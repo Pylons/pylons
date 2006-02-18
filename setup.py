@@ -40,7 +40,7 @@ being used in production environments. A major release is planned for January.
 
 Dev packages:
 
-* `Development svn <http://pylons.groovie.org/svn/trunk#egg=Pylons-dev>`_
+* `Development svn <http://pylons.groovie.org/svn/Pylons/trunk#egg=Pylons-dev>`_
 
 * `FormBuild svn <http://pylons.groovie.org/svn/trunk/sandbox/james/code/FormBuild#egg=FormBuild-dev>`_
 
