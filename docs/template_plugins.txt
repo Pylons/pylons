@@ -1,0 +1,81 @@
+Template Language Plugins
++++++++++++++++++++++++++
+
+Pylons supports a variety of template languages in addition to Myghty through the use of template engine
+plug-ins. This can be useful both for migrating web applications to Pylons, or in cases where you just
+would rather prefer some other templating solution.
+
+Template language plug-ins can be installed rather easily using setuptools. A current list of template
+engine plug-ins is at the `Buffet <http://projects.dowski.com/projects/buffet>`_ website.
+
+Once you have installed one of these, using the new template language within Pylons is quite easy. As
+Pylons does not come pre-configured with this in mind, you will need to do a little more work yourself
+depending on which template language you're using.
+
+
+Example: Using Kid with Pylons
+==============================
+
+To use Kid with Pylons, first we must setup a new template directory for the Kid templates.
+
+First, create a directory in ``yourproject`` called ``kidtemplates`` and add a controller::
+
+    ~/yourproject% mkdir yourproject/kidtemplates
+    ~/yourproject% paster controller kid
+    
+You will now have a kid.py controller in your controllers directory. Add ``from pylons import buffet``
+to the top of the file so that you have plug-in template rendering access.
+
+*Note:* If you plan on using different template languages often, you can save yourself some time later
+by putting the import line in ``yourproject/lib/base.py`` so that ``buffet`` will be available in all
+your controllers.
+
+Edit the KidController class so it looks like this::
+
+    class KidController(BaseController):
+        def __before__(self, action, **params):
+            buffet.prepare('kid', 'yourproject.kidtemplates')
+    
+        def index(self):
+            c.title = "Your Page"
+            c.message = 'hi'
+            buffet.render('kid', 'test')
+
+Make sure to change ``yourproject.kidtemplates`` to reflect what your project is actually called. The
+first argument to ``buffet.prepare`` indicates what template engine we will use, and the second one
+indicates where the template root path is.
+
+You can also call the prepare command in your BaseController's ``__call__`` method if you plan on using
+this template engine setup frequently in many controllers.
+
+Now let's add a Kid template to render, create the file ``yourproject/kidtemplates/test.kid`` with
+the following content::
+
+    <html xmlns="http://www.w3.org/1999/xhtml" xmlns:py="http://purl.org/kid/ns#">
+        <head>
+            <title py:content="c.title">title</title>
+        </head>
+        <body>
+            <p py:content="c.message">message</p>
+            <p>You made it to the following url: ${h.url_for()}</p>
+        </body>
+    </html>
+
+Notice that all the same Pylons variables are made accessible to template engine plug-ins. You will have c, h, m,
+session, and request available in any template language you choose to use. This also makes it easier to switch
+later to Myghty or a different template language without having to update your controller action.
+
+Since the template plug-in's currently expect path's to act as module imports, you will also need to create
+a ``__init__.py`` file inside ``yourproject/kidtemplates``.
+
+Loading ``/kid`` will now return the Kid template that you have created.
+
+
+Further Notes
+=============
+
+Since Pylons will route all template output through Myghty, you have access to Myghty's powerful caching abilities
+even when using other template languages.
+
+``buffet.render`` will also take the keyword argument ``as_string`` boolean which will return the rendered template
+as a string if you'd then like to pass it elsewhere.

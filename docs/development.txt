@@ -1,0 +1,228 @@
+Beginners Web Development
++++++++++++++++++++++++++
+
+:author: James Gardner
+:date: 2005-11-24
+:status: Unfinshed First Draft
+
+This guide teaches the basics of web programming in Python and is aimed at a developer who is used to programming concepts like functions and classes but who hasn't had much experience with the web or with Python.
+
+You are a developer right? So hopefully you won't need to be held by the hand but you might have to run some of the examples to be clear in your own head how things work. Also this guide won't teach you how to actually get a single web page produced, it is about understanding the concepts so that when you do start programming you know why you are doing what you are doing.
+
+The HTTP Protocol
+=================
+
+The web is based on the HTTP or Hyper Text Transfer Protocol. Any website with ``http://`` as the start of the URL uses the HTTP protocol and it is this protocol that we are going to concentrate on. 
+
+Of course there are other protocols like FTP, HTTPS or SVN but these are not covered because to create a dynamic website you use the HTTP protocol.
+
+When you visit a website such as http://www.python.org your browser recognizes the URL and sends a ``GET`` request to the website. The request might contain a series of HTTP headers to tell the server what sort of browser it is and send any cookie information. 
+
+The website responds by sending HTTP headers and content back to the browser which in turn performs any actions as a result of the headers such as setting cookies and then displays the content accordingly. There are other kinds of request such as ``POST`` but the majority of web applications spend most of their time responding to ``GET`` requests.
+
+Mozilla Extensions
+------------------
+
+You would not normally see the HTTP headers because the browser only displays the content. In order to be able to see the HTTP requests and responses you will need to download and install the `FireFox <http://www.mozilla.org/products/firefox>`_ web browser and the LiveHTTPHeaders extension. You might also be interested in the Web Developer Toolbar extension.
+
+Once you have installed LiveHTTPHeaders you can click View->Sidebar->LiveHTTPHeaders to make the LiveHTTPHeaders sidebar appear. Now when you visit a page and get a response you will be able to see the HTTP headers of the request and the response.
+
+A Typical Response
+------------------
+
+A simple response from a webserver to a ``GET`` request might look like this::
+
+    HTTP/1.x 200 OK
+    Server: SimpleHTTP/0.6 Python/2.4.1
+    Content-Type: text/html
+
+    <html>
+    <body>
+    Hello World!
+    </body>
+    </html>
+
+Let's look at this in more detail. The first three lines contain the HTTP headers then there is a blank line to indicate the start of the content and then content follows. 
+
+The headers tell us that there was a ``200`` server response which is an HTTP status code to say everything went fine in generating the response. The code is followed by a message ``OK``. You may also have seen a ``500 Internal Server Error`` header. This is another status code that says that there was a problem generating the response. The error code is ``500`` and the message is ``Internal Server Error``. The server can generate any message it likes but it is the status code that is important. A header like ``500 Everything is fine`` might be returned but because the code is still ``500`` it would still be treated as an internal server error.
+
+The headers also tell us that this particular response was generated with the ``SimpleHTTP/0.6 Python/2.4.1`` server which is used in software called `Paste <http://www.pythonpaste.org>`_ that Pylons is built on and which Pylons uses to serve applications. 
+
+The final header tells the browser that the content that is about to be sent should be treated as an HTML file. If the ``Content-Type`` header was ``img/gif`` for example, the browser would expect to treat the content as a GIF file. The ``img/gif`` or ``text/html`` part corresponds to the MIME type of the file. In this case the content is a simple HTML page so when you press Ctrl+U in FireFox to view source after you have visited the URL that gave this response, you would only see the HTML for the ``Hello World!`` message::
+
+    <html>
+    <body>
+    Hello World!
+    </body>
+    </html>
+    
+Starting Simple: CGI
+====================
+
+There are many ways of producing the HTTP response but fundamentally they all involve the following:
+
+* Some sort of server to listen for requests made by people visiting the URL 
+* Some way of printing output back to the browser
+
+The simplest method is called CGI or Common Gateway Interface which is nothing more complicated than the webserver executing some sort of program and printing any output generated back to the web browser. The program can be written in Perl, Python, C++ in fact, any language at all.
+
+Here is a very simple CGI program written in Python::
+
+    print "Content-Type: text/html"
+    print ""
+    print "<html>"
+    print "<body>"
+    print "Hello World!"
+    print "</body>"
+    print "</html>"
+    
+Of course you could write it in one line::
+
+    print "Content-Type: text/html\n\n<html>\n<body>\nHello World!\n</body>\n</html>"
+
+Save whichever version you find simplest to a file named ``hello.py`` and then run it from the command line like this::
+
+    python hello.py
+
+You will see the expected output::
+
+    Content-Type: text/html
+
+    <html>
+    <body>
+    Hello World!
+    </body>
+    </html>
+    
+When you use the same program as a CGI script the web server is responsible for executing the script and it captures the output you print, adds its own HTTP headers and sends it back to the web browser. In our example the web server added the HTTP headers below::
+
+    HTTP/1.x 200 OK
+    Server: SimpleHTTP/0.6 Python/2.4.1
+    
+to the output from our script to produce the complete response::
+
+    HTTP/1.x 200 OK
+    Server: SimpleHTTP/0.6 Python/2.4.1
+    Content-Type: text/html
+
+    <html>
+    <body>
+    Hello World!
+    </body>
+    </html>
+
+So with CGI you are responsible for producing most of the HTTP header and all the content yourself in a very direct way.
+
+Of course a CGI program which only produces static output isn't very useful, you might as well have put the HTML in a file and let the web browser work out what type of file it was and generate the whole HTTP response for you (this is what web servers do for static files).
+
+For a CGI script to be useful it needs some input. Information is passed to CGI scripts through Environment Variables. For each request the server passes a series of environment variables to the script as defined by the CGI standard. They are all useful but one particularly useful one id the ``QUERY_STRING`` environmental variable. 
+
+If a user submitted the following form after entering the name ``James`` the url visited would look be ``http://www.example.com/script.cgi?name=James&Submit=Go``::
+
+    <form method="GET" action="http://www.example.com/script.cgi">
+    <input type="text" />
+    <input type="sumbit" name="Submit" value="Go" />
+    </form>
+
+Everything after the ``?`` is called the query string and it contains the names and values of the fields in the form the user submitted. You can access the information from the ``QUERY_STRING`` environment variable. In python you would do this like as follows::
+
+    import os
+    print os.environ['QUESRY_STRING']
+    
+But of course you would get an error if no ``QUERY_STRING`` key existed because no data as submitted.
+
+Most languages have tools to parse this string into a useful form so that you can respond to the user input. Of course the other environment variables that are useful too for reading cookies, getting information about the browser etc.
+
+If you are interested in writing CGI scripts in Python rather than full applications you might want to look at http://www.pythonweb.org which contains a series of software components to allow you to do just that.
+
+There are a number of drawbacks to writing CGI scripts in the way detailed above. Some of these are:
+
+* They are slow
+* They don't separate code from the way it is displayed
+* The URLs look messy
+* It is hard to structure your code
+* There is not an easy way to filter the output
+* Code is hard to test
+
+Languages like ASP, PHP etc also have these fundamental problems although because of the huge user-base many different ways of working around them have been invented so that they are very useful. 
+
+Pylons by contrast is written to allow developers to work in the most natural and useful way possible without needing to learn workarounds. Everything in Pylons is convention based, so that if you use the defaults everything will work but you are free to do things differently without worrying about whether you are going to break the entire system.
+
+
+Enter Pylons
+============
+
+Pylons is a rapid web application framework which contains everything you need to write powerful applications quickly, easily and naturally. 
+
+Fundamentally a Pylons application does a similar job to a CGI script in that it outputs HTTP headers and content to a web browser but Pylons applications are structured in such a way that the more sophisticated tasks a serious web application needs to perform are extremely simple.
+
+Pylons is based on firmly on the `Web Server Gateway Interface <http://www.python.org/peps/pep-0333.html>`_ so to really understand Pylons, rather than just be able to use it, you need to understand WSGI.
+
+Here is a quick summary of some of the main features of Pylons:
+
+Speed of execution
+------------------
+
+Pylons is fast. It is fast because code only needs to be loaded once to be run lots of times, this means that after the first request, none of the libraries need to be reloaded. It has been carefully coded to be fast.
+
+Ease of deployment
+------------------
+
+Pylons uses `Paste <http://www.pythonpaste.org>`_ extensively. This allows a huge variety of deployment methods from ordinary slow CGI to FastCGI and SCGI, mod_python to WSGIUtils. All deployment options can be specified through a simple configuration file.
+
+Pylons applications are distributed as ``.egg`` files which can be installed with a single command using Easy Install.
+
+Intermixing of code and template
+--------------------------------
+
+When you write CGI scripts you find yourself using ``print`` statements quite a lot and it can be very difficult to separate your code from the HTML presentation. If you are working with a designer with little coding experience they will almost certainly not be able to make changes to the layout of your generated pages without breaking your code. 
+
+There are two approaches to solving this problem. The first is to use a templating language. The idea is to keep your code and your template completely separate. You write your code so that all the information that needs to be put into a web page is passed in one go to a template which generates the output which in turn the program sends back to the browser. Your designer can then edit the templates without as much risk of damaging your code.
+
+The second approach, which beginners tend to like, is to mix code and template in the same document. Languages like PHP and ASP do this where you put any code in tags and any template code outside the tags. Conceptually this is just like writing an HTML page with an extra tag which runs code. This approach makes it easy to mix and match code and HTML but is not as good at separating presentation from code since the page often contain lots of code.
+
+Pylons projects have a ``templates`` directory which use Myghty templates (a system based on HTML::Mason used to power amazon.com amoungst others) that allows mixing of Python code and other information such as HTML in a fast, extensible format. Myghty also allows for components, inheritance and more. Pylons also supports Cheetah, Kid and other template solutions utilizing the TurboGears template plug-in system.
+
+Routes
+------
+
+URLs are mapped to actions within controllers by a system called Routes. Routes makes it extremely simple to have a logical structure to your URLs whilst still maintaining a Model Controller View architecture
+
+Helpers
+-------
+
+Pylons comes with an extensive library of helper functions to assist with common tasks such as form generation, date formatting and much more. It supports every feature the Rails helpers have including AJAX.
+
+AJAX
+----
+
+Pylons fully supports script.aculo.us AJAX and Rails AJAX helpers to assist in making advanced JavaScript web 2.0 interfaces straightforward to write.
+
+
+Where to go Next
+================
+
+If you are more interested in creating applications than understanding low level server APIs, now would be a good time to do the following:
+
+* `Install Pylons <install.html>`_
+* Read the `Getting Started <getting_started.html>`_ guide
+
+There are a few things you will probably want to try out after having read this introduction. The following variables might help:
+
+``m.write()``
+    Write some output to the web browser, equivalent to the ``print`` statement in CGI
+    
+``request.headers_in``
+    A dictionary of the request headers sent to the server by the browser
+    
+``request.headers_out``
+    A dictionary where the keys you set will be used as the HTTP headers of the response
+    
+``request.content_type``
+    Use this to set the content type of the output. For example ``request.content_type='text/plain'``.
+
+Otherwise, if you are willing to get stuck into some more advanced concepts you are ready to read the following guides:
+
+* `Introduction to the Web Server Gateway Interface <wsgi.html>`_
+* `Advanced Pylons <advanced.html>`_
+

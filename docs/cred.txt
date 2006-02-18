@@ -1,0 +1,359 @@
+
+=======================================================
+A Solution for Data Representation in MVC Architectures
+=======================================================
+
+Background Information
+======================
+
+A common methodology to use when writing a web application is the MVC or *Model View Controller* methodology. 
+
+The idea is that your application can be broken down into three sets of components: Model classes to represent or model your data, View classes to present a view of your data to a user and Controller classes to provide control logic to determine how the Model and View are changed as the user performs various actions.
+
+The separation between the model, view and controller classes can often be difficult to decide. For example most templating languages which are used for view components can also provide control logic. Another problem is that as data is passed around an application it has to be converted to various representations. Since the user can be entering data there is no guarantee that the data your application is using is valid.
+
+In the case of web programming, data is often stored in a database so an ORM or *Object Relational Mapper* is frequently used to convert SQL database structures into Python objects to be used as a Model. The ORM can also save any changes to the data to the database, performing any operations or conversions transparently. A templating system such as Cheetah is often used to embed your data in a format which can be displayed in a web browser and finally Controller classes provided by one of the various Python web frameworks provide a basis for the application logic.
+
+Implementing the MVC architecture in the way described above works fairly well but there are a few drawbacks:
+
+#. There is no structured way to load or save model data from a datasource other than a database supported by the ORM using a data type supported by the ORM.
+#. Data validation, conversion and coercion still needs to be done when presenting data in a view and when extracting information from a request.
+
+CRED attempts to solve these problems by devising a new way of implementing the Model part of the MVC architecture which fits better into the way MVC is supposed to be used.
+
+The Data Validation, Conversion and Coercion Problem
+----------------------------------------------------
+
+In a well designed MVC implementation the program should always be able to rely on the fact that the data contained in the model is valid. This means you should not be able to set any data properties of the model to an invalid value and doing so will raise an error.
+
+Because a well implemented model should be able to accept values from all sorts of sources such as Python variables, user input or SQL output, converters need to be written to convert the data to and from the various representations.
+
+We can decide that the model is going to store the representation of its data members as Python objects. If this is the case we can write validators to validate each data type against a Python object. Since for every conversion for every data type, either the input or output of the conversion will be a Python object we only need one validator for each pair of converters.
+
+For every data type we now have two converters and a validator. Since for every conversion we will want to validate the Python object and raise an Error if there is a problem we can combine the validators and converters for each data type into one class which we call a validator.
+
+This works as follows::
+
+    try:
+        value = raw_input('Enter a number: ')
+        return validator.to_python(value)
+    except ValidationError, e:
+        print e
+        
+    try:
+        return validator.from_python(value)
+    except ValidationError, e:
+        print e
+
+Internally the ``to_python()`` and ``from_python()`` methods both convert and validate the value.
+
+Validators can be grouped together to from complex schema that validate all of the Model's data at once. This is very useful when whether or not one value is valid depends on the value of a different data element.
+
+In this way we can build up the smallest possible, highly extensible schema to define how your Model should be converted to and from various formats.
+
+
+The Load and Save Problems
+--------------------------
+
+Certain ORMs set data in the underlying database when you modify their attributes in Python code. We prefer to have complete control over when data is loaded and saved so the ideal Model class completely abstracts the ORMs functionality. To save to the database you should actively call ``.saveToDatabase()``. 
+
+There are a number of advantages to this abstraction:
+
+#. If you wish to use a different ORM, you only have to change the code in the ``.saveToDatabase()`` and ``.loadFromDatabase()`` methods of your Model and the rest of your code will work automatically.
+#. If your data contains files and other objects which aren't easily stored in your database you can extend the save and load methods to store and load your non-database data from elsewhere. The rest of your code needn't know about the extra complication.
+#. If you want to load data from a completely different data source (say if it doesn't exist in the database) you can write a ``.loadFromElsewhere()`` method to load the data. You may need to write a new set of Manipulators since the data format of the other source may be different, but this is easy too as you can derive your new manipulators from the existing ones. One the data is loaded into the Model your ``.saveToDatabase()`` code will automatically be able to save the data you have loaded without modification. This makes it easy to change the backend of your application with minimal modification to the rest of the code.
+
+Summary
+-------
+
+All this conversion, loading and saving malarky might sound rather complicated, and indeed it is. The point is that your web application is almost certainly already doing all this so why not do it in a structured and extensible way that makes it easy to modify your application later on? The Model software does just that.
+
+Our Implementation
+==================
+
+Our philosophy when designing an implementation of the extended ideas described in `Background Information`_ was to use existing code where possible. The more code already being maintained by a community, the less code there is to maintain.
+
+There are two extremely useful pieces of software called ``SQLObject``, an ORM and ``FormEncode``, a validation mechanism which we have based our code on. The beauty of the implementation is that you can use your own libraries if you prefer.
+
+Basic CRUD Operations
+=====================
+
+As an example we are going to consider a book list application. Users can add books to a list and make and edit a comment on each book. The interface is simply a list of the books already on the list and a form at the bottom of the page to add a new book to the list. 
+
+When a user adds a book a search is done using Amazon's XML web service API to find the information needed. Because the Amazon search is fairly slow, a search if first done on other user's books to see if the book is already in the database.
+
+Creating the Data Structure
+---------------------------
+
+Each book has the following attributes::
+
+    Title
+    Author
+    ISBN
+    Publication Date
+    Comment
+
+This means the model for our application needs to have the following data attributes::
+
+    title     (string)
+    author    (string)
+    ISBN      (string)
+    published (date)
+    comment   (string)
+    
+We need to write code to:
+
+#. Load a users book list with book information and comments
+#. Search the database for a book match when a new book is added to the list
+#. Search Amazon if no match is found
+#. Add new books to the database
+#. Update a comment for a particular book
+
+To start writing our code we need to define our database using SQLObject. We do this as follows::
+
+    import SQLObject
+
+    class BookData(SQLObject.Table):
+        user = String(10)
+        title = String(255)
+        author = String(255)
+        ISBN = String(255)
+        published = Date()
+        comment = String(500)
+        
+    bookData = BookData()
+
+Next we need to create a Model for our particular purpose::
+
+    from model import Model
+
+    class BookModel(SQLObjectModel):
+        SQLObjectData = bookData
+
+    bookModel = BookModel()
+
+What this does is to return a ``BookModel`` class which has methods for finding book objects and creating new books.
+
+First lets add a new Book to the database::
+    
+    import datetime
+
+    try:
+        newBook = bookModel.new(
+            title = 'James and the Giant Peach',
+            user = 'James',
+            author = 'Rohl Dahl', 
+            ISBN = 'Some ISBN number', 
+            published = datetime.date(2004,12,05),
+            comments = None,
+        )
+    except model.ValidationError e:
+        for error in e.errors:
+            print error
+            
+We could have left the line ``comments = None,`` out of the above example since values that aren't specified are automatically assumed to be empty. This detail is particularly important when loading from web based forms when an empty value can mean the string value ``''`` or that the data should be ignored.
+            
+Note also how we try to catch a model.ValidationError. If there was a problem loading the data an error is raised containing all the validation errors. Each ``error`` object is an Exception object with detailed information about the error but when printed displays a short description.
+
+Our new book isn't much use if it only exists in memory, we need to save it back to the database::
+
+    newBook.saveToDatabase()
+    
+Note how this time we didn't need to catch any validation errors. The data in our Model is always valid for whatever output stream we want to give it. The data still needs to be converted but since it is already valid we don't need to check for validation errors.
+
+This simple way of loading data into the model and saving it to a data source is the same no matter whether the data is loaded from Python, a database, from request variables or from some new source we haven't thought of until the code is nearly finished!
+
+Updating Data
+-------------
+
+Now lets change some of the data. Using our ``newBook`` object from earlier we can do the following::
+
+    try:
+        newBook.loadFromPython(
+            comments = 'Truly great book.'
+        )
+    except model.ValidationError e:
+        for error in e.errors:
+            print error
+
+There is quite a lot going on here which deserves some explanation.
+
+Note how we have used a ``loadLoadFromPython()`` method. In the Model way of thinking you always *load* data into the Model from various representations and *save* them back to the representation. In the example above we are loading Python data into the ``newBook`` object so we use ``loadFromPython()``. We can get data back from the model as a dictionary with ``saveToPython()``. The ``saveToPython()`` method also has two parameters ``name`` which if specified makes the method return the value of the data item named ``name`` and ``default`` which sets a default value for the data item named ``name`` if it doesn't exist. Of course in real life it is simpler to use ``set()`` for ``loadFromPython()`` and ``get()`` for ``saveToPython()``. Both sets of methods exist and do exactly the same thing so you can use whichever suits you best.
+
+The second point to note is that we DID NOT load the values of the data like this::
+
+    newBook.data.comments = 'Truly great book.'
+
+The reason for this is that if you are setting lots of values at once your Manipulators might need to know all the values before being able to determine whether your data was valid. Loading the variables one by one in the way shown above would result in Model attributes being set which might not have been valid which would wreak havoc with the rest of your code. Another reason for not using the method described above is that if your data was named something like ``__init__``, the method above would not work since Python wouldn't know if you were meaning to set the ``__init__`` method to point to a different object or update the value of a data item named ``__init__``.
+
+
+Displaying a Book List
+----------------------
+
+In order to display a book list we need to get a list of all the books a particular user has from the database. 
+
+First we get the IDs of all the appropriate books in whichever way we think best. For example like this::
+
+    cursor.execute("select id from Books where user='james' order by published")
+    ids = []
+    for id in cursor.fetchall():
+        ids.append(id[0])
+        
+In practice SQLObject has it's own methods for doing this too.
+    
+Then we use the ``bookModel`` object to create our Models::
+
+    books = []
+    for id in ids:
+        newBook = bookModel.loadFromDatabase(id=3)
+        books.append(newBook)
+
+Ordinarily, since we are loading form an external datasource we would check for Validation errors. However realistically there shouldn't be any errors in the database unless someone has tampered with it because the data was validated when we wrote it so in this case the error would be a bug so we don't try to catch it.
+
+Now we need to display our books. This can be done with any templating system, or just with Python itself. In this example we will just print a simple HTML table::
+
+    print '<table>'
+    print '<tr><td>Title</td><td>Author</td><td>ISBN</td><td>Published<td></tr>'
+    for book in books:
+        print '<tr><td>%s</td><td>%s</td><td>%s</td><td>%s<td></tr>'%(
+            book.data.title,
+            book.data.author, 
+            book.data.ISBN, 
+            book.data.published,
+        )
+    print '</table>'
+    
+Note how this time we have been able to use the attributes of the data attribute of model. This is because they are being read, not written to.
+
+Of course we could have made this a bit simpler by changing line 4 of the code above to read::
+
+        row = """<tr><td>%(title)s</td><td>%(author)s</td>
+                <td>%(ISBN)s</td><td>%(published)s<td></tr>"""%book.get()
+        print row
+        
+This works because the ``get()`` method is an alternative way of calling the ``saveToPython()`` method which returns a dictionary object which Python understands how to place into the correct places in a carefully formatted string.
+
+Deleting a Book
+---------------
+
+To delete a book you would do the following::
+
+    bookModel.deleteFromDatabase(id=3)
+
+This would remove the book with ``id`` equal to ``3`` from the database but it wouldn't remove any objects in your code which still contained the data from the the book. It is up to you to make sure that you don't then save the data back to the database. The best way of doing this would be to delete the Python objects representing the ``3`` book::
+
+    del newBook
+    
+Or to remove a book from the a list such as in the book list example::
+    
+    i = 0
+    for book in books:
+        if book.get('id') == 3:
+            break
+        i += 1
+    books.pop(i)
+
+
+Using Alternative Validators
+============================
+
+The previous section demonstrated how to to use a book model to create, read, update a and delete a book from a database. It was fairly straightforward because the book's data attributes happened to coincide with the formats supported by SQLObject and therefore in turn, by the underlying database.
+
+In real life things aren't so simple. For CRUD to be credible we need to be able to store data attributes that don't fit nicely with already defined data types supported by the underlying database.
+
+For this part of the tutorial we will write a custom validator to store ISBN numbers which validates that they are in the correct format.
+
+We can use the FormEncode validator classes. Instead of the example we used right at the beginning we can define our BookModel class like this::
+
+    bookValidators = model.validators(
+        ISBN = validators.Regex(regex='^[a-zA-Z0-9]+$'),
+    )
+        
+    class BookModel(Model):
+        SQLObjectData = bookData
+        validators = bookValidators
+
+This time we have specified that the ISBN data type should use a regular expression validator which only allows alphanumeric values.
+
+Using Custom Validators
+=======================
+
+If FormEncode's built in validators aren't quite what you want you can also use your own custom validators. 
+
+Our validators are based on FormEncode so to create a custom validator you derive your new validator from a FormEncode validator as follows::
+
+    import formencode
+    from formencode import validators
+    
+    class ISBNValidator(validators.FancyValidator):
+    
+        min = 3
+        non_letter = 1
+        letter_regex = re.compile(r'[a-zA-Z]')
+    
+        messages = {
+            'too_few': 'Your password must be longer than %(min)i '
+                      'characters long',
+            'non_letter': 'You must include at least %(non_letter)i '
+                         'characters in your password',
+            }
+    
+        def _to_python(self, value, state):
+            # _to_python gets run before validate_python.  Here we
+            # strip whitespace off the password, because leading and
+            # trailing whitespace in a password is too elite.
+            return value.strip()
+    
+        def validate_python(self, value, state):
+            if len(value) < self.min:
+                raise Invalid(self.message("too_few", state, 
+                                           min=self.min),
+                              value, state)
+            non_letters = self.letter_regex.sub('', value)
+            if len(non_letters) < self.non_letter:
+                raise Invalid(self.message("non_letter", 
+                                            non_letter=self.non_letter),
+                              value, state)
+
+
+Extending Our Example to use other Data Sources
+===============================================
+
+So far we have only used an SQLObject database as the data source for our model. It may well be that our application needs to load or save data to another datasource. We need to add ``loadXXX()`` and ``saveXXX()`` methods to our ``BookManager``::
+
+    from model import Model
+
+    class BookModel(Model):
+        
+        SQLObjectData = bookData
+        
+        def loadFromXML(self):
+            _data = {}
+            for k, v in self.data:
+                _data[k] = self.validators[k].to_python(v)
+            self.data = _data
+            
+        def saveToXML(self):
+            pass
+
+    bookModel = BookModel()
+
+# Internally this will pass the save() method to the Book class.
+
+``Model`` class with the data structures for the ``Book`` class as well as an automatically created set of Manipulators which validate the default data types described in ``Book``.
+
+We are now ready to start using our Model.
+
+First lets display out book list:
+
+We now need to create 
+As well as being able to convert data to and from the database and to and from the web browser we also need to load data from Amazon.
+
+
+Note how we have specified ``Manipulators`` as ``None``. This is because we want our ``BookModel`` class to use the default manipulators for the data structure defined in our ``Book`` class.
+
+
+Customising Our Example to search on ISBN
+=========================================
+
+In the real world it isn't necessarily too helpful to have to reference every book by the id that SQLObject created for it when it was added to the database. In our example it we would find it useful to be able to load books by user and ISBN. 

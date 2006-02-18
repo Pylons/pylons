@@ -1,0 +1,5 @@
+from ${base_package}.lib.base import *
+
+class ${name}Controller(BaseController):
+    def index(self):
+        pass

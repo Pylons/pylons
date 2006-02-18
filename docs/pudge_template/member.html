@@ -1,0 +1,117 @@
+<?xml version="1.0"?>
+<?python
+
+def initialize(self):
+    subject = self.subject
+    self.qualified_name = subject.qualified_name()
+    self.title = self.qualified_name
+    if not hasattr(self, 'heading'):
+        self.heading = self.title
+    if not hasattr(self, 'parent_link'):
+        self.parent_link = None
+    self.blurb = subject.blurb(html=1)
+    self.doc = subject.doc(html=1, blurbless=1)
+    if self.blurb:
+        self.title += ' -- %s' % (subject.blurb(), )
+    sects = getattr(self, 'sections', [])
+    sections = []
+    for title, members in self.sections:
+        members = list(members)
+        if title == 'Modules':
+            sortkey = lambda x: x.qualified_name()
+        else:
+            sortkey = lambda x: x.source_lines()
+        members.sort(lambda x, y: cmp(sortkey(x), sortkey(y)))
+        sections.append((title, members))
+    self.sections = sections
+?>
+<div xmlns:py="http://purl.org/kid/ns#"
+     py:extends="'layout.html', 'common.html', 'transitions.html'"
+     py:strip="1"
+     py:def="layout">
+
+  <ul id="breadcrumbs">
+      <li class="breadcrumb first"><a href="module-index.html">Module Reference</a></li>
+      <li py:if="parent_link" class="breadcrumb"><a href="${link_to(parent_link)}">${parent_link.qualified_name()}</a></li>
+      <li class="breadcrumb">${heading}</li>
+  </ul>
+
+  <h1 class="pudge-member-page-heading">
+    <tt>${heading}</tt>
+  </h1>
+  <h4 class="pudge-member-page-subheading" py:if="blurb">
+    ${XML(blurb)}
+  </h4>
+  <p class="pudge-member-parent-link"
+     py:if="parent_link">
+    <small>
+    The ${subject.name} ${subject.type_name} is accessible via the
+    <a href="${link_to(parent_link)}">
+      <tt>${parent_link.qualified_name()}</tt>
+    </a> ${parent_link.type_name}.
+    </small>
+  </p>
+  <div id="pudge-section-nav">
+  <ul>
+    <li py:for="section_title, members in self.sections">
+      <a class="pudge-section-link" href="#${section_title.lower()}" py:if="members">
+        ${section_title} (${len(members)})
+      </a>
+      <span py:if="not members" class="pudge-missing-section-link">
+        ${section_title}
+      </span>
+    </li>
+    <li py:if="subject.ismodule()">
+      <a class="pudge-section-link" 
+         href="${'module-%s-index.html' % (subject.qualified_name(), ) }">
+        Index
+      </a>
+    </li>
+    <li py:if="link_to_source(subject)">
+      <a class="pudge-section-link" href="${link_to_source(subject)}">
+        Source
+      </a>
+    </li>
+  </ul>
+  </div>
+  <div style="clear: left"/>
+  <div class="rst pudge-module-doc" py:if="doc">
+    ${XML(doc)}
+  </div>
+  
+  <hr py:if="[a for a, b in sections if len(b)]"/>
+  
+  <div py:for="section_title, members in sections"
+       py:if="members" py:strip="">
+    <a name="${section_title.lower()}" />
+    <h2>${section_title}</h2>
+    <div py:for="member in members" py:if="section_title != 'Modules'"
+         py:replace="render_object(member)" />
+    <div py:if="members and section_title == 'Modules'" py:strip="">
+      <a name="modules" />
+      <p>
+        The <tt>${qualified_name}</tt> module 
+        exposes ${len(members)} submodules:
+      </p>
+      ${module_index_table(members)}
+    </div>
+  </div>
+  
+  <p>
+    <small>
+    <?python
+    undocumented_count = 0 #len(list(subject.undocumented_members()))
+    ?>
+    <span py:if="undocumented_count">
+      This module contains ${undocumented_count}
+      undocumented members.
+    </span>
+    See 
+    <a href="${link_to_source(subject)}"
+       title="${subject.relative_file()}:${subject.source_lines()[0]}"
+       >the source</a>
+    for more information.
+    </small>
+  </p>
+
+</div>

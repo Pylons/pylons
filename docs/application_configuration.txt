@@ -1,0 +1,91 @@
+Configuration Files
++++++++++++++++++++
+
+Pylons comes with two main ways to configure an application::
+
+    * Through the application's ``config`` directory
+    * Through a user configuration file
+    
+Typically as a developer writing a Pylons application you will change the files in the ``config`` directory to change certain aspects of how your application behaves but any options you want the webmaster using your configuration file to be able to configure will be specified by the in a configuration file. This document describes how to use the webmaster configurable configuration file support in Pylons.
+
+Default Configuration File Setup
+================================
+
+When you create a project using ``paster create --template=pylons`` a sample configuration file called ``development.ini`` is automatically produced as one of the project files. This is an example of a configuration file and contains sensible options for development use in your project. For example when you are developing a Pylons application it is very useful to be able to see a debug report every time an error occurs so the developent.ini file includes options to enable debug mode so these errors are shown.
+
+You can serve your application using this development configuration like this::
+
+    paster serve --reload development.ini
+    
+The ``--reload`` option is useful during development as the server will automatically reload each time a file is changed so that you can test the changes without having to manually restart the server.
+    
+Say your application is called wiki, when a user comes to want to setup an application they will run the command::
+
+    paster make-config wiki production.ini
+    
+This command produces a different configuration file with sensible options for production use. In particular, the debug display is disables as the report might contain your usernames, passwords or other information you wouldn't want end users to see.
+
+You can find out how to control what is produced by the ``paster make-config`` by reading `Application Setup <application_setup>`_.
+
+It is your responsibility as a developer to ensure that a sensible set of default configuration values exist when the webmaster uses the ``paster make-config`` command.
+
+You can create as many different configuration files as you like. Typically a developer might have a ``development.ini`` configuration file for testing, a ``production.ini`` file produced by the ``paster make-config`` command for testing the command produces sensible production output. You might also want a ``testing.ini`` configuration for doing some specific testing or any other number of configurations appropriate for your application. You can deploy your configuration in a variety of ways supported by paste deploy but typically you would serve your configuration like this::
+
+    paster serve production.ini
+    
+Configuration File Format
+=========================
+
+Configuration file format is described in great detail in the `Paste Deploy documentation <http://www.pythonpaste.org>`_.
+
+
+Error Handling Options
+======================
+
+A number of error handling options can be specified in the config file. These are described in the `Error Handler <error_handler.html>`_ documentation.
+
+
+Getting Information From Configuration Files
+============================================
+
+All information from your configuration file is available in the ``paste.config`` key of ``environ``. It can be obtained like this::
+
+    config = request.environ['paste.config']
+    
+There is also a handy shortcut for when the ``request`` variable isn't in scope::
+
+    from paste.deploy import CONFIG
+    config = CONFIG
+
+Either way, the ``config`` object returned is the same. It behaves like a dictionary and has two keys, ``app`` which contains config keys in the ``[app:main]`` section of the config file and ``default`` which contains the global configuration settings from the ``[DEFAULT]`` section. 
+
+For example you can obtain the location of the cache directory like this::
+
+    cache_dir = config['app']['cache_dir']
+    
+Or the name of the package like this::
+
+    package = config['app']['package']
+    
+Or the debug status like this::
+    
+    from paste.deploy.converters import asbool
+    debug = asbool(config.get('debug', 'true'))
+
+URL Prefix
+==========
+
+In certain rare circumstances you may need to manually override the root URL of your applicaiton. For example if you are using a proxy server. To do this you can set the ``prefix`` option in ``[app:main]``. 
+
+For example to move your entire application to ``/james`` add this to ``[app:main]``::
+
+    prefix = /james
+    
+In normal operation ``prefix`` should not be used, since it is correctly calculated from ``SCRIPT_NAME``. Even paste deploy composite applications work fine without a prefix.
+
+If you need to find out the prefix being used you can do this from inside a controller::
+
+    from pylons.util import get_prefix
+    prefix = get_prefix(request.environ)
+    
+The parameter passed to ``get_prefix()`` is the environ dictionary.

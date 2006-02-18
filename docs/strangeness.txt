@@ -1,0 +1,22 @@
+Strangeness
++++++++++++
+
+These are just some notes to myself about things that seem strange. (James)::
+
+    <% c.form.layout.sub_question_start(
+        title="Project ID",
+        c.form.field.text(name='project_id') ) %>
+    
+    is fine but 
+    
+    <% c.form.layout.sub_question_start(
+        title="Project ID",
+        c.form.field.text(name='project_id') 
+    ) %>
+    
+    Can't create a controller with the same name as the package itself.
+
+    m.subexec() doesn't raise errors - is this expected (in which case we should always use m.comp() in the docs.
+    
+    POST doesn't work in security
+    

@@ -1,0 +1,198 @@
+Internationalization in Pylons
+++++++++++++++++++++++++++++++
+
+Everywhere in your code where you want strings to be available in different languages you wrap them in the  ``h._()`` method. The method is called ``h._()`` rather than something like ``h.translate()`` because ``_()`` is a convention in Python for marking text to be translated and it also saves on typing when lots of strings need to appear in multiple languages.
+
+
+In this example we want the string ``'Hello'`` to appear in three different languages: English, French and Spanish. We also want to display the word ``'Hello'`` in the default language. This is handled by Pylons using a helper method named ``h._()`` which in turn uses Python's ``gettext`` module.
+
+Lets call our project ``translate_demo``::
+
+    paster create --template=pylons translate_demo
+    
+Or on Windows::
+
+    python C:\Python24\Scripts\paster create --template=pylons translate_demo
+    
+Now lets add a friendly controller that says hello::
+
+    cd translate_demo
+    paster controller hello
+    
+Or on Windows::
+
+    cd translate_demo
+    python C:\Python24\Scripts\paster controller hello
+
+Edit ``controllers/hello.py`` controller to look like this making use of the ``_()`` helper method everywhere where the string ``Hello`` appears::
+
+    from translate_demo.lib.base import *
+    
+    class HelloController(BaseController):
+    
+        def index(self):
+            m.write('Default: %s<br />'%h._('Hello'))
+            for lang in ['fr','en','es']:
+                h.lang = lang
+                m.write("%s: %s<br />"%(h.lang, h._('Hello')))
+    
+The controller has now been internationalized but it won't function properly until we have specified the alternative languages.
+
+Pylons comes with a setuptools extension to scan all the Python code in your applications for any calls to ``_()`` and write them to a textual Uniform-style human readable message catalog ``.pot`` file, essentially a structured human readable file which contains every marked string in the source code, along with a placeholder for the translation strings.
+
+You can invoke this command by running the following in your project's root directory::
+
+    python setup.py lang_extract
+
+If you open the ``translate_demo.pot`` file which will be created in your project's ``i18n`` directory it will look something like this::
+    
+    # Pylons Project translate_demo Translation File
+    # Copyright (C) YEAR ORGANIZATION
+    # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+    #
+    msgid ""
+    msgstr ""
+    "Project-Id-Version: PACKAGE VERSION\n"
+    "POT-Creation-Date: 2006-02-03 13:01+GMT Standard Time\n"
+    "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+    "Last-Translator: unknown <unknown>\n"
+    "Language-Team: LANGUAGE <LL@li.org>\n"
+    "MIME-Version: 1.0\n"
+    "Content-Type: text/plain; charset=UTF-8\n"
+    "Content-Transfer-Encoding: ENCODING\n"
+    "Generated-By: Pylons 1.5\n"
+    
+    
+    #: translate_demo\controllers\hello.py:6 translate_demo\controllers\hello.py:9
+    msgid "Hello"
+    msgstr ""
+
+Th ``lang_extract`` command uses the project ``name``, ``author``, and ``author_email`` variables specified in the ``setup()`` method of ``setup.py`` as default values to use in the above file. Since no such names have been specified in our project the defaults are used as demonstrated above. You can tweak the lines at the top with your own information if you wish though. 
+
+The important parts of the file are the lines which specify the strings you have marked as translatable. To create English, Spanish and French translations of these strings first make the directories ``i18n/en``, ``i18n/es`` and ``i18n/fr``. In each of these directories put a copy of ``i18n/translate_demo.pot`` but rename it ``translate_demo.po``. Edit each of the ``.po`` files with the translation of the string ``"Hello"`` specified by ``msgstr``.
+
+The relevant lines from ``i18n/en/translate_demo.po`` look like this::
+
+    #: translate_demo\controllers\hello.py:6 translate_demo\controllers\hello.py:9
+    msgid "Hello"
+    msgstr "Hello"
+    
+The relevant lines from ``i18n/es/translate_demo.po`` look like this::
+
+    #: translate_demo\controllers\hello.py:6 translate_demo\controllers\hello.py:9
+    msgid "Hello"
+    msgstr "Hola"
+    
+The relevant lines from ``i18n/fr/translate_demo.po`` look like this::
+
+    #: translate_demo\controllers\hello.py:6 translate_demo\controllers\hello.py:9
+    msgid "Hello"
+    msgstr "Bonjour"
+    
+Your ``i18n`` directory should now look like this::
+
+    i18n/translate_demo.pot
+    i18n/en/translate_demo.po
+    i18n/es/translate_demo.po
+    i18n/fr/translate_demo.po
+
+Next you need to convert the language-specific ``.po`` files into machine-readable ``.mo`` binary catalog files. You can do this with another setuptools extension from your project root directory as follows::
+
+    python setup.py lang_compile
+
+This step converts all your ``.po`` files to ``.mo`` files ready to be run by your application. 
+
+Testing the Application
+=======================
+
+Start the server with the following command::
+
+    paster serve --reload development.ini
+    
+Or on Windows::
+
+    python C:\Python24\Scripts\paster serve --reload development.ini
+
+Test your controller by visiting http://localhost:5000/hello. You should see the following output::
+
+    Default: Hello
+    fr: Bonjour
+    en: Hello
+    es: Hola
+
+You can now set the language used in a controller on the fly. 
+
+For example this could be used to allow a user to set which language they wanted your application to work in. You could save the value to the ``s`` session object like this::
+
+    s['lang'] = 'en'
+    
+Then on each controller call the language to be used could be read from the session and set in your controller's ``__before__()`` method so that the pages remained in the same language that was previously set::
+
+    def __before__(self, action):
+        if s.has_key('lang'):
+            h.set_lang(s['lang'])
+
+One more useful thing to be able to do is to set the default language to be used in the configuration file. Just add a ``lang`` variable together with the code of the language you wanted to use in your ``development.ini`` file. For example to set the default language to Spanish you would add ``lang = es`` to your ``development.ini``. The relevant part from the file might look something like this::
+
+    [app:main]
+    use = egg:translate_demo
+    cache_dir = %(here)s/cache
+    lang = es
+
+If you are running the server with the ``--reload`` option the server will automatically restart. Otherwise restart the server manually and the output would this time be as follows::
+
+    Default: Hola
+    fr: Bonjour
+    en: Hello
+    es: Hola
+
+Missing Translations
+====================
+
+If your code calls ``h._()`` with a string that doesn't exist in your language catalogue, the string passed to ``h._()`` is returned instead.
+
+Modify the last line of the hello controller to look like this::
+
+    m.write("%s: %s %s<br />"%(h.lang, h._('Hello'), h._('World!')))
+    
+If you run the example again the output will be::
+
+    Default: Hola
+    fr: Bonjour World!
+    en: Hello World!
+    es: Hola World!
+    
+This is because we never provided a translation for the string ``'World!'`` so the string itself is used.
+
+Translations Within Templates
+=============================
+
+You can also use the ``h._()`` command within templates in exactly the same way you do in code. For example::
+
+    <% h._('Hello') %> 
+    
+would produce the string ``'Hello'`` in the language you had set.
+
+There is one complication though. The ``lang_extract`` command can only extract strings that need translating from Python code in ``.py`` files. This means that if you write ``h._('Hello')`` in a template such as a Myghty template, ``lang_extract`` will not find the string ``'Hello'`` as one which needs translating.
+
+As long as ``lang_extract`` can find a string marked for translation with ``h._()`` and defined in Python code in your project filesystem it will manage the translation when the same string is defined in a Myghty template and marked for translation. This means the best solution to ensure all strings are picked up for translation is to create a file in ``lib`` with an appropriate filename, ``i18n.py`` for example, and then add a list of all the strings which appear in your templates so that the ``lang_extract`` command can then extract the strings in ``lib/i18n.py`` for translation and use the translated versions in your templates as well.
+
+For example if you wanted to ensure the translated string ``'Good Morning'`` was available in all templates you could create a ``lib/i18n.py`` file that looked something like this::
+
+    from base import h
+    h._('Good Morning')
+
+Of course, if you are using a templating system such as Myghty or Cheetah and your cache directory is in the default location or elsewhere within your project's filesystem, you will probably find that all templates have been cached as Python files during the course of the development process and so the ``lang_extract`` command will successfully pick up strings to translate from the cached files anyway.
+
+Producing a Python Egg
+======================
+
+Finally you can produce an egg of your project which includes the translation files like this::
+
+    python setup.py bdist_egg
+
+The ``setup.py`` automatically includes the ``.mo`` language catalogs your application needs so that your application can be distributed as an egg. This is done with the following line in your ``setup.py`` file::
+
+    package_data={'translate_demo': ['i18n/*/LC_MESSAGES/*.mo']},
+    
+Internationalization support is zip safe so your application can be run directly from the egg without the need for ``easy_install`` to extract it.

@@ -1,0 +1,122 @@
+Application Setup
++++++++++++++++++
+
+This document describes how a developer can take advantage of Pylon's application setup functionality to allow webmasters to easily setup their application.
+
+Installation refers to the process of downloading and installing the application with easy_install whereas setup refers to the process of setting up an instance of an installed application so it is ready to be deployed. 
+
+For example, a wiki application might need to create database tables to use. The webmaster would only install the wiki ``.egg`` file once using easy_install but might want to run 5 wikis on the site so would setup the wiki 5 times, each time specifying a different database to use so that 5 wikis can run from the same code, but store their data in different databases.
+
+Egg Files
+=========
+
+Before you can understand how a user configures an application you have to understand how Pylons applications are distributed. All Pylons applications are distributed in ``.egg`` format. An egg is simply a Python executable package that has been put together into a single file.
+
+You create an egg from your project by going into the project root directory and running the command::
+
+    python setup.py bdist_egg
+    
+If everything goes smoothly a ``.egg`` file with the correct name and version number appears in a newly created ``dist`` directory.
+
+When a webmaster wants to install a Pylons application he will do so by downloading the egg and then installing it.
+
+Installing as a Non-root User
+=============================
+
+It's quite possible when using shared hosting accounts that you do not have root access to install packages. In this
+case you can install setuptools based packages like Pylons and Pylons web applications in your home directory using
+the `virtual Python <http://peak.telecommunity.com/DevCenter/EasyInstall#creating-a-virtual-python>`_ setup. This way
+you can install all the packages you want to use without super-user access.
+
+Understanding the Setup Process
+=================================
+
+Say you have written a Pylons wiki application called ``wiki``. When a webmaster wants to install your wiki appliction he will run the following command to generate a config file::
+
+    paster make-config wiki wiki_production.ini
+    
+He will then edit the config file for his production environment with the settings he wants and then run this command to setup the application::
+
+    paster setup-app wiki_production.ini
+
+Finally he might choose to deploy the wiki application through the paste server like this (although he could have chosen CGI/FastCGI/SCGI etc)::
+
+    paster serve wiki_production.ini
+
+The idea is that an application only needs to be installed once but if necessary can be setup multiple times, each with a different configuration. 
+
+All Pylons applications are installed in the same way, so you as the developer need to know what to make the above commands work.
+
+Make Config
+-----------
+
+The ``paster make-config`` command looks for looks for the file ``paste_deploy_config.ini_tmpl`` and uses it as a basis for generating a new ``.ini`` file. 
+
+Using our new wiki example again the ``wiki.egg-info/paste_deploy_config.ini_tmpl`` file in the route directory contains the text::
+
+    [DEFAULT]
+    debug = true
+    email_to = you@yourdomain.com
+    smtp_server = localhost
+    error_email_from = paste@exceptions.com
+    
+    [server:main]
+    use = egg:PasteScript#wsgiutils
+    host = 0.0.0.0
+    port = 5000
+    
+    [app:main]
+    set debug = false
+    use = egg:wiki
+    cache_dir = %(here)s/cache
+    #sqlobject.dburi = sqlite:/somedb.db
+
+When the command ``paster make-config wiki wiki_production.ini`` is run, the contents of this file are produced so you should tweak this file to provide sensible default configuration for production deployment.
+
+Setup App
+---------
+
+The ``paster setup-app`` takes the newly created ``.ini`` file and calls the function ``wiki.websetup.setup_config()`` with various arguments to setup the application. If your application needs to be setup before it can be used, you should edit the ``websetup.py`` file. 
+
+For example, say your application needs a database setting up. The user will have specified the database to use by editing the config file before they ran the ``paster setup-app`` command. The ``paster setup-app`` command will call the ``wiki.websetup.setup_config()`` function with the details of the database connection so the ``setup_config()`` function can setup the database.
+
+Here's an example which just prints the location of the cache directory::
+
+    def setup_config(command, filename, section, vars):
+        from paste.deploy import appconfig
+        config = appconfig('config:'+filename)
+        print "Using cache dirctory %s"%repr(config['cache_dir'])
+    
+Note: At the moment on windows this only works if you specify the full URL to the app-setup command using forward slashes, enclosed with quotation marks and not including the drive letter and colon! Would it not be better is a full path to the config file was passed into ``setup_config()`` instead of just the filename?!
+    
+Deploying the Application
+-------------------------
+
+Once the application is setup it is ready to be deployed. There are lots of ways of deploying an application, one of which is to use the ``paster serve`` command which takes the configuration file that has already been used to setup the application and serves it on a local server for production use::
+
+    paster serve wiki_production.ini
+
+More information on deployment options is available on the Paste website at http://www.pythonpaste.org.
+
+Advanced Use
+------------
+
+So far everything we have done has happened through the ``paste.script.appinstall.Installer`` class which looks for the ``paste_deploy_config.ini_tmpl`` and ``websetup.py`` file and behaves accordingly.
+
+If you need more control over how your application is installed you can use your own installer class. Create a file, for example ``wiki/installer.py`` and code your new installer class in the file by deriving it from the existing one::
+
+    from paste.script.appinstall import Installer
+    class MyInstaller(Installer):
+        pass
+
+You then override the functionality as necessary (have a look at the source code for ``Installer`` as a basis. You then change your application's ``setup.py`` file so that the ``paste.app_install`` entry point ``main`` points to your new installer::
+
+    entry_points="""
+        ...
+        [paste.app_install]
+        main=wiki.installer:MyInstaller
+        ...
+    """,
+
+Depending on how you code your ``MyInstaller`` class you may not even need your ``websetup.py`` or ``paste_deploy_config.ini_tmpl`` as you might have decided to create the ``.ini`` file and setup the application in an entirely different way.
+

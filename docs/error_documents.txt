@@ -1,0 +1,102 @@
+Error Documents
++++++++++++++++
+
+Introduction
+============
+
+When an application returns a status code other than ``200``, which is the code for "everything went fine", you might wish to display a message to the user explaining what happened with an error document. 
+
+Error documents are a good way of passing on a status message to the user. Anyone familiar with Apache will be aware of how to use the ``ErrorDocument`` directive, well Pylons achieves a similar thing with ``ErrorDocuments`` middleware.
+
+If you do not display an error document the user might see the browser's default page for that error or a blank screen depending on the browser.
+
+The Default Setup
+=================
+
+By default when you create a Pylons application the standard Pylons error document handler will be setup with the default Pylons HTML template and default Pylons error mapper to map the error to your application's error controller, which by default displays the appropriate error document for the status code.
+
+Every part of the error documents system can be configured and customized to provide whatever error handling you like.
+
+Disabling Error Documents Support
+=================================
+
+To disable error documents, just remove the following lines from your ``config/middleware.py`` file::
+
+    # @@@ Display error documents for 401, 403, 404 status codes (if debug is False also intercepts 500)  @@@
+    app = ErrorDocuments(app, global_conf, mapper=error_mapper, **kw)
+
+Any status codes will no longer be intercepted. 
+
+Changing the Base Path
+======================
+
+If you deploy your application in such a way that the URL ``/error/`` does not map onto the error controller in ``controllers/error.py`` then you will need to specify a base path so that it does.
+
+Open your configuration file ``development.ini`` and change ``base_path=/`` to whatever the base path of your application is. For example if your application is at ``/james/apps/my_app/`` then that is the value you should set ``base_path`` to be.
+
+Changing the template
+=====================
+
+If you want to use a different template for the error documents you will need to edit your ``error.py`` controller. Change the ``document()`` action so that rather than using the ``pylons.middleware.error_document_template`` string as a template it uses your own template::
+
+    def document(self, ARGS):
+        my_template="""
+        <html>
+        <head><title>Error %(code)s</title></head>
+        <body>
+        <h1>Error %(code)s</h1>
+        <p>%(message)s</p>
+        </body>
+        </html>
+        """ % {'code':ARGS.get('code', ''), 'message':ARGS.get('message', '')}
+        m.write(my_template)
+
+You probably won't need the other actions in the error controller if you use your own template. The are just a rather clever bit of code so that the default error handler can serve images from the Pylons package without them being copied into your ``public`` directory.
+
+
+Changing the error mapper
+=========================
+
+By default the status codes 404, 500, 401 and 403 are intercepted and redirected to the error controller. This is done by the error mapper specified in the error documents middleware. Have a look at your ``config/middleware.py`` file::
+
+    # @@@ Display error documents for 401, 403, 404 status codes (if debug is False also intercepts 500)  @@@
+    app = ErrorDocuments(app, global_conf, mapper=error_mapper, **kw)
+    
+By default the ``pylons.middleware.error_mapper`` is used. It looks like this::
+
+    from urllib import urlencode
+    from paste.deploy.converters import asbool
+    
+    def error_mapper(code, message, global_conf={}, kw={}):
+        codes = [401, 403, 404]
+        if not asbool(global_conf.get('debug', 'true')):
+            codes.append(500)
+        if code in codes:
+            url = '/error/document/?%s'%urlencode({'message':message, 'code':code})
+            return url
+            
+Note how in debug mode the mapper does not intercept server error 500 codes since if it did, you wouldn't be able to see the error report produced by the PylonsEvalException middleware.
+
+You can create your own error mapper based on this one to intercept different status codes by changing the line ``if code in [401, 403, 404, 500]``. You can even change the URL so that a static file is served from your ``public`` directory rather than by the error controller. Just specify your error_mapper as the ``mapper`` parameter to middleware.
+
+Testing Your Error Document
+===========================
+
+You can test your error document implementation by aborting a request with ``m.abort()``. The method takes two parameters: the first is an integer representing the error code, the second is the response message to send as part of the status HTTP header.
+
+Add a controller to your project named ``error_doc_test``::
+    
+    paster controller error_doc_test
+    
+or on Windows::
+
+    python C:/Python24/Scripts/paster controller error_doc_test
+    
+Modify your controller's ``index()`` action to look like this::
+
+    def index(self):
+        m.abort(500, 'Internal Server Error')
+        
+Then start your server as described in the `Getting Started Guide <getting_started.html>`_ and visit http://localhost:5000/error_doc_test/
+
+You should see the error 500 page with an ``Internal Server Error`` message.

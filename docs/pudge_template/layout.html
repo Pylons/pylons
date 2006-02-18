@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<?python
+import pudge
+
+def initialize(t):
+   if not hasattr(t, 'title'):
+       t.title = 'Untitled'
+   t.doc_title = t.generator.index_document['title']
+
+?>
+<div>${content()}</div>

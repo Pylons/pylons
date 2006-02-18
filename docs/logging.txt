@@ -1,0 +1,35 @@
+Logging
++++++++
+
+Logging a message
+=================
+
+All WSGI applications can write messages to an error log. The ``wsgi.errors`` environ key is an open file object for writing errors. You can use it in Pylons like this::
+
+    request.environ['wsgi.errors'].write('This is an error!')
+    
+The above example would write the message ``This is an error!`` to the error log unchanged with no preceding or following whitespace.
+    
+Pylons also comes with a helper function called ``log()`` which logs messages to the WSGI error object in a formatted manner. You use it like this::
+
+    h.log('This is an error')
+    
+This would produce the following::
+
+    => This is an error
+    
+The log message is preceded by ``=>`` and followed by a line end.
+
+Using a Log file
+================
+
+Your log messages will be sent to wherever the error file like object is set to store them in the WSGI environment you are using. 
+
+If you are using ``paster serve`` then they will be logged to the stdout with the other server messages. ``paster serve`` also has a ``--log-file=LOG_FILE`` option which can be used to specify a log file to which to write the error messages. 
+
+For example, supposing you wanted to serve the configuratin ``development.ini`` and log messages to a file called ``myapp.log``, you could do the following::
+
+    paster serve --log-file=myapp.log development.ini
+    
+This option suppresses the output to stdout and instead writes it to the file ``myapp.log``.
+

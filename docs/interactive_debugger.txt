@@ -1,0 +1,46 @@
+Interactive Application Debugging
+++++++++++++++++++++++++++++++++++
+
+Things break, and when they do, quickly pinpointing what went wrong and why makes a huge difference. By default, Pylons uses a customized version of `Ian Bicking's <http://blog.ianbicking.org/>`_ EvalException middleware that also includes full Myghty Traceback information.
+
+The debugging screen has three tabs at the top:
+
+``Traceback``
+    Provides the raw exception trace with the interactive debugger
+
+``Extra Data``
+    Displays CGI, WSGI variables at the time of the exception, in addition to configuration information
+    
+``Myghty``
+    Human friendly traceback for Myghty templates, and errors raised as a result of Myghty templates
+
+Since Myghty compiles its templates to Python modules, it can be difficult to accurately figure out what line of the template resulted in the error. The `Myghty` tab provides the full Myghty traceback which contains accurate line numbers for your templates, and where the error originated from. If your exception was triggered before a template was rendered, no Myghty information will be available in this section.
+
+Example: Exploring the Traceback
+==================================
+
+Using the interactive debugger can also be useful to gain a deeper insight into objects present only during the web request like Myghty's ``m`` object, or the ``session`` and ``request`` objects. The thing to keep in mind with some of these objects is that you won't be able to explore them through the interactive debugger unless you first use a supplied Controller method to `bind them to your controller <class-pylons.controllers.Controller.html#_attach_locals>`_.
+
+To trigger an error so that we can explore what's happening just raise an exception inside an action you're curious about. In this example, we'll raise an error in the action that's used to display the page you're reading this on. Here's what the docs controller looks like::
+
+    class DocsController(BaseController):
+        def view(self, url):
+            if request.path_info.endswith('docs'):
+                h.redirect_to('/docs/')
+            m.subexec('/docs/' + url)
+
+Since we want to explore the ``session`` and ``request``, we'll need to bind them first. Here's what our action now looks like with the binding and raising an exception::
+
+    def view(self, url):
+        self._attach_locals()
+        raise "hi"
+        if request.path_info.endswith('docs'):
+            h.redirect_to('/docs/')
+        m.subexec('/docs/' + url)
+
+Here's what exploring the Traceback from the above example looks like (Excerpt of the relevant portion):
+
+
+.. image:: /img/screenshots/doctraceback.gif
+
+ 

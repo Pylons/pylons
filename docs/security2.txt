@@ -1,0 +1,99 @@
+Security: Integrating an Auth System
+++++++++++++++++++++++++++++++++++++
+
+:author: James Gardner
+:date: 2005-12-18
+
+This HOWTO assumes you have read `Security: Getting Started <security.html>`_.
+
+# XXX Not finished
+
+Overriding other Security Methods
+---------------------------------
+
+The Pylons security implementation looks like this::
+
+    def __granted__(self, action, m, r):
+        action_ = getattr(self, action)
+        if hasattr(action_, 'permissions'):
+            if not r.environ.has_key('paste.login.http_login'):
+                raise Exception('Action permissions specified by security middleware not present.')
+            if r.environ.has_key('REMOTE_USER'):
+                if self.__authorize__(r.environ['REMOTE_USER'], action_.permissions):         
+                    return True
+                else:
+                    m.abort('403 Access Denied')
+            else:
+                m.abort('401 Not signed in')
+        else:
+            return True
+
+    def __form_authenticate__(self, user, password):
+        """Authorization for form_based sign in"""
+        from paste.deploy.config import CONFIG 
+        if not CONFIG['pylons']['r'].environ.has_key('paste.login.http_login'):
+            raise Exception('Action permissions specified by security middleware not present.')
+        
+        return CONFIG['pylons']['r'].environ['paste.login.authenticator']().check_auth(user, password)
+        
+    def __authorize__(self, user, permissions):
+        return False
+        
+    def __signout__(self, r):
+        from pylons.security import SimpleCookie
+        cookie = SimpleCookie(
+            r.environ['paste.login.cookie_name'],
+            '',
+            '/',
+        )
+        r.headers_out['Set-Cookie'] = str(cookie)
+        
+    def __signin__(self, r, username):
+        from pylons.security import SimpleCookie
+        cookie = SimpleCookie(
+            r.environ['paste.login.cookie_name'],
+            r.environ['paste.login.signer'].make_signature(username),
+            '/',
+        )
+        r.headers_out['Set-Cookie'] = str(cookie)
+
+# XXX More here
+
+Creating Your Own Sign In Method
+--------------------------------
+
+You don't have to use the ``pylons.security`` middleware. In fact you can use any middleware you like so long as it responds to 401 status messages. The permissions system you implement in your controllers will work just as well.
+
+# XXX Not strictly true yet because the key ``paste.login.authenticator`` won't be present.
+
+Real World Example Tutorial
+===========================
+
+# XXX This should be ignored and will be replaced.
+
+In this tutorial we are going to use the web.auth system with Pylons to provide a complete security system. 
+
+Start by creating a sample application and adding the necessary code to ``__init__.py`` as described in the  Getting Started section of the Overview Tutorial.
+
+Install web.auth::
+
+    easy_install web
+    easy_install database
+
+Now we need to setup the database that will hold all the information about our users. The following code does just that::
+
+    import web.database
+    connection = web.database.connect(adapter='snakesql', database='test', autoCreate=1)
+    cursor = connection.cursor()
+
+    admin = web.auth.admin(driver='database', cursor=cursor)
+    
+    if not admin.completeAuthEnvironment():
+        admin.removeAuthEnvironment(ignoreErrors=True)
+        admin.createAuthEnvironment()
+    connection.commit()
+
+Of course, you will need to change the parameters to ``web.database.connect()`` so that they are suitable for your database. 
+
+Now that your database is created you will want to add users, applications, roles, access levels and groups. The documentation for how to do this is described in the web.auth documentation.
+

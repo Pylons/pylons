@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<?python
+def initialize(t):
+    t.index_document = t.generator.index_document
+    t.title = t.index_document['title'] + " -- Module Reference"
+?>
+<div xmlns:py="http://purl.org/kid/ns#"
+     py:extends="'layout.html', 'common.html'"
+     py:strip="">
+  
+  <ul id="breadcrumbs">
+      <li class="breadcrumb first">Module Reference</li>
+  </ul>
+  
+  <h2>Packages and Modules</h2>
+  
+  ${module_index_table(browser.modules(recursive=0), qualified_names=1)}
+  
+</div>

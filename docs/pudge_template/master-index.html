@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<?python
+def initialize(t):
+    t.index_document = t.generator.index_document
+    t.title = t.index_document['title']
+?>
+<div xmlns:py="http://purl.org/kid/ns#"
+     py:extends="'layout.html', 'common.html'"
+     py:strip="">
+  
+  <h1 class="pudge-member-page-heading">
+    ${index_document['title']}
+  </h1>
+  <h4 class="pudge-member-page-subheading" 
+      py:if="index_document.get('subtitle')">
+    ${index_document['subtitle']}
+  </h4>
+  
+  <div class="rst-doc">
+    ${XML(index_document['fragment'])}
+  </div>
+  
+</div>

@@ -1,0 +1,40 @@
+Distributing your project
+=========================
+
+As mentioned earlier eggs are a convenient format for packaging applications. You can create an egg for your project like this::
+
+    cd helloworld
+    python setup.py bdist_egg
+    
+Your egg will be in the ``dist`` directory and will be called ``helloworld-0.0.0dev-py2.4.egg``.
+
+You can change options in ``setup.py`` to change information about your project. For example change version to ``version="0.1.0",`` and run ``python setup.py bdist_egg`` again to produce a new egg with an updated version number.
+
+You can then register your application with the python CheeseShop at http://cheeseshop.python.org/pypi with the following command::
+
+    setup.py register
+    
+Note: You should not do this unless you actually want to register a package.
+
+If users want to install your software and have installed easy install they can install your new egg as follows::
+
+    easy_install helloworld==0.1.0
+    
+Windows users might need to use::
+
+    C:\Python24\Scripts\easy_install helloworld-0.1.0
+    
+This will retrieve the package from the CheeseShop and install it. Alternatively you can install the egg locally::
+
+    easy_install -f C:\path\with\the\egg\files\in helloworld==0.1.0
+    
+In order to use the egg in a website you need to use Paste. You have already used Paste to create your Pylons template and to run a test server to test the tutorial application.
+
+Paste is a set of tools available at http://www.pythonpaste.org for providing a uniform way in which all compatible Python web frameworks can work together. To run a paste application such as any Pylons application you need to create a Paste configuration file. The idea is that the your paste configuration file will contain all the configuration for all the different Paste applications you run. A configuration file suitable for development is in the ``helloworld/development.ini`` file of the tutorial but the idea is that the person using your egg will add relevant configuration options to their own Paste configuration file so that your egg behaves they way they want.
+
+Paste configuration files can be run in many different ways, from CGI scripts, as standalone servers, with FastCGI, SCGI, mod_python and more. This flexibility means that your Pylons application can be run in virtually any environment and also take advantage of the speed benefits that the deployment option offers.
+
+Running your application
+------------------------
+
+In order to run your application your users will need to install it as described above but then generate a config file and setup your application before deploying it. This is described in `Application Configuration <application_configuration.html>`_.

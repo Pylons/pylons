@@ -1,0 +1,80 @@
+
+Web Server Gateway Interface
+============================
+
+The Web Server Gateway Interface is a specification agreed upon by the Python community to enable interoperability of Python frameworks, middleware and servers. 
+
+Although most Python frameworks allow their applications to be run as WSGI applications, Pylons takes WSGI integration to the next level, supporting WSGI all through the stack. It is hoped that as other frameworks follow suit we will see a new era in web development in Python.
+
+The principles of WSGI are actually very simple but it can it can be quite hard to explain all the details. For full information you will need to look at the PEP at  http://www.python.org/peps/pep-0333.html This guide takes you through the basics.
+
+WSGI Applications
+-----------------
+
+The best way to explain the WSGI is to work through an example demonstrating how an application written as a CGI script has to be modified to work as a WSGI application.
+    
+Consider the following CGI script::
+
+    print "Content-Type: text/html\n\n<html>\n<body>\nHello World!\n</body>\n</html>"
+    
+This does nothing more than print the words ``'Hello world!'`` to a web browser. What we have done is sent an HTTP header ``Content-type: text/html\n\n`` and then some HTML to the browser. The webserver may also have sent a ``'200 OK'`` response if the application completed successfully. 
+    
+To create the same result using a WSGI application we would use this code:
+    
+    def application(environ, start_response):
+        start_response('200 OK',[('Content-type','text/html')])
+        return ['<html>\n<body>\nHello World!\n</body>\n</html>']
+
+This is the most basic WSGI application. It is a function named ``application`` which a WSGI server will call and pass two parameters. The first is a dictionary named ``environ`` containing environmental variables and the second is a function named ``start_response`` which must be called before the application returns a value. 
+
+The ``environ`` dictionary contains all the environment variables related to the request including those that would be available in a CGI script and some extra keys relevant to WSGI applications. 
+
+``start_response()`` takes two positional arguments containing the status and headers although they may not be named as such so they are always specified just by their position::
+
+    start_response(status, headers)
+
+The status argument is the HTTP status code to return such as ``"200 OK"``. The headers argument is a list of tuples of header name and value pairs to include in the response.
+
+It sounds complicated but in reality all you are doing is specifying the status code, content-type and other headers in an easy way. Once ``start_response()`` is called the application can return the content as an iterable such as a list of strings as demonstrated in the example above. ``start_response()`` must be called before *any* content is returned and must only be called once.
+    
+You may not be happy with the function ``start_response`` being passed as a parameter to our ``application`` callable. Whilst it is not possible to pass a function as a parameter in some languages it is allowed in Python. This ability to pass callables as function parameters is crucial to understanding how the WSGI works.
+
+Since WSGI applications can return an iterable they are often written to make use of the ``yield`` statement so that part of the return value can be returned while other parts of the application are still executing::
+
+    def application(environ, start_response):
+        start_response('200 OK',[('Content-type','text/html')])
+        yeild '<html>\n<body>\n'
+        ... do some work ...
+        yield 'Hello World!\n'
+        ... do some more work ...
+        yeild '</body>\n</html>'
+        
+If you don't understand this example read some documentation about `Python generators <http://docs.python.org/tut/node11.html>`_. Generators are only available in Python 2.3 or above.
+
+There are some big advantages in rewriting our code as a WSGI application:
+    
+#. Once a server has loaded our application it can execute it many times without having to reload it on each request. This makes for huge performance gains over a traditional CGI approach.
+    
+#. By using callables in this standard way it is possible to chain together applications called middleware components to provide applications with extra functionality passed in the ``environ`` dictionary with very little programming effort.
+    
+#. The application has control over its status. For example if the application encountered an error it could send an ``500 Internal Server Error`` status message and the WSGI server would display the appropriate error page.
+    
+#. All HTTP headers are sent at the same time before the main content avoiding the possibility of sending content before headers.
+
+#. If all frameworks and servers support this simple interface then the Python community gains massive re-use and interoperability straight away with very little effort.
+    
+
+WSGI Middleware
+---------------
+
+# XXX To write.
+
+WSGI Servers and Deployment
+---------------------------
+
+# XXX To write.
+
+Paste and WSGI
+--------------
+
+Most of Pylons' WSGI capability comes from its close integration with Paste. Paste provides all the tools and middleware necessary to deploy WSGI applications. It can be thought of as a low-level WSGI framework designed for other web frameworks to build upon. Pylons is an example of a framework which makes full use of the possibilities of Paste.

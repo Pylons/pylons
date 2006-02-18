@@ -1,0 +1,222 @@
+Security: Getting Started
++++++++++++++++++++++++++
+
+:author: James Gardner
+:date: 2005-12-10
+
+Background
+==========
+
+Security is the whole topic of granting and denying access to certain parts of your program to certain users under certain circumstances. 
+
+Granting or denying access usually happens in two stages. First the user is *authenticated*. This means the application verifies that the user is who he or she claims to be by means of a username and password. Then once authenticated the user can attempt to access part of the application. At this stage the user undergoes *authorization*, this is the process of checking if the user has the appropriate permissions to access that part of the application.
+
+Pylons provides facilities for authentication, sign in, authorization and sign out as well as a way to specify different permissions for different actions. However, the details of how the username and password are checked and how the permission checking are done is left to the developer so that you can use Pylons with whichever security system you like. 
+
+The next section will demonstrate how the security system works and how to integrate a sensible auth system called ``web.auth`` into your pylons security system to create a system that allows multiple users (with firstname, surname, email, username and password) access with multiple roles to multiple apps with multiple access levels and multiple groups as well as active and disabled accounts. For the majority of security systems this will be sufficient.
+
+Overview Tutorial
+=================
+
+This tutorial goes into quite a lot of detail about how security works. If you just want to get started quickly go straight to the Real World Example Tutorial.
+
+Setting Permissions
+-------------------
+
+First you will need to install a copy of FormBuild available in the Pylons SVN in ``trunk/sandbox/james/code/FormBuild``.
+
+Then add security controllers and templates::
+
+    paster security
+    
+or on Windows::
+
+    python C:\Python24\Scripts\paster security
+    
+You might also want to add an ``autohandler`` to ``templates/security`` that looks something like this so that your security templates produce proper HTML pages::
+
+    <html>
+        <head>
+            <title>Security</title>
+            </head>
+        <body>
+        <% m.call_next() %>
+        </body>
+    </html>
+        
+Add a new controller::
+
+    paster controller permissions
+    
+or on Windows::
+
+    python C:\Python24\Scripts\paster controller permissions
+    
+Now edit your ``permissions.py`` controller to look like this::
+
+    from securityapp.lib.base import *
+
+    class PermissionsController(BaseController):
+        def index(self, m, **params):
+            m.write('<a href="/permissions/private">See a private page</a>.<br />')
+            m.write('<a href="/permissions/public">See a public page</a>.<br />')
+
+        def public(self, m, **p):
+            m.write('This is public')
+            
+        def private(self, m, r, **params):
+            m.write('This is private!')
+        private.permissions = 'james'
+        
+        def __authorize__(self, user, permissions):
+            if user == 'james':
+                return True
+            return False
+
+Edit ``lib/base.py`` to look like this so that we are using a base controller with built in security features::
+
+    from routes.util import redirect_to, url_for
+    from pylons.myghtyroutes import SecureController
+    import securityapp.model as model
+    
+    class BaseController(SecureController):
+        def __call__(self, action, **params):
+            # Insert any code to be run per request here
+            SecureController.__call__(self, action, **params)
+
+Now you need to add the ``pylons.security.Security`` middleware to your project's ``__init__.py`` file to catch 401 No User HTTP errors for when no user is signed in to display a sign in page. You also need to add the ``pylons.security.ShowSignInOn403`` middleware to catch 403 Access Denied HTTP errors to turn them into 401 errors so that ``paste.login`` can catch them and display a sign in the same way it does for 401 errors.
+
+Replace the line ``# Goes here`` after ``# @@@ Security middleware @@@`` in ``__init__.py`` with the following code::
+
+    from pylons.security import Security, Authenticator, ShowSignInOn403
+    
+    class SimplestAuthenticator(Authenticator):
+        def check_auth(self, username, password):
+            if username == 'james' and password == 'bananas':
+                return True
+            else:
+                return False
+
+    app = ShowSignInOn403(app) 
+    app = Security(
+        app,
+        global_conf=global_conf,
+        http_login=False,
+        cookie_prefix='',
+        login_page='security/signin',
+        logout_page='security/signout',
+        secret=None,
+        authenticator=SimplestAuthenticator,
+    )
+
+The options to ``Security`` are the same as the options for ``paste.login.middleware`` so you can counsult the  paste documentation for information.
+
+# XXX We do need to explain the options though.
+
+If you do not want 403 Access Denied errors to be converted to 401 so that the sign in form is displayed then remove the line ``app = ShowSignInOn403(app)``.
+
+The class we have created called ``SimplestAuthenticator`` is passed to the rest of the security system and will be used to check the username and password a user enters when they attempt to sign in. The ``check_auth()`` method should return ``True`` if the username and password are valid, ``False`` afterwards. In this case of our example ``james`` and ``bananas`` are the only username and password combination that will be allowed but you would typically alter this method depending on the security system you use.
+
+Now that now our security middleware is setup, if our application returns any 401 or 403 HTTP headers, the user will be presented with a form to sign in.
+
+Start the server::
+
+    paster serve --reload server.conf
+    
+or on Windows::
+
+    python "C:\Python24\Scripts\paster" serve --reload server.conf
+
+and visit http://localhost:5000/permissions/ to test that the sign in form is correctly displayed.
+
+You can specify who is allowed to sign in by modifying the `SimplestAuthenticator`` class's ``check_auth()`` method in your ``__init__.py`` file.
+
+Although the example above is very simple, you can do much make much more complicated things too. For example, rather than setting ``private.permissions`` to a string you could set it to a series of specifications or even a callback function. The value you set to the ``.permission`` attribute is the value is passed as the ``permissions`` argument to ``__authorize__()`` and the username of the currently signed in user is passed as the ``user`` argument.
+
+You can access the m, r and other Pylons variables from within the ``__authorize__()`` method like this::
+
+    from paste.deploy.config import CONFIG 
+    m = CONFIG['pylons']['m']
+    r = CONFIG['pylons']['r']
+    
+This all allows you to build a sophisticated security system. See `Testing the Sign In Manually`_ for more information.
+
+Using HTTP sign in
+------------------
+
+The ``Security`` middleware supports Basic HTTP sign in as well as form based sign in. Try changing the  parameters to ``Security`` in ``__init__.py`` to the following::
+
+    app = Security(
+        app,
+        global_conf=global_conf,
+        http_login=True,
+        http_realm='Secure Website 3',
+        http_overwrite_realm=True,
+        http_and_cookie=True,
+        cookie_prefix='',
+        secret=None,
+        authenticator=SimplestAuthenticator,
+    )
+    
+You will now find that rather than displaying a form, the sign in is done with a box that your browser pops up.
+
+If you visit http://localhost:5000/security/signout you will be signed out.
+
+Testing the Sign In Manually
+----------------------------
+
+Lets just check that sending a 401 or 403 error does indeed send show the form, of course the form won't do anything when you are signed in yet. 
+
+Add a new controller::
+
+    paster controller auth
+    
+or on Windows::
+
+    python C:\Python24\Scripts\paster controller auth
+    
+Now edit your ``auth.py`` controller to look like this::
+
+    from securityapp.lib.base import *
+
+    class AuthController(BaseController):
+        def index(self, m, **params):
+            m.write('<a href="/auth/error401">Generate a 401 Error</a><br />')
+            m.write('<a href="/auth/error403">Generate a 403 Error</a><br />')
+            m.write('<a href="/auth/public">See a public page.</a><br />')
+            
+        def error401(self, m, **p):
+            m.abort('401 Not signed in')
+            
+        def public(self, m, **p):
+            m.write('This is public')
+            
+        def error403(self, m, **p):
+            m.abort('403 Access denied')
+
+Start the server::
+
+    paster serve --reload server.conf
+    
+or on Windows::
+
+    python "C:\Python24\Scripts\paster"  serve --reload server.conf
+
+and visit http://localhost:5000/ to test that the sign in form is correctly displayed. You can try commenting out the line ``app = ShowSignInOn403(app)`` in ``__init__.py`` and you will see that the 403 error no longer results in a sign in being displayed.
+
+NB. The sign in won't appear to do anything yet since even though we are signed in the methods still produce the status codes to make the sign in appear.
+
+When a user is correctly signed in the environmental variable ``REMOTE_USER`` is set to their username. This means you could add another method to the ``auth.py`` controller as follows::
+
+    def private(self, m, r, **params):
+        if r.environ.has_key('REMOTE_USER'):
+            if r.environ['REMOTE_USER'] == 'james':
+                m.write('Worked!')
+            else:
+                m.abort('403 Access denied')
+        else:
+            m.abort('401 No user signed in')
+
+Now if you visited http://localhost:5000/auth/private signed in as ``james`` you would see the message ``Worked!`` otherwise you would be prompted to sign in.
+
+You have now seen how the security permissions system works. The next HOWTO shows you how to implement a fully fledged auth system for your application. See `Security: Implementing an Auth System <security2.html>`_.

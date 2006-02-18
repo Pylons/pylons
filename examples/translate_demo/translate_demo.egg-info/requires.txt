@@ -1,0 +1,1 @@
+Pylons==dev,>=0.8dev-r292

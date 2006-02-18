@@ -1,0 +1,27 @@
+Installing Pylons
++++++++++++++++++
+
+#. Download the Pylons install file from http://pylons.groovie.org/files/ez_setup.py and run the command ``python ez_setup.py Pylons==dev`` to download and install all necessary files.
+
+For absolutely the latest version (or to upgrade to the latest) run::
+
+    sudo easy_install -U -D Pylons==dev
+    
+Windows users will need to install `subversion <http://subversion.tigris.org/project_packages.html#binary-packages>`_ and issue this command::
+
+    C:\Python24\Scripts\easy_install -U -D Pylons==dev
+
+Further notes for Windows Users
+===============================
+
+Windows cannot run Python files without ``.py`` extensions as executable files. As a result all of the documentation where the command ``paster`` is issued will need to be replaced by::
+
+    python C:\Python24\Scripts\paster
+    
+Alternatively, you can place the following in a file called ``paster.bat`` which you can create in your ``C:\WINDOWS`` directory or anywhere else on your path::
+
+    python C:\Python24\Scripts\paster %1 %2 %3 %4 %5 %6 %7 %8 %9
+    
+Then when you issue the ``paster`` command, the program above will be run and this will in turn run the correct paster command. You will need to replace ``C:\Python24\Scripts`` with wherever your correct python scripts directory is.
+
+One word of caution is that this command only sends the first 9 arguments to the correct paster command so if you have a really long command with lots of spaces you will have to do it the full way. This method works for all examples in the documentation though.

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding='utf-8'?>
+<?python
+def initialize(t):
+    t.title = t.parts['title']
+?>
+<div class="rst-docs">
+  
+  <h1 class="pudge-member-page-heading">${XML(parts['title'])}</h1>
+  
+  ${XML(parts['docinfo'])}
+  ${XML(parts['body'])}
+</div>

@@ -1,0 +1,19 @@
+[DEFAULT]
+debug = true
+email_to = you@yourdomain.com
+smtp_server = localhost
+error_email_from = paste@exceptions.com
+
+[server:main]
+use = egg:Paste#http
+host = 0.0.0.0
+port = 5000
+
+[app:main]
+set debug = false
+use = egg:${package}
+cache_dir = %(here)s/cache
+app_instance_uuid = $${app_instance_uuid}
+session_key = ${package}
+session_secret = $${app_instance_secret}
+#sqlobject.dburi = sqlite:/somedb.db

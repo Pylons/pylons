@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+<?python
+
+import pprint
+import pudge.generator
+
+def _render_object(t, obj):
+   return getattr(t, 'render_' + obj.type_name)(obj)
+
+def sigil_for_type(type):
+   prefixes = { 'routine': 'f',
+                'module': 'm',
+                'class': 'C',
+                'attribute': 'a' }
+   return prefixes[type]
+
+pp = pprint.PrettyPrinter(depth=3)
+
+?>
+<templates xmlns:py="http://purl.org/kid/ns#"
+           py:extends="pudge.generator.Page">
+  
+  <span py:def="blurb(item)" py:strip="1" 
+        py:if="len(item.blurb())">
+      - <span class="rst">${XML(item.blurb(html=1))}</span>
+  </span>
+  
+  <div py:def="member_doc(member)" py:strip="1" py:if="not member.isdata()">
+    <p py:if="member.blurb()" class="pudge-member-blurb">
+      ${XML(member.blurb(html=1))}
+    </p>
+    <p py:if="member.doc(blurbless=1)" 
+       py:replace="XML(member.doc(html=1, blurbless=1))"/>
+  </div>
+  
+  <!-- render attributes -->
+
+  <div py:def="render_attribute(member)" class="pudge-member name">
+    <a name="${member.name}" />
+    <h4 class="pudge-member-name">${member_sigil(member.type_name)}
+      <tt><a href="${link_to(member)}" class="pudge-obj-link">${member.name}</a></tt></h4>
+    <div class="pudge-section rst">
+      <p py:if="member.doc()" py:replace="XML(member.doc(html=1))"></p>
+      <pre py:if="not member.doc()">${pp.pformat(member.obj)}</pre>
+    </div>
+  </div>
+    
+  <!-- render routines -->
+  
+  <div py:def="render_routine(member)" 
+       class="pudge-member routine ${member.isalias() and 'alias' or None}">
+    <a name="${member.name}" />
+    <h4 class="pudge-member-name">${member_sigil(member.type_name)}
+      <tt><a href="${link_to(member)}" class="pudge-obj-link">${member.name}</a>${member.formatargs()}</tt>
+      <a href="${link_to_source(member)}" title="View Source">...</a>
+    </h4>
+    <div class="pudge-section rst">
+      ${member_doc(member)}
+    </div>
+  </div>
+  
+  <!-- render class members -->
+
+  <div py:def="render_class(member)" 
+       class="pudge-member class ${member.isalias() and 'alias' or None}">
+    <h4 class="pudge-member-name">${member_sigil(member.type_name)}
+      <tt>
+        <a href="${link_to(member)}" class="pudge-obj-link"
+           >${member.name}</a>${member.formatargs()}</tt>
+      <a href="${link_to_source(member)}" title="View Source" 
+         class="pudge-member-view-source">...</a>
+    </h4>
+    <div class="pudge-section rst">
+      ${member_doc(member)}
+      <?python
+         members = list(member.all())
+         member_count = len(members)
+      ?>
+      <p class="note" py:if="member_count">
+        This class contains <a href="${link_to(member)}#members">
+          ${member_count} member${member_count &gt; 1 and 's' or ''}</a>.
+      </p>
+    </div>
+  </div>
+  
+  <div py:def="render_object(member)" 
+       py:replace="_render_object(self, member)" />
+  
+  <!-- view source link -->
+  
+  <dl py:def="module_index_table(modules, qualified_names=0)" 
+      py:if="not isinstance(modules, list) or len(modules)" 
+      class="pudge-module-list">
+    <div py:for="module in modules" py:strip="">
+    <dt><tt><a href="${link_to(module)}" class="pudge-obj-link">
+        ${qualified_names and module.qualified_name() or module.name}
+        </a></tt>
+    </dt>
+    <dd py:if="module.blurb()">
+      ${XML(module.blurb(html=1))}
+    </dd>
+    </div>
+  </dl>
+  
+  <span class="prefix" 
+        py:def="member_sigil(type)">${sigil_for_type(type)}</span>
+
+</templates>

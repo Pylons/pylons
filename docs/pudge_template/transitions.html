@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<?python
+import pudge.peruser
+import pudge.generator
+?>
+<py:transitions 
+   xmlns:py="http://purl.org/kid/ns#"
+   py:extends="pudge.generator.Page">
+  
+  <py:transition py:match="item.tag == 'cite'" py:strip="">
+    <?python
+    name = item.text.strip()
+    if hasattr(self, 'subject') and self.subject:
+        # check the current subject first
+        o = self.subject.find(name)
+        if not o and not self.subject.ismodule():
+            o = self.subject.parent.find(name)
+    if not o:
+       o = browser.find(name, contained=1)
+    link = link_to(o)
+    ?>
+    <a py:if="link" href="${link}" 
+       class="obj-link ${o.type_name}"
+       title="${o.qualified_name()} - ${o.blurb()}">
+      <tt>${name}</tt></a>
+    <cite py:if="not link" py:replace="item" />
+  </py:transition>
+  
+</py:transitions>

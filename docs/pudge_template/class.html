@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<?python
+def initialize(self):
+    subject = self.subject
+    self.sections = [('Attributes', subject.attributes()),
+                     ('Methods', subject.routines())]
+    self.heading = subject.name
+    self.parent_link = subject.parent
+?>
+<div xmlns="http://www.w3.org/1999/xhtml" 
+     xmlns:py="http://purl.org/kid/ns#"
+     py:extends="'member.html'"
+     py:strip="1">
+</div>

@@ -1,0 +1,83 @@
+Web-server Configuration with a Pylons Web Application
+++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+This document assumes that you have already installed a Pylons web application, and `created a 
+configuration <application_configuration.html>`_ for it. Pylons applications use `PasteDeploy
+<http://pythonpaste.org/deploy/>`_ to start up your Pylons WSGI application, and can use the flup
+package to provide a Fast-CGI, SCGI, or AJP connection to it.
+
+Using Fast-CGI
+==============
+
+`Fast-CGI <http://fastcgi.com/>`_ is a gateway to connect web severs like `Apache <http://httpd.apache.org/>`_ and
+`lighttpd <http://lighttpd.net/>`_ to a CGI-style application. Out of the box, Pylons applications can run with
+Fast-CGI in either a threaded or forking mode. (Threaded is the recommended choice)
+
+Setting a Pylons application to use Fast-CGI is very easy, and merely requires you to change the config line like
+so::
+
+    #default
+    [server:main]
+    use = egg:Paste#http
+    
+    #Use Fastcgi threaded
+    [server:main]
+    use = egg:PasteScript#flup_fcgi_thread
+    host = 0.0.0.0
+    port = 6500
+    
+Note that you will need to install the `flup <http://www.saddi.com/software/flup/dist/>`_ package, which can be
+installed via easy_install::
+
+    easy_install -U flup
+
+The options in the config file are passed onto flup. The two common ways to run Fast CGI is either using a socket
+to listen for requests, or listening on a port/host which allows a webserver to send your requests to web applications
+on a different machine.
+
+To configure for a socket, your ``server:main`` section should look like this::
+
+    [server:main]
+    use = egg:PasteScript#flup_fcgi_thread
+    socket = /location/to/app.socket
+
+If you want to listen on a host/port, the configuration cited in the first example will do the trick.
+
+Apache Configuration
+--------------------
+
+For this example, we will assume you're using Apache 2, though Apache 1 configuration will be very similar. First, make
+sure that you have the Apache `mod_fastcgi <http://fastcgi.com/mod_fastcgi/docs/mod_fastcgi.html>`_ module installed in
+your Apache.
+
+There will most likely be a section where you declare your FastCGI servers, and whether they're external::
+
+    <IfModule mod_fastcgi.c>
+    FastCgiIpcDir /tmp
+    FastCgiExternalServer /some/path/to/app/myapp.fcgi -host some.host.com:6200
+    </IfModule>
+
+In our example we'll assume you're going to run a Pylons web application listening on a host/port. Changing ``-host`` to
+``-socket`` will let you use a Pylons web application listening on a socket.
+
+The filename you give in the second option does not need to physically exist on the webserver, URI's that Apache resolve
+to this filename will be handled by the FastCGI application.
+
+The other important line to ensure that your Apache webserver has is to indicate that fcgi scripts should be handled
+with Fast-CGI::
+
+    AddHandler fastcgi-script .fcgi
+
+Finally, to configure your website to use the Fast CGI application you will need to indicate the script to be used::
+
+    <VirtualHost *:80>
+        ServerAdmin george@monkey.com
+        ServerName monkey.com
+        ServerAlias www.monkey.com
+        DocumentRoot /some/path/to/app
+
+        ScriptAliasMatch ^(/.*)$ /some/path/to/app/myapp.fcgi$1
+    </VirtualHost>
+
+Other useful directives should be added as needed, for example, the ErrorLog directive, etc. This configuration will
+result in all requests being sent to your FastCGI application.

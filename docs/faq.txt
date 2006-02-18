@@ -1,0 +1,30 @@
+Frequently Asked Questions
+++++++++++++++++++++++++++
+
+**Pylons is excellent but why didn't you put your effort into improving other projects instead?**
+
+    We did, just not the projects you might have expected!
+
+    The Pylons team are obsessed with reuse. Our vision is that in the near future Python web frameworks will all adopt the Web Server Gateway Interface throughout their stack making integration and reuse between frameworks extremely easy. Other frameworks don't necessarily share this vision to the same extent, preferring instead to keep their existing code base rather than opening it up to be replaced with standardized code.
+    
+    There have been many other excellent developments in the Python web world recently such as Paste and Myghty and so rather than duplicating the efforts of these teams by writing similar code for existing frameworks we decided instead to put a new framework together using these existing projects with an emphasis on WSGI. We did this by working with the existing project teams and adding features to their code when possible rather than putting it all into the Pylons package.
+    
+    For the small number of cases where we couldn't find suitable features in an existing project we ported code from other languages or, as a last resort, started new projects form scratch, each time designing, documenting and packaging them so they can be easily integrated into existing frameworks. This integration has already begun to happen, particularly with RailsHelpers and Routes, and we are keen to facilitate this further.
+
+**I've heard Pylons is a direct port of Rails, is this true?**
+
+    Not really. While we designed Pylons to have all the functionality of Rails (porting Rails components to Python as necessary) we also designed it to be much more flexible, thanks mainly to WSGI. This allowed us to design Pylons so that your projects are highly reusable and easy to integrate with existing projects, or integrate existing projects into Pylons. You can use Pylons in the way that feels most natural to you, and in smaller or larger chunks.
+
+**How do I use an existing WSGI project in Pylons?**
+
+    Pylons applications can easily run Django, TurboGears and other framework's WSGI applications from Pylons controllers, simply name your WSGI application with the same name your would name a Pylons controller and Pylons will serve your controller as a WSGI application instead of treating it as a Pylons controller.
+    
+    This functionality can be extended so that Pylons can be used to run other projects' controllers natively from Pylons. For example, by deriving an existing Bricks controller from ``pylons.controllers.BricksController``, Bricks controllers can be run *without any other modification* from a Pylons application. We would be pleased to accept contributions of similar controller classes for the integration of TurboGears and Django controllers. Pylons also supports Buffet templates and works with Cheetah, Kid and other templates as well as with Myghty templates.
+    
+**I've found some typos in the docs or would like to suggest an alternative form of words**
+
+    We greatly appreciate such corrections. Please email the Pylons-discuss mailing list and we will make the changes. The mailing list is at http://groups.google.com/group/pylons-discuss
+
+**I have another question, where can I ask it?**
+
+    Again, the best place is the mailing list at http://groups.google.com/group/pylons-discuss where someone will be pleased to answer. We'll put the most commonly asked questions on this FAQ.

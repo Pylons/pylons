@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<?python
+def initialize(t):
+    t.title = ' '.join(['Index of', t.subject.qualified_name(), 
+                        t.subject.type_name])
+    t.objects_seen = {}
+
+def object_seen(self, obj):
+    # XXX: Is this too strict?  I'm getting problems with infinite loops
+    # of objects, but aliases are supported here in some fashion, and
+    # this might break that.
+    result = id(obj) in self.objects_seen
+    self.objects_seen[id(obj)] = None
+    return result
+?>
+<div xmlns:py="http://purl.org/kid/ns#"
+     py:extends="'layout.html', 'common.html'"
+     py:strip="1">
+  
+  <h1>Index of the <tt>${subject.name}</tt> ${subject.type_name}</h1>
+  
+  <ul class="pudge-module-index">
+    <li py:replace="toc_member(subject, full=1)"/>
+  </ul>
+  
+  <li py:def="toc_member(member, full=0)"
+      class="${member.type_name}"
+      py:if="not member.isalias() and not object_seen(self, member.obj)">
+    ${member_sigil(member.type_name)}
+    <a href="${link_to(member)}" 
+       class="${member.isalias() and 'alias' or None}">
+      <tt>${full and member.qualified_name() or member.name}</tt>
+    </a>
+    <a href="${link_to_source(member)}">...</a>
+    <small>${blurb(member)}</small>
+    <ul py:if="(member.ismodule() or member.isclass()) and not member.isalias()">
+      <div py:for="meth in ['attributes', 'classes', 'routines', 'modules']"
+           py:strip="">
+      <li py:for="m in getattr(member, meth)()" 
+          py:replace="toc_member(m)" />
+      </div>
+    </ul>
+  </li>
+  
+</div>

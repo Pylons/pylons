@@ -1,0 +1,191 @@
+Advanced Pylons Tinkering
++++++++++++++++++++++++++
+
+Warning: This section is meant for experts who know what they are doing and want to play with the guts of a Pylons application. Novices should probably steer clear.
+
+NB: You may need to upgrade to the latest version of Pylons for the g = app.globals line to work!
+
+Setting Up a Pylons Applications
+================================
+
+The Pylons dispatch mechanism
+-----------------------------
+
+In order to really understand all of Pylons it is useful to have an idea of what Pylons does to route a request from a particular URL to a piece of code after Paste has done the work of routing the request from whichever server or deployment option you are using to your Pylons application.
+
+All the guts of a Pylons application are neatly organized into your project's ``config`` directory so that if you want to change the default behavior of Pylons you can do.
+
+Understanding WSGI, Paste and Deployment
+----------------------------------------
+
+Pylons is based on the Web Server Gateway Interface and all Pylons applications just WSGI applications.
+
+WSGI applications need some way of being run, they can be run from CGI scripts, other web frameworks and various other places but Pylons uses PasteDeploy by default to handle the way Pylons applications are deployed. 
+
+PasteDeploy uses a simple config file format to configure and application and then this config file can be "deployed" in various different ways such as a standalone serve (``paster serve``) or CGI/FastCGI/SCGI etc etc. Of course it isn't really the config file which is actually deployed, PasteDeploy uses the config file to build the specified WSGI application and it is the application which is deployed.
+
+Entry Points
+------------
+
+PasteDeploy can deploy WSGI applications from egg files. Eggs are a convenient way of packaging applications and all Pylons applications can be used as eggs.  As paste parses the configuration file it will in the various eggs specified by for a function that returns the WSGI app. It knows where in the egg this function is because the entry point named ``paste.app_factory`` points to the WSGI application to load.
+
+If you look at your application's ``setup.py`` file you will see a section starting::
+
+    entry_points="""
+        [paste.app_factory]
+        main=project:make_app
+        ...
+        
+So for the project named ``project`` PasteDeploy will expect ``project.make_app`` to be a WSGI application. If you look at your project's ``__init__.py`` file you will see
+
+    from project.config.middleware import make_app
+    
+So in fact the real ``make_app()`` function is in the file ``project/config/middleware.py``. You will probably be used to editing this function already but all it does is setup and return the correct WSGI app for PasteDeploy to serve.
+
+Configuration Files
+-------------------
+
+PasteDeploy also lets you specify configuration for your application. The configuration is passed as the ``global_conf`` and ``kw`` arguments to the ``make_app()`` function in ``config/middleware.py``.
+
+Setting up Your Application
+----------------------------
+
+It is the responsibility of the ``middleware.make_app()`` function to set up your application. The configuration setup in the configuration file is supplemented by configuration from the ``load_config()`` function. The configuration from the file and the function contain all the information needed to setup the application::
+
+    app = pylons.wsgiapp.make_app(global_conf, config, **kw)
+    
+# XXX Can we rename this make_app to avoid confusion?
+
+The ``app`` produced is a basic Pylons WSGI application and could be returned to PasteDeploy if desired, but the default is for the app is wrapped in a series of middleware components that you can easily customize to add extra functionality.
+
+This app also has a ``.globals`` attribute which is an instance of the ``Globals`` object in ``lib/app_globals``. If your application needs access to this object in order to configure middleware it is made available as ``g`` by the next line::
+
+    g = app.globals
+    
+Note: once the application is wrapped by another middleware component you will not be able to access the first application's ``.globals`` attribute so if your middleware needs access to ``g`` it is best to explicitly write it at this point.
+
+We won't go into detail about each middleware component such as error handling and error documents since they are described elsewhere but the very last item in the middleware stack is a Paste Cascade. This object is a WSGI application that keeps looking down a series of other WSGI applications until one of them returns a response which isn't ``404``. ``staticapp`` is a WSGI application that serves files from your ``public`` directory and ``app`` is the WSGI application you have setup with the middleware. So what is returned to PasteDeploy is actually just a WSGI application that tries to serve files from the ``public`` directory first and then loads the Pylons applications if no match is found.
+
+Changing the app returned
+-------------------------
+
+Lets suppose you wanted to do the make the most drastic change possible and not use all the Pylons tools at all but instead write your own WSGI application from scratch without any of the controllers, templates, public files or anything.
+
+You can do this by changing the ``make_app()``. Suppose your new application is the simplest possible WSGI application, hello world and you have added it to ``config/middleware.py`` at the top::
+
+    def hello(environ, start_response):
+        start_response('200 OK', [['Content-type','text/html']])
+        return ['Hello World!']
+    
+You can then change the existing ``make_app`` application to the following and remove everything else from the file::
+
+    def make_app(global_conf, **kw):
+        return hello
+        
+Whatever you entered as the URL the application would now always return just ``Hello World!`` since this is all the application knows how to do. I think you'll agree that the full Pylons version with all the helpful middleware set up is much more useful!
+
+
+Of course the other way of achieving the same thing is to create a new Paste application factory which does the same as ``make_app()`` but edit your ``setup.py`` file so the entry point points to your new factory instead. If you planned to do this you would also need to delete any ``build``, ``dist`` and ``PROJECT.egg-info`` directories and run::
+
+    python setup.py bdist_egg
+    
+to generate the new entry points document in the ``PROJECT.egg-info`` directory.
+
+Understanding the Cascade
+-------------------------
+    
+If we want to change the default behavior of Pylons so that controllers are handled before looking for static files in the public directory we can change the order of the application in the final line of ``make_app()`` in ``config/middleware.py``::
+
+    return Cascade([app, staticapp])
+
+Now if the ``index.html`` file was still in the ``public`` directory and your hello controller was resent and your routes properly setup, the hello controller would be run and the ``index.html`` file wouldn't be displayed.
+
+This has another consequence. ``staticapp`` is a ``paste.urlparser.StaticURLParser`` object and does not show an error page so you would loose all the error documents support so it is not recommended.
+
+Extending the cascade
+---------------------
+
+Suppose we want another behavior to display an error page if a 404 error occurs.
+
+Add the following function before the ``make_app()`` methods in ``__init__.py``::
+
+    def errorPage(environ, start_response):
+        start_response('200 Page not found error handled', [['Content-type','text/html']])
+        msg = """
+        <html>
+        <title>404 Page Not Found</title>
+        <body>
+        <h1>404 Page Not Found</h1>
+        <p>The page you requested could not be found.</p>
+        </body>
+        </html>
+        """
+        return [msg]
+
+Then add it at the end of your cascade::
+
+    return Cascade([staticapp, app, errorPage])
+    
+You now have your own error document handler. Obviously the error document support which comes with Pylons implemented as middleware is much more powerful that this so you should use it instead. The example above is just to demonstrate a point. You could also add extra places to serve static files from or do things the Pylons developers haven't even considered yet.
+
+Adding Your Own Middleware
+--------------------------
+
+# XXX This is really easy so isn't a priority for documenting, just add a new line to middleware.py by the comment about ADD YOUR MIDDLEWARE HERE.
+
+
+The Request Mechanism
+=====================
+
+You can work out exactly what happens during a request by looking at the parts that the WSGI application is made up from.
+
+# XXX More to write here, but that's all for tonight!
+
+
+
+
+Other things to mention
+=======================
+
+* Login code
+* Private methods.
+
+Using the paste configuration file
+==================================
+
+Global Configuration
+--------------------
+
+Making Before anf After methods
+===============================
+
+Structuring Code in the lib directory
+=====================================
+
+Ignoring Myghty 404 Errors
+==========================
+
+Making a SuperController to affect all your controllers
+=======================================================
+
+printing outputs log messages
+
+File monitor isn't picking up changes to server.conf
+
+New things to integrate into Pylons
+
+* Validation on a per field basis using JS
+* Dates use a date chooser
+* Permission sets
+
+CMS can use the RichText edit in place with a toolbar at the very top of the page. Drag and drop from dojo can build the template.
+
+We should reserve the directories pylons in public and template and controllers begining pylons in controllers?
+We can then have a controller database as well as an eggs database
+
+We should do the FormEncode thing using Pyprotocols to extend it.
+
+Things which might be perceived as bugs
+=======================================
+
+Directory listings don't work
