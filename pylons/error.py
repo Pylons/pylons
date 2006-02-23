@@ -318,7 +318,8 @@ class PylonsEvalException(EvalException):
     #~ pylons.exposed = True
     
     def respond(self, environ, start_response):
-
+        base_path = request.construct_url(environ, with_path_info=False,
+                                          with_query_string=False)
         environ['paste.throw_errors'] = True
         started = []
         def detect_start_response(status, headers, exc_info=None):
@@ -359,7 +360,9 @@ class PylonsEvalException(EvalException):
                         include_reusable=False, show_extra_data=False)
                     return [html]
             count = debug_counter.next()
-            debug_info = DebugInfo(count, exc_info)
+            exc_data = collector.collect_exception(*exc_info)
+            debug_info = DebugInfo(count, exc_info, exc_data, base_path,
+                                   environ)
             assert count not in self.debug_infos
             self.debug_infos[count] = debug_info
             

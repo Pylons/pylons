@@ -52,7 +52,7 @@ Dev packages:
     zip_safe=False,
     include_package_data=True,
     install_requires=[
-        "Routes>=1.2", "Myghty>=1.0", "Paste==dev,>=0.5dev-r4706",
+        "Routes>=1.2", "Myghty>=1.0", "Paste==dev,>=0.5dev-r4770",
         "PasteDeploy==dev,>=0.5dev-r4624","PasteScript==dev,>=0.5dev-r4674",
         "simplejson >= 1.1", "WSGIUtils >= 0.7", "WebHelpers==dev,>=0.1dev-r607",
         "nose >= 0.8.6",
