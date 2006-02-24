@@ -190,7 +190,9 @@ class RoutesResolver(ResolverRule):
         config = request_config()
         config.mapper = self.mapper
         m = request.instance()
-        config.environ = m.request_impl.httpreq.environ
+        env = m.request_impl.httpreq.environ
+        env['PATH_INFO'] = uri
+        config.environ = env
         match = config.mapper_dict
         if match:
             config.redirect = m.send_redirect
