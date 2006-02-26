@@ -36,13 +36,10 @@ Current Status
 ---------------
 
 Pylons is currently quite stable (built mostly with the mature Myghty package), and is
-being used in production environments. A major release is planned for January.
+being used in production environments. Dependant packages are automatically installed 
+from the following URL:
 
-Dev packages:
-
-* `Development svn <http://pylons.groovie.org/svn/Pylons/trunk#egg=Pylons-dev>`_
-
-* `FormBuild svn <http://pylons.groovie.org/svn/trunk/sandbox/james/code/FormBuild#egg=FormBuild-dev>`_
+* `Dependant Packages svn <http://www.pylonshq.com/download/>`_
 
 """,
     author='Ben Bangert, James Gardner',
@@ -52,10 +49,10 @@ Dev packages:
     zip_safe=False,
     include_package_data=True,
     install_requires=[
-        "Routes>=1.3", "Myghty>=1.0", "Paste==dev,>=0.5dev-r4770",
-        "PasteDeploy==dev,>=0.5dev-r4624","PasteScript==dev,>=0.5dev-r4674",
-        "simplejson >= 1.1", "WSGIUtils >= 0.7", "WebHelpers==dev,>=0.1dev-r607",
-        "nose >= 0.8.6",
+        "Routes>=1.3", "Myghty==dev,==1.0.1-r2049", "Paste==dev,==0.5dev-r4772",
+        "PasteDeploy==dev,>=0.5dev-r4624","PasteScript==dev,==0.5dev-r4754",
+        "simplejson==1.1", "WSGIUtils==0.7", "WebHelpers==dev,==0.1dev-r678",
+        "nose==0.8.6",
         ],
     classifiers=["Development Status :: 4 - Beta",
                  "Intended Audience :: Developers",
