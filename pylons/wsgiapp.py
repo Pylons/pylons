@@ -43,6 +43,7 @@ def make_app(config):
         'global_conf':config.global_conf
     })
     g = pylons.middleware.Globals()
+    g.pylons_config = config
     try:
         package = __import__(config.package + '.lib.app_globals', globals(), locals(), ['Globals'])
     except ImportError:
