@@ -48,7 +48,7 @@ def make_app(config):
     except ImportError:
         pass
     else:
-        g = package.Globals(config.global_conf, config.app_conf)
+        g = package.Globals(config.global_conf, config.app_conf, config=config)
     g.pylons_config = config
     app = pylons.middleware.register_app_globals(app, g)
     return app
