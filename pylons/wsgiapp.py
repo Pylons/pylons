@@ -43,12 +43,12 @@ def make_app(config):
         'global_conf':config.global_conf
     })
     g = pylons.middleware.Globals()
-    g.pylons_config = config
     try:
         package = __import__(config.package + '.lib.app_globals', globals(), locals(), ['Globals'])
     except ImportError:
         pass
     else:
         g = package.Globals(config.global_conf, config.app_conf)
+    g.pylons_config = config
     app = pylons.middleware.register_app_globals(app, g)
     return app
