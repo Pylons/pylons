@@ -15,6 +15,22 @@ class Config(object):
     that retains the information regarding the global and app conf's as
     well as per-applcation instance specific data such as the mapper, the
     paths for this instance, and the myghty configuration.
+    
+    The Config object is available in your application as a Pylons global
+    ``pylons_config`` under the ``g`` object. There's several useful
+    attributes of the config object most people will be interested in:
+    
+    ``myghty``
+        The myghty configuration dict that was used to initialize Myghty
+    ``map``
+        Mapper object used for Routing. Yes, it is possible to add routes
+        after your application has started running.
+    ``global_conf``
+        Global configuration passed in from Paste, this corresponds to the
+        DEFAULTS section in the config file.
+    ``app_conf``
+        Application specific configuration directives, passed in via Paste
+        from the app section of the config file.
         
     """
     def __init__(self, myghty, map, paths):
