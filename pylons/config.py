@@ -13,7 +13,7 @@ class Config(object):
     
     The Pylons configuration object is a per-application instance object
     that retains the information regarding the global and app conf's as
-    well as per-applcation instance specific data such as the mapper, the
+    well as per-application instance specific data such as the mapper, the
     paths for this instance, and the myghty configuration.
     
     The Config object is available in your application as a Pylons global
