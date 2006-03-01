@@ -25,6 +25,9 @@ class Config(object):
     ``map``
         Mapper object used for Routing. Yes, it is possible to add routes
         after your application has started running.
+    ``paths``
+        An array of absolute paths that were defined in the applications
+        ``config/environment.py`` module.
     ``global_conf``
         Global configuration passed in from Paste, this corresponds to the
         DEFAULTS section in the config file.
