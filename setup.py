@@ -66,7 +66,7 @@ from the following URL:
                ],
     # XXX These do not necessarily work yet, but will once we release 0.8
     extras_require = {
-        'pudge': ["docutils>=0.4", "elementtree>=1.2.6", "kid>=0.9",  "pudge>=0.1.1dev", "buildutils>=0.1.2dev",],
+        'pudge': ["docutils>=0.4", "elementtree>=1.2.6", "kid>=0.9",  "pudge>=0.1dev", "buildutils>=0.1.1dev",],
         'test': ["py>=0.8.0_alpha2"],
         'cheetah':["Cheetah>=1.0", "TurboCheetah>=0.9.5"],
         'kid':["kid>=0.9", "TurboKid>=0.9.1dev"],

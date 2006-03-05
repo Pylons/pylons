@@ -1,0 +1,142 @@
+Installing Pylons
++++++++++++++++++
+
+#. Download the Pylons install file from http://pylonshq.com/files/ez_setup.py
+#. Follow the instructions for the release or development versions
+
+Python 2.3 users on Windows will need to install `subprocess <http://www.pylonshq.com/download/subprocess-0.1-20041012.win32-py2.3.exe>`_ before beginning the installation.
+
+All Windows users should read the section `Post install tweaks for Windows`_ after installation.
+
+Release Version
+===============
+
+Read the `Easy Install documentation <http://peak.telecommunity.com/DevCenter/EasyInstall>`_, to decide whether to install Pylons as a root user so it can be used by eveyone or whether to use a `custom installation location <http://peak.telecommunity.com/DevCenter/EasyInstall#custom-installation-locations>`_ then download `ez_setup.py <http://pylonshq.com/files/ez_setup.py>`_ and run::
+
+	python ez_setup.py -f http://pylonshq.com/download/ "Pylons==0.8"
+
+Or for a full installation including some less well tested optional extras::
+
+	python ez_setup.py -f http://pylonshq.com/download/ "Pylons[test,pudge,kid,cheetah]==0.8"
+
+Development Version
+===================
+
+Read the `Easy Install documentation <http://peak.telecommunity.com/DevCenter/EasyInstall>`_, to decide whether to install Pylons as a root user so it can be used by eveyone or whether to use a `custom installation location <http://peak.telecommunity.com/DevCenter/EasyInstall#custom-installation-locations>`_ then download `ez_setup.py <http://pylonshq.com/files/ez_setup.py>`_ and run::
+
+Standard Installation
+---------------------
+
+Read the `Easy Install documentation <http://peak.telecommunity.com/DevCenter/EasyInstall>`_, to decide whether to install Pylons as an administrator or root user, or whether to use a `virtual python installation <http://peak.telecommunity.com/DevCenter/EasyInstall#creating-a-virtual-python>`_ or one of the other methods described, then download `ez_setup.py <http://pylonshq.com/files/ez_setup.py>`_ and run::
+
+	python ez_setup.py -f http://pylonshq.com/download "Pylons==dev,>=0.8"
+
+Or for a full installation including some less well tested optional extras::
+
+	python ez_setup.py -f http://pylonshq.com/download "Pylons[test,pudge,kid,cheetah]==dev,>=0.8"
+
+
+Development Installation
+------------------------
+
+Check out the latest code::
+	
+	svn co http://pylonshq.com/svn/Pylons/trunk Pylons
+
+Tell setuptools to use the version you are editing in the ``Pylons`` directory::
+
+	cd Pylons
+	python setup.py develop
+	
+Now you can make changes to the files in the Pylons directory and the code will run exaclty as if you had installed a version of the egg with the changes you have made. 
+
+Post install tweaks for Windows
+===============================
+
+Python scripts installed as part of the Pylons install process will be put in the ``Scripts`` directory of your Python installation, typically in ``C:\Python24\Scripts``. By default on Windows this directory is not on your ``PATH`` which means that if you open up a command prompt and type a command like ``paster`` you might see something similar to the following::
+
+	C:\Documents and Settings\James>paster
+	'paster' is not recognized as an internal or external command,
+	operable program or batch file.
+
+To be able to use the scripts installed with Pylons you either have to use the full path::
+
+	C:\Documents and Settings\James>C:\Python24\Scripts\paster
+	Usage: C:\Python24\Scripts\paster-script.py COMMAND
+	usage: paster-script.py [paster_options] COMMAND [command_options]
+
+	options:
+	  --version         show program's version number and exit
+	  --plugin=PLUGINS  Add a plugin to the list of commands (plugins are Egg
+			    specs; will also require() the Egg)
+	  -h, --help        Show this help message
+	
+	... etc ...
+	
+or a better solution is to add your ``Scripts`` directory to the ``PATH`` as described next.
+
+For Win2K or WinXP
+------------------
+
+#. From the desktop or start menu, right click My Computer and click properties.
+#. In the System Properties window, click on the Advanced tab.
+#. In the Advanced section, click the Environment Variables button. 
+#. Finally, in the Environment Variables window, highlight the path variable in the Systems Variable section and click edit. Add or modify the path lines with the paths you wish the computer to access. Each different directory is separated with a semicolon as shown below::
+
+	C:\Program Files;C:\WINDOWS;C:\WINDOWS\System32
+      
+#. Add the path to your scripts directory::
+
+	C:\Program Files;C:\WINDOWS;C:\WINDOWS\System32;C:\Python24\Scripts
+	
+See `Finally`_ below.
+	
+For Windows 95, 98 and ME
+-------------------------
+
+You will need to edit your ``autoexec.bat`` file so that your path is correctly setup. Add a line like this::
+
+	path=%path%;C:\Python24\Scripts
+
+:Warning: I haven't tested the above but this seems to be the correct thing to do. Please could someone confirm this works? Thanks JG.
+
+See `Finally`_ below.
+
+Finally
+-------
+
+You may need to restart your computer but now you can just enter the command you want in the same way you would on a Mac or on Linux::
+
+	C:\Documents and Settings\James>paster
+	Usage: C:\Python24\Scripts\paster-script.py COMMAND
+	usage: paster-script.py [paster_options] COMMAND [command_options]
+
+	options:
+	  --version         show program's version number and exit
+	  --plugin=PLUGINS  Add a plugin to the list of commands (plugins are Egg
+			    specs; will also require() the Egg)
+	  -h, --help        Show this help message
+	
+	... etc ...
+
+All the documentation is written assuming you have set up your ``PATH`` correctly as described above.
+
+Upgrading
+=========
+
+For absolutely the latest version (or to upgrade to the latest) run::
+
+    easy_install -U -D Pylons==dev
+    
+Windows users will need to install `subversion <http://subversion.tigris.org/project_packages.html#binary-packages>`_ and issue this command::
+
+    C:\Python24\Scripts\easy_install -U -D Pylons==dev
+
+Please Note
+===========
+
+The versions of pudge and buildutils required for using the documentation support in Pylons are the versions from http://pylonshq.com/download/ even though they have the same version numbers as versions available from cheeseshop. This is because the versions on PylonsHQ are later versions from SVN checkouts but the developers of these packages have not increased the version numbers in the code.
+
+Also the versions of Cheetah, docutils, elementtree, nose and just about everything else has been slightly modified by James Gardner so that they support setuptools and Python 2.3 and can automatically be installed by easy_install. Some of these packages have installation instructions which might require manual tweaking. If you plan to use the packages outside Pylons you may prefer to install them manually yourself to be 100% confident that they are setup correctly although the Pylons team haven't spotted any problems yet and they appear to work perfectly.
+
+
