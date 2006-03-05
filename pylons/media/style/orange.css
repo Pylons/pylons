@@ -1,7 +1,7 @@
 body{
     margin: 0px;
     padding: 0px;/* 4% 0 0;*/
-    background: #000000 url(../img/bg.png) repeat-x; 
+    background: #494943 url(../img/bg.jpg) top repeat-x; 
     font-family: Verdana, Arial, sans-serif;
     font-size: 75%;
     line-height: 160%;
@@ -78,9 +78,16 @@ div.two div.b{
 
 
 h1#logo{
-    padding: 25px 5% 0 5%;
-    margin: 0 0 0 -2px;
+    margin: 20px 5% 0 5%;
+    padding: 0;
     float: left;
+    width: 155px;
+    height: 52px;
+
+    
+    /*padding: 25px 5% 0 5%;
+    margin: 0 0 0 -2px;
+    float: left;*/
 }
 /* Nav Bar */
 
