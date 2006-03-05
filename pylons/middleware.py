@@ -53,7 +53,7 @@ def ErrorHandler(app, global_conf, **errorware):
 from pylons.util import run_wsgi
 
 from paste.recursive import RecursiveMiddleware
-from paste.error_document import custom_forward
+from paste.errordocument import custom_forward
 from urllib import urlencode
 from paste.deploy.converters import asbool
 from pylons.util import get_prefix
