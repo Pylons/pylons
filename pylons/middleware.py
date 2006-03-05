@@ -168,7 +168,7 @@ a.switch_source:hover {
     <a name="top"></a>
     
     <!-- Logo -->
-    <h1 id="logo"><a class="no-underline" href="http://pylons.groovie.org"><img class="no-border" src="%(prefix)s/error/img/logo.gif" alt="Pylons" title="Pylons"/></a></h1>
+    <h1 id="logo"><a class="no-underline" href="http://www.pylonshq.com"><img class="no-border" src="%(prefix)s/error/img/logo.gif" alt="Pylons" title="Pylons"/></a></h1>
     <p class="invisible"><a href="#content">Skip to content</a></p>
 
     <!-- Main Content -->
