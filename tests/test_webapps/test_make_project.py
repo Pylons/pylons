@@ -6,26 +6,43 @@ for spec in ['PasteScript', 'Paste', 'PasteDeploy', 'pylons']:
     pkg_resources.require(spec)
 
 template_path = os.path.join(
-    os.path.dirname(__file__), 'test_files')
+    os.path.dirname(__file__), 'test_files').replace('\\','/')
 
 test_environ = os.environ.copy()
 test_environ['PASTE_TESTING'] = 'true'
 
 testenv = TestFileEnvironment(
-    os.path.join(os.path.dirname(__file__), 'output'),
+    os.path.join(os.path.dirname(__file__), 'output').replace('\\','/'),
     template_path=template_path,
     environ=test_environ)
 
+projenv = None
+    
+def _get_script_name(script):
+    if sys.platform == 'win32':
+        script += '.exe'
+    return script
+
 def svn_repos_setup():
-    res = testenv.run('svnadmin', 'create', 'REPOS',
+    res = testenv.run(_get_script_name('svnadmin'), 'create', 'REPOS',
                       printresult=False)
-    testenv.svn_url = 'file://' + testenv.base_path + '/REPOS'
+    path = testenv.base_path.replace('\\','/').replace(' ','%20')
+    base = 'file://'
+    if ':' in path:
+        base = 'file:///'
+    testenv.svn_url = base + path + '/REPOS'
     assert 'REPOS' in res.files_created
     testenv.ignore_paths.append('REPOS')
 
 def paster_create():
     global projenv
-    res = testenv.run('paster', 'create', '--verbose', '--no-interactive',
+    sys.stderr.write(' '.join(['paster', 'create', '--verbose', '--no-interactive',
+                      '--svn-repository=' + testenv.svn_url,
+                      '--template=pylons',
+                      'ProjectName',
+                      'version=0.1',
+                      ]))
+    res = testenv.run(_get_script_name('paster'), 'create', '--verbose', '--no-interactive',
                       '--svn-repository=' + testenv.svn_url,
                       '--template=pylons',
                       'ProjectName',
@@ -36,41 +53,45 @@ def paster_create():
                  ]
     for fn in expect_fn:
         fn = os.path.join('ProjectName', fn)
-        assert fn in res.files_created
+        #~ if fn not in res.files_created.keys():
+            #~ sys.stderr.write('ERROR not creates %r'%fn)
+        #~ if fn not in res.stdout:
+            #~ sys.stderr.write('ERROR not in stdout %r'%fn)
+        assert fn in res.files_created.keys()
         assert fn in res.stdout
-    setup = res.files_created['ProjectName/setup.py']
+    
+    setup = res.files_created[os.path.join('ProjectName','setup.py')]
     setup.mustcontain('0.1')
     setup.mustcontain('projectname:make_app')
     setup.mustcontain('main=paste.script.appinstall:Installer')
     setup.mustcontain("include_package_data=True")
     assert '0.1' in setup
-    testenv.run('python setup.py egg_info',
-                cwd=os.path.join(testenv.cwd, 'ProjectName'),
+    testenv.run(_get_script_name('python')+' setup.py egg_info',
+                cwd=os.path.join(testenv.cwd, 'ProjectName').replace('\\','/'),
                 expect_stderr=True)
-    testenv.run('svn', 'commit', '-m', 'Created project', 'ProjectName')
+    testenv.run(_get_script_name('svn'), 'commit', '-m', 'Created project', 'ProjectName')
     # A new environment with a new
     projenv = TestFileEnvironment(
-        os.path.join(testenv.base_path, 'ProjectName'),
+        os.path.join(testenv.base_path, 'ProjectName').replace('\\','/'),
         start_clear=False,
         template_path=template_path,
         environ=test_environ)
-    print projenv
     projenv.environ['PYTHONPATH'] = (
         projenv.environ.get('PYTHONPATH', '') + ':'
         + projenv.base_path)
 
 def make_controller():
-    res = projenv.run('paster controller test1')
-    assert 'projectname/controllers/test1.py' in res.files_created
-    assert 'projectname/tests/functional/test_test1.py' in res.files_created
-    res = projenv.run('svn status')
+    res = projenv.run(_get_script_name('paster')+' controller test1')
+    assert os.path.join('projectname','controllers','test1.py') in res.files_created
+    assert os.path.join('projectname','tests','functional','test_test1.py') in res.files_created
+    res = projenv.run(_get_script_name('svn')+' status')
     # Make sure all files are added to the repository:
     assert '?' not in res.stdout
 
 def do_pytest():
-    res = projenv.run('nosetests projectname/tests',
+    res = projenv.run(_get_script_name('nosetests')+' projectname/tests',
                       expect_stderr=True,
-                      cwd=os.path.join(testenv.cwd, 'ProjectName'))
+                      cwd=os.path.join(testenv.cwd, 'ProjectName').replace('\\','/'))
 
 def do_test_known():
     projenv.writefile('projectname/controllers/test1.py',
@@ -79,29 +100,29 @@ def do_test_known():
                       frompath='app_globals.py')
     projenv.writefile('projectname/tests/functional/test_test1.py',
                       frompath='functional_test_controller_test1.py')
-    res = projenv.run('nosetests projectname/tests',
+    res = projenv.run(_get_script_name('nosetests')+' projectname/tests',
                       expect_stderr=True,
-                      cwd=os.path.join(testenv.cwd, 'ProjectName'))
+                      cwd=os.path.join(testenv.cwd, 'ProjectName').replace('\\','/'))
 
 def make_tag():
     global tagenv
-    res = projenv.run('svn commit -m "updates"')
-    res = projenv.run('python setup.py svntag --version=0.5')
+    res = projenv.run(_get_script_name('svn')+' commit -m "updates"')
+    # Space at the end needed so run() doesn't add \n causing svntag to complain
+    res = projenv.run(_get_script_name('python')+' setup.py svntag --version=0.5 ')
+    # XXX Still fails => setuptools problem on win32?
     assert 'Tagging 0.5 version' in res.stdout
     assert 'Auto-update of version strings' in res.stdout
-    res = testenv.run('svn co %s/ProjectName/tags/0.5 Proj-05'
+    res = testenv.run(_get_script_name('svn')+' co %s/ProjectName/tags/0.5 Proj-05 '
                       % testenv.svn_url)
     setup = res.files_created['Proj-05/setup.py']
     setup.mustcontain('0.5')
     assert 'Proj-05/setup.cfg' not in res.files_created
     tagenv = TestFileEnvironment(
-        os.path.join(testenv.base_path, 'Proj-05'),
+        os.path.join(testenv.base_path, 'Proj-05').replace('\\','/'),
         start_clear=False,
         template_path=template_path)
 
 def test_project():
-    global projenv
-    projenv = None
     yield svn_repos_setup
     yield paster_create
     yield make_controller

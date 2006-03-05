@@ -50,7 +50,7 @@ from the following URL:
     include_package_data=True,
     install_requires=[
         "Routes>=1.3", "Myghty>=1.0.1", "Paste==dev,>=0.5dev-r4832",
-        "PasteDeploy==dev,>=0.5dev-r4624","PasteScript==dev,>=0.5dev-r4754",
+        "PasteDeploy==dev,>=0.5dev-r4624","PasteScript==dev,>=0.5dev-r4833",
         "simplejson==1.1", "WSGIUtils==0.7", "WebHelpers==dev,>=0.1dev-r678",
         "nose>=0.8.7",
         ],
