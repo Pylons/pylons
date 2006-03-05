@@ -1,5 +1,7 @@
 """Base objects to be exported for use in Controllers"""
 
+version = '0.8'
+
 from pylons.controllers import Controller, RPCController
 from pylons.decorators import jsonify
 from pylons.helpers import SessionProxy, RequestProxy, MyghtyProxy, GlobalsProxy, RequestArgProxy

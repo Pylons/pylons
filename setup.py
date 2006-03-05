@@ -2,9 +2,11 @@ from ez_setup import use_setuptools
 use_setuptools()
 from setuptools import setup, find_packages
 
+from pylons import version
+
 setup(
     name="Pylons",
-    version='0.8',
+    version=version,
     description='Pylons Web Framework',
     long_description="""
 The Pylons web framework is aimed at making webapps and large programmatic website
@@ -61,7 +63,14 @@ from the following URL:
                  "Topic :: Internet :: WWW/HTTP",
                  "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
                  "Topic :: Software Development :: Libraries :: Python Modules",
-               ],    
+               ],
+    # XXX These do not necessarily work yet, but will once we release 0.8
+    extras_require = {
+        'pudge': ["docutils>=0.4", "elementtree>=1.2.6", "kid>=0.9",  "pudge>=0.1.1dev", "buildutils>=0.1.2dev",],
+        'test': ["py>=0.8.0_alpha2"],
+        'cheetah':["Cheetah>=1.0", "TurboCheetah>=0.9.5"],
+        'kid':["kid>=0.9", "TurboKid>=0.9.1dev"],
+    },
     entry_points="""
     [paste.paster_command]
     controller=pylons.commands:ControllerCommand
