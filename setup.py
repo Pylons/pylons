@@ -6,7 +6,7 @@ from pylons import version
 
 setup(
     name="Pylons",
-    version=version,
+    version="0.8",
     description='Pylons Web Framework',
     long_description="""
 The Pylons web framework is aimed at making webapps and large programmatic website
