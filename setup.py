@@ -51,9 +51,9 @@ from the following URL:
     zip_safe=False,
     include_package_data=True,
     install_requires=[
-        "Routes>=1.3", "Myghty>=1.0.1", "Paste==dev,>=0.5dev-r4832",
-        "PasteDeploy==dev,>=0.5dev-r4624","PasteScript==dev,>=0.5dev-r4833",
-        "simplejson==1.1", "WSGIUtils==0.7", "WebHelpers==dev,>=0.1dev-r678",
+        "Routes>=1.3", "Myghty>=1.0.1", "Paste>=0.5, <0.6",
+        "PasteDeploy>=0.5, <0.6","PasteScript>=0.5, <0.6",
+        "simplejson==1.1", "WSGIUtils==0.7", "WebHelpers>=0.1",
         "nose>=0.8.7",
         ],
     classifiers=["Development Status :: 4 - Beta",
@@ -74,6 +74,7 @@ from the following URL:
     entry_points="""
     [paste.paster_command]
     controller=pylons.commands:ControllerCommand
+    compile_templates=pylons.commands:CompileCommand
 
     [paste.paster_create_template]
     pylons=pylons.util:PylonsTemplate
