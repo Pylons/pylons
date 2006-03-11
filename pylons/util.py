@@ -140,9 +140,12 @@ class Helpers(object):
         self.__dict__['_local']._clear()
         project_name = CONFIG['app']['package']
         try:
-            helpers = getattr(getattr(__import__(project_name+'.config.helpers'), 'config'), 'helpers')
+            helpers_name = project_name + '.config.helpers'
+            __import__(helpers_name)
         except:
-            helpers = getattr(getattr(__import__(project_name+'.lib.helpers'), 'lib'), 'helpers')
+            helpers_name = project_name + '.lib.helpers'
+            __import__(helpers_name)
+        helpers = sys.modules[helpers_name]
         self.__dict__['_local'].helpers = helpers
         self.__dict__['_local'].translator = _Translator()
         self.__dict__['_local'].config = CONFIG
