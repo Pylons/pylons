@@ -13,7 +13,7 @@ port = 5000
 use = egg:${package}
 cache_dir = %(here)s/cache
 session_key = ${package}
-session_secret = 'somesecret'
+session_secret = somesecret
 
 # If you are using SQLObject you will need to specify a
 # dburi. You can do this with a line similar to the 
