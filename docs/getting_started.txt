@@ -1,7 +1,6 @@
 
-=========================
-Pylons Beginners Tutorial
-=========================
+Getting Started
++++++++++++++++
 
 Installing Pylons
 =================
@@ -106,6 +105,21 @@ Try creating a new file named ``test.html`` in the ``helloworld/public`` directo
 If you visit http://localhost:5000/test.html you will see the message ``Hello World!``. Any files in the ``public`` directory are served in the same way they would be by any webserver and if Pylons has a choice of whether to serve a file from the ``public`` directory or from code in a controller it will always choose the file in ``public``.
 
 Warning: If pylons doesn't appear to be serving the correct content check that it is not because there is a file in the ``public`` directory which is being served first.
+
+Enabling Debugging
+==================
+
+If you are developing an application you will want to enable the interactive debugging but it is disabled by default so that you don't accidentally use it on a production site. If you accidentally left debugging on, if an error occured the visitor would be able to execute malicious code.
+
+Enable debugging by commenting out the line that looks like this in the ``[app:main]`` section of your ``development.ini`` file::
+
+    set debug = false
+    
+so that it looks like this::
+
+    # set debug = false
+
+Now if an error occurs you will be able to interactively debug it.
 
 Creating a Controller and modifying the Routes
 ==============================================

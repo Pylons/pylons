@@ -3,6 +3,11 @@ Interactive Application Debugging
 
 Things break, and when they do, quickly pinpointing what went wrong and why makes a huge difference. By default, Pylons uses a customized version of `Ian Bicking's <http://blog.ianbicking.org/>`_ EvalException middleware that also includes full Myghty Traceback information.
 
+See the Enabling Debugging section of the `Getting Started <getting_started.html>`_ guide to enable the interactive debugging.
+
+The Debugging Screen
+====================
+
 The debugging screen has three tabs at the top:
 
 ``Traceback``

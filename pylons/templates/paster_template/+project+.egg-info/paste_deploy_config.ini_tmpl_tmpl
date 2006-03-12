@@ -10,10 +10,26 @@ host = 0.0.0.0
 port = 5000
 
 [app:main]
-set debug = false
 use = egg:${package}
 cache_dir = %(here)s/cache
 app_instance_uuid = $${app_instance_uuid}
 session_key = ${package}
 session_secret = $${app_instance_secret}
-#sqlobject.dburi = sqlite:/somedb.db
+
+# If you are using SQLObject you will need to specify a
+# dburi. You can do this with a line similar to the 
+# one below but adjusted for your database connection 
+# according to the SQLObject documentation. The %(here)s
+# part is replaced with the current directory which is
+# useful when using sqlite on UNIX based platforms. 
+# For Windows you should look at the SQLObject
+# documentation for a special syntax to use because the
+# path returned by %(here)s contains a : character.
+#sqlobject.dburi = sqlite:%(here)s/somedb.db
+
+# Do not set debug to true or uncomment the line below
+# on a production environment otherwise in the event of
+# an error occurring the visitor will be presented with
+# interactive debugging tools and these could be used to 
+# execute malicious code.
+set debug = false

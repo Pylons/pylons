@@ -38,12 +38,10 @@ Configuration File Format
 
 Configuration file format is described in great detail in the `Paste Deploy documentation <http://www.pythonpaste.org>`_.
 
-
 Error Handling Options
 ======================
 
-A number of error handling options can be specified in the config file. These are described in the `Error Handler <error_handler.html>`_ documentation.
-
+A number of error handling options can be specified in the config file. These are described in the `Error Handler <interactive_debugger.txt>`_ documentation but the important point to remember is that debug should always be set to ``false`` in production environments otherwise if an error occurs the visitor will be presented with the developer's interactive traceback which they could use to execute malicious code.
 
 Getting Information From Configuration Files
 ============================================
