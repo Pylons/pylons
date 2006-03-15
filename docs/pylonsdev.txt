@@ -1,0 +1,36 @@
+Development Version
+===================
+
+Read the `Easy Install documentation <http://peak.telecommunity.com/DevCenter/EasyInstall>`_, to decide whether to install Pylons as a root user so it can be used by everyone or whether to use a `custom installation location <http://peak.telecommunity.com/DevCenter/EasyInstall#custom-installation-locations>`_ then download `ez_setup.py <http://pylonshq.com/files/ez_setup.py>`_ and run::
+    
+    python ez_setup.py -U Pylons==dev
+
+Or for a full installation including some less well tested optional extras::
+
+	python ez_setup.py -f http://pylonshq.com/download "Pylons[test,pudge,kid,cheetah]==dev,>=0.8"
+
+
+Checking out the source code
+----------------------------
+
+Check out the latest code::
+	
+	svn co http://pylonshq.com/svn/Pylons/trunk Pylons
+
+Tell setuptools to use the version you are editing in the ``Pylons`` directory::
+
+	cd Pylons
+	python setup.py develop
+	
+Now you can make changes to the files in the Pylons directory and the code will run exactly as if you had installed a version of the egg with the changes you have made. 
+
+Upgrading
+=========
+
+For absolutely the latest version (or to upgrade to the latest) run::
+
+    easy_install -U -D Pylons==dev
+    
+Windows users will need to install `subversion <http://subversion.tigris.org/project_packages.html#binary-packages>`_ and issue this command::
+
+    C:\Python24\Scripts\easy_install -U -D Pylons==dev
