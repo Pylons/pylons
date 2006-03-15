@@ -181,7 +181,7 @@ The m.subexec('/serverinfo.myt') function will call Myghty to render your templa
 
 If your server is still running you can view the page at: http://localhost:5000/hello/serverinfo
 
-If not simply restart the server with ``paster serve --reload development.ini`` from the helloword directory. 
+If not simply restart the server with ``paster serve --reload development.ini`` from the helloworld directory. 
 
 Controller variables and Template Globals
 =========================================
@@ -196,13 +196,17 @@ session
     Acts as a dict to store session data, see the `Myghty Session docs <http://www.myghty.org/docs/session.myt#session>`_ for usage details
 
 request
-    The current server request, corresponds to the `r object from Myghty <http://www.myghty.org/docs/globals.myt#globals_globalr>`_
+    The current HTTP request object, corresponds to the `r object from Myghty <http://www.myghty.org/docs/globals.myt#globals_globalr>`_. This object contains common methods to
+    access request information like request.method, request.headers_in and request.headers_out.
 
 m
-    m is the Myghty request object, described in `detail in the Myghty docs <http://www.myghty.org/docs/request.myt#request>`_
+    m is the Myghty object, described in `detail in the Myghty docs <http://www.myghty.org/docs/request.myt#request>`_.
+    Used primarily for template rendering, and caching functionality.
 
 h
-    h is the point at which all the Pylons helper functions are utilized from. By default Pylons will load all the helper functions available from the `Web Helpers </WebHelpers/module-index.html>`_ package.
+    h is the point at which all the Pylons helper functions are utilized from. By default Pylons will load all the helper functions available from the `Web Helpers </WebHelpers/module-index.html>`_ package. Keep in mind when
+    reading the WebHelpers docs that all the functions listed should be prefixed by `h.` under Pylons as
+    we use namespaces to keep them organized.
 
 c
     (described in `Passing Variables to Templates`)
