@@ -15,14 +15,16 @@ Read the `Easy Install documentation <http://peak.telecommunity.com/DevCenter/Ea
 
 	python ez_setup.py -f http://pylonshq.com/download/ "Pylons==0.8"
 
-Or for a full installation including some less well tested optional extras::
+Or for a full installation including some cutting edge optional extras::
 
 	python ez_setup.py -f http://pylonshq.com/download/ "Pylons[test,pudge,kid,cheetah]==0.8"
 
 Development Version
 ===================
 
-Read the `Easy Install documentation <http://peak.telecommunity.com/DevCenter/EasyInstall>`_, to decide whether to install Pylons as a root user so it can be used by eveyone or whether to use a `custom installation location <http://peak.telecommunity.com/DevCenter/EasyInstall#custom-installation-locations>`_ then download `ez_setup.py <http://pylonshq.com/files/ez_setup.py>`_ and run::
+Read the `Easy Install documentation <http://peak.telecommunity.com/DevCenter/EasyInstall>`_, to decide whether to install Pylons as a root user so it can be used by everyone or whether to use a `custom installation location <http://peak.telecommunity.com/DevCenter/EasyInstall#custom-installation-locations>`_ then download `ez_setup.py <http://pylonshq.com/files/ez_setup.py>`_ and run::
+    
+    python ez_setup.py -U Pylons==dev
 
 Standard Installation
 ---------------------
