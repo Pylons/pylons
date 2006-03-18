@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="Pylons",
-    version="0.8",
+    version="0.9",
     description='Pylons Web Framework',
     long_description="""
 The Pylons web framework is aimed at making webapps and large programmatic website
@@ -49,10 +49,10 @@ from the following URL:
     zip_safe=False,
     include_package_data=True,
     install_requires=[
-        "Routes>=1.3", "Myghty>=1.0.1", "Paste>=0.5, <0.6",
-        "PasteDeploy>=0.5, <0.6","PasteScript>=0.5, <0.6",
+        "Routes>=1.3", "Myghty>=1.0.1", "Paste==dev,>=0.5.1dev-r4882",
+        "PasteDeploy==dev,>=0.5.1dev-r4883","PasteScript==dev,>=0.5.1dev-r4849",
         "simplejson==1.1", "WSGIUtils==0.7", "WebHelpers>=0.1",
-        "nose>=0.8.7",
+        "nose>=0.8.7", "Beaker==dev,>=0.5.1dev-r25",
         ],
     classifiers=["Development Status :: 4 - Beta",
                  "Intended Audience :: Developers",
