@@ -51,7 +51,7 @@ from the following URL:
     install_requires=[
         "Routes>=1.3", "Myghty>=1.0.1", "Paste==dev,>=0.5.1dev-r4882",
         "PasteDeploy==dev,>=0.5.1dev-r4883","PasteScript==dev,>=0.5.1dev-r4849",
-        "simplejson==1.1", "WSGIUtils==0.7", "WebHelpers>=0.1",
+        "simplejson>=1.1", "WSGIUtils==0.7", "WebHelpers>=0.1",
         "nose>=0.8.7", "Beaker==dev,>=0.5.1dev-r25",
         ],
     classifiers=["Development Status :: 4 - Beta",
