@@ -73,7 +73,7 @@ Or the debug status like this::
 URL Prefix
 ==========
 
-In certain rare circumstances you may need to manually override the root URL of your applicaiton. For example if you are using a proxy server. To do this you can set the ``prefix`` option in ``[app:main]``. 
+In certain rare circumstances you may need to manually override the root URL of your application. For example if you are using a proxy server. To do this you can set the ``prefix`` option in ``[app:main]``. 
 
 For example to move your entire application to ``/james`` add this to ``[app:main]``::
 
