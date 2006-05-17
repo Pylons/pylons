@@ -72,3 +72,66 @@ class ControllerCommand(Command):
             import sys
             msg = str(sys.exc_info()[1])
             raise BadCommand('An unknown error ocurred, %s'%msg)
+
+class CompileCommand(Command):
+    """Compile the templates in the directory indicated
+    
+    The compile_templates command will scan the directory of your choice and
+    run the compiler of your choice over them. With no location or compiler
+    given, compile_templates will assume they are Myghty templates, and are
+    located in the ``templates`` and ``components`` directories.
+    
+    For other template languages that require template compilation (usually
+    for i18n support), it is suggested that you keep them separate from the
+    directories used for Myghty templates.
+    
+    Example usage::
+    
+        yourproj% paster compile_templates 
+        Compiling templates...
+        Compiling components...
+        
+        yourproj% paster compile_templates kid_templates Kid
+        Compiling kid_templates with Kid...
+    
+    Please note that other template language compilers aren't yet supported.
+    
+    """
+    summary = "Compile templates"
+    usage = 'CONTROLLER_NAME'
+    
+    min_args = 1
+    max_args = 1
+    group_name = 'pylons'
+    
+    parser = Command.standard_parser(simulate=True)
+    parser.add_option('--no-test',
+                      action='store_true',
+                      dest='no_test',
+                      help="Don't create the test; just the controller")
+
+    def command(self):
+        try:
+            self.verbose = 3
+            fo = FileOp(source_dir=os.path.dirname(__file__) + '/templates')
+            try:
+                name, dir = fo.parse_path_name_args(self.args[0])
+            except:
+                raise BadCommand('No egg_info directory was found')
+            fullname = '/'.join([dir, name])
+            if not fullname.startswith('/'): fullname = '/' + fullname
+            testname = fullname.replace('/', '_')[1:]
+            fo.template_vars.update({'name': name.title().replace('-', '_'),
+                                  'fullname':fullname,
+                                  'fname':'/'.join([dir, name]),
+                                  'lname': name})
+            fo.copy_file(template='controller.py_tmpl',
+                         dest='controllers' + '/' + dir, filename=name)
+            if not self.options.no_test:
+                fo.copy_file(template='test_controller.py_tmpl',
+                             dest='tests/functional', 
+                             filename='test_'+testname)
+        except:
+            import sys
+            msg = str(sys.exc_info()[1])
+            raise BadCommand('An unknown error ocurred, %s'%msg)

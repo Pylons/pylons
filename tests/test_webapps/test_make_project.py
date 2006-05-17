@@ -89,6 +89,8 @@ def make_controller():
     assert '?' not in res.stdout
 
 def do_pytest():
+    projenv.writefile('development.ini',
+                      frompath='development.ini')
     res = projenv.run(_get_script_name('nosetests')+' projectname/tests',
                       expect_stderr=True,
                       cwd=os.path.join(testenv.cwd, 'ProjectName').replace('\\','/'))

@@ -1,17 +1,19 @@
 """Base objects to be exported for use in Controllers"""
 
+from paste.registry import StackedObjectProxy
+
 from pylons.controllers import Controller, RPCController
 from pylons.decorators import jsonify
-from pylons.helpers import SessionProxy, RequestProxy, MyghtyProxy, GlobalsProxy, RequestArgProxy
-from pylons.util import RequestLocal, Buffet, Helpers
+from pylons.util import Helpers
 
-m = MyghtyProxy()
-c = RequestLocal()
-g = GlobalsProxy()
-session = SessionProxy()
-request = RequestProxy()
-buffet = Buffet()
-params = RequestArgProxy()
-h = Helpers(m=m, c=c, session=session, request=request, buffet=buffet)
+c = StackedObjectProxy(name="C")
+g = StackedObjectProxy(name="G")
+cache = StackedObjectProxy(name="Cache")
+session = StackedObjectProxy(name="Session")
+request = StackedObjectProxy(name="Request")
+buffet = StackedObjectProxy(name="Buffet")
+params = StackedObjectProxy(name="params")
+response = StackedObjectProxy(name="response")
+h = Helpers(c=c, session=session, request=request, buffet=buffet)
 
 __all__ = ['Controller', 'RPCController', 'jsonify']

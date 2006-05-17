@@ -16,4 +16,4 @@ class TemplateController(BaseController):
         The default is just to abort the request with a 404 File not found
         status message.
         """
-        m.abort(404, "File not found")
+        return WSGIResponse(code=404)

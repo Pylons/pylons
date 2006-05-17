@@ -1,7 +1,8 @@
-from pylons import Controller, m, h, c, g, session, request, params
+from pylons import Controller, h, c, g, session, request, response, params
+from paste.wsgiwrappers import WSGIResponse
 import ${package}.models as model
 
 class BaseController(Controller):
-    def __call__(self, action, **params):
+    def __call__(self, **params):
         # Insert any code to be run per request here
-        Controller.__call__(self, action, **params)
+        return Controller.__call__(self, **params)

@@ -11,10 +11,10 @@ def jsonify(func):
     and output it.
     """
     def decorator(*args, **kw):
-        pylons.request.content_type = 'text/javascript'
-        return pylons.m.write(json.dumps(func(*args, **kw)))
-    if not hasattr(func, '_orig'):
-        decorator._orig = func
+        pylons.response.headers['Content-Type'] = 'text/javascript'
+        pylons.response.content.append(json.dumps(func(*args, **kw)))
+        return pylons.response
+    decorator._orig = getattr(func, '_orig', func)
     return decorator
 
 __all__ = ['jsonify']

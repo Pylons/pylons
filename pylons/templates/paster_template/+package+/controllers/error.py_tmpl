@@ -1,6 +1,6 @@
 from ${package}.lib.base import *
 from paste import fileapp
-from pylons.middleware import media_path, error_document_template, run_wsgi
+from pylons.middleware import media_path, error_document_template
 import os.path
 from pylons.util import get_prefix
 
@@ -20,13 +20,14 @@ class ErrorController(BaseController):
             'code':params.get('code', ''), 
             'message':params.get('message', ''),
         }
-        m.write(page)
+        return WSGIResponse(page)
 
     def img(self, id):
-        self._serve_file(os.path.join(media_path, 'img', id))
+        return self._serve_file(os.path.join(media_path, 'img', id))
         
     def style(self, id):
-        self._serve_file(os.path.join(media_path, 'style', id))
+        return self._serve_file(os.path.join(media_path, 'style', id))
 
     def _serve_file(self, path):
-        run_wsgi(fileapp.FileApp(path), m, request)
+        fapp = fileapp.FileApp(path)
+        return fapp(self.environ, self.start_response)

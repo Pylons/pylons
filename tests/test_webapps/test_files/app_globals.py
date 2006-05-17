@@ -1,6 +1,4 @@
-import pylons.middleware 
-
-class Globals(pylons.middleware.Globals):
+class Globals(object):
 
     def __init__(self, global_conf, app_conf, **extra):
         self.message = 'Hello'

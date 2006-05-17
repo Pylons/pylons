@@ -1,30 +1,7 @@
-"EvalException, Error Documents, and Globals middleware"
+"""EvalException, Error Documents, and Globals middleware"""
 from paste.deploy.converters import asbool
 import os.path
 media_path = os.path.join(os.path.dirname(__file__), 'media')
-
-#
-# Global g variable
-#
-
-class Globals:
-    pass
-
-class register_app_globals:
-    """Small middleware application that saves per-application globals"""
-    def __init__(self, app, globals):
-        """Saves a reference to the WSGI app and globals for later use"""
-        self.app = app
-        self.globals = globals
-        
-    def __call__(self, environ, start_response):
-        """Sets environ variable for globals before calling app"""
-        environ['pylons.g'] = self.globals
-        return self.app(environ, start_response)
-
-#
-# Customized Error Handling
-#
 
 def ErrorHandler(app, global_conf, **errorware):
     """ErrorHandler Toggle
@@ -35,6 +12,7 @@ def ErrorHandler(app, global_conf, **errorware):
     
     Otherwise, the app will be wrapped in the Paste ErrorMiddleware, and
     the ``errorware`` dict will be passed into it.
+    
     """
     if asbool(global_conf.get('debug', 'true')):
         from pylons.error import PylonsEvalException
@@ -49,8 +27,6 @@ def ErrorHandler(app, global_conf, **errorware):
 #
 # Error Document Handling
 #
-
-from pylons.util import run_wsgi
 
 from paste.recursive import RecursiveMiddleware
 from paste.errordocument import custom_forward
@@ -213,4 +189,4 @@ a.switch_source:hover {
 </html>
 """
 
-__pudge_all__ = ['register_app_globals', 'ErrorHandler', 'ErrorDocuments']
+__pudge_all__ = ['ErrorHandler', 'ErrorDocuments']

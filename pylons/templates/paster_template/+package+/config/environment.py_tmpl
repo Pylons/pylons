@@ -18,7 +18,6 @@ def load_environment():
     # The following options are passed directly into Myghty, so all configuration options
     # available to the Myghty handler are available for your use here
     myghty = {}
-    
     myghty['log_errors'] = True
 
     # Add your own Myghty config options here, note that all config options will override

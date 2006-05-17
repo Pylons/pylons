@@ -6,7 +6,7 @@ for Myghty, Paste errorware, and prefixing Routes if necessary.
 
 from myghty.resolver import *
 from paste.deploy.converters import asbool
-import pylons.myghtyroutes
+#import pylons.myghtyroutes
 
 class Config(object):
     """Pylons configuration object
@@ -34,14 +34,19 @@ class Config(object):
     ``app_conf``
         Application specific configuration directives, passed in via Paste
         from the app section of the config file.
-        
+    ``environ_config``
+        Dict of environ keys for where in the environ to pickup various
+        objects for registering with Pylons. If these are present then
+        PylonsApp will use them from environ rather than using default
+        middleware from Beaker. Valid keys are: ``session, cache``
     """
-    def __init__(self, myghty, map, paths):
+    def __init__(self, myghty, map, paths, environ_config={}):
         self.myghty = myghty
         self.map = map
         self.paths = paths
         self.global_conf = {}
         self.app_conf = {}
+        self.environ_config = environ_config
     
     def init_app(self, global_conf, app_conf, package):
         """Initialize configuration for the application
@@ -82,27 +87,8 @@ class Config(object):
         if prefix:
             self.map.prefix = app_conf['prefix']
             self.map._created_regs = False
-        
-        cache_dir = app_conf.get('cache_dir')
-        if not cache_dir:
-            cache_dir = global_conf.get('cache_dir')
-            if not cache_dir:
-                raise Exception("No 'cache_dir' key specified in the config file.")
-            app_uuid = app_conf.get('app_instance_uuid') or global_conf.get('app_instance_uuid')
-            if not app_uuid:
-                raise Exception("No 'app__uuid' key specified in the config file.")
-            cache_dir = cache_dir + '/' + app_uuid
-        
+                
         myghty_defaults = {}
-        
-        # Where does the sessions/cache/etc. go for this instance of the webapp?
-        myghty_defaults['data_dir'] = cache_dir
-        
-        session_dir = app_conf.get('session_data_dir') or global_conf.get('session_data_dir')
-        if session_dir:
-            myghty_defaults['session_data_dir'] = session_dir
-        myghty_defaults['session_key'] = app_conf.get('session_key') or global_conf.get('session_key')
-        myghty_defaults['session_secret'] = app_conf.get('session_secret') or global_conf.get('session_secret')
         
         # Raise a complete error for the error middleware to catch
         myghty_defaults['raise_error'] = True
@@ -110,26 +96,8 @@ class Config(object):
         # Standard Pylons configuration directives for Myghty
         myghty_defaults.setdefault('allow_globals', [])
                 
-        myghty_defaults['allow_globals'].extend(['c', 'h', 's', 'session', 'request', 'g'])
+        myghty_defaults['allow_globals'].extend(['c', 'h', 'session', 'request', 'params', 'g'])
         myghty_defaults['component_root'] = [{x.split('/')[-1] : x} for x in self.paths['templates']]
-        
-        # Pylons resolver strategy
-        myghty_defaults['resolver_strategy'] = [
-            ConditionalGroup(
-                context = 'request',
-                rules = [
-                    PathTranslate(),
-                    pylons.myghtyroutes.RoutesResolver(
-                        mapper=self.map,
-                        controller_root=self.paths['controllers'],
-                        scan_controllers=asbool(global_conf.get('debug', 'true'))),
-                    NotFound(),
-                ]
-            ),
-            URICache(rule = ResolveFile()),
-            ResolveUpwards(),
-            ResolveFile(),
-        ]
         
         errorware = {}
         # Load the errorware configuration from the Paste configuration file

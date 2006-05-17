@@ -11,7 +11,8 @@ port = 5000
 
 [app:main]
 use = egg:${package}
-cache_dir = %(here)s/cache
+cache_data_dir = %(here)s/data/cache
+session_data_dir = %(here)s/data/sessions
 session_key = ${package}
 session_secret = somesecret
 
@@ -34,4 +35,4 @@ session_secret = somesecret
 # For development purposes debug should be set to true
 # to enable the debugging code but be sure to set it back
 # to false before releasing your application.
-set debug = false
+#set debug = false
