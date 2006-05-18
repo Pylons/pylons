@@ -1,0 +1,10 @@
+Pylons Changelog
+=================
+
+0.9 (**dev**)
+* Added use of Beaker for session and caching functionality
+
+0.8.3 (**dev**)
+* Fixed default controller to allow for actions with - in them. The - will be
+  replaced with an underscore, while the original action name in the mapper
+  dict is unchanged. Patch by Thomas Sidwick.

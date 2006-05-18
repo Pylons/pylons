@@ -75,10 +75,11 @@ class Controller(object):
         
         """
         action = kargs['action']
+        action_method = action.replace('-', '_')
         if hasattr(self, '__before__'):
             self._inspect_call(self.__before__, **kargs)
-        if isinstance(getattr(self, kargs['action'], None), types.MethodType):
-            func = getattr(self, kargs['action'])
+        if isinstance(getattr(self, action_method, None), types.MethodType):
+            func = getattr(self, action_method)
             response = self._inspect_call(func, **kargs)
         else:
             if CONFIG['global_conf']['debug'] == 'false':
