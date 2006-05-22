@@ -2,9 +2,17 @@ Pylons Changelog
 =================
 
 0.9 (**dev**)
-* Added use of Beaker for session and caching functionality
+* Added use of Beaker middleware for session and caching functionality
+* Fixed error traceback and updated template to use proper error images and
+  stylesheets.
 
-0.8.3 (**dev**)
+0.8.2 (**dev**)
 * Fixed default controller to allow for actions with - in them. The - will be
   replaced with an underscore, while the original action name in the mapper
   dict is unchanged. Patch by Thomas Sidwick.
+
+0.8.1 (May 10th, 2006)
+* Added REST decorators and re-arranged decorator layout to support more styles
+  of decorators for future expansion.
+* Fixed dependency requirement bug that had Pylons locked to simplejson 1.1
+  even though a newer version was out.

@@ -279,7 +279,10 @@ class PylonsEvalException(EvalException):
         self.error_template=error_template
         self.debug_infos = {}
         if xmlhttp_key is None:
-            xmlhttp_key = global_conf.get('xmlhttp_key', '_')
+            if global_conf is None:
+                xmlhttp_key = '_'
+            else:
+                xmlhttp_key = global_conf.get('xmlhttp_key', '_')
         self.xmlhttp_key = xmlhttp_key
         self.errorparams = errorparams
         self.errorparams['debug_mode'] = self.errorparams['debug']
@@ -332,7 +335,12 @@ class PylonsEvalException(EvalException):
         try:
             __traceback_supplement__ = Supplement, self, environ
             app_iter = self.application(environ, detect_start_response)
-            return self.catching_iter(app_iter, environ)
+            try:
+                return_iter = list(app_iter)
+                return return_iter
+            finally:
+                if hasattr(app_iter, 'close'):
+                    app_iter.close()
         except:
             exc_info = sys.exc_info()
             if inspect.isclass(exc_info[0]):
@@ -340,17 +348,22 @@ class PylonsEvalException(EvalException):
                     if issubclass(exc_info[0], expected):
                         raise
                     
-            import paste.exceptions.errormiddleware
-            paste.exceptions.errormiddleware.handle_exception(
-                exc_info,
-                environ['wsgi.errors'],
-                **self.errorparams
-            )
-
+            count = debug_counter.next()
+            view_uri = self.make_view_url(environ, base_path, count)
             if not started:
+                headers = [('content-type', 'text/html')]
+                headers.append(('X-Debug-URL', view_uri))
                 start_response('500 Internal Server Error',
-                               [('content-type', 'text/html')],
+                               headers,
                                exc_info)
+            environ['wsgi.errors'].write('Debug at: %s\n' % view_uri)
+
+            exc_data = collector.collect_exception(*exc_info)
+            debug_info = DebugInfo(count, exc_info, exc_data, base_path,
+                                   environ, view_uri)
+            assert count not in self.debug_infos
+            self.debug_infos[count] = debug_info
+
             if self.xmlhttp_key:
                 get_vars = wsgilib.parse_querystring(environ)
                 if dict(get_vars).get(self.xmlhttp_key):
@@ -359,21 +372,11 @@ class PylonsEvalException(EvalException):
                         exc_data, include_hidden_frames=False,
                         include_reusable=False, show_extra_data=False)
                     return [html]
-            count = debug_counter.next()
-            exc_data = collector.collect_exception(*exc_info)
-            debug_info = DebugInfo(count, exc_info, exc_data, base_path,
-                                   environ)
-            assert count not in self.debug_infos
-            self.debug_infos[count] = debug_info
-            
-            
             
             base_path = get_prefix(environ)
             #base_path = environ['SCRIPT_NAME']
             
-            
             # @@: it would be nice to deal with bad content types here
-            exc_data = collector.collect_exception(*exc_info)
             html, extra_data = format_eval_html(exc_data, base_path, count)
             #raise Exception(extra_data)
             head_html = (formatter.error_css + formatter.hide_display_js)

@@ -30,4 +30,4 @@ class ErrorController(BaseController):
 
     def _serve_file(self, path):
         fapp = fileapp.FileApp(path)
-        return fapp(self.environ, self.start_response)
+        return fapp(request.environ, self.start_response)
