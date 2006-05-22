@@ -6,7 +6,6 @@ for Myghty, Paste errorware, and prefixing Routes if necessary.
 
 from myghty.resolver import *
 from paste.deploy.converters import asbool
-#import pylons.myghtyroutes
 
 class Config(object):
     """Pylons configuration object

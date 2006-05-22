@@ -17,7 +17,6 @@ from paste.deploy import loadapp
 import paste.fixture
 
 from ${package}.config.routing import *
-from pylons.myghtyroutes import RoutesResolver
 from routes import request_config, url_for
 
 class TestController(TestCase):

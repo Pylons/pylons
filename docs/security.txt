@@ -76,7 +76,7 @@ Now edit your ``permissions.py`` controller to look like this::
 Edit ``lib/base.py`` to look like this so that we are using a base controller with built in security features::
 
     from routes.util import redirect_to, url_for
-    from pylons.myghtyroutes import SecureController
+    from pylons.FIXME import SecureController
     import securityapp.model as model
     
     class BaseController(SecureController):
