@@ -183,21 +183,12 @@ use the context object 'c' to store conext information.")
             from pkg_resources import resource_string, resource_stream, \
                 resource_exists, resource_filename
             from pylons.i18n.translation import egg_translation
-            if not resource_exists(project_name, 'i18n/%s/LC_MESSAGES'%(lang)):
-                raise LanguageError(
-                    'Langauge catalog %s not found'%repr(
-                        '%s/i18n/%s/LC_MESSAGES'%(
-                            project_name,
-                            lang
-                        )
-                    )
-                )
-            self.__dict__['_local'].translator = egg_translation(
-                project_name, 
-                lang = 'i18n/%s/LC_MESSAGES'%(
-                    lang
-                )
-            )
+            catalog_path = os.path.join('i18n', lang, 'LC_MESSAGES')
+            if not resource_exists(project_name, catalog_path):
+                raise LanguageError('Langauge catalog %s not found' % \
+                                    os.path.join(project_name, catalog_path))
+            self.__dict__['_local'].translator = \
+                egg_translation(project_name, lang=catalog_path)
 
     def get_lang(self):
         return self.__dict__['_local'].lang

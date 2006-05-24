@@ -1,3 +1,4 @@
+import os
 from gettext import *
 
 from pkg_resources import resource_stream
@@ -10,4 +11,4 @@ def egg_translation(domain, lang):
     We can't just use gettext.translation because the .mo files might be in eggs
     """
     class_ = GNUTranslations
-    return class_(resource_stream(domain, lang+'/%s.mo'%domain))
+    return class_(resource_stream(domain, os.path.join(lang, '%s.mo' % domain)))

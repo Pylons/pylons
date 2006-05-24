@@ -1,8 +1,10 @@
 """
 Setuptools extensions and tools to add multiple language support
 """
-
 import setuptools, sys, os, re
+
+# Ignore these directories when iterating through paths
+exclude_dirs = ('.AppleDouble', '.svn', 'CVS', '_darcs')
 
 class LangExtract(setuptools.Command):
 
@@ -14,22 +16,18 @@ class LangExtract(setuptools.Command):
         
     def run(self):
         project = re.compile('[^a-zA-Z0-9_]').sub('', self.distribution.get_name().lower())
+        i18n_path = os.path.join(project, 'i18n/')
+        pot_filename = '%s.pot' % project
+        pot_path = os.path.join(i18n_path, pot_filename)
+        
+        if os.path.exists(pot_path):
+            print "Error: File %s already exists" % pot_path
+            sys.exit(1)
+
         oldsys = sys.argv
         sys.argv.pop(1)
-        path = '%s/i18n/%s.pot'%(project, project)
+        sys.argv.extend(['-K', '-k', '_', '-o', pot_filename, '-p', i18n_path, '*'])
         
-        if os.path.exists(path):
-            print "Error: File %s already exists"%path
-            sys.exit()
-
-        sys.argv.append('-K')
-        sys.argv.append('-k')
-        sys.argv.append('_')
-        sys.argv.append('-o')
-        sys.argv.append('%s.pot'%project)
-        sys.argv.append('-p')
-        sys.argv.append('%s/i18n/'%project)
-        sys.argv.append('*')
         import pylons.i18n.pygettext
         pylons.i18n.pygettext.pot_header = '''\
 # Pylons Project %s Translation File
@@ -55,10 +53,11 @@ msgstr ""
         )
         # These could be filled in from setup.py
         pylons.i18n.pygettext.main()
-        print "\nSucessfully created langauage template in %s\n"%path
+        print "\nSucessfully created langauage template in %s\n" % pot_path
         print """Now create your langauge files, save them in i18n/lang replacing 
 lang with the language code and changing the file extension to .po then run 
 setup.py lang_compile mode to produce your .mo files"""
+
         sys.argv = oldsys
 
 class LangCompile(setuptools.Command):
@@ -72,27 +71,34 @@ class LangCompile(setuptools.Command):
         
     def compile_lang(self, lang):
         project = re.compile('[^a-zA-Z0-9_]').sub('', self.distribution.get_name().lower())
+        lang_path = os.path.join(project, 'i18n', lang)
+        po_path = os.path.join(lang_path, '%s.po' % project)
+        lc_path = os.path.join(lang_path, 'LC_MESSAGES')
+        mo_path = os.path.join(lc_path, '%s.mo' % project)
+
+        if not os.path.exists(lang_path) or not os.path.exists(po_path):
+            print "Error: Could not find the directory %s" % lang_path
+            sys.exit(1)
+        if not os.path.exists(lc_path):
+            os.mkdir(lc_path)
+        
         oldsys = sys.argv
-        sys.argv = sys.argv[:1]
-        sys.argv.append('-o')
-        sys.argv.append('%s/i18n/%s/LC_MESSAGES/%s.mo'%(project,lang,project))
-        sys.argv.append('%s/i18n/%s/%s.po'%(project,lang,project))
-        if not os.path.exists('%s/i18n/%s'%(project,lang)) or not os.path.exists('%s/i18n/%s/%s.po'%(project,lang,project)):
-            print "Error: Could not find the directory %s"%'%s/i18n/%s'%(project,lang)
-            sys.exit()
-        if not os.path.exists('%s/i18n/%s/LC_MESSAGES'%(project,lang)):
-            os.mkdir('%s/i18n/%s/LC_MESSAGES'%(project,lang))
+        sys.argv = [sys.argv[0], '-o', mo_path, po_path]
+
         import pylons.i18n.msgfmt
         pylons.i18n.msgfmt.main()
-        print "Sucessfully generated '%s' catalog"%lang
+        print "Sucessfully generated '%s' catalog" % lang
+        
         sys.argv = oldsys
         
     def run(self):
         project = re.compile('[^a-zA-Z0-9_]').sub('', self.distribution.get_name().lower())
         if not self.lang:
             print "No langauge specified, compiling all languages"
-            for lang in os.listdir('%s/i18n/'%(project)):
-                if os.path.isdir('%s/i18n/%s'%(project,lang)) and lang != '.svn':
+            i18n_path = os.path.join(project, 'i18n')
+            for lang in os.listdir(i18n_path):
+                if os.path.isdir(os.path.join(i18n_path, lang)) and \
+                                     lang not in exclude_dirs:
                     self.compile_lang(lang)
         else:
             self.compile_lang(self.lang)

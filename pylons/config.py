@@ -3,7 +3,7 @@
 This module supplies pylons_config which handles setting up defaults
 for Myghty, Paste errorware, and prefixing Routes if necessary.
 """
-
+import os
 from myghty.resolver import *
 from paste.deploy.converters import asbool
 
@@ -96,7 +96,8 @@ class Config(object):
         myghty_defaults.setdefault('allow_globals', [])
                 
         myghty_defaults['allow_globals'].extend(['c', 'h', 'session', 'request', 'params', 'g'])
-        myghty_defaults['component_root'] = [{x.split('/')[-1] : x} for x in self.paths['templates']]
+        myghty_defaults['component_root'] = [{os.path.basename(path): path} for \
+                                             path in self.paths['templates']]
         
         errorware = {}
         # Load the errorware configuration from the Paste configuration file
