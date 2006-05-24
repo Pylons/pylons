@@ -16,7 +16,7 @@ class LangExtract(setuptools.Command):
         
     def run(self):
         project = re.compile('[^a-zA-Z0-9_]').sub('', self.distribution.get_name().lower())
-        i18n_path = os.path.join(project, 'i18n/')
+        i18n_path = os.path.join(project, 'i18n%s' % os.sep)
         pot_filename = '%s.pot' % project
         pot_path = os.path.join(i18n_path, pot_filename)
         
