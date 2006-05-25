@@ -266,9 +266,9 @@ class Buffet(object):
         """
         for char in ['/','\\']:
             if char in template_name:
-                raise BuffetError('Templates should be specified as module'
-                    'paths relative to the template root and therefore cannot'
-                    ' contain %s characters' % repr(char))
+                raise BuffetError('Templates should be specified as module '
+                    'paths relative to the template root and therefore cannot '
+                    'contain %s characters' % repr(char))
         if not engine_name and self.default_engine:
             engine_name = self.default_engine
         
@@ -288,12 +288,13 @@ class Buffet(object):
             return d
         
         if namespace==None:
-            if include_pylons_variables == False:
-                raise BuffetError('You must specify ``namespace`` if ``include_pylons_variables`` is False')
+            if include_pylons_variables is False:
+                raise BuffetError('You must specify ``namespace`` if ``include_pylons_variables`` is '
+                                  'False')
             else:
                 namespace = update_namespace({})
         elif isinstance(namespace, dict):
-            if include_pylons_variables == True:
+            if include_pylons_variables is True:
                 keys = namespace.keys()
                 for k in ['c','h','g','request','session', 'params']:
                     if k in keys:
@@ -304,9 +305,7 @@ class Buffet(object):
         else:
             namespace = update_namespace(namespace)
         engine_config = getattr(self.engines, engine_name)
-        base_path = engine_config['root'].split('/')
-        tmpl_path = template_name.split('/')
-        full_path = os.path.join(*(base_path + tmpl_path))
+        full_path = os.path.join(engine_config['root'], template_name)
         dotted_path = full_path.replace(os.path.sep, '.').lstrip('.')
         page_data = engine_config['engine'].render(namespace, template=dotted_path, **options)
         if as_string:
