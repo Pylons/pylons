@@ -3,7 +3,11 @@
 Additional helper object available for use in Controllers is the etag_cache.
 
 """
+from paste.registry import StackedObjectProxy
+
 import pylons
+
+response = StackedObjectProxy(name="response")
 
 def etag_cache(key=None):
     """Use the HTTP Entity Tag cache for Browser side caching

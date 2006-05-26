@@ -8,12 +8,15 @@ and call the WSGI app as well.
 import sys
 
 import paste.wsgiwrappers
-from paste.wsgiwrappers import WSGIRequest, WSGIResponse
+from paste.registry import RegistryManager
+from paste.wsgiwrappers import WSGIRequest
+from paste.wsgiwrappers import WSGIResponse as Response
 
 from routes import request_config
 import myghty.escapes as escapes
 
 import pylons
+from pylons.helpers import Myghty_Compat
 
 class PylonsBaseWSGIApp(object):
     """Basic Pylons WSGI Application
@@ -38,6 +41,7 @@ class PylonsBaseWSGIApp(object):
         self.package_name = package_name
         self.default_charset = default_charset
         self.settings = dict(charset=default_charset, content_type='text/html')
+        self.legacy = False
     
     def __call__(self, environ, start_response):
         self.setup_app_env(environ)
@@ -52,8 +56,17 @@ class PylonsBaseWSGIApp(object):
             status, response_headers, content = response.wsgi_response()
             start_response(status, response_headers)
             return content
-        else:
+        elif response:
             return response
+        else:
+            # Apparently we returned absolutely nothing, use the response
+            # object if in legacy mode, otherwise raise an exception
+            if self.legacy:
+                status, response_headers, content = pylons.helpers.response.wsgi_response()
+                start_response(status, response_headers)
+                return content
+            else:
+                raise Exception, "No content returned by controller: %s" % controller.__name__
     
     def setup_app_env(self, environ):
         """Setup and register all the Pylons objects with the registry"""
@@ -63,8 +76,12 @@ class PylonsBaseWSGIApp(object):
         environ['paste.registry'].register(pylons.c, {})
         environ['paste.registry'].register(pylons.g, self.globals)
         environ['paste.registry'].register(pylons.params, req.params)
-        environ['paste.registry'].register(pylons.response, WSGIResponse())
         pylons.h()
+        
+        # Setup legacy globals
+        if self.legacy:
+            environ['paste.registry'].register(pylons.m, Myghty_Compat())
+            environ['paste.registry'].register(pylons.helpers.response, Response())
         
         econf = environ['pylons.environ_config']
         if econf.get('session'):
@@ -82,7 +99,7 @@ class PylonsBaseWSGIApp(object):
         controller = match.get('controller')
         if not controller:
             return None
-                
+        
         # Pull the controllers class name, import controller
         # @@ TODO: Encapsulate in try/except to raise error if controller
         #          doesn't exist, or class in controller file doesn't exist.
@@ -98,8 +115,9 @@ class PylonsBaseWSGIApp(object):
         """Dispatches to a controller, will instantiate the controller
         if necessary"""
         if not controller:
-            pylons.response.status_code = 404
-            return pylons.response
+            res = Response()
+            response.status_code = 404
+            return response
         match = environ['pylons.routes_dict']
         if not getattr(controller, 'wsgi_application', False):
             # Sanitaze keys
@@ -181,3 +199,11 @@ class PylonsApp(object):
     def __call__(self, environ, start_response):
         environ['pylons.environ_config'] = self.econf
         return self.app(environ, start_response)
+
+def make_app(config):
+    """ Legacy WSGI app creator"""
+    config.legacy = True
+    app = PylonsApp(config)
+    app.legacy = True
+    app = RegistryManager(app)
+    return app
