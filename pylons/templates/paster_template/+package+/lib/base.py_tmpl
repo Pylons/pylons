@@ -1,5 +1,4 @@
 from pylons import Controller, h, c, g, session, request, response, params
-from paste.wsgiwrappers import WSGIResponse
 import ${package}.models as model
 
 class BaseController(Controller):
