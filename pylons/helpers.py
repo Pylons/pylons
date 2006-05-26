@@ -33,4 +33,12 @@ def etag_cache(key=None):
     else:
         return False
 
+class Myghty_Compat(object):
+    def write(self, content):
+        pylons.response.write(content)
+    
+    def out(self, content):
+        pylons.response.write(content)
+    
+
 __all__ = ['etag_cache']
