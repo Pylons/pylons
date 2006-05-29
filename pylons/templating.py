@@ -132,6 +132,7 @@ class MyghtyTemplatePlugin(object):
             request=pylons.request,
             g=pylons.g,
             session=pylons.session,
+            s=pylons.session
         )
         self.interpreter = Interpreter(**myt_opts)
     
