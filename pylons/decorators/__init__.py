@@ -1,7 +1,7 @@
 """Custom Decorators, currently ``jsonify``"""
-
-import pylons
 import simplejson as json
+import pylons
+from pylons.decorator import weak_signature_decorator
 
 def jsonify(func):
     """Action decorator that formats output for JSON
@@ -11,10 +11,10 @@ def jsonify(func):
     and output it.
     """
     def decorator(*args, **kw):
-        pylons.response.headers['Content-Type'] = 'text/javascript'
-        pylons.response.content.append(json.dumps(func(*args, **kw)))
-        return pylons.response
-    decorator._orig = getattr(func, '_orig', func)
-    return decorator
+        response = pylons.Response()
+        response.headers['Content-Type'] = 'text/javascript'
+        response.content.append(json.dumps(func(*args, **kw)))
+        return response
+    return weak_signature_decorator(decorator)
 
 __all__ = ['jsonify']

@@ -16,6 +16,7 @@ from routes import request_config
 import myghty.escapes as escapes
 
 import pylons
+import pylons.templating
 from pylons.helpers import Myghty_Compat
 
 class PylonsBaseWSGIApp(object):
@@ -42,6 +43,9 @@ class PylonsBaseWSGIApp(object):
         self.default_charset = default_charset
         self.settings = dict(charset=default_charset, content_type='text/html')
         self.legacy = False
+        config = globals.pylons_config
+        self.buffet = pylons.templating.Buffet(config.templating, 
+            template_root=config.template_root, **config.template_options)
     
     def __call__(self, environ, start_response):
         self.setup_app_env(environ)
@@ -76,6 +80,7 @@ class PylonsBaseWSGIApp(object):
         environ['paste.registry'].register(pylons.c, {})
         environ['paste.registry'].register(pylons.g, self.globals)
         environ['paste.registry'].register(pylons.params, req.params)
+        environ['paste.registry'].register(pylons.buffet, self.buffet)
         pylons.h()
         
         # Setup legacy globals

@@ -45,6 +45,9 @@ class Config(object):
         self.paths = paths
         self.global_conf = {}
         self.app_conf = {}
+        self.templating = 'pylonsmyghty'
+        self.template_options = None
+        self.template_root = None
         self.environ_config = environ_config
     
     def init_app(self, global_conf, app_conf, package):
@@ -117,6 +120,9 @@ class Config(object):
         # Merge in the user-supplied Myghty values
         myghty_defaults.update(self.myghty)
         self.myghty = myghty_defaults
+        self.template_options = {}
+        for k, v in self.myghty.iteritems():
+            self.template_options['myghty.'+k] = v
         
         # Save our errorware values
         self.errorware = errorware

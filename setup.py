@@ -82,6 +82,6 @@ from the following URL:
     lang_compile = pylons.i18n:LangCompile
     
     [python.templating.engines]
-    pylonsmyghty = pylons.buffet:MyghtyTemplatePlugin
+    pylonsmyghty = pylons.templating:MyghtyTemplatePlugin
     """,
 )

@@ -1,19 +1,20 @@
 """REST decorators"""
 
 import pylons
+from pylons.decorator import weak_signature_decorator
 
 def restrict(*methods):
     """Restricts access to the function depending on HTTP method"""
-    def check_methods(func):
-        def new_func(*args, **kw):
-            pylons.response.headers['Allow'] = ','.join(methods)
+    def entangle(func):
+        def check_methods(*args, **kw):
+            response = pylons.Response()
+            response.headers['Allow'] = ','.join(methods)
             if pylons.request.method not in methods:
-                pylons.response.status_code = 405
-                return pylons.response
+                response.status_code = 405
+                return response
             return func(*args, **kw)
-        new_func._orig = getattr(func, '_orig', func)
-        return new_func
-    return check_methods
+        return check_methods
+    return weak_signature_decorator(entangle)
 
 def dispatch_on(**method_map):
     """Dispatches to alternate controller methods based on HTTP method
@@ -27,7 +28,7 @@ def dispatch_on(**method_map):
     
         class SomeController(BaseController):
             
-            @pylons.rest.dispatch_in(POST=create_comment)
+            @pylons.rest.dispatch_on(POST=create_comment)
             def comment(self, id):
                 # Do something with the comment
             
@@ -41,15 +42,14 @@ def dispatch_on(**method_map):
     one.
     
     """
-    def dispatcher(func):
-        def new_func(self, *args, **kw):
+    def entangle(func):
+        def dispatcher(self, *args, **kw):
             alt_method = method_map.get(pylons.request.method)
             if alt_method:
                 alt_method = getattr(self, alt_method)
                 return self._inspect_call(alt_method, **kw)
             return func(self, *args, **kw)
-        new_func._orig = getattr(func, '_orig', func)
-        return new_func
-    return dispatcher
+        return dispatcher
+    return weak_signature_decorator(entangle)
 
 __all__ = ['restrict', 'dispatch_on']
