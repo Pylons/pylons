@@ -1,20 +1,20 @@
 """REST decorators"""
 
 import pylons
-from pylons.decorator import weak_signature_decorator
+from pylons.decorator import decorator
 
 def restrict(*methods):
     """Restricts access to the function depending on HTTP method"""
     def entangle(func):
-        def check_methods(*args, **kw):
-            response = pylons.Response()
-            response.headers['Allow'] = ','.join(methods)
+        def check_methods(func, *args, **kw):
             if pylons.request.method not in methods:
+                response = pylons.Response()
+                response.headers['Allow'] = ','.join(methods)
                 response.status_code = 405
                 return response
             return func(*args, **kw)
         return check_methods
-    return weak_signature_decorator(entangle)
+    return decorator(entangle)
 
 def dispatch_on(**method_map):
     """Dispatches to alternate controller methods based on HTTP method
@@ -43,13 +43,13 @@ def dispatch_on(**method_map):
     
     """
     def entangle(func):
-        def dispatcher(self, *args, **kw):
+        def dispatcher(func, self, *args, **kw):
             alt_method = method_map.get(pylons.request.method)
             if alt_method:
                 alt_method = getattr(self, alt_method)
                 return self._inspect_call(alt_method, **kw)
-            return func(self, *args, **kw)
+            return self.func(self, *args, **kw)
         return dispatcher
-    return weak_signature_decorator(entangle)
+    return decorator(entangle)
 
 __all__ = ['restrict', 'dispatch_on']
