@@ -126,7 +126,7 @@ class Config(object):
             if k.startswith('session_') or k.startswith('cache_'):
                 self.app_conf[k] = v
         if not app_conf.has_key('session_data_dir'):
-            app_conf['session_data_dir'] = app_conf['cache_dir'] + '/sessions'
+            app_conf['session_data_dir'] = os.path.join(app_conf['cache_dir'], 'sessions')
         if not app_conf.has_key('cache_data_dir'):
             app_conf['cache_data_dir'] = app_conf['cache_dir']
         #raise str(app_conf)
