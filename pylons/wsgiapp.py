@@ -107,6 +107,8 @@ class PylonsBaseWSGIApp(object):
         config.environ = environ
         config.redirect = redirect_to
         match = config.mapper_dict
+        if not match:
+            return None
         environ['pylons.routes_dict'] = match
         controller = match.get('controller')
         if not controller:
@@ -128,8 +130,8 @@ class PylonsBaseWSGIApp(object):
         if necessary"""
         if not controller:
             res = Response()
-            response.status_code = 404
-            return response
+            res.status_code = 404
+            return res
         match = environ['pylons.routes_dict']
         if not getattr(controller, 'wsgi_application', False):
             # Sanitaze keys
