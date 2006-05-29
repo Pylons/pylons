@@ -123,6 +123,8 @@ class Config(object):
         self.template_options = {}
         for k, v in self.myghty.iteritems():
             self.template_options['myghty.'+k] = v
+            if k.startswith('session_'):
+                self.app_conf[k] = v
         
         # Save our errorware values
         self.errorware = errorware
