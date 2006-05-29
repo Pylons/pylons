@@ -60,7 +60,10 @@ class Controller(object):
             argspec = inspect.getargspec(func._orig)
         else:
             argspec = inspect.getargspec(func)
+        
+        # @@ LEGACY: Add in ARGS alias to params
         kargs['ARGS'] = pylons.request.params
+        
         if argspec[2]:
             return func(**kargs)
         else:
