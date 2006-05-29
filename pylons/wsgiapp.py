@@ -140,9 +140,12 @@ class PylonsBaseWSGIApp(object):
                 if v:
                     match[k] = escapes.url_unescape(v)
             controller = controller()
+            controller.start_response = start_response
+            
+            # @@ LEGACY: Attach c to controller
             if environ.get('pylons.legacy'):
                 controller.c = pylons.c
-            controller.start_response = start_response
+            
             return controller(**match)
         
         self.fixup_environ(environ, match)
