@@ -98,7 +98,7 @@ class Config(object):
         # Standard Pylons configuration directives for Myghty
         myghty_defaults.setdefault('allow_globals', [])
                 
-        myghty_defaults['allow_globals'].extend(['c', 'h', 'session', 'request', 'params', 'g'])
+        myghty_defaults['allow_globals'].extend(['c', 'h', 's', 'session', 'request', 'params', 'g'])
         myghty_defaults['component_root'] = [{os.path.basename(path): path} for \
                                              path in self.paths['templates']]
         
