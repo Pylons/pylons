@@ -28,7 +28,7 @@ def dispatch_on(**method_map):
     
         class SomeController(BaseController):
             
-            @pylons.rest.dispatch_on(POST=create_comment)
+            @pylons.rest.dispatch_on(POST='create_comment')
             def comment(self, id):
                 # Do something with the comment
             
