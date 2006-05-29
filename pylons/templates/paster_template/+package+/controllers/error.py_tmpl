@@ -20,7 +20,7 @@ class ErrorController(BaseController):
             'code':params.get('code', ''), 
             'message':params.get('message', ''),
         }
-        return WSGIResponse(page)
+        return Response(page)
 
     def img(self, id):
         return self._serve_file(os.path.join(media_path, 'img', id))
