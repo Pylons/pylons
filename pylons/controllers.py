@@ -6,7 +6,6 @@ import xmlrpclib
 from paste.deploy.config import CONFIG
 
 import pylons
-from paste.wsgiwrappers import WSGIResponse
 
 class Controller(object):
     """Standard Pylons Controller for Web Requests
@@ -47,19 +46,17 @@ class Controller(object):
         self.c = pylons.c.current_obj()
     
     def _inspect_call(self, func, **kargs):
-        """Calls a function with the names in kargs
+        """Calls a function with the Routes dict
         
         Given a function, inspect_call will inspect the function args and call
         it with no further keyword args than it asked for.
         
-        If the function has been decorated, the decorator should have ensured
-        that the original function is available at _orig for introspection.
+        If the function has been decorated, it is assumed that the decorator
+        preserved the function signature.
+        
         """
-        # Get original function if its decorated
-        if hasattr(func, '_orig'):
-            argspec = inspect.getargspec(func._orig)
-        else:
-            argspec = inspect.getargspec(func)
+        argspec = inspect.getargspec(func)
+        kargs = pylons.request.environ['pylons.routes_dict'].copy()
         
         # @@ LEGACY: Add in ARGS alias to params
         kargs['ARGS'] = pylons.request.params
@@ -78,26 +75,20 @@ class Controller(object):
         more fully.
         
         """
-        # This if statement is to deal with legacy apps
-        if args:
-            action = args[0]
-            kargs['action'] = action
-        else:
-            action = kargs['action']
-        
+        action = pylons.request.environ['pylons.routes_dict'].get('action')
         action_method = action.replace('-', '_')
         if hasattr(self, '__before__'):
             self._inspect_call(self.__before__, **kargs)
         if isinstance(getattr(self, action_method, None), types.MethodType):
             func = getattr(self, action_method)
-            response = self._inspect_call(func, **kargs)
+            response = self._inspect_call(func)
         else:
             if CONFIG['global_conf']['debug'] == 'false':
-                response = WSGIResponse(code=404)
+                response = pylons.Response(code=404)
             else:
                 raise NotImplementedError('Action %s is not implemented'%action)
         if hasattr(self, '__after__'):
-            self._inspect_call(self.__after__, **kargs)
+            self._inspect_call(self.__after__)
         return response
 
 class RPCController(Controller):
