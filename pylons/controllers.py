@@ -67,14 +67,20 @@ class Controller(object):
             args = [kargs[name] for name in argnames if kargs.has_key(name)]
             return func(*args)
     
-    def __call__(self, **kargs):
+    def __call__(self, *args, **kargs):
         """Makes our controller a callable to handle requests
         
         This is called when dispatched to as the Controller class docs explain
         more fully.
         
         """
-        action = kargs['action']
+        # This if statement is to deal with legacy apps
+        if args:
+            action = args[0]
+            kargs['action'] = action
+        else:
+            action = kargs['action']
+        
         action_method = action.replace('-', '_')
         if hasattr(self, '__before__'):
             self._inspect_call(self.__before__, **kargs)

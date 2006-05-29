@@ -6,6 +6,8 @@ Additional helper object available for use in Controllers is the etag_cache.
 from paste.registry import StackedObjectProxy
 
 import pylons
+import pylons.helpers
+import pylons.templating as tmpl
 
 response = StackedObjectProxy(name="response")
 
@@ -30,7 +32,7 @@ def etag_cache(key=None):
     
     """
     if_none_match = pylons.request.environ.get('HTTP_IF_NONE_MATCH', None)
-    pylons.request.headers_out['ETag'] = key
+    pylons.helpers.response.headers['ETag'] = key
     if str(key) == if_none_match:
         pylons.m.abort(304)
         return True
@@ -38,11 +40,29 @@ def etag_cache(key=None):
         return False
 
 class Myghty_Compat(object):
+    def __init__(self, environ, start_response):
+        self.environ = environ
+        self.start_response = start_response
+        self.headers_out = pylons.helpers.response.headers
+        self.headers_in = pylons.request.headers
+    
     def write(self, content):
-        pylons.response.write(content)
+        pylons.helpers.response.write(content)
     
     def out(self, content):
-        pylons.response.write(content)
+        pylons.helpers.response.write(content)
     
+    def cache_self(self, *args, **kargs):
+        return False
+    
+    def subexec(self, *args, **kargs):
+        pylons.helpers.response.write(tmpl.render(*args, **kargs))
+    
+    def comp(self, *args, **kargs):
+        pylons.helpers.response.write(tmpl.render(*args, **kargs))
+    
+    def scomp(self, *args, **kargs):
+        return tmpl.render_fragment(*args, **kargs)
+
 
 __all__ = ['etag_cache']

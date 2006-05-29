@@ -1,8 +1,18 @@
 """EvalException, Error Documents, and Globals middleware"""
 from paste.deploy.converters import asbool
 import os.path
+import pylons.helpers
 media_path = os.path.join(os.path.dirname(__file__), 'media')
 
+class Globals(object):
+    """Legacy Globals object"""
+    pass
+
+def run_wsgi(app, m, req):
+    """Legacy WSGI call"""
+    pylons.helpers.response.content = app(m.environ, m.start_response)
+    pylons.helpers.response.wsgicall = True
+    
 def ErrorHandler(app, global_conf, **errorware):
     """ErrorHandler Toggle
     
