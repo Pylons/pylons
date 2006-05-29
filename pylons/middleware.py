@@ -63,7 +63,7 @@ def ErrorDocuments(app,  global_conf={}, mapper=None, **kw):
     app = RecursiveMiddleware(app)
     return custom_forward(app, global_conf=global_conf, mapper=mapper, **kw)
 
-error_document_template = """
+error_document_template = """\
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
