@@ -142,7 +142,7 @@ class MyghtyTemplatePlugin(object):
         vars = info
         buf = StringIO()
         if fragment:
-            self.interpreter.execute(template, request_args=vars, out_buffet=buf, disable_wrapping=True)
+            self.interpreter.execute(template, request_args=vars, out_buffer=buf, disable_wrapping=True)
         else:
             self.interpreter.execute(template, request_args=vars, out_buffer=buf)
         return buf.getvalue()
@@ -160,5 +160,15 @@ def render(*args, **kargs):
     if args: engine = args.pop()
     return pylons.buffet.render(engine, template, namespace=kargs)
 
+def render_fragment(*args, **kargs):
+    args = list(args)
+    engine = 'pylonsmyghty'
+    template = args.pop()
+    if args: engine = args.pop()
+    return pylons.buffet.render(engine, template, fragment=True, namespace=kargs)
+
 def render_response(*args, **kargs):
     return pylons.Response(render(*args, **kargs))
+
+def render_response_fragment(*args, **kargs):
+    return pylons.Response(render_fragment(*args, **kargs))    

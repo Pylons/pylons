@@ -1,5 +1,5 @@
 from pylons import Controller, Response, h, c, g, session, request, params
-from pylons.templating import render, render_response
+from pylons.templating import render, render_fragment, render_response, render_response_fragment
 import ${package}.models as model
 
 class BaseController(Controller):
