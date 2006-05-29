@@ -46,7 +46,7 @@ from ${package}.lib.base import *
 
 class HelloController(BaseController):
     def index(self):
-        m.write('Hello World')
+        return Response('Hello World')
         
 </pre>
 </p>
@@ -58,7 +58,7 @@ request information from a Myghty template.
 # ${package}/templates/serverinfo.myt
 
 &lt;p>Hi, here's the server environment: &lt;br />
-&lt;% str(r.environ) %>&lt;/p>
+&lt;% str(request.environ) %>&lt;/p>
 
 &lt;p>
 here's the URL you called: &lt;% h.url_for() %>
@@ -74,7 +74,7 @@ Then add this to your hello controller class:
 <pre>
     def serverinfo(self):
         c.name = 'The Black Knight'
-        m.subexec('/serverinfo.myt')
+        return render_response('/serverinfo.myt')
 </pre>
 
 You can now view the page at: <tt>http://localhost:5000/hello/serverinfo</tt>
