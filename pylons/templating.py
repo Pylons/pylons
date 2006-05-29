@@ -155,17 +155,19 @@ for entry_point in pkg_resources.iter_entry_points('python.templating.engines'):
 
 def render(*args, **kargs):
     args = list(args)
-    engine = 'pylonsmyghty'
     template = args.pop()
-    if args: engine = args.pop()
-    return pylons.buffet.render(engine, template, namespace=kargs)
+    if args: 
+        engine = args.pop()
+        return pylons.buffet.render(engine, template, namespace=kargs)
+    return pylons.buffet.render(template_name=template, namespace=kargs)
 
 def render_fragment(*args, **kargs):
     args = list(args)
-    engine = 'pylonsmyghty'
     template = args.pop()
-    if args: engine = args.pop()
-    return pylons.buffet.render(engine, template, fragment=True, namespace=kargs)
+    if args: 
+        engine = args.pop()
+        return pylons.buffet.render(engine, template, fragment=True, namespace=kargs)
+    return pylons.buffet.render(template_name=template, fragment=True, namespace=kargs)
 
 def render_response(*args, **kargs):
     return pylons.Response(render(*args, **kargs))
