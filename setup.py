@@ -49,7 +49,7 @@ from the following URL:
     zip_safe=False,
     include_package_data=True,
     install_requires=[
-        "Routes>=1.3.2", "Myghty>=1.0.2dev-r2062", "Paste>=0.9.3",
+        "Routes>=1.3.2", "Myghty==dev,>=1.0.2dev-r2062", "Paste>=0.9.3",
         "PasteDeploy>=0.5", "PasteScript>=0.5.1",
         "simplejson>=1.3", "WSGIUtils==0.7", "WebHelpers>=0.1.1",
         "nose>=0.8.7", "Beaker==dev,>=0.5.1dev-r27", "RuleDispatch",
