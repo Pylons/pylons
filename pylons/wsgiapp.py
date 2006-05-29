@@ -18,7 +18,7 @@ import myghty.escapes as escapes
 import pylons
 import pylons.templating
 from pylons.util import RequestLocal
-from pylons.helpers import Myghty_Compat
+from pylons.helpers import Myghty_Compat, redirect_to
 
 class PylonsBaseWSGIApp(object):
     """Basic Pylons WSGI Application
@@ -105,6 +105,7 @@ class PylonsBaseWSGIApp(object):
         config = request_config()
         config.mapper = self.mapper
         config.environ = environ
+        config.redirect = redirect_to
         match = config.mapper_dict
         environ['pylons.routes_dict'] = match
         controller = match.get('controller')
@@ -137,6 +138,8 @@ class PylonsBaseWSGIApp(object):
                 if v:
                     match[k] = escapes.url_unescape(v)
             controller = controller()
+            if environ.get('pylons.legacy'):
+                controller.c = pylons.c
             controller.start_response = start_response
             return controller(**match)
         
