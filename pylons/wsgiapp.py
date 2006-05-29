@@ -146,7 +146,7 @@ class PylonsBaseWSGIApp(object):
             return controller(**match)
         
         self.fixup_environ(environ, match)
-        return controller(environ, start_response)
+        return controller.wsgi_application(environ, start_response)
     
     def fixup_environ(self, environ, dispatch):
         """Fixes the environ based on the Routes match"""
