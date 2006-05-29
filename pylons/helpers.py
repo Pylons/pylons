@@ -4,6 +4,7 @@ Additional helper object available for use in Controllers is the etag_cache.
 
 """
 from paste.registry import StackedObjectProxy
+import paste.httpexceptions as httpexceptions
 
 import pylons
 import pylons.helpers
@@ -63,6 +64,23 @@ class Myghty_Compat(object):
     
     def scomp(self, *args, **kargs):
         return tmpl.render_fragment(*args, **kargs)
+    
+    def fetch_component(self, name):
+        return name
+    
+    def get_cache(self, component):
+        return pylons.cache.get_cache(component)
+    
+    def send_redirect(self, path, hard=True):
+        redirect_to(path)
+    
+    def abort(self, status_code=None):
+        if status_code == 404:
+            raise httpexceptions.HTTPNotFound()
+        else:
+            return
 
+def redirect_to(url):
+    raise httpexceptions.HTTPFound(url)
 
 __all__ = ['etag_cache']
