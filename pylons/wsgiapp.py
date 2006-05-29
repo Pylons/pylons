@@ -222,13 +222,14 @@ class LegacyApp(object):
 
 def make_app(config):
     """ Legacy WSGI app creator"""
-    app = LegacyApp(config)
+    papp = LegacyApp(config)
     from paste.deploy.config import ConfigMiddleware
-    app = ConfigMiddleware(app, {
+    app = ConfigMiddleware(papp, {
         'default':config.global_conf,
         'app':config.app_conf,
         'app_conf':config.app_conf,
         'global_conf':config.global_conf
     })
     app = RegistryManager(app)
+    app.globals = papp.globals
     return app

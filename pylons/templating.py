@@ -47,6 +47,19 @@ class Buffet(object):
         self.engines[engine_name] = \
             dict(engine=Engine(options=config), root=template_root)
     
+    def _update_names(self, ns):
+        d = {}
+        d.update(ns)
+        d.update(dict(
+            c=pylons.c,
+            h=pylons.h,
+            m=pylons.m,
+            request=pylons.request,
+            g=pylons.g,
+            session=pylons.session,
+        ))
+        return d
+    
     def render(self, engine_name=None, template_name=None, 
         include_pylons_variables=True, namespace=None, **options):
         """Render a template using a template engine plug-in
@@ -77,42 +90,29 @@ class Buffet(object):
         used.
         
         """
-        if engine_name and engine_name != 'pylonsmyghty':
-            for char in ['/','\\']:
-                if char in template_name:
-                    raise BuffetError('Templates should be specified as module '
-                        'paths relative to the template root and therefore cannot '
-                        'contain %s characters' % repr(char))
         if not engine_name and self.default_engine:
             engine_name = self.default_engine
-        
-        def update_namespace(namespace):
-            d = {}
-            for k,v in namespace.items():
-                d[k] = v
-            d.update(options)
-            return d
-        
-        if namespace==None:
-            if include_pylons_variables is False:
-                raise BuffetError('You must specify ``namespace`` if ``include_pylons_variables`` is '
-                                  'False')
-            else:
-                namespace = update_namespace({})
-        elif isinstance(namespace, dict):
-            if include_pylons_variables is True:
-                keys = namespace.keys()
-                for k in ['c','h','g','request','session', 'params']:
-                    if k in keys:
-                        raise Exception('The variable %s specified in namespace conflicts '
-                            'with the Pylons variable of the same name. Set ``include_pylons_variables`` '
-                            'to ``False`` if you do not want to use Pylons variables in your template'%k)
-                namespace = update_namespace(namespace)
-        else:
-            namespace = update_namespace(namespace)
         engine_config = self.engines.get(engine_name)
-        full_path = os.path.join(engine_config['root'], template_name)
+        full_path = template_name
+        
         if engine_name != 'pylonsmyghty':
+            if namespace==None:
+                if include_pylons_variables is False:
+                    raise BuffetError('You must specify ``namespace`` if ``include_pylons_variables`` is '
+                                      'False')
+                else:
+                    namespace = self._update_names({})
+            elif isinstance(namespace, dict):
+                if include_pylons_variables is True:
+                    for k in ['c','h','g','request','session', 'params']:
+                        if k in namespace:
+                            raise Exception('The variable %s specified in namespace conflicts '
+                                'with the Pylons variable of the same name. Set ``include_pylons_variables`` '
+                                'to ``False`` if you do not want to use Pylons variables in your template'%k)
+                    namespace = self._update_names(namespace)
+            else:
+                namespace = self._update_names(namespace)
+            full_path = os.path.join(engine_config['root'], template_name)
             full_path = full_path.replace(os.path.sep, '.').lstrip('.')
         return engine_config['engine'].render(namespace, template=full_path, **options)
         
