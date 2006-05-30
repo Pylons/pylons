@@ -5,6 +5,7 @@ Additional helper object available for use in Controllers is the etag_cache.
 """
 from paste.registry import StackedObjectProxy
 import paste.httpexceptions as httpexceptions
+from formencode import htmlfill
 
 import pylons
 import pylons.helpers
@@ -82,5 +83,14 @@ class Myghty_Compat(object):
 
 def redirect_to(url):
     raise httpexceptions.HTTPFound(url)
+
+def formfill(m, defaults=None, errors=None):
+    if not defaults:
+        defaults = pylons.c.defaults
+    if not errors:
+        errors = pylons.c.errors
+    form = m.content()
+    m.write(htmlfill.render(form, defaults, errors))
+
 
 __all__ = ['etag_cache']
