@@ -47,6 +47,7 @@ class Myghty_Compat(object):
         self.start_response = start_response
         self.headers_out = pylons.helpers.response.headers
         self.headers_in = pylons.request.headers
+        self.request_args = pylons.request.params
     
     def write(self, content):
         pylons.helpers.response.write(content)
