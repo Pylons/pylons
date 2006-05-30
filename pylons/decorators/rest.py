@@ -4,7 +4,16 @@ import pylons
 from pylons.decorator import decorator
 
 def restrict(*methods):
-    """Restricts access to the function depending on HTTP method"""
+    """Restricts access to the function depending on HTTP method
+    
+    Example::
+        
+        class SomeController(BaseController):
+            
+            @pylons.rest.restrict('GET')
+            def comment(self, id):
+    
+    """
     def entangle(func):
         def check_methods(func, *args, **kw):
             if pylons.request.method not in methods:
@@ -29,17 +38,11 @@ def dispatch_on(**method_map):
         class SomeController(BaseController):
             
             @pylons.rest.dispatch_on(POST='create_comment')
-            def comment(self, id):
+            def comment(self):
                 # Do something with the comment
             
             def create_comment(self, id):
                 # Do something if its a post to comment
-    
-    **Please Note:** Due to how the argument inspection process works for
-    methods, any desired function args must be present in the decorated
-    function for them to be available in the dispatched function. The
-    dispatched method can however have less arguments than the decorated
-    one.
     
     """
     def entangle(func):
