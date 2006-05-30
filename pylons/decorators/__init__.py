@@ -25,7 +25,7 @@ def jsonify(func):
 def validate(form=None, validators=None):
     """Validate input either for a FormEncode schema, or individual validators
     
-    Given a form schema or list of validators, validate will attempt to validate
+    Given a form schema or dict of validators, validate will attempt to validate
     the schema or validator list. Errors will be saved to ``c.errors``, and the
     defaults used will be saved as ``c.defaults``. Testing to see if the validation
     was successful should be done on ``self.valid`` which will return True or False.
@@ -53,14 +53,23 @@ def validate(form=None, validators=None):
         def validate(func, self, *args, **kwargs):
             self.valid = False
             pylons.c.defaults, pylons.c.errors = {}, {}
+            if not pylons.request.method == 'POST':
+                return func(self, *args, **kwargs)
             for key in pylons.request.POST.keys():
                 pylons.c.defaults[key] = pylons.request.POST[key]
-            if not pylons.c.defaults:
-                return func(self, *args, **kwargs)
-            try:
-                self.form_result = form.to_python(pylons.c.defaults)
-            except api.Invalid, e:
-                pylons.c.errors = e.unpack_errors()
+            if form:
+                try:
+                    self.form_result = form.to_python(pylons.c.defaults)
+                except api.Invalid, e:
+                    pylons.c.errors = e.unpack_errors()
+            if validators:
+                if isinstance(validators, dict):
+                    for field, validator in validators.iteritems():
+                        try:
+                            self.form_result[field] = \
+                                validator.to_python(pylons.c.defaults[field] or None)
+                        except api.Invalid, error:
+                            pylons.c.errors[field] = error
             if not pylons.c.errors:
                 self.valid = True
             return func(self, *args, **kwargs)
