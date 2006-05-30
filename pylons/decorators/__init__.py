@@ -49,18 +49,16 @@ def validate(form=None, validators=None):
     def entangle(func):
         def validate(func, self, *args, **kwargs):
             self.valid = False
-            c = pylons.c
-            params = {}
+            pylons.c.defaults, pylons.c.errors = {}, {}
             for key in pylons.request.POST.keys():
-                params[key] = pylons.request.POST[key]
-            c.errors, c.defaults = {}, params
-            if not c.defaults:
+                pylons.c.defaults[key] = pylons.request.POST[key]
+            if not pylons.c.defaults:
                 return func(self, *args, **kwargs)
             try:
-                self.form_result = form.to_python(c.defaults)
+                self.form_result = form.to_python(pylons.c.defaults)
             except api.Invalid, e:
-                c.errors = e.unpack_errors()
-            if not c.errors:
+                pylons.c.errors = e.unpack_errors()
+            if not pylons.c.errors:
                 self.valid = True
             return func(self, *args, **kwargs)
         return validate
