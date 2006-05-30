@@ -45,6 +45,9 @@ def validate(form=None, validators=None):
                     # Render the new form, using pylons.helpers.formfill helps
                     return render_response('/myform.myt')
     
+    **Note**: For the curious, variables only useful in the controller are attached
+    to it, while variables useful during rendering are attached to ``c``.
+    
     """
     def entangle(func):
         def validate(func, self, *args, **kwargs):
@@ -64,4 +67,4 @@ def validate(form=None, validators=None):
         return validate
     return decorator(entangle)
     
-__all__ = ['jsonify']
+__all__ = ['jsonify', 'validate']
