@@ -167,7 +167,7 @@ use the context object 'c' to store conext information.")
         """Set the language used"""
         project_name = CONFIG['app']['package']
         self.__dict__['_local'].lang = lang
-        if lang == None:
+        if lang is None:
             self.__dict__['_local'].translator = _Translator()
         else:
             from pkg_resources import resource_string, resource_stream, \

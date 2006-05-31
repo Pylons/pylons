@@ -58,7 +58,7 @@ def ErrorDocuments(app,  global_conf={}, mapper=None, **kw):
     All the args are passed directly into the ErrorDocumentsMiddleware. If no mapper is given,
     a default error_mapper is passed in.
     """
-    if mapper == None:
+    if mapper is None:
         mapper = error_mapper
     app = RecursiveMiddleware(app)
     return custom_forward(app, global_conf=global_conf, mapper=mapper, **kw)
