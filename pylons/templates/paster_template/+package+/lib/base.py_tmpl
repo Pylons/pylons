@@ -1,4 +1,4 @@
-from pylons import Controller, Response, h, c, g, session, request, params
+from pylons import Controller, Response, h, c, g, session, request, params, cache
 from pylons.decorators import jsonify, validate, rest
 from pylons.templating import render, render_fragment, render_response, render_response_fragment
 import ${package}.models as model
