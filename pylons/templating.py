@@ -94,7 +94,7 @@ class Buffet(object):
             engine_name = self.default_engine
         engine_config = self.engines.get(engine_name)
         full_path = template_name
-        
+                
         if engine_name != 'pylonsmyghty':
             if namespace==None:
                 if include_pylons_variables is False:
@@ -114,6 +114,24 @@ class Buffet(object):
                 namespace = self._update_names(namespace)
             full_path = os.path.join(engine_config['root'], template_name)
             full_path = full_path.replace(os.path.sep, '.').lstrip('.')
+        
+        cache_key = options.pop('cache_key', 'DEFF')
+        cache_expire = options.pop('cache_expire', 'DEFF')
+        cache_type = options.pop('cache_type', 'DEFF')
+    
+        if cache_key != 'DEFF' or cache_expire != 'DEFF' or cache_type != 'DEFF':
+            if cache_key == 'DEFF':
+                cache_key = None
+            if cache_expire == 'DEFF':
+                cache_expire = 0
+            if cache_type == 'DEFF':
+                cache_type = 'dbm'
+            def content():
+                return engine_config['engine'].render(namespace, template=full_path, **options)
+            mycache = pylons.cache.get_cache(full_path)
+            content = mycache.get_value(cache_key, createfunc=content, type=cache_type,
+                expiretime=cache_expire)
+            return content
         return engine_config['engine'].render(namespace, template=full_path, **options)
         
 class TemplateEngineMissing(Exception):
@@ -125,7 +143,8 @@ class MyghtyTemplatePlugin(object):
     def __init__(self, extra_vars_func=None, options={}):
         myt_opts = {}
         for k, v in options.iteritems():
-            myt_opts[k[7:]] = v
+            if options.startswith('myghty.'):
+                myt_opts[k[7:]] = v
         myt_opts['global_args'] = dict(
             c=pylons.c,
             h=pylons.h,
@@ -157,18 +176,25 @@ for entry_point in pkg_resources.iter_entry_points('python.templating.engines'):
 def render(*args, **kargs):
     args = list(args)
     template = args.pop()
+    cache_args = {}
+    cache_args['cache_key'] = kargs.pop('cache_key', 'DEFF')
+    cache_args['cache_expire'] = kargs.pop('cache_expire', 'DEFF')
+    cache_args['cache_type'] = kargs.pop('cache_type', 'DEFF')
     if args: 
         engine = args.pop()
-        return pylons.buffet.render(engine, template, namespace=kargs)
-    return pylons.buffet.render(template_name=template, namespace=kargs)
+        return pylons.buffet.render(engine, template, namespace=kargs, **cache_args)
+    return pylons.buffet.render(template_name=template, namespace=kargs, **cache_args)
 
 def render_fragment(*args, **kargs):
     args = list(args)
     template = args.pop()
+    cache_args['cache_key'] = kargs.pop('cache_key', 'DEFF')
+    cache_args['cache_expire'] = kargs.pop('cache_expire', 'DEFF')
+    cache_args['cache_type'] = kargs.pop('cache_type', 'DEFF')
     if args: 
         engine = args.pop()
-        return pylons.buffet.render(engine, template, fragment=True, namespace=kargs)
-    return pylons.buffet.render(template_name=template, fragment=True, namespace=kargs)
+        return pylons.buffet.render(engine, template, fragment=True, namespace=kargs, **cache_args)
+    return pylons.buffet.render(template_name=template, fragment=True, namespace=kargs, **cache_args)
 
 def render_response(*args, **kargs):
     return pylons.Response(render(*args, **kargs))
