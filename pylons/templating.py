@@ -115,10 +115,13 @@ class Buffet(object):
             full_path = os.path.join(engine_config['root'], template_name)
             full_path = full_path.replace(os.path.sep, '.').lstrip('.')
         
+        # Default these to types the user won't use, since None is something
+        # that might be set already by the user.
         cache_key = options.pop('cache_key', 'DEFF')
         cache_expire = options.pop('cache_expire', 'DEFF')
         cache_type = options.pop('cache_type', 'DEFF')
-    
+        
+        # If one of them is not 'DEFF' then the user did set something
         if cache_key != 'DEFF' or cache_expire != 'DEFF' or cache_type != 'DEFF':
             if cache_key == 'DEFF':
                 cache_key = None
@@ -128,10 +131,14 @@ class Buffet(object):
                 cache_type = 'dbm'
             def content():
                 return engine_config['engine'].render(namespace, template=full_path, **options)
-            mycache = pylons.cache.get_cache(full_path)
+            tfile = full_path
+            if options.get('fragment', False):
+                tfile += '_frag'
+            mycache = pylons.cache.get_cache(tfile)
             content = mycache.get_value(cache_key, createfunc=content, type=cache_type,
                 expiretime=cache_expire)
             return content
+        
         return engine_config['engine'].render(namespace, template=full_path, **options)
         
 class TemplateEngineMissing(Exception):
