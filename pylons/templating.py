@@ -37,8 +37,11 @@ class Buffet(object):
     def prepare(self, engine_name, template_root=None, alias=None, **config):
         """Prepare a template engine for use
         
-        This method must be run every request before the `render <#render>`_
-        method is called so that the ``template_root`` can be set.
+        This method must be run before the `render <#render>`_ method is called
+        so that the ``template_root`` and options can be set. Template engines
+        can also be aliased if you wish to use multiplate configurations of the
+        same template engines, or prefer a shorter name when rendering a template
+        with the engine of your choice.
         
         """
         Engine = available_engines.get(engine_name, None)
@@ -60,6 +63,8 @@ class Buffet(object):
             request=pylons.request,
             g=pylons.g,
             session=pylons.session,
+            render=render,
+            render_fragment=render_fragment
         ))
         return d
     
@@ -89,6 +94,18 @@ class Buffet(object):
             template. If ``include_pylons_variables`` is ``True`` and any
             keys in ``namespace`` conflict with names of Pylons variables, 
             an error is raised.
+        
+        Caching options (uses Beaker caching middleware)
+        
+        ``cache_key``
+            Key to cache this copy of the template under.
+        ``cache_type``
+            Valid options are ``dbm``, ``file``, ``memory``, or ``ext:memcached``.
+        ``cache_expire``
+            Time in seconds to cache this template with this ``cache_key`` for.
+        
+        The minimum key required to trigger caching is ``cache_expire=0`` which
+        will cache the template forever with no key.
         
         All other keyword options are passed directly to the template engine
         used.
@@ -124,7 +141,9 @@ class Buffet(object):
             if not cache_type:
                 cache_type = 'dbm'
             if not cache_key:
-                cache_key = 'default'        
+                cache_key = 'default'     
+            if not cache_expire:
+                cache_expire = 0   
             def content():
                 return engine_config['engine'].render(namespace, template=full_path, **options)
             tfile = full_path
@@ -156,7 +175,9 @@ class MyghtyTemplatePlugin(object):
             request=pylons.request,
             g=pylons.g,
             session=pylons.session,
-            s=pylons.session
+            s=pylons.session,
+            render=render,
+            render_fragment=render_fragment
         )
         self.interpreter = Interpreter(**myt_opts)
     
