@@ -26,7 +26,7 @@ Upgrading
 
 For absolutely the latest version (or to upgrade to the latest) run::
 
-    easy_install -U -D Pylons
+    easy_install -U Pylons
 
 
 Living on the Cutting Edge
