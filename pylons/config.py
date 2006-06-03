@@ -123,10 +123,19 @@ class Config(object):
         myghty_defaults.update(self.myghty)
         self.myghty = myghty_defaults
         self.template_options = {}
+        if app_conf.get('cache_dir', False):
+            myghty_defaults['data_dir'] = app_conf['cache_dir']
+        else:
+            myghty_defaults['data_dir'] = app_conf['myghty_data_dir']
+        
+        # Copy Myghty defaults and options into template options
         for k, v in self.myghty.iteritems():
             self.template_options['myghty.'+k] = v
+            
+            # Legacy copy of session and cache settings into app_conf
             if k.startswith('session_') or k.startswith('cache_'):
                 self.app_conf[k] = v
+        
         if not app_conf.has_key('session_data_dir'):
             app_conf['session_data_dir'] = os.path.join(app_conf['cache_dir'], 'sessions')
         if not app_conf.has_key('cache_data_dir'):
