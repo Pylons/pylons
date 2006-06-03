@@ -44,7 +44,9 @@ from urllib import urlencode
 from paste.deploy.converters import asbool
 from pylons.util import get_prefix
 
-def error_mapper(code, message, environ, global_conf={}, kw={}):
+def error_mapper(code, message, environ, global_conf={}, kw=None):
+    if kw is None:
+        kw = {}
     codes = [401, 403, 404]
     if not asbool(global_conf.get('debug', 'true')):
         codes.append(500)
@@ -52,12 +54,14 @@ def error_mapper(code, message, environ, global_conf={}, kw={}):
         url = '%s/error/document/?%s'%(get_prefix(environ), urlencode({'message':message, 'code':code}))
         return url
 
-def ErrorDocuments(app,  global_conf={}, mapper=None, **kw):
+def ErrorDocuments(app,  global_conf=None, mapper=None, **kw):
     """Wraps the app in error docs using Paste RecursiveMiddleware and ErrorDocumentsMiddleware
     
     All the args are passed directly into the ErrorDocumentsMiddleware. If no mapper is given,
     a default error_mapper is passed in.
     """
+    if global_conf is None:
+        global_conf = {}
     if mapper is None:
         mapper = error_mapper
     app = RecursiveMiddleware(app)
