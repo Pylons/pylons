@@ -43,7 +43,7 @@ and gettext_noop. But those can be a lot of text to include all over your
 code. C and C++ have a trick: they use the C preprocessor. Most
 internationalized C source includes a #define for gettext() to _() so that
 what has to be written in the source is much less. Thus these are both
-translatable strings:
+translatable strings::
 
     gettext("Translatable String")
     _("Translatable String")
@@ -63,7 +63,7 @@ additional switches.
 
 Usage: pygettext [options] inputfile ...
 
-Options:
+Options::
 
     -a
     --extract-all
