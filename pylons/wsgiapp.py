@@ -45,9 +45,13 @@ class PylonsBaseWSGIApp(object):
         self.settings = dict(charset=default_charset, content_type='text/html')
         self.c = RequestLocal()
         config = globals.pylons_config
-        self.buffet = pylons.templating.Buffet(config.templating, 
-            template_root=config.template_root, **config.template_options)
-        for e in config.extra_template_engines:
+        
+        # Initialize Buffet and all our template engines, default engine is the
+        # first in the template_engines list
+        def_eng = config.template_engines.pop(0)
+        self.buffet = pylons.templating.Buffet(def_eng['engine'], 
+            template_root=def_eng['template_root'], **def_eng['template_options'])
+        for e in config.template_engines:
             self.buffet.prepare(e['engine'], template_root=e['template_root'], 
                 alias=e['alias'], **e['template_options'])
     

@@ -47,10 +47,7 @@ class Config(object):
         self.paths = paths
         self.global_conf = {}
         self.app_conf = {}
-        self.templating = 'pylonsmyghty'
-        self.template_options = None
-        self.template_root = None
-        self.extra_template_engines = []
+        self.template_engines = []
         self.environ_config = environ_config
     
     def add_template_engine(self, engine, root, options, alias=None):
@@ -82,7 +79,7 @@ class Config(object):
         
         """
         config = dict(engine=engine, template_root=root, template_options=options, alias=alias)
-        self.extra_template_engines.append(config)
+        self.template_engines.append(config)
     
     def init_app(self, global_conf, app_conf, package):
         """Initialize configuration for the application
@@ -156,7 +153,7 @@ class Config(object):
         # Merge in the user-supplied Myghty values
         myghty_defaults.update(self.myghty)
         self.myghty = myghty_defaults
-        self.template_options = {}
+        myghty_template_options = {}
         if app_conf.get('cache_dir', False):
             myghty_defaults['data_dir'] = app_conf['cache_dir']
         else:
@@ -164,7 +161,7 @@ class Config(object):
         
         # Copy Myghty defaults and options into template options
         for k, v in self.myghty.iteritems():
-            self.template_options['myghty.'+k] = v
+            myghty_template_options['myghty.'+k] = v
             
             # Legacy copy of session and cache settings into app_conf
             if k.startswith('session_') or k.startswith('cache_'):
@@ -174,6 +171,9 @@ class Config(object):
             app_conf['session_data_dir'] = os.path.join(app_conf['cache_dir'], 'sessions')
         if not app_conf.has_key('cache_data_dir'):
             app_conf['cache_data_dir'] = app_conf['cache_dir']
-        #raise str(app_conf)
+        
+        # Prepare our default template engine
+        self.add_template_engine('pylonsmyghty', None, myghty_template_options)
+        
         # Save our errorware values
         self.errorware = errorware
