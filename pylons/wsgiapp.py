@@ -47,6 +47,9 @@ class PylonsBaseWSGIApp(object):
         config = globals.pylons_config
         self.buffet = pylons.templating.Buffet(config.templating, 
             template_root=config.template_root, **config.template_options)
+        for e in config.extra_template_engines:
+            self.buffet.prepare(e['engine'], template_root=e['template_root'], 
+                alias=e['alias'], **e['template_options'])
     
     def __call__(self, environ, start_response):
         self.setup_app_env(environ, start_response)
