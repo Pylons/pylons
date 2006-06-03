@@ -5,7 +5,7 @@ smtp_server = localhost
 error_email_from = paste@exceptions.com
 
 [server:main]
-use = egg:PasteScript#wsgiutils
+use = egg:Paste#http
 host = 0.0.0.0
 port = 5000
 
