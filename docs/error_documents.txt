@@ -67,12 +67,16 @@ By default the ``pylons.middleware.error_mapper`` is used. It looks like this::
     from urllib import urlencode
     from paste.deploy.converters import asbool
     
-    def error_mapper(code, message, global_conf={}, kw={}):
+    def error_mapper(code, message, environ, global_conf=None, kw=None):
+        if global_conf is None:
+            global_conf = {}
+        if kw is None:
+            kw = {}
         codes = [401, 403, 404]
         if not asbool(global_conf.get('debug', 'true')):
             codes.append(500)
         if code in codes:
-            url = '/error/document/?%s'%urlencode({'message':message, 'code':code})
+            url = '%s/error/document/?%s'%(get_prefix(environ), urlencode({'message':message, 'code':code}))
             return url
             
 Note how in debug mode the mapper does not intercept server error 500 codes since if it did, you wouldn't be able to see the error report produced by the PylonsEvalException middleware.
