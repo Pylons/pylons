@@ -2,7 +2,13 @@ import itertools
 from copy import copy
 from inspect import getargspec, formatargspec
 
-from protocols.advice import add_assignment_advisor
+try:
+    from protocols.advice import add_assignment_advisor
+except:
+    msg = "Unable to import from PyProtocols, to remedy, download the latest"
+    msg += " PyProtocols > 1.0a with the following command:\n"
+    msg += "sudo easy_install -U -f http://peak.telecommunity.com/snapshots/ PyProtocols"
+    raise Exception, msg
 
 
 # Inspired by Michele Simionato's decorator library
