@@ -154,7 +154,7 @@ class MyghtyTemplatePlugin(object):
             options = {}
         myt_opts = {}
         for k, v in options.iteritems():
-            if options.startswith('myghty.'):
+            if k.startswith('myghty.'):
                 myt_opts[k[7:]] = v
         myt_opts['global_args'] = dict(
             c=pylons.c,
