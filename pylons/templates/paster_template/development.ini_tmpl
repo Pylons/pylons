@@ -11,6 +11,7 @@ port = 5000
 
 [app:main]
 use = egg:${package}
+myghty_data_dir = %(here)s/data/templates
 cache_data_dir = %(here)s/data/cache
 session_data_dir = %(here)s/data/sessions
 session_key = ${package}
