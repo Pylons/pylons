@@ -2,6 +2,12 @@ Pylons Changelog
 =================
 
 0.9 (**dev**)
+* Added alias option to Buffet to support aliasing more template engines
+  to other engine names
+* Buffet enhancements to support caching of any template with any template
+  engine
+* All render commands processed through Buffet
+* Backwards compatibility 'm' object for use with legacy projects
 * Added use of Beaker middleware for session and caching functionality
 * Fixed error traceback and updated template to use proper error images and
   stylesheets.
