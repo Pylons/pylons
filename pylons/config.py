@@ -38,6 +38,12 @@ class Config(object):
         objects for registering with Pylons. If these are present then
         PylonsApp will use them from environ rather than using default
         middleware from Beaker. Valid keys are: ``session, cache``
+    ``template_engines``
+        List of template engines to configure. The first one in the list will
+        be configured as the default template engine. Each item in the list is
+        a dict indicating how to configure the template engine with keys:
+         ``engine``, ``template_root``, ``template_options``, and ``alias``
+    
     """
     def __init__(self, myghty, map, paths, environ_config=None):
         if environ_config is None:
