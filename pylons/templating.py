@@ -115,6 +115,10 @@ class Buffet(object):
         if not engine_name and self.default_engine:
             engine_name = self.default_engine
         engine_config = self.engines.get(engine_name)
+        
+        if not engine_config:
+            raise Exception, "No engine with that name configured: %s" % engine_name
+        
         full_path = template_name
                 
         if engine_name != 'pylonsmyghty':
