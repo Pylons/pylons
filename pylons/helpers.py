@@ -1,6 +1,8 @@
-""""``etag_cache``
+"""Myghty compatibility object, ``etag_cache``, ``redirect_to`` and Myghty Module Components
 
-Additional helper object available for use in Controllers is the etag_cache.
+Additional helper object available for use in Controllers is the etag_cache, along with
+the Myghty compatibility objects for Pylons 0.8 projects and new Myghty Module Components
+for use in Myghty templates.
 
 """
 from paste.registry import StackedObjectProxy
@@ -42,6 +44,7 @@ def etag_cache(key=None):
         return False
 
 class Myghty_Compat(object):
+    """Myghty Compatibility Object for Pylons 0.8 Projects"""
     def __init__(self, environ, start_response):
         self.environ = environ
         self.start_response = start_response
@@ -83,9 +86,29 @@ class Myghty_Compat(object):
             return
 
 def redirect_to(url):
+    """Redirect function to raise an httpexception causing a 302 Redirect"""
     raise httpexceptions.HTTPFound(url)
 
 def formfill(m, defaults=None, errors=None):
+    """Formfill Myghty Module Component
+    
+    The Formfill module component is for use with Myghty as a wrapper
+    around a ``<form>`` section. The formfill component will then parse
+    the Myghty content block and fill in errors and defaults as needed.
+    
+    Example::
+        
+        <&| @pylons.helpers:formfill &>
+        <form action="<% h.url_for() %>" method="post">
+        Username: <input type="text" name="username" size="26" />
+        <form:error name="username">
+        Age: <input type="text" name="age" size="3" />
+        <form:error name="age">
+        <input type="submit" value="Send it" />
+        </form>
+        </&>
+    
+    """
     if not defaults:
         defaults = pylons.c.defaults
     if not errors:
@@ -94,4 +117,4 @@ def formfill(m, defaults=None, errors=None):
     m.write(htmlfill.render(form, defaults, errors))
 
 
-__all__ = ['etag_cache']
+__all__ = ['etag_cache', 'redirect_to', 'formfill']
