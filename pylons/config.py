@@ -54,6 +54,33 @@ class Config(object):
         self.environ_config = environ_config
     
     def add_template_engine(self, engine, root, options, alias=None):
+        """Add additional template engines for configuration on Pylons WSGI init
+        
+        ``engine``
+            The name of the template engine
+        
+        ``root``
+            Template root for the engine
+        
+        ``options``
+            Dict of additional options used during engine initialization
+        
+        ``alias``
+            Name engine should respond to when actually used. This allows for
+            multiple configurations of the same engine and lets you alias the
+            additional ones to other names.
+        
+        Example of Kid addition::
+            
+            # In yourproj/middleware.py
+            # ...
+            config.init_app(global_conf, app_conf, package='testes')
+
+            # Load additional template engines
+            kidopts = {'kid.assume_encoding':'utf-8', 'kid.encoding':'utf-8'}
+            config.add_template_engine('kid', 'yourproj.kidtemplates', kidopts)
+        
+        """
         config = dict(engine=engine, template_root=root, template_options=options, alias=alias)
         self.extra_template_engines.append(config)
     
