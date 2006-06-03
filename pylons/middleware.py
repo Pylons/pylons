@@ -44,7 +44,9 @@ from urllib import urlencode
 from paste.deploy.converters import asbool
 from pylons.util import get_prefix
 
-def error_mapper(code, message, environ, global_conf={}, kw=None):
+def error_mapper(code, message, environ, global_conf=None, kw=None):
+    if global_conf is None:
+        global_conf = {}
     if kw is None:
         kw = {}
     codes = [401, 403, 404]
