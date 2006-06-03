@@ -50,7 +50,12 @@ class Config(object):
         self.templating = 'pylonsmyghty'
         self.template_options = None
         self.template_root = None
+        self.extra_template_engines = []
         self.environ_config = environ_config
+    
+    def add_template_engine(self, engine, root, options, alias=None):
+        config = dict(engine=engine, template_root=root, template_options=options, alias=alias)
+        self.extra_template_engines.append(config)
     
     def init_app(self, global_conf, app_conf, package):
         """Initialize configuration for the application
