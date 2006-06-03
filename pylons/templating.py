@@ -22,9 +22,11 @@ class Buffet(object):
     
     """
     def __init__(self, default_engine=None, template_root=None, 
-        default_options={}, **config):
+        default_options=None, **config):
         """Initialize the Buffet renderer, and optionally set a default
         engine/options"""
+        if default_options is None:
+            default_options = {}
         self.default_engine = default_engine
         self.template_root = template_root
         self.default_options = default_options
@@ -147,7 +149,9 @@ class TemplateEngineMissing(Exception):
 class MyghtyTemplatePlugin(object):
     extension = "myt"
 
-    def __init__(self, extra_vars_func=None, options={}):
+    def __init__(self, extra_vars_func=None, options=None):
+        if options is None:
+            options = {}
         myt_opts = {}
         for k, v in options.iteritems():
             if options.startswith('myghty.'):
