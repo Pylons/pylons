@@ -1,4 +1,4 @@
-"""Buffet templating plugin and render"""
+"""Buffet templating plugin and render functions"""
 import pkg_resources
 import os
 try:
@@ -62,8 +62,9 @@ class Buffet(object):
         ))
         return d
     
-    def render(self, engine_name=None, template_name=None, 
-        include_pylons_variables=True, namespace=None, **options):
+    def render(self, engine_name=None, template_name=None,
+        include_pylons_variables=True, namespace=None, 
+        cache_key=None, cache_expire=None, cache_type=None, **options):
         """Render a template using a template engine plug-in
         
         To use templates it is expected that you will attach data to be used in
@@ -116,20 +117,10 @@ class Buffet(object):
                 namespace = self._update_names(namespace)
             full_path = os.path.join(engine_config['root'], template_name)
             full_path = full_path.replace(os.path.sep, '.').lstrip('.')
-        
-        # Default these to types the user won't use, since None is something
-        # that might be set already by the user.
-        cache_key = options.pop('cache_key', 'DEFF')
-        cache_expire = options.pop('cache_expire', 'DEFF')
-        cache_type = options.pop('cache_type', 'DEFF')
-        
-        # If one of them is not 'DEFF' then the user did set something
-        if cache_key != 'DEFF' or cache_expire != 'DEFF' or cache_type != 'DEFF':
-            if cache_key == 'DEFF':
-                cache_key = None
-            if cache_expire == 'DEFF':
-                cache_expire = 0
-            if cache_type == 'DEFF':
+                
+        # If one of them is not None then the user did set something
+        if cache_key is not None or cache_expire is not None or cache_type is not None:
+            if not cache_type:
                 cache_type = 'dbm'
             def content():
                 return engine_config['engine'].render(namespace, template=full_path, **options)
@@ -187,10 +178,9 @@ for entry_point in pkg_resources.iter_entry_points('python.templating.engines'):
 def render(*args, **kargs):
     args = list(args)
     template = args.pop()
-    cache_args = {}
-    cache_args['cache_key'] = kargs.pop('cache_key', 'DEFF')
-    cache_args['cache_expire'] = kargs.pop('cache_expire', 'DEFF')
-    cache_args['cache_type'] = kargs.pop('cache_type', 'DEFF')
+    cache_args = dict(cache_expire=kargs.pop('cache_expire', None), 
+                      cache_type=kargs.pop('cache_type', None),
+                      cache_key=kargs.pop('cache_key', None))
     if args: 
         engine = args.pop()
         return pylons.buffet.render(engine, template, namespace=kargs, **cache_args)
@@ -199,9 +189,9 @@ def render(*args, **kargs):
 def render_fragment(*args, **kargs):
     args = list(args)
     template = args.pop()
-    cache_args['cache_key'] = kargs.pop('cache_key', 'DEFF')
-    cache_args['cache_expire'] = kargs.pop('cache_expire', 'DEFF')
-    cache_args['cache_type'] = kargs.pop('cache_type', 'DEFF')
+    cache_args = dict(cache_expire=kargs.pop('cache_expire', None), 
+                      cache_type=kargs.pop('cache_type', None),
+                      cache_key=kargs.pop('cache_key', None))
     if args: 
         engine = args.pop()
         return pylons.buffet.render(engine, template, fragment=True, namespace=kargs, **cache_args)
