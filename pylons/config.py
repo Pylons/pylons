@@ -39,7 +39,9 @@ class Config(object):
         PylonsApp will use them from environ rather than using default
         middleware from Beaker. Valid keys are: ``session, cache``
     """
-    def __init__(self, myghty, map, paths, environ_config={}):
+    def __init__(self, myghty, map, paths, environ_config=None):
+        if environ_config is None:
+            environ_config = {}
         self.myghty = myghty
         self.map = map
         self.paths = paths
