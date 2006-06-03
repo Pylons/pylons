@@ -161,6 +161,12 @@ class TemplateEngineMissing(Exception):
     pass
 
 class MyghtyTemplatePlugin(object):
+    """Myghty Template Plugin
+    
+    This Myghty Template Plugin varies from the official BuffetMyghty in that it will
+    properly populate all the default Myghty variables needed and render fragments.
+    
+    """
     extension = "myt"
 
     def __init__(self, extra_vars_func=None, options=None):
@@ -227,3 +233,6 @@ def render_response(*args, **kargs):
 
 def render_response_fragment(*args, **kargs):
     return pylons.Response(render_fragment(*args, **kargs))    
+
+__pudge_all__ = ['render', 'render_fragment', 'render_response', 
+    'render_response_fragment', 'Buffet', 'MyghtyTemplatePlugin']

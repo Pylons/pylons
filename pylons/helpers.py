@@ -96,6 +96,9 @@ def formfill(m, defaults=None, errors=None):
     around a ``<form>`` section. The formfill component will then parse
     the Myghty content block and fill in errors and defaults as needed.
     
+    Formfill uses `FormEncode <http://formencode.org/>`_ to parse the
+    form and put in errors and defaults.
+    
     Example::
         
         <&| @pylons.helpers:formfill &>

@@ -1,4 +1,4 @@
-"""Custom Decorators, currently ``jsonify``"""
+"""Custom Decorators, currently ``jsonify``, ``validate``, and 2 REST decorators"""
 import simplejson as json
 import formencode.api as api
 import pylons
@@ -76,4 +76,4 @@ def validate(form=None, validators=None):
         return validate
     return decorator(entangle)
     
-__all__ = ['jsonify', 'validate']
+__all__ = ['jsonify', 'validate', 'rest']
