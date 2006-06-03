@@ -21,6 +21,11 @@ def make_app(global_conf, **app_conf):
     # Load our Pylons configuration defaults
     config = load_environment()
     config.init_app(global_conf, app_conf, package='projectname')
+    
+    # Pull the other engine and put a new one up first
+    config.template_engines.pop()
+    kidopts = {'kid.assume_encoding':'utf-8', 'kid.encoding':'utf-8'}
+    config.add_template_engine('kid', 'projectname.kidtemplates', kidopts)
         
     # Load our default Pylons WSGI app and make g available
     app = pylons.wsgiapp.PylonsApp(config)

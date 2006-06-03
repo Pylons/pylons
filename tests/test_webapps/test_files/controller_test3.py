@@ -23,3 +23,9 @@ class Test1Controller(BaseController):
     
     def myparams(self):
         return Response(str(params))
+
+    def test_extra_engine(self):
+        return render_response('kid', 'testkids')
+    
+    def test_template_caching(self):
+        return render_response('/test_myghty.myt', cache_expire='never')

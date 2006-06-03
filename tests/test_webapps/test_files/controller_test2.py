@@ -23,3 +23,7 @@ class Test1Controller(BaseController):
     
     def myparams(self):
         return Response(str(params))
+
+    def testdefault(self):
+        return render_response('testkid')
+    

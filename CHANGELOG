@@ -2,6 +2,7 @@ Pylons Changelog
 =================
 
 0.9 (**dev**)
+* Added exception toss when a template engine doesn't exist.
 * Added alias option to Buffet to support aliasing more template engines
   to other engine names
 * Buffet enhancements to support caching of any template with any template
