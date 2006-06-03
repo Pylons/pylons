@@ -102,10 +102,11 @@ class Buffet(object):
         ``cache_type``
             Valid options are ``dbm``, ``file``, ``memory``, or ``ext:memcached``.
         ``cache_expire``
-            Time in seconds to cache this template with this ``cache_key`` for.
+            Time in seconds to cache this template with this ``cache_key`` for. Or
+            use 'never' to designate that the cache should never expire.
         
-        The minimum key required to trigger caching is ``cache_expire=0`` which
-        will cache the template forever with no key.
+        The minimum key required to trigger caching is ``cache_expire='never'`` which
+        will cache the template forever seconds with no key.
         
         All other keyword options are passed directly to the template engine
         used.
@@ -142,8 +143,8 @@ class Buffet(object):
                 cache_type = 'dbm'
             if not cache_key:
                 cache_key = 'default'     
-            if not cache_expire:
-                cache_expire = 0   
+            if cache_expire == 'never':
+                cache_expire = None
             def content():
                 return engine_config['engine'].render(namespace, template=full_path, **options)
             tfile = full_path
