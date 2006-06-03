@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="Pylons",
-    version="0.9a1",
+    version="0.9",
     description='Pylons Web Framework',
     long_description="""
 The Pylons web framework is aimed at making webapps and large programmatic website
@@ -41,8 +41,6 @@ from the following URL:
 
 * `Dependant Packages svn <http://www.pylonshq.com/download/>`_
 
-* `Latest PyProtocols <http://peak.telecommunity.com/snapshots#egg=PyProtocols-latest>`_
-
 """,
     author='Ben Bangert, James Gardner',
     author_email='ben@groovie.org',
@@ -54,7 +52,7 @@ from the following URL:
         "Routes>=1.3.2", "Myghty==dev,>=1.0.2dev-r2062", "Paste>=0.9.3",
         "PasteDeploy>=0.5", "PasteScript>=0.5.1", "FormEncode>=0.4",
         "simplejson>=1.3", "WSGIUtils==0.7", "WebHelpers>=0.1.2",
-        "nose>=0.8.7", "Beaker==dev,>=0.5.1dev-r27", "PyProtocols==latest, >=1.0a",
+        "nose>=0.8.7", "Beaker==dev,>=0.5.1dev-r27", "PyProtocols>=1.0a0dev-r2082",
         ],
     classifiers=["Development Status :: 4 - Beta",
                  "Intended Audience :: Developers",
