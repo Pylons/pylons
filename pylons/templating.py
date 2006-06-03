@@ -34,7 +34,7 @@ class Buffet(object):
         if self.default_engine:
             self.prepare(default_engine, template_root, **config)
         
-    def prepare(self, engine_name, template_root=None, **config):
+    def prepare(self, engine_name, template_root=None, alias=None, **config):
         """Prepare a template engine for use
         
         This method must be run every request before the `render <#render>`_
@@ -45,6 +45,7 @@ class Buffet(object):
         if not Engine:
             raise TemplateEngineMissing('Please install a plugin for '
                 '"%s" to use its functionality' % engine_name)
+        engine_name = alias or engine_name
         defaults = config.pop('default_options', None)
         self.engines[engine_name] = \
             dict(engine=Engine(options=config), root=template_root)
@@ -122,6 +123,8 @@ class Buffet(object):
         if cache_key is not None or cache_expire is not None or cache_type is not None:
             if not cache_type:
                 cache_type = 'dbm'
+            if not cache_key:
+                cache_key = 'default'        
             def content():
                 return engine_config['engine'].render(namespace, template=full_path, **options)
             tfile = full_path
