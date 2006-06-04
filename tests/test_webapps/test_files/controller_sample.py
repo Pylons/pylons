@@ -32,3 +32,17 @@ class SampleController(BaseController):
     
     def test_template_caching(self):
         return render_response('/test_myghty.myt', cache_expire='never')
+    
+    [rest.dispatch_on(GET='test_only_get')]
+    [rest.restrict('POST')]
+    def test_only_post(self):
+        return Response('It was a post!')
+    
+    [rest.restrict('GET')]
+    def test_only_get(self):
+        return Response('It was a get!')
+    
+    [rest.restrict('POST')]
+    [rest.dispatch_on(POST='test_only_post')]
+    def impossible(self):
+        return Response('This should never be shown')

@@ -127,7 +127,24 @@ def do_two_engines():
                       frompath='functional_sample_controller_sample3.py')
     res = projenv.run(_get_script_name('nosetests')+' projectname/tests',
                       expect_stderr=True,
-                      cwd=os.path.join(testenv.cwd, 'ProjectName').replace('\\','/'))    
+                      cwd=os.path.join(testenv.cwd, 'ProjectName').replace('\\','/'))
+
+def do_crazy_decorators():
+    projenv.writefile('projectname/tests/functional/test_sample3.py',
+                      frompath='functional_sample_controller_sample4.py')
+    res = projenv.run(_get_script_name('nosetests')+' projectname/tests',
+                      expect_stderr=True,
+                      cwd=os.path.join(testenv.cwd, 'ProjectName').replace('\\','/'))
+def do_legacy_app():
+    legacyenv = TestFileEnvironment(
+        os.path.join(testenv.base_path, 'legacyapp').replace('\\','/'),
+        start_clear=False,
+        template_path=template_path,
+        environ=test_environ)
+    res = legacyenv.run(_get_script_name('nosetests')+' legacyapp/tests',
+                      expect_stderr=True,
+                      cwd=os.path.join(testenv.cwd, 'legacyapp').replace('\\','/'))
+    
 
 def make_tag():
     global tagenv
@@ -155,5 +172,7 @@ def test_project():
     yield do_test_known
     yield do_kid_default
     yield do_two_engines
+    yield do_crazy_decorators
+    #yield do_legacy_app
     #yield make_tag
     
