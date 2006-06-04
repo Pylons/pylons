@@ -1,6 +1,6 @@
 from projectname.lib.base import *
 
-class Test1Controller(BaseController):
+class SampleController(BaseController):
     def index(self):
         return Response('basic index page')
     
