@@ -81,9 +81,9 @@ def paster_create():
         + projenv.base_path)
 
 def make_controller():
-    res = projenv.run(_get_script_name('paster')+' controller test1')
-    assert os.path.join('projectname','controllers','test1.py') in res.files_created
-    assert os.path.join('projectname','tests','functional','test_test1.py') in res.files_created
+    res = projenv.run(_get_script_name('paster')+' controller sample')
+    assert os.path.join('projectname','controllers','sample.py') in res.files_created
+    assert os.path.join('projectname','tests','functional','test_sample.py') in res.files_created
     res = projenv.run(_get_script_name('svn')+' status')
     # Make sure all files are added to the repository:
     assert '?' not in res.stdout
@@ -96,26 +96,24 @@ def do_pytest():
                       cwd=os.path.join(testenv.cwd, 'ProjectName').replace('\\','/'))
 
 def do_test_known():
-    projenv.writefile('projectname/controllers/test1.py',
-                      frompath='controller_test1.py')
+    projenv.writefile('projectname/controllers/sample.py',
+                      frompath='controller_sample.py')
     projenv.writefile('projectname/lib/app_globals.py',
                       frompath='app_globals.py')
-    projenv.writefile('projectname/tests/functional/test_test1.py',
-                      frompath='functional_test_controller_test1.py')
+    projenv.writefile('projectname/tests/functional/test_sample.py',
+                      frompath='functional_sample_controller_sample1.py')
     res = projenv.run(_get_script_name('nosetests')+' projectname/tests',
                       expect_stderr=True,
                       cwd=os.path.join(testenv.cwd, 'ProjectName').replace('\\','/'))
 
 def do_kid_default():
-    projenv.writefile('projectname/controllers/test1.py',
-                      frompath='controller_test2.py')    
     projenv.writefile('projectname/kidtemplates/testkid.kid',
                       frompath='testkid.kid')
     projenv.writefile('projectname/kidtemplates/__init__.py')
     projenv.writefile('projectname/config/middleware.py',
                       frompath='middleware_def_engine.py')
-    projenv.writefile('projectname/tests/functional/test_test2.py',
-                      frompath='functional_test_controller_test2.py')
+    projenv.writefile('projectname/tests/functional/test_sample2.py',
+                      frompath='functional_sample_controller_sample2.py')
     res = projenv.run(_get_script_name('nosetests')+' projectname/tests',
                       expect_stderr=True,
                       cwd=os.path.join(testenv.cwd, 'ProjectName').replace('\\','/'))
