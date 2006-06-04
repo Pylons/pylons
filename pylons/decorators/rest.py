@@ -51,7 +51,7 @@ def dispatch_on(**method_map):
             if alt_method:
                 alt_method = getattr(self, alt_method)
                 return self._inspect_call(alt_method, **kw)
-            return self.func(self, *args, **kw)
+            return func(self, *args, **kw)
         return dispatcher
     return decorator(entangle)
 
