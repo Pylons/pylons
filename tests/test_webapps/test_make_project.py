@@ -118,6 +118,17 @@ def do_kid_default():
                       expect_stderr=True,
                       cwd=os.path.join(testenv.cwd, 'ProjectName').replace('\\','/'))
 
+def do_two_engines():
+    projenv.writefile('projectname/config/middleware.py',
+                      frompath='middleware_two_engines.py')
+    projenv.writefile('projectname/templates/test_myghty.myt',
+                      frompath='test_myghty.myt')    
+    projenv.writefile('projectname/tests/functional/test_sample2.py',
+                      frompath='functional_sample_controller_sample3.py')
+    res = projenv.run(_get_script_name('nosetests')+' projectname/tests',
+                      expect_stderr=True,
+                      cwd=os.path.join(testenv.cwd, 'ProjectName').replace('\\','/'))    
+
 def make_tag():
     global tagenv
     res = projenv.run(_get_script_name('svn')+' commit -m "updates"')
@@ -143,5 +154,6 @@ def test_project():
     yield do_pytest
     yield do_test_known
     yield do_kid_default
+    yield do_two_engines
     #yield make_tag
     
