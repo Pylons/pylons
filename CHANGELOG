@@ -2,6 +2,10 @@ Pylons Changelog
 =================
 
 0.9 (**dev**)
+* WebHelpers' .js files are now automatically published under the 
+  '/javascripts/' URL path. Individual WebHelpers' .js files can be
+  overridden by other .js files inside the project's 'public/javascripts'
+  directory
 * Added exception toss when a template engine doesn't exist.
 * Added alias option to Buffet to support aliasing more template engines
   to other engine names

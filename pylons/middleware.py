@@ -1,12 +1,30 @@
 """EvalException, Error Documents, and Globals middleware"""
-from paste.deploy.converters import asbool
 import os.path
 import pylons.helpers
+from paste.deploy.converters import asbool
+from paste.urlparser import StaticURLParser
+from webhelpers.rails.javascript import javascripts_path
+
 media_path = os.path.join(os.path.dirname(__file__), 'media')
 
 class Globals(object):
     """Legacy Globals object"""
     pass
+
+class StaticJavascripts(object):
+    """
+    Middleware for intercepting requests for WebHelpers' included javascript files.
+
+    Triggered when PATH_INFO begins with '/javascripts/'.
+    """
+    def __init__(self):
+        self.javascripts_app = StaticURLParser(os.path.dirname(javascripts_path))
+        
+    def __call__(self, environ, start_response):
+        if environ.get('PATH_INFO', '').startswith('/javascripts/'):
+            return self.javascripts_app(environ, start_response)
+        else:
+            return self.javascripts_app.not_found(environ, start_response)
 
 def run_wsgi(app, m, req):
     """Legacy WSGI call"""
