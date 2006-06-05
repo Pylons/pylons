@@ -65,7 +65,7 @@ class Myghty_Compat(object):
         pylons.helpers.response.write(tmpl.render(*args, **kargs))
     
     def comp(self, *args, **kargs):
-        pylons.helpers.response.write(tmpl.render(*args, **kargs))
+        pylons.helpers.response.write(tmpl.render_fragment(*args, **kargs))
     
     def scomp(self, *args, **kargs):
         return tmpl.render_fragment(*args, **kargs)
