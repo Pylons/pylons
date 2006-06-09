@@ -9,7 +9,7 @@ information.
 """
 __all__ = []
 
-import inspect, myghty.exception, sys
+import myghty.exception, sys
 
 from paste.evalexception.middleware import *
 from paste.exceptions.formatter import *
@@ -343,10 +343,9 @@ class PylonsEvalException(EvalException):
                     app_iter.close()
         except:
             exc_info = sys.exc_info()
-            if inspect.isclass(exc_info[0]):
-                for expected in environ.get('paste.expected_exceptions', []):
-                    if issubclass(exc_info[0], expected):
-                        raise
+            for expected in environ.get('paste.expected_exceptions', []):
+                if isinstance(exc_info[1], expected):
+                    raise
                     
             count = debug_counter.next()
             view_uri = self.make_view_url(environ, base_path, count)
