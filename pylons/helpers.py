@@ -79,7 +79,7 @@ class Myghty_Compat(object):
     def send_redirect(self, path, hard=True):
         redirect_to(path)
     
-    def abort(self, status_code=None):
+    def abort(self, status_code=None, reason=""):
         if status_code == 404:
             raise httpexceptions.HTTPNotFound()
         else:
