@@ -302,7 +302,7 @@ class PylonsEvalException(EvalException):
             raise Exception('Invalid template. Please ensure all % signs are properly quoted as %% and no extra substitution strings are present.')
             
     def eval_javascript(self, base_path, counter):
-        base_path = '/_debug' # Note the difference!
+        base_path += '/_debug' # Note the difference!
         return (
             '<script type="text/javascript" src="%s/mochikit/MochiKit.js">'
             '</script>\n'
