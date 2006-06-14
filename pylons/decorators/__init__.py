@@ -49,8 +49,7 @@ def validate(form=None, validators=None):
         defaults, errors = {}, {}
         if not pylons.request.method == 'POST':
             return func(self, *args, **kwargs)
-        for key in pylons.request.POST.keys():
-            defaults[key] = pylons.request.POST[key]
+        defaults.update(pylons.request.POST)
         if form:
             try:
                 self.form_result = form.to_python(defaults)

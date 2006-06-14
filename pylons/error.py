@@ -104,7 +104,7 @@ class HTMLFormatter(formatter.HTMLFormatter):
         for (importance, name), value in general_data.items():
             data_by_importance[importance].append(
                 (name, value))
-        for value in data_by_importance.values():
+        for value in data_by_importance.itervalues():
             value.sort()
         return self.format_combine(data_by_importance, lines, exc_info)
         
