@@ -3,7 +3,7 @@ import os.path
 import pylons.helpers
 from paste.deploy.converters import asbool
 from paste.urlparser import StaticURLParser
-from webhelpers.rails.javascript import javascripts_path
+from webhelpers.rails.javascript import javascript_path
 
 media_path = os.path.join(os.path.dirname(__file__), 'media')
 
@@ -18,7 +18,7 @@ class StaticJavascripts(object):
     Triggered when PATH_INFO begins with '/javascripts/'.
     """
     def __init__(self):
-        self.javascripts_app = StaticURLParser(os.path.dirname(javascripts_path))
+        self.javascripts_app = StaticURLParser(os.path.dirname(javascript_path))
         
     def __call__(self, environ, start_response):
         if environ.get('PATH_INFO', '').startswith('/javascripts/'):
