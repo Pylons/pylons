@@ -102,12 +102,15 @@ class RPCController(Controller):
     resource = 'RPC2'
     
     def __call__(self, action, **kargs):
-        if action != RPCController.resource:
+        self._req = pylons.request.current_obj()
+        action = self._req.environ['pylons.routes_dict'].get('action')
+        action_method = action.replace('-', '_')
+        if action_method != RPCController.resource:
             if CONFIG['default']['debug'] == 'false':
-                pylons.m.abort(404, "File not found")
+                return pylons.Response(code=404)
             else:
                 raise NotImplementedError('RPCController only supports %s action', RPCController.resource)
-        d = pylons.m.request_args['_file'].read()
+        d = self._req.environ['wsgi.input'].read()
         params, method = xmlrpclib.loads(d)
         
         if hasattr(self, '__before__'):
@@ -116,8 +119,9 @@ class RPCController(Controller):
             self.__getattribute__(method)(**params)
         else:
             res = 3#supposed to return xmlrpc fault thing
-        pylons.m.write(xmlrpclib.dumps((res,)))
+        response = pylons.Response(xmlrpclib.dumps((res,)))
         if hasattr(self, '__after__'):
             self.__after__(pylons, method, **params)
+        return response
 
 __all__ = ['Controller', 'RPCController']

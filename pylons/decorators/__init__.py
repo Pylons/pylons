@@ -25,28 +25,25 @@ def validate(form=None, validators=None):
     """Validate input either for a FormEncode schema, or individual validators
     
     Given a form schema or dict of validators, validate will attempt to validate
-    the schema or validator list. Errors will be saved to ``c.errors``, and the
-    defaults used will be saved as ``c.defaults``. Testing to see if the validation
-    was successful should be done on ``self.valid`` which will return True or False.
+    the schema or validator list.
     
     If validation was succesfull, the valid result dict will be saved as
-     ``self.form_results``.
+     ``self.form_results``. Otherwise, the action will be re-run as if it was a
+     GET, and the output will be filled by FormEncode's htmlfill to fill in the
+     form field errors.
     
     Example::
         
         class SomeController(BaseController):
             
-            @validate(form=model.forms.myshema())
             def comment(self, id):
-                if self.valid:
-                    # Do something with self.form_results
-                else:
-                    # Render the new form, using pylons.helpers.formfill helps
-                    return render_response('/myform.myt')
-    
-    **Note**: For the curious, variables only useful in the controller are attached
-    to it, while variables useful during rendering are attached to ``c``.
-    
+                return render_response('/myform.myt')
+            
+            @validate(form=model.forms.myshema())
+            def POST_comment(self, id):
+                # Do something with self.form_results
+                pass
+        
     """
     def validate(func, self, *args, **kwargs):
         defaults, errors = {}, {}
@@ -69,7 +66,7 @@ def validate(form=None, validators=None):
                         errors[field] = error
         if errors:
             pylons.request.environ['REQUEST_METHOD'] = 'GET'
-            response = self._dispatch_call()            
+            response = self._dispatch_call()
             form_content = "".join(response.content)
             response.content = [htmlfill.render(form_content, defaults, errors)]
             return response
