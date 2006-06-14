@@ -56,10 +56,10 @@ class Controller(object):
         
         """
         argspec = inspect.getargspec(func)
-        kargs = pylons.request.environ['pylons.routes_dict'].copy()
+        kargs = self._req.environ['pylons.routes_dict'].copy()
         
         # @@ LEGACY: Add in ARGS alias to params
-        kargs['ARGS'] = pylons.request.params
+        kargs['ARGS'] = self._req.params
         
         if argspec[2]:
             return func(**kargs)
@@ -68,6 +68,21 @@ class Controller(object):
             args = [kargs[name] for name in argnames if kargs.has_key(name)]
             return func(*args)
     
+    def _dispatch_call(self):
+        """Handles dispatching the request to the function"""
+        action = self._req.environ['pylons.routes_dict'].get('action')
+        action_method = action.replace('-', '_')
+        rest_method = self._req.method + "_" + action_method
+        func = getattr(self, rest_method, getattr(self, action_method, None))
+        if isinstance(func, types.MethodType):
+            response = self._inspect_call(func)
+        else:
+            if CONFIG['global_conf']['debug'] == 'false':
+                response = pylons.Response(code=404)
+            else:
+                raise NotImplementedError('Action %s is not implemented'%action)
+        return response
+    
     def __call__(self, *args, **kargs):
         """Makes our controller a callable to handle requests
         
@@ -75,18 +90,10 @@ class Controller(object):
         more fully.
         
         """
-        action = pylons.request.environ['pylons.routes_dict'].get('action')
-        action_method = action.replace('-', '_')
+        self._req = pylons.request.current_obj()
         if hasattr(self, '__before__'):
             self._inspect_call(self.__before__, **kargs)
-        if isinstance(getattr(self, action_method, None), types.MethodType):
-            func = getattr(self, action_method)
-            response = self._inspect_call(func)
-        else:
-            if CONFIG['global_conf']['debug'] == 'false':
-                response = pylons.Response(code=404)
-            else:
-                raise NotImplementedError('Action %s is not implemented'%action)
+        response = self._dispatch_call()
         if hasattr(self, '__after__'):
             self._inspect_call(self.__after__)
         return response

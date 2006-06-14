@@ -1,6 +1,8 @@
 """Custom Decorators, currently ``jsonify``, ``validate``, and 2 REST decorators"""
+import types
 import simplejson as json
 import formencode.api as api
+from formencode import htmlfill
 import pylons
 from pylons.decorator import decorator
 import rest
@@ -47,27 +49,30 @@ def validate(form=None, validators=None):
     
     """
     def validate(func, self, *args, **kwargs):
-        self.valid = False
-        pylons.c.defaults, pylons.c.errors = {}, {}
+        defaults, errors = {}, {}
         if not pylons.request.method == 'POST':
             return func(self, *args, **kwargs)
         for key in pylons.request.POST.keys():
-            pylons.c.defaults[key] = pylons.request.POST[key]
+            defaults[key] = pylons.request.POST[key]
         if form:
             try:
-                self.form_result = form.to_python(pylons.c.defaults)
+                self.form_result = form.to_python(defaults)
             except api.Invalid, e:
-                pylons.c.errors = e.unpack_errors()
+                errors = e.unpack_errors()
         if validators:
             if isinstance(validators, dict):
                 for field, validator in validators.iteritems():
                     try:
                         self.form_result[field] = \
-                            validator.to_python(pylons.c.defaults[field] or None)
+                            validator.to_python(defaults[field] or None)
                     except api.Invalid, error:
-                        pylons.c.errors[field] = error
-        if not pylons.c.errors:
-            self.valid = True
+                        errors[field] = error
+        if errors:
+            pylons.request.environ['REQUEST_METHOD'] = 'GET'
+            response = self._dispatch_call()            
+            form_content = "".join(response.content)
+            response.content = [htmlfill.render(form_content, defaults, errors)]
+            return response
         return func(self, *args, **kwargs)
     return decorator(validate)
 
