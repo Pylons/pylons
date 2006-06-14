@@ -5,7 +5,7 @@ import pylons
 from pylons.decorator import decorator
 import rest
 
-def jsonify(func):
+def jsonify(func, *args, **kw):
     """Action decorator that formats output for JSON
     
     Given a function that will return content, this decorator will
@@ -13,14 +13,11 @@ def jsonify(func):
     and output it.
     
     """
-    def entangle(func):
-        def json(func, *args, **kw):
-            response = pylons.Response()
-            response.headers['Content-Type'] = 'text/javascript'
-            response.content.append(json.dumps(func(*args, **kw)))
-            return response
-        return json
-    return decorator(entangle)
+    response = pylons.Response()
+    response.headers['Content-Type'] = 'text/javascript'
+    response.content.append(json.dumps(func(*args, **kw)))
+    return response
+jsonify = decorator(jsonify)
 
 def validate(form=None, validators=None):
     """Validate input either for a FormEncode schema, or individual validators
@@ -49,31 +46,29 @@ def validate(form=None, validators=None):
     to it, while variables useful during rendering are attached to ``c``.
     
     """
-    def entangle(func):
-        def validate(func, self, *args, **kwargs):
-            self.valid = False
-            pylons.c.defaults, pylons.c.errors = {}, {}
-            if not pylons.request.method == 'POST':
-                return func(self, *args, **kwargs)
-            for key in pylons.request.POST.keys():
-                pylons.c.defaults[key] = pylons.request.POST[key]
-            if form:
-                try:
-                    self.form_result = form.to_python(pylons.c.defaults)
-                except api.Invalid, e:
-                    pylons.c.errors = e.unpack_errors()
-            if validators:
-                if isinstance(validators, dict):
-                    for field, validator in validators.iteritems():
-                        try:
-                            self.form_result[field] = \
-                                validator.to_python(pylons.c.defaults[field] or None)
-                        except api.Invalid, error:
-                            pylons.c.errors[field] = error
-            if not pylons.c.errors:
-                self.valid = True
+    def validate(func, self, *args, **kwargs):
+        self.valid = False
+        pylons.c.defaults, pylons.c.errors = {}, {}
+        if not pylons.request.method == 'POST':
             return func(self, *args, **kwargs)
-        return validate
-    return decorator(entangle)
-    
+        for key in pylons.request.POST.keys():
+            pylons.c.defaults[key] = pylons.request.POST[key]
+        if form:
+            try:
+                self.form_result = form.to_python(pylons.c.defaults)
+            except api.Invalid, e:
+                pylons.c.errors = e.unpack_errors()
+        if validators:
+            if isinstance(validators, dict):
+                for field, validator in validators.iteritems():
+                    try:
+                        self.form_result[field] = \
+                            validator.to_python(pylons.c.defaults[field] or None)
+                    except api.Invalid, error:
+                        pylons.c.errors[field] = error
+        if not pylons.c.errors:
+            self.valid = True
+        return func(self, *args, **kwargs)
+    return decorator(validate)
+
 __all__ = ['jsonify', 'validate', 'rest']
