@@ -91,6 +91,11 @@ class Controller(object):
         
         """
         self._req = pylons.request.current_obj()
+        
+        # Keep private methods private
+        if self._req.environ['pylons.routes_dict'].get('action').startswith('_'):
+            return pylons.Response(code=404)
+        
         if hasattr(self, '__before__'):
             self._inspect_call(self.__before__, **kargs)
         response = self._dispatch_call()
