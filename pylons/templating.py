@@ -1,4 +1,21 @@
-"""Buffet templating plugin and render functions"""
+"""Buffet templating plugin and render functions
+
+The Buffet object is styled after the original Buffet module that implements
+template language neutral rendering for CherryPy. This version of Buffet also
+contains caching functionality that utilizes 
+`Beaker middleware <http://beaker.groovie.org/>`_ to provide template language
+neutral caching functionality.
+
+A customized version of 
+`BuffetMyghty <http://projects.dowski.com/projects/buffetmyghty>`_ is included
+that provides a template API hook as the ``pylonsmyghty`` engine. This version
+of BuffetMyghty disregards some of the TurboGears API spec so that traditional
+Myghty template names can be used with ``/`` and file extensions.
+
+The render functions are intended as the primary user-visible rendering commands
+and hook into Buffet to make rendering content easy.
+
+"""
 import pkg_resources
 import os
 try:
@@ -211,6 +228,16 @@ for entry_point in pkg_resources.iter_entry_points('python.templating.engines'):
     available_engines[entry_point.name] = Engine
 
 def render(*args, **kargs):
+    """Render a template and return it as a string (possibly Unicode)
+    
+    Optionally takes 3 keyword arguments to use caching supplied by Buffet.
+    
+    Example::
+        
+        >>> content = render('/my/template.myt')
+        >>> print content
+    
+    """
     args = list(args)
     template = args.pop()
     cache_args = dict(cache_expire=kargs.pop('cache_expire', None), 
@@ -222,6 +249,22 @@ def render(*args, **kargs):
     return pylons.buffet.render(template_name=template, namespace=kargs, **cache_args)
 
 def render_fragment(*args, **kargs):
+    """Render a template as a fragment and return it as a string (possibly Unicode)
+    
+    Optionally takes 3 keyword arguments to use caching supplied by Buffet.
+    
+    Example::
+        
+        >>> content = render_fragment('/my/template.myt')
+        >>> print content
+    
+    .. admonition:: Note
+        
+        Not all template languages support the concept of a fragment. In those template
+        languages that do support the fragment option, this usually implies that the
+        template will be rendered without extending or inheriting any site skin.
+    
+    """
     args = list(args)
     template = args.pop()
     cache_args = dict(cache_expire=kargs.pop('cache_expire', None), 
@@ -233,9 +276,19 @@ def render_fragment(*args, **kargs):
     return pylons.buffet.render(template_name=template, fragment=True, namespace=kargs, **cache_args)
 
 def render_response(*args, **kargs):
+    """Returns the rendered response within a Response object
+    
+    See ``render`` for information on rendering.
+    
+    """
     return pylons.Response(render(*args, **kargs))
 
 def render_response_fragment(*args, **kargs):
+    """Returns the rendered response fragment within a Response object
+    
+    See ``render_fragment`` for information on fragment rendering.
+    
+    """
     return pylons.Response(render_fragment(*args, **kargs))    
 
 __pudge_all__ = ['render', 'render_fragment', 'render_response', 
