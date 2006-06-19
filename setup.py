@@ -72,7 +72,6 @@ from the following URL:
     entry_points="""
     [paste.paster_command]
     controller=pylons.commands:ControllerCommand
-    compile_templates=pylons.commands:CompileCommand
 
     [paste.paster_create_template]
     pylons=pylons.util:PylonsTemplate
