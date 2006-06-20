@@ -63,6 +63,9 @@ class PylonsBaseWSGIApp(object):
         controller = self.resolve(environ, start_response)
         response = self.dispatch(controller, environ, start_response)
         
+        if environ.get('paste.testing') and hasattr(response, 'wsgi_response'):
+            environ['paste.testing_variables']['response'] = response
+        
         # Transform HttpResponse objects into WSGI response
         if hasattr(response, 'wsgi_response'):
             status, response_headers, content = response.wsgi_response()
@@ -172,7 +175,7 @@ class PylonsBaseWSGIApp(object):
     def load_test_env(self, environ):
         """Sets up our Paste testing environment"""
         testenv = environ['paste.testing_variables']
-        testenv['request'] = pylons.request.current_obj()
+        testenv['req'] = pylons.request.current_obj()
         testenv['c'] = pylons.c.current_obj()
         testenv['g'] = pylons.g.current_obj()
         econf = environ['pylons.environ_config']
@@ -212,7 +215,8 @@ class PylonsApp(object):
         if not econf.has_key('session'):
             from beaker.session import SessionMiddleware
             econf['session'] = 'beaker.session'
-            app = SessionMiddleware(app, config.global_conf, **config.app_conf)
+            app = SessionMiddleware(app, config.global_conf, 
+                auto_register=True, **config.app_conf)
         
         if not econf.has_key('cache'):
             from beaker.cache import CacheMiddleware

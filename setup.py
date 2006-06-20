@@ -35,9 +35,8 @@ development. Using a MVC style dispath, Python knowledge is used at various leve
 Current Status
 ---------------
 
-Pylons is currently quite stable (built mostly with the mature Myghty package), and is
-being used in production environments. Dependant packages are automatically installed 
-from the following URL:
+Pylons is stable, and is being used in production environments. Dependant packages
+are automatically installed from the following URL:
 
 * `Dependant Packages svn <http://www.pylonshq.com/download/>`_
 
@@ -72,6 +71,7 @@ from the following URL:
     entry_points="""
     [paste.paster_command]
     controller=pylons.commands:ControllerCommand
+    shell=pylons.commands:ShellCommand
 
     [paste.paster_create_template]
     pylons=pylons.util:PylonsTemplate
