@@ -109,27 +109,39 @@ class ShellCommand(Command):
         
         # Load locals and populate with objects for use in shell
         sys.path.insert(0, here_dir)
+        
+        # Load the wsgi app first so that everything is initialized right
+        wsgiapp = loadapp(config_name, relative_to=here_dir)
+        
+        # Start the rest of our imports now that the app is loaded
         routing_package = pkg_name + '.config.routing'
-        __import__(routing_package)
+        models_package = pkg_name + '.models'
+        helpers_package = pkg_name + '.lib.helpers'
+        
+        # Import all the modules
+        for pack in [routing_package, models_package, helpers_package]:
+            __import__(pack)
+        
         make_map = getattr(sys.modules[routing_package], 'make_map')
         mapper = make_map()
-        models_package = pkg_name + '.models'
-        __import__(models_package)
-        locs['model'] = sys.modules[models_package]
-        from routes import url_for
-        locs['mapper'] = mapper
-        wsgiapp = loadapp(config_name, relative_to=here_dir)
-        locs['wsgiapp'] = wsgiapp
-        locs['app'] = paste.fixture.TestApp(wsgiapp)
-        __import__(pkg_name + '.lib.helpers')
-        locs['h'] = sys.modules[pkg_name + '.lib.helpers']
         
+        locs.update(
+            dict(
+                model=sys.modules[models_package],
+                mapper=mapper,
+                wsgiapp=wsgiapp,
+                app=paste.fixture.TestApp(wsgiapp),
+                h=sys.modules[helpers_package],
+            )
+        )
+                
         banner = "Pylons Interactive Shell\nPython %s\n\n" % sys.version
-        banner += "Additional Objects:\n\tmapper - Routes mapper object\n"
-        banner += "\th - Helper object\n"
-        banner += "\tmodel - Models from models package\n"
-        banner += "\twsgiapp - This projects WSGI App instance\n"
-        banner += "\tapp - paste.fixture wrapped around wsgiapp"
+        banner += "Additional Objects:\n"
+        banner += "  %-10s -  %s\n" % ('mapper', 'Routes mapper object')
+        banner += "  %-10s -  %s\n" % ('h', 'Helper object')
+        banner += "  %-10s -  %s\n" % ('model', 'Models from models package')
+        banner += "  %-10s -  %s\n" % ('wsgiapp', 'This projects WSGI App instance')
+        banner += "  %-10s -  %s\n" % ('app', 'paste.fixture wrapped around wsgiapp')
         try:
             # try to use IPython if possible
             import IPython
