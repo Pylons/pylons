@@ -3,7 +3,7 @@ import os.path
 import pylons.helpers
 from paste.deploy.converters import asbool
 from paste.urlparser import StaticURLParser
-from webhelpers.rails.javascript import javascript_path
+from webhelpers.rails.asset_tag import javascript_path
 
 media_path = os.path.join(os.path.dirname(__file__), 'media')
 
