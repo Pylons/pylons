@@ -81,28 +81,40 @@ class ControllerCommand(Command):
 class ShellCommand(Command):
     """Open an interactive shell with the Pylons app loaded
     
-    Should include the name of the config file to use for the interactive
-    shell. This allows you to test your mapper, models, and simulate
-    web requests using ``paste.fixture``.
+    The optional CONFIG_FILE argument specifies the config file to use for
+    the interactive shell. CONFIG_FILE defaults to 'development.ini'.
+    
+    This allows you to test your mapper, models, and simulate web requests
+    using ``paste.fixture``.
     
     Example::
         
-        $ paster shell development.ini
-    
+        $ paster shell my-development.ini
     """
     summary = __doc__
-    usage = 'CONFIG_FILE'
+    usage = '[CONFIG_FILE]'
     
-    min_args = 1
+    min_args = 0
     max_args = 1
     group_name = 'pylons'
     
     parser = Command.standard_parser(simulate=True)
 
     def command(self):
-        import sys
         self.verbose = 3
-        config_name = 'config:%s' % self.args[0]
+        
+        if len(self.args) == 0:
+            # Assume the .ini file is ./development.ini
+            config_file = 'development.ini'
+            if not os.path.isfile(config_file):
+                raise BadCommand('%sError: CONFIG_FILE not found at: .%s%s\n'
+                                 'Please specify a CONFIG_FILE' % \
+                                 (self.parser.get_usage(), os.path.sep,
+                                  config_file))
+        else:
+            config_file = self.args[0]
+            
+        config_name = 'config:%s' % config_file
         here_dir = os.getcwd()
         locs = dict(__name__="pylons-admin")
         pkg_name = here_dir.split(os.path.sep)[-1].lower()
