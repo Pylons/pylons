@@ -123,9 +123,11 @@ class PackageHub(object):
     def set_hub(self):
         dburi = self.dburi
         if not dburi:
-            dburi = CONFIG.current_conf()['app'].get("%s.dburi" % self.packagename, None)
+            conf = CONFIG.current_conf()
+            appconf = conf.get('app_conf', conf.get('app'))
+            dburi = appconf.get("%s.dburi" % self.packagename, None)
             if not dburi:
-                dburi = CONFIG.current_conf()['app'].get("sqlobject.dburi", None)
+                dburi = appconf.get("sqlobject.dburi", None)
         if not dburi:
             raise KeyError, "No database configuration found!"
         hub = _hubs.get(dburi, None)
