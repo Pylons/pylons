@@ -16,11 +16,11 @@ class ErrorController(BaseController):
         Change this method to change how error documents are displayed
         """
         page = error_document_template % {
-            'prefix':get_prefix(request.environ),
-            'code':params.get('code', ''), 
-            'message':params.get('message', ''),
+            'prefix': get_prefix(request.environ),
+            'code': request.params.get('code', ''), 
+            'message': request.params.get('message', ''),
         }
-        return Response(page)
+        return response(page)
 
     def img(self, id):
         return self._serve_file(os.path.join(media_path, 'img', id))

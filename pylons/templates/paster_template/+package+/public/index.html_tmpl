@@ -46,7 +46,7 @@ from ${package}.lib.base import *
 
 class HelloController(BaseController):
     def index(self):
-        return Response('Hello World')
+        return response('Hello World')
         
 </pre>
 </p>
