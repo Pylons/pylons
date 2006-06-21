@@ -2,27 +2,27 @@ from projectname.lib.base import *
 
 class SampleController(BaseController):
     def index(self):
-        return Response('basic index page')
+        return response('basic index page')
     
     def session_increment(self):
         session.setdefault('counter', -1)
         session['counter'] += 1
         session.save()
-        return Response('session incrementer')
+        return response('session incrementer')
     
     def globalup(self):
-        return Response(g.message)
+        return response(g.message)
     
     def global_store(self, id):
         if id:
             g.counter += int(id)
-        return Response(str(g.counter))
+        return response(str(g.counter))
     
     def myself(self):
-        return Response(h.url_for())
+        return response(h.url_for())
     
     def myparams(self):
-        return Response(str(params))
+        return response(str(request.params))
     
     def testdefault(self):
         return render_response('testkid')
@@ -33,16 +33,14 @@ class SampleController(BaseController):
     def test_template_caching(self):
         return render_response('/test_myghty.myt', cache_expire='never')
     
-    [rest.dispatch_on(GET='test_only_get')]
-    [rest.restrict('POST')]
     def test_only_post(self):
-        return Response('It was a post!')
+        return response('It was a post!')
+    test_only_post = rest.dispatch_on(GET='test_only_get')(rest.restrict('POST')(test_only_post))
     
-    [rest.restrict('GET')]
     def test_only_get(self):
-        return Response('It was a get!')
+        return response('It was a get!')
+    test_only_get = rest.restrict('GET')(test_only_get)
     
-    [rest.restrict('POST')]
-    [rest.dispatch_on(POST='test_only_post')]
     def impossible(self):
-        return Response('This should never be shown')
+        return response('This should never be shown')
+    impossible = rest.restrict('POST')(rest.dispatch_on(POST='test_only_post')(impossible))
