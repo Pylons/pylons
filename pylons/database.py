@@ -21,7 +21,9 @@ class AutoConnectHub(ConnectionHub):
     
     def __init__(self, uri=None):
         if not uri:
-            uri = CONFIG.current_conf()['app'].get('sqlobject.dburi')
+            conf = CONFIG.current_conf()
+            appconf = conf.get('app_conf', conf.get('app'))
+            uri = appconf.get('sqlobject.dburi')
         self.uri = uri
         ConnectionHub.__init__(self)
     
