@@ -195,7 +195,7 @@ class PylonsApp(object):
     then no session/cache objects will be available.
     
     """
-    def __init__(self, config):
+    def __init__(self, config, default_charset='UTF-8'):
         self.config = config
         g = None
         try:
@@ -207,7 +207,7 @@ class PylonsApp(object):
             g.pylons_config = config
         
         # Create the base Pylons wsgi app
-        app = PylonsBaseWSGIApp(config.map, config.package, g)
+        app = PylonsBaseWSGIApp(config.map, config.package, g, default_charset)
         
         # Pull user-specified environ overrides, or just setup default
         # session and caching objects
