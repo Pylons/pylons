@@ -15,7 +15,8 @@ import glob
 from paste.script.command import Command, BadCommand
 from paste.script.filemaker import FileOp
 from paste.script import pluginlib, copydir
-from paste.deploy import loadapp
+from paste.deploy import loadapp, appconfig
+import paste.deploy.config
 import paste.fixture
 
 class ControllerCommand(Command):
@@ -118,6 +119,11 @@ class ShellCommand(Command):
         here_dir = os.getcwd()
         locs = dict(__name__="pylons-admin")
         pkg_name = here_dir.split(os.path.sep)[-1].lower()
+        
+        # Load app config into paste.deploy to simulate request config
+        app_conf = appconfig(config_name, relative_to=here_dir)
+        conf = dict(app=app_conf, app_conf=app_conf)
+        paste.deploy.config.CONFIG.push_thread_config(conf)
         
         # Load locals and populate with objects for use in shell
         sys.path.insert(0, here_dir)
