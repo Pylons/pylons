@@ -10,7 +10,7 @@ import sys
 import paste.wsgiwrappers
 from paste.registry import RegistryManager
 from paste.wsgiwrappers import WSGIRequest
-from paste.wsgiwrappers import WSGIResponse as Response
+from paste.wsgiwrappers import WSGIResponse
 
 from routes import request_config
 import myghty.escapes as escapes
@@ -101,7 +101,7 @@ class PylonsBaseWSGIApp(object):
         
         # Setup legacy globals
         if environ.get('pylons.legacy'):
-            environ['paste.registry'].register(pylons.helpers.response, Response())
+            environ['paste.registry'].register(pylons.helpers.response, WSGIResponse())
             environ['paste.registry'].register(pylons.m, Myghty_Compat(environ, start_response))
         
         econf = environ['pylons.environ_config']
@@ -139,7 +139,7 @@ class PylonsBaseWSGIApp(object):
         """Dispatches to a controller, will instantiate the controller
         if necessary"""
         if not controller:
-            res = Response()
+            res = WSGIResponse()
             res.status_code = 404
             return res
         match = environ['pylons.routes_dict']
@@ -238,6 +238,10 @@ class LegacyApp(object):
     def __call__(self, environ, start_response):
         environ['pylons.legacy'] = True
         return self.app(environ, start_response)
+
+def response(*args, **kargs):
+    """ Return a WSGIResponse object """
+    return WSGIResponse(*args, **kargs)
 
 def make_app(config):
     """ Legacy WSGI app creator"""

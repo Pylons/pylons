@@ -5,6 +5,7 @@ from paste.wsgiwrappers import WSGIResponse as Response
 
 from pylons.controllers import Controller, RPCController
 from pylons.decorators import jsonify
+from pylons.wsgiapp import response
 from pylons.util import Helpers
 
 c = StackedObjectProxy(name="C")
