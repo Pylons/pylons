@@ -155,8 +155,10 @@ class Buffet(object):
                     namespace = self._update_names(namespace)
             else:
                 namespace = self._update_names(namespace)
-            full_path = os.path.join(engine_config['root'], template_name)
-            full_path = full_path.replace(os.path.sep, '.').lstrip('.')
+            
+            if not engine_name.startswith('pylons'):
+                full_path = os.path.join(engine_config['root'], template_name)
+                full_path = full_path.replace(os.path.sep, '.').lstrip('.')
                 
         # If one of them is not None then the user did set something
         if cache_key is not None or cache_expire is not None or cache_type is not None:
