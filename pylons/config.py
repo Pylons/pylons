@@ -77,11 +77,27 @@ class Config(object):
             
             # In yourproj/middleware.py
             # ...
-            config.init_app(global_conf, app_conf, package='testes')
+            config.init_app(global_conf, app_conf, package='yourproj')
 
             # Load additional template engines
             kidopts = {'kid.assume_encoding':'utf-8', 'kid.encoding':'utf-8'}
             config.add_template_engine('kid', 'yourproj.kidtemplates', kidopts)
+        
+        Example of changing the default template engine::
+
+            # In yourproj/middleware.py
+            # ...
+            config.init_app(global_conf, app_conf, package='yourproj')
+            
+            # Remove existing template engine
+            old_default = config.template_engines.pop()
+            
+            # Load additional template engines
+            kidopts = {'kid.assume_encoding':'utf-8', 'kid.encoding':'utf-8'}
+            config.add_template_engine('kid', 'yourproj.kidtemplates', kidopts)
+            
+            # Add old default as additional engine
+            config.template_engines.append(old_default)
         
         """
         config = dict(engine=engine, template_root=root, template_options=options, alias=alias)
