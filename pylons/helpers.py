@@ -12,6 +12,7 @@ from formencode import htmlfill
 import pylons
 import pylons.helpers
 import pylons.templating as tmpl
+from pylons.util import get_prefix
 
 response = StackedObjectProxy(name="response")
 
@@ -87,7 +88,7 @@ class Myghty_Compat(object):
 
 def redirect_to(url):
     """Redirect function to raise an httpexception causing a 302 Redirect"""
-    raise httpexceptions.HTTPFound(url)
+    raise httpexceptions.HTTPFound('%s%s' % (get_prefix(pylons.request.environ), url))
 
 def formfill(m, defaults=None, errors=None):
     """Formfill Myghty Module Component
