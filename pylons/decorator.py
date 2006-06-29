@@ -1,7 +1,7 @@
 """Decorator module
 
 Author:         Michele Simionato
-E-mail: michele.simionato@gmail.com
+E-mail:         michele.simionato@gmail.com
 Version:        0.7
 License:        Python license
 
