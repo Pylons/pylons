@@ -22,8 +22,8 @@ def etag_cache(key=None):
     a ``304`` HTTP message will be returned with the ETag to tell the browser
     that it should use its current cache of the page.
     
-    Otherwise, the ETag header will be added to the response for use in future
-    request cycles.
+    Otherwise, the ETag header will be added to a new response object and
+    returned for use in your action.
     
     Suggested use is within a Controller Action like so::
     
@@ -31,17 +31,18 @@ def etag_cache(key=None):
         
         class YourController(BaseController):
             def index(self):
-                if pylons.etag_cache(key=1): return
-                m.subexec('/splash.myt')
+                resp = pylons.etag_cache(key=1)
+                resp.write(render('/splash.myt'))
+                return resp
     
     """
     if_none_match = pylons.request.environ.get('HTTP_IF_NONE_MATCH', None)
-    pylons.helpers.response.headers['ETag'] = key
+    resp = pylons.response()
+    resp.headers['ETag'] = key
     if str(key) == if_none_match:
-        pylons.m.abort(304)
-        return True
+        raise httpexceptions.HTTPNotModified()
     else:
-        return False
+        return resp
 
 class Myghty_Compat(object):
     """Myghty Compatibility Object for Pylons 0.8 Projects"""
@@ -90,7 +91,7 @@ def redirect_to(url):
     raise httpexceptions.HTTPFound(url)
 
 def formfill(m, defaults=None, errors=None):
-    """Formfill Myghty Module Component
+    """Formfill Myghty Module Component (LEGACY, use validate decorator)
     
     The Formfill module component is for use with Myghty as a wrapper
     around a ``<form>`` section. The formfill component will then parse
