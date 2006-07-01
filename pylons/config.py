@@ -42,7 +42,7 @@ class Config(object):
         List of template engines to configure. The first one in the list will
         be configured as the default template engine. Each item in the list is
         a dict indicating how to configure the template engine with keys:
-         ``engine``, ``template_root``, ``template_options``, and ``alias``
+        ``engine``, ``template_root``, ``template_options``, and ``alias``
     
     """
     def __init__(self, myghty, map, paths, environ_config=None):
