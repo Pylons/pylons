@@ -239,10 +239,6 @@ class LegacyApp(object):
         environ['pylons.legacy'] = True
         return self.app(environ, start_response)
 
-def response(*args, **kargs):
-    """ Return a WSGIResponse object """
-    return WSGIResponse(*args, **kargs)
-
 def make_app(config):
     """ Legacy WSGI app creator"""
     papp = LegacyApp(config)
