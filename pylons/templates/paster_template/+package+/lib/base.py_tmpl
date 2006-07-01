@@ -1,7 +1,6 @@
 from pylons import Controller, c, g, h, cache, request, response, session
 from pylons.decorators import jsonify, rest, validate
-from pylons.templating import render, render_fragment, render_response, \
-    render_response_fragment
+from pylons.templating import render, render_response
 import ${package}.models as model
 
 class BaseController(Controller):

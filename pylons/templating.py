@@ -207,7 +207,6 @@ class MyghtyTemplatePlugin(object):
             session=pylons.session,
             s=pylons.session,
             render=render,
-            render_fragment=render_fragment
         )
         self.interpreter = Interpreter(**myt_opts)
     
@@ -238,27 +237,7 @@ def render(*args, **kargs):
         
         >>> content = render('/my/template.myt')
         >>> print content
-    
-    """
-    args = list(args)
-    template = args.pop()
-    cache_args = dict(cache_expire=kargs.pop('cache_expire', None), 
-                      cache_type=kargs.pop('cache_type', None),
-                      cache_key=kargs.pop('cache_key', None))
-    if args: 
-        engine = args.pop()
-        return pylons.buffet.render(engine, template, namespace=kargs, **cache_args)
-    return pylons.buffet.render(template_name=template, namespace=kargs, **cache_args)
-
-def render_fragment(*args, **kargs):
-    """Render a template as a fragment and return it as a string (possibly Unicode)
-    
-    Optionally takes 3 keyword arguments to use caching supplied by Buffet.
-    
-    Example::
-        
-        >>> content = render_fragment('/my/template.myt')
-        >>> print content
+        >>> content = render('/my/template.myt', fragment=True)
     
     .. admonition:: Note
         
@@ -267,6 +246,7 @@ def render_fragment(*args, **kargs):
         template will be rendered without extending or inheriting any site skin.
     
     """
+    fragment = kargs.pop('fragment', False)
     args = list(args)
     template = args.pop()
     cache_args = dict(cache_expire=kargs.pop('cache_expire', None), 
@@ -274,8 +254,8 @@ def render_fragment(*args, **kargs):
                       cache_key=kargs.pop('cache_key', None))
     if args: 
         engine = args.pop()
-        return pylons.buffet.render(engine, template, fragment=True, namespace=kargs, **cache_args)
-    return pylons.buffet.render(template_name=template, fragment=True, namespace=kargs, **cache_args)
+        return pylons.buffet.render(engine, template, fragment=fragment, namespace=kargs, **cache_args)
+    return pylons.buffet.render(template_name=template, fragment=fragment, namespace=kargs, **cache_args)
 
 def render_response(*args, **kargs):
     """Returns the rendered response within a Response object
@@ -285,13 +265,6 @@ def render_response(*args, **kargs):
     """
     return pylons.Response(render(*args, **kargs))
 
-def render_response_fragment(*args, **kargs):
-    """Returns the rendered response fragment within a Response object
-    
-    See ``render_fragment`` for information on fragment rendering.
-    
-    """
-    return pylons.Response(render_fragment(*args, **kargs))    
 
-__pudge_all__ = ['render', 'render_fragment', 'render_response', 
-    'render_response_fragment', 'Buffet', 'MyghtyTemplatePlugin']
+__pudge_all__ = ['render', 'render_response', 'Buffet', 'MyghtyTemplatePlugin']
+__all__ = ['render', 'redner_response', 'Buffet', 'MyghtyTemplatePlugin']
