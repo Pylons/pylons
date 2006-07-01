@@ -81,7 +81,6 @@ class Buffet(object):
             g=pylons.g,
             session=pylons.session,
             render=render,
-            render_fragment=render_fragment
         ))
         return d
     
