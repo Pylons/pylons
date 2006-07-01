@@ -48,7 +48,7 @@ are automatically installed from the following URL:
     zip_safe=False,
     include_package_data=True,
     install_requires=[
-        "Routes>=1.3.2", "Myghty==dev,>=1.0.2dev-r2062", "Paste==dev,>=0.9.4dev-r5400",
+        "Routes==dev,>=1.3.3dev-r219", "Myghty==dev,>=1.0.2dev-r2062", "Paste==dev,>=0.9.4dev-r5400",
         "PasteDeploy>=0.5", "PasteScript==dev,>=0.9.1dev-r5387", "FormEncode>=0.4",
         "simplejson>=1.3", "WSGIUtils==0.7", "WebHelpers==dev,>=0.1.3dev-r989",
         "nose>=0.8.7", "Beaker==dev,>=0.5.1dev-r30",
