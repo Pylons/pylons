@@ -72,15 +72,14 @@ class Controller(object):
         """Handles dispatching the request to the function"""
         action = self._req.environ['pylons.routes_dict'].get('action')
         action_method = action.replace('-', '_')
-        rest_method = self._req.method + "_" + action_method
-        func = getattr(self, rest_method, getattr(self, action_method, None))
+        func = getattr(self, action_method, None)
         if isinstance(func, types.MethodType):
             response = self._inspect_call(func)
         else:
             if CONFIG['global_conf']['debug'] == 'false':
                 response = pylons.Response(code=404)
             else:
-                raise NotImplementedError('Action %s is not implemented'%action)
+                raise NotImplementedError('Action %s is not implemented' % action)
         return response
     
     def __call__(self, *args, **kargs):
