@@ -60,7 +60,15 @@ class PylonsBaseWSGIApp(object):
         if environ.get('paste.testing'):
             self.load_test_env(environ)
         
+        # Change our HTTP_METHOD if _method is present
+        req = pylons.request.current_obj()
+        old_method = None
+        if req.params.has_key('_method'):
+            old_method = environ['REQUEST_METHOD']
+            environ['REQUEST_METHOD'] = req.params['_method']
+        
         controller = self.resolve(environ, start_response)
+        if old_method: environ['REQUEST_METHOD'] = old_method            
         response = self.dispatch(controller, environ, start_response)
         
         if environ.get('paste.testing') and hasattr(response, 'wsgi_response'):
