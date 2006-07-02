@@ -10,7 +10,7 @@ class TestSample2Controller(TestController):
         assert response.session['counter'] == 1
         assert 'session incrementer' in response
     
-    def test_default(self):
+    def test_kid_default(self):
         response = self.app.get(url_for(controller='/sample', action='test_extra_engine'))
         assert 'Hello from Kid' in response
     
