@@ -21,7 +21,7 @@ def jsonify(func, *args, **kw):
     return response
 jsonify = decorator(jsonify)
 
-def validate(form=None, validators=None):
+def validate(schema=None, validators=None, form=None):
     """Validate input either for a FormEncode schema, or individual validators
     
     Given a form schema or dict of validators, validate will attempt to validate
@@ -36,11 +36,11 @@ def validate(form=None, validators=None):
         
         class SomeController(BaseController):
             
-            def comment(self, id):
+            def create(self, id):
                 return render_response('/myform.myt')
             
-            @validate(form=model.forms.myshema())
-            def POST_comment(self, id):
+            @validate(schema=model.forms.myshema(), form='create')
+            def update(self, id):
                 # Do something with self.form_results
                 pass
         
@@ -50,9 +50,9 @@ def validate(form=None, validators=None):
         if not pylons.request.method == 'POST':
             return func(self, *args, **kwargs)
         defaults.update(pylons.request.POST)
-        if form:
+        if schema:
             try:
-                self.form_result = form.to_python(defaults)
+                self.form_result = schema.to_python(defaults)
             except api.Invalid, e:
                 errors = e.unpack_errors()
         if validators:
@@ -65,6 +65,7 @@ def validate(form=None, validators=None):
                         errors[field] = error
         if errors:
             pylons.request.environ['REQUEST_METHOD'] = 'GET'
+            pylons.request.environ['pylons.routes_dict']['action'] = form
             response = self._dispatch_call()
             form_content = "".join(response.content)
             response.content = [htmlfill.render(form_content, defaults, errors)]
