@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9 (**dev**)
+* Added automatic copying of Route variables declared in an action's
+  function definition to the 'c' object.
 * WebHelpers' .js files are now automatically published under the 
   '/javascripts/' URL path. Individual WebHelpers' .js files can be
   overridden by other .js files inside the project's 'public/javascripts'

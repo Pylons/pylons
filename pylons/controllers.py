@@ -61,11 +61,17 @@ class Controller(object):
         # @@ LEGACY: Add in ARGS alias to params
         kargs['ARGS'] = self._req.params
         
+        c = pylons.c.current_obj()
         if argspec[2]:
+            for k,v in kargs: setattr(c, k, v)
             return func(**kargs)
         else:
             argnames = argspec[0][1:]
-            args = [kargs[name] for name in argnames if kargs.has_key(name)]
+            args = []
+            for name in argnames:
+                if kargs.has_key(name):
+                    setattr(c, name, kargs[name])
+                    args.append(kargs[name])
             return func(*args)
     
     def _dispatch_call(self):
