@@ -2,11 +2,16 @@ from ez_setup import use_setuptools
 use_setuptools()
 from setuptools import setup, find_packages
 
+version = "0.9"
+
 setup(
     name="Pylons",
-    version="0.9",
+    version=version,
     description='Pylons Web Framework',
     long_description="""
+Pylons
+======
+
 The Pylons web framework is aimed at making webapps and large programmatic website
 development in Python easy. Several key points:
 
@@ -35,15 +40,28 @@ development. Using a MVC style dispath, Python knowledge is used at various leve
 Current Status
 ---------------
 
-Pylons is stable, and is being used in production environments. Dependant packages
-are automatically installed from the following URL:
+Pylons %s described on this page is stable.
 
-* `Dependant Packages svn <http://www.pylonshq.com/download/>`_
+There is also an 
+unstable `develoment version <http://www.pylonshq.com/svn/Pylons/trunk#egg=Pylons-dev>`_ 
+of Pylons.
 
-""",
+Download and Installation
+-------------------------
+
+Pylons can be installed with `Easy Install 
+<http://peak.telecommunity.com/DevCenter/EasyInstall>`_ by typing::
+
+    > easy_install Pylons 
+
+Dependant packages are automatically installed from 
+the `Pylons download page <http://www.pylonshq.com/download/>`_ .
+
+
+"""%version,
     author='Ben Bangert, James Gardner',
     author_email='ben@groovie.org',
-    url='http://pylons.groovie.org/',
+    url='http://www.pylonshq.com/',
     packages=find_packages(exclude=['ez_setup']),
     zip_safe=False,
     include_package_data=True,
@@ -52,15 +70,16 @@ are automatically installed from the following URL:
         "PasteDeploy>=0.5", "PasteScript==dev,>=0.9.1dev-r5387", "FormEncode>=0.4",
         "simplejson>=1.3", "WSGIUtils==0.7", "WebHelpers==dev,>=0.1.3dev-r1011",
         "nose>=0.8.7", "Beaker==dev,>=0.5.1dev-r33",
-        ],
-    classifiers=["Development Status :: 4 - Beta",
-                 "Intended Audience :: Developers",
-                 "License :: OSI Approved :: BSD License",
-                 "Programming Language :: Python",
-                 "Topic :: Internet :: WWW/HTTP",
-                 "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
-                 "Topic :: Software Development :: Libraries :: Python Modules",
-               ],
+    ],
+    classifiers=[
+        "Development Status :: 4 - Beta",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: BSD License",
+        "Programming Language :: Python",
+        "Topic :: Internet :: WWW/HTTP",
+        "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+    ],
     extras_require = {
         'pudge': ["docutils>=0.4", "elementtree>=1.2.6", "kid>=0.9", 
             "pudge==dev,>=0.1.1dev", "buildutils==dev,>=0.1.2dev",],
