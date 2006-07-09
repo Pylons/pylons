@@ -1,15 +1,26 @@
 Development Version
-===================
++++++++++++++++++++
 
-`Subersion <http://subversion.tigris.org>`_ must be installed to retrieve the latest development version of Pylons. Subersion packages are available from `here <http://subversion.tigris.org/project_packages.html#binary-packages>`_.
+Installing The Development Version
+==================================
 
-Read the `Easy Install documentation <http://peak.telecommunity.com/DevCenter/EasyInstall>`_, to decide whether to install Pylons as a root user so it can be used by everyone or whether to use a `custom installation location <http://peak.telecommunity.com/DevCenter/EasyInstall#custom-installation-locations>`_ then download `ez_setup.py <http://pylonshq.com/files/ez_setup.py>`_ and run::
+`Subersion <http://subversion.tigris.org>`_ must be installed to retrieve the latest development version of Pylons. Subersion packages are available from `here <http://subversion.tigris.org/project_packages.html#binary-packages>`_. 
+
+Even if Windows users have Tortoise SVN installed they will still need the command line SVN tools described above, both systems can be installed at once.
+
+Read the `Easy Install documentation <http://peak.telecommunity.com/DevCenter/EasyInstall>`_, to decide whether to install Pylons as a root user so it can be used by everyone or whether to use a `custom installation location <http://peak.telecommunity.com/DevCenter/EasyInstall#custom-installation-locations>`_.
+
+If you have easy install run::
+
+    easy_install -U http://pylonshq.com/svn/Pylons/trunk
+
+Otherwise download `ez_setup.py <http://peak.telecommunity.com/dist/ez_setup.py>`_ and run::
     
     python ez_setup.py -U http://pylonshq.com/svn/Pylons/trunk
 
 
-Checking out the source code
-----------------------------
+Working Directlu From the Source Code
+=====================================
 
 Check out the latest code::
 	

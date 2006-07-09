@@ -1,44 +1,46 @@
 Installing Pylons
 +++++++++++++++++
 
-First, please note that Python 2.3 users on Windows will need to install `subprocess.exe <http://www.pylonshq.com/download/subprocess-0.1-20041012.win32-py2.3.exe>`_ before beginning the installation.
+First, please note that Python 2.3 users on Windows will need to install `subprocess.exe <http://www.pylonshq.com/download/subprocess-0.1-20041012.win32-py2.3.exe>`_ before beginning the installation. All windows users also should read the section `Post install tweaks for Windows </docs/0.9/windowsnotes.html>`_ after installation.
 
-Then, if you want to install Pylons system-wide (you'll need root access) so it can be used by everyone:
+System-wide Install
+===================
 
-#. Download the easy install file from http://pylonshq.com/files/ez_setup.py
-#. ``python ez_setup.py -f http://pylonshq.com/download/ "Pylons==0.8"``
+To install Pylons so it can be used by everyone (you'll need root access).
 
-Or if you'd like to use a `custom installation location <http://peak.telecommunity.com/DevCenter/EasyInstall#custom-installation-locations>`_, follow the steps there, then install Pylons as shown above. Reading the `Easy Install documentation <http://peak.telecommunity.com/DevCenter/EasyInstall>`_ can be useful to determine if you'd prefer system-wide
+If you already have easy install::
+
+    ``easy_install Pylons[full]``
+
+Otherwise: 
+
+#. Download the easy install setup file from http://peak.telecommunity.com/dist/ez_setup.py
+#. Run ``python ez_setup.py Pylons[full]``
+
+If you only want a minimum Pylons install without all the useful extras you can leave out the ``[full]`` part, but please be aware that the documentation assumes you have a full install.
+
+Custom Install Location
+=======================
+
+If you'd like to use a `custom installation location <http://peak.telecommunity.com/DevCenter/EasyInstall#custom-installation-locations>`_, follow the steps there, then install Pylons as shown above. Reading the `Easy Install documentation <http://peak.telecommunity.com/DevCenter/EasyInstall>`_ can be useful to determine if you'd prefer system-wide
 installation or not.
-
-If you already have Easy Install installed, you can install Pylons with a single command:
-    ``easy_install "Pylons==0.8"``
-
-All Windows users should read the section `Post install tweaks for Windows </docs/0.8/windowsnotes.html>`_ after installation.
-
-For a full installation including some cutting edge optional extras::
-
-	``python ez_setup.py -f http://pylonshq.com/download/ "Pylons[test,pudge,kid,cheetah]==0.8"``
-
 
 Upgrading
 =========
 
-For absolutely the latest version (or to upgrade to the latest) run::
+To upgrade to the latest version of Pylons run::
 
-    easy_install -U Pylons
+    easy_install -U Pylons[full]
 
 
 Living on the Cutting Edge
 ==========================
 
 Not satisfied with the latest release? Want to be on the cutting edge or work with Pylons source code?
-Feel free to `get involved </project/>`_ with Pylons and work with the `latest development version </docs/0.8/pylonsdev.html>`_.
+Feel free to `get involved </project/>`_ with Pylons and work with the `latest development version </docs/0.9/pylonsdev.html>`_.
 
 
 Packaging Note
 ==============
 
-The versions of Cheetah, docutils, elementtree, nose and just about everything else has been slightly modified by James Gardner so that they support setuptools and Python 2.3 and can automatically be installed by easy_install. Some of these packages have installation instructions which might require manual tweaking. If you plan to use the packages outside Pylons you may prefer to install them manually yourself to be 100% confident that they are setup correctly although the Pylons team haven't spotted any problems yet and they appear to work perfectly.
-
-
+The versions of Cheetah, docutils, elementtree, nose and just about everything else used by Pylons have been slightly modified by James Gardner so that they support setuptools and Python 2.3 and can automatically be installed by easy_install. Some of these packages have installation instructions which might require manual tweaking. If you plan to use the packages outside Pylons you may prefer to install them manually yourself to be 100% confident that they are setup correctly although the Pylons team haven't spotted any problems yet and they appear to work perfectly.
