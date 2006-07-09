@@ -10,6 +10,7 @@ Creating
 * `Internationalization <internationalisation.html>`_
 * `Error Documents <error_documents.html>`_
 * `Using Other Template Languages <template_plugins.html>`_
+* `Pylons Support for the Web Server Gateway Interface <wsgi.html>`_
 
 Debugging
 =========
