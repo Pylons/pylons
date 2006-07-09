@@ -37,7 +37,7 @@
 
 <h2>Getting Started</h2>
 <p>You're now ready to start creating your own web application. Here's what a basic controller looks
-like to print out 'Hello World' and respond to http://localhost:5000/hello:
+like to print out 'Hello World' and respond to http://127.0.0.1:5000/hello:
 <pre>
 # ${package}/controllers/hello.py
 # Note that the line above is the file you should create and put the following into...
@@ -77,7 +77,7 @@ Then add this to your hello controller class:
         return render_response('/serverinfo.myt')
 </pre>
 
-You can now view the page at: <tt>http://localhost:5000/hello/serverinfo</tt>
+You can now view the page at: <tt>http://127.0.0.1:5000/hello/serverinfo</tt>
 </p>
 </body>
 </html>

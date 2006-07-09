@@ -5,7 +5,7 @@ Getting Started
 Installing Pylons
 =================
 
-Read the `Installing Pylons HOWTO <install.html>`_.
+Read `Installing Pylons <install.html>`_.
 
 Creating a Pylons Project
 =========================
@@ -16,26 +16,28 @@ Create a new project named ``helloworld`` with this command::
 
     paster create --template=pylons helloworld
     
-Windows users might have to use a slightly longer version using the appropriate path to their ``Scripts`` directory::
+Windows users may have to configure their PATH as decribed in `Windows Notes <windowsnotes.html>`_ or use a slightly longer version using the appropriate path to their ``Scripts`` directory::
 
     python "C:\Python24\Scripts\paster" create --template=pylons helloworld
     
-    
 This creates a template pylons project which you can use as a basis for your own project. The directory structure is as follows::
 
-    -helloworld
-
+    - helloworld
+        - data
         - helloworld
         - helloworld.egg-info
+            - Various files including paste_deploy_config.ini_tmpl
         - development.ini
         - setup.cfg
         - setup.py
 
-The ``setup.py`` file is used to create a re-distributable Python package of your project called an egg. Eggs can be thought of as similar to ``.jar`` files in Java. ``setup.cfg`` and the ``helloworld.egg-info`` directory contain extra information to configure how the egg is produced. Distributing and deploying your egg file is covered in the Deployment docs.
+The ``setup.py`` file is used to create a re-distributable Python package of your project called an `egg <http://peak.telecommunity.com/DevCenter/PythonEggs>`_. Eggs can be thought of as similar to ``.jar`` files in Java. The ``setup.cfg`` file contains extra information about your project and the ``helloworld.egg-info`` directory contains information about the egg inculding a ``paste_deploy_config.ini_tmpl`` file which is used as a template for the config file when users of your project issue a ``paster make-config`` command. Distributing and deploying your egg is covered in the `Distributing Your Project <deployment.html>`_ documentation and end user configuration is described in `Application Setup <application_setup.html>`_.
 
-The ``helloworld`` directory within the ``helloworld`` directory is where all your application specific code and files are placed. This directory looks like:
+You may also notice a ``data`` directory which is created the first time you run the code. You can configure the location of the ``data`` directory by editing your ``development.ini`` file.
 
-    -helloworld
+The ``helloworld`` directory within the ``helloworld`` directory is where all your application specific code and files are placed. The directory looks like this::
+
+    - helloworld
         - helloworld
             - components
             - config
@@ -43,24 +45,30 @@ The ``helloworld`` directory within the ``helloworld`` directory is where all yo
             - docs
             - i18n
             - lib
+            - models
             - public
             - tests
             - templates
             - __init__.py
-            - model.py
             - websetup.py
 
 The ``components`` directory is for Myghty components that you want available in your Myghty templates.
+
+# XXX Do we really need a components directory in 0.0?
 
 The ``config`` directory contains the configuration options for your web application.
 
 The ``controllers`` directory is where your application controllers are written. Controllers are the core of your application where most of your code will be written.
 
-The ``docs`` directory is where you can write documentation for your project. You can then turn it into HTML using the command ``setup.py pudge``. # XXX currently a problem in lib.base.py when this command is run but project documentation is generated fine.
+The ``docs`` directory is where you can write documentation for your project. You can then turn it into HTML using the command ``setup.py pudge``. 
+
+# XXX currently a problem in lib.base.py when this command is run but project documentation is generated fine if you comment out threadlocal global imports.
 
 The ``i18n`` directory is where your message catalogues are stored to support multiple languages.
 
 The ``lib`` directory is where you can put code that is used between different controllers, third party code, or any other code that doesn't fit in well elsewhere.
+
+The ``models`` directory is for SQLObject or SQLAlchemy model objects. Objects defined in ``models/__init__.py`` will be loaded and present as model.YourObject inside your controllers. The database configuration string can be set in your ``development.ini`` file.
 
 The ``public`` directory is where you put all your HTML, image, javascript, css and other static files. It is similar to your htdocs directory in Apache.
 
@@ -70,11 +78,9 @@ The ``templates`` directory is where templates are stored. Templates contain a m
 
 The ``__init__.py`` file is present so that the ``helloworld`` directory can be used as a Python module within the egg.
 
-The ``model.py`` file is for SQLObject classes should you choose to use SQLObject as your database object mapper. SQLObject classes defined in model.py will be loaded and present as model.YourClass inside your controllers. The database configuration string can be set in your ``development.ini`` file.
+The ``websetup.py`` should contain any code that should be executed when an end user of your application runs the ``paster setup-app`` command described in  `Application Setup <application_setup.html>`_.
 
-The ``websetup.py`` should contain any code that should be executed when an end user of your application runs the ``paster setup-app`` command.
 
-You may also notice the Myghty ``cache`` directory which is created the first time you run the code.
 
 Testing the template project
 ============================
@@ -84,15 +90,15 @@ We can test the template project like this::
     cd helloworld
     paster serve --reload development.ini
     
-Again Windows users may need a slightly longer version of the command last command with the path to their ``Scripts`` directory::
+Again Windows users may need a slightly longer version of the command with the path to their ``Scripts`` directory if they haven't followed the instructions in `Windows Notes <windowsnotes.txt>`_::
 
     python "C:\Python24\Scripts\paster" serve  --reload development.ini
     
+The command loads our project server configuration file in ``development.ini`` and serves the Pylons application.
+
 The ``--reload`` option ensures that the server is automatically reloaded if you make any changes to Python files or the ``development.ini`` config file. This is very useful during development.
 
-If you visit http://localhost:5000/ you will see the welcome page. 
-
-The command ``paster serve development.ini`` loads our project server configuration file in ``development.ini`` and responds appropriately.
+If you visit http://127.0.0.1:5000/ you will see the welcome page (``127.0.0.1`` is a special IP address that references your own computer but you can change the hostname by editing the ``development.ini`` file).
 
 Try creating a new file named ``test.html`` in the ``helloworld/public`` directory with the following content::
 
@@ -102,14 +108,12 @@ Try creating a new file named ``test.html`` in the ``helloworld/public`` directo
     </body>
     </html>
     
-If you visit http://localhost:5000/test.html you will see the message ``Hello World!``. Any files in the ``public`` directory are served in the same way they would be by any webserver and if Pylons has a choice of whether to serve a file from the ``public`` directory or from code in a controller it will always choose the file in ``public``.
+If you visit http://127.0.0.1:5000/test.html you will see the message ``Hello World!``. Any files in the ``public`` directory are served in the same way they would be by any webserver, but with built-in caching, and if Pylons has a choice of whether to serve a file from the ``public`` directory or from code in a controller it will always choose the file in ``public``. This behaviour can be changed by altering the order of the ``Cascade`` in ``config/middleware.py``.
 
-Warning: If pylons doesn't appear to be serving the correct content check that it is not because there is a file in the ``public`` directory which is being served first.
+Interactive Debugger
+====================
 
-Enabling Debugging
-==================
-
-If you are developing an application you will want to enable the interactive debugging but it is disabled by default so that you don't accidentally use it on a production site. If you accidentally left debugging on, if an error occured the visitor would be able to execute malicious code.
+If you are developing an application you will want to use the interactive debugging which is enabled by default in ``development.ini`` but disabled in config files your users will generate so that they don't accidentally use it on a production site. If debugging was accidentally left on for a production site and an error occured the visitor would be able to execute malicious code using the interactive debugging prompt. 
 
 Enable debugging by commenting out the line that looks like this in the ``[app:main]`` section of your ``development.ini`` file::
 
@@ -119,7 +123,9 @@ so that it looks like this::
 
     # set debug = false
 
-Now if an error occurs you will be able to interactively debug it.
+If debug is not set to ``false`` you will be able to interactively debug your application but as mentioned earlier this should not be used in a production site as it is a MAJOR SECURITY RISK.
+
+More information is available in the `Interactive Debugger <interactive_debugger.html>`_ documentation.
 
 Creating a Controller and modifying the Routes
 ==============================================
@@ -130,29 +136,27 @@ You're now ready to start creating your own web application. First, lets create 
 
 This ``paster`` command will create the ``controllers/hello.py`` file for you with a basic layout as well as a ``helloworld/tests/functional/test_hello.py`` that is used for running functional tests of the controller.
 
-Here's what a basic controller looks like to print out 'Hello World' and respond to http://localhost:5000/hello. Put the following text in the file ``helloworld/controllers/hello.py``::
+Here's what a basic controller looks like to print out 'Hello World' and respond to http://127.0.0.1:5000/hello. Put the following text in the file ``helloworld/controllers/hello.py``::
 
     from helloworld.lib.base import *
     
     class HelloController(BaseController):
         def index(self):
-            m.write('hello world')
+            return response('hello world')
 
 Pylons uses a powerful and flexible system for routing URLs to the appropriate piece of code and back. 
 
-We would like the hello controller to also be displayed for both the URL http://localhost:5000/hello and the URL http://localhost:5000/ which is the site route. We modify the ``ROUTES CONFIG`` in ``helloworld/config/routing.py`` like this::
+We would like the hello controller to also be displayed for both the URL http://127.0.0.1:5000/hello and the URL http://127.0.0.1:5000/ which is the site route. We need to add a line to the routes config in ``helloworld/config/routing.py`` so it looks like this::
 
-    # ROUTES CONFIG
-    map = Mapper(directory=root_path+'/controllers')
-    
-    map.connect(':controller/:action/:id')
     map.connect('', controller='hello', action='index')
+    map.connect(':controller/:action/:id')
+    map.connect('*url', controller='template', action='view')
 
-This means that route mapper looks for URLs in the form ``controller/action/id`` but that if ``id``, ``action`` or ``controller`` are not specified the defaults in the last line are used.
+This means that an empty URL is matched to the ``index`` action of the ``hello`` controller otherwise the route mapper looks for URLs in the form ``controller/action/id`` but if ``id``, ``action`` or ``controller`` are not specified the request is routed to the ``view`` action of the ``templates`` controller where by default a 404 error is raised.
 
-Since we have made changes to our routes we must restart the server. If you are using the ``--reload`` option this will happen automatically, otherwise close the old server and start it again using the same command as before. (Note: Controller and template changes do *not* require restarting the server even without the ``--reload`` option.)
+Since we have made changes to our routes we must restart the server. If you are using the ``--reload`` option this will happen automatically, otherwise close the old server and start it again using the same command as before. (Note: Myghty template changes do *not* require restarting the server even without the ``--reload`` option.)
 
-Visit both http://localhost:5000/hello and http://localhost:5000/ and you will find that although the first URL produces the expected ``Hello World``, the second URL produces the welcome page as before. This is because, as mentioned earlier, static files in the ``public`` directory are served before looking for code.
+Visit both http://127.0.0.1:5000/hello and http://127.0.0.1:5000/ and you will find that although the first URL produces the expected ``Hello World``, the second URL produces the welcome page as before. This is because, as mentioned earlier, static files in the ``public`` directory are served before looking for code.
 
 Delete the file ``public/index.html`` and the application works as expected.
 
@@ -175,13 +179,17 @@ Create a template file ``helloworld/templates/serverinfo.myt`` containing the fo
 To use this template you will need to add a new method to your HelloController in ``helloworld/controllers/hello.py``. Add the following function to the end of the class::
 
     def serverinfo(self):
-        m.subexec('/serverinfo.myt')
+        return render_response('/serverinfo.myt')
 
-The m.subexec('/serverinfo.myt') function will call Myghty to render your template. 
+The ``render_response('/serverinfo.myt')`` function will call Myghty to render your template. 
 
-If your server is still running you can view the page at: http://localhost:5000/hello/serverinfo
+If your server is still running you can view the page at: http://127.0.0.1:5000/hello/serverinfo
 
-If not simply restart the server with ``paster serve --reload development.ini`` from the helloworld directory. 
+If not simply restart the server with ``paster serve --reload development.ini`` from the helloworld directory.
+
+# XXX Add some inforation on multiple template types.
+# XXX Add some inforation on the shell.
+
 
 Controller variables and Template Globals
 =========================================
@@ -199,9 +207,14 @@ request
     The current HTTP request object, corresponds to the `r object from Myghty <http://www.myghty.org/docs/globals.myt#globals_globalr>`_. This object contains common methods to
     access request information like request.method, request.headers_in and request.headers_out.
 
-m
-    m is the Myghty object, described in `detail in the Myghty docs <http://www.myghty.org/docs/request.myt#request>`_.
-    Used primarily for template rendering, and caching functionality.
+response
+    The response object to return
+
+render
+    Render a template to return a string
+
+render_response
+    Render a template and return a valid ``response`` object. Equivalent to ``response(render(...))``.
 
 h
     h is the point at which all the Pylons helper functions are utilized from. By default Pylons will load all the helper functions available from the `Web Helpers </WebHelpers/module-index.html>`_ package. Keep in mind when
@@ -223,7 +236,7 @@ To make it easier to set up your data for use by the template, the variable ``c`
 
     def serverinfo(self):
         c.value = 2 
-        m.subexec('/serverinfo.myt')
+        return render_response('/serverinfo.myt')
 
 and modify the ``serverinfo.myt`` file in the ``templates`` directory to look like this::
 
@@ -259,7 +272,7 @@ Then add this new method to the end of the ``helloworld/controllers/hello.py``:
         else:
             m.write(g.message)
 
-This time if you run the server and visit http://localhost:5000/hello/app_globals_test/ you should see the message ``Hello``. If you visit the page again the message will be changed to ``Hello World!`` and it will remain changed for all subsequent requests because the application global variable was modified on the first request.
+This time if you run the server and visit http://127.0.0.1:5000/hello/app_globals_test/ you should see the message ``Hello``. If you visit the page again the message will be changed to ``Hello World!`` and it will remain changed for all subsequent requests because the application global variable was modified on the first request.
 
 The ``__init__()`` method takes the parameters ``global_conf`` and ``app_conf`` which are the values of the global_conf and application configuration variables specified in the ``development.ini`` file. This means you can set global variables based on configuration options. Note that you do not have access to ``m``, ``r``, ``h`` or other variables when adding application globals since they are setup before a request is ever made.
 
