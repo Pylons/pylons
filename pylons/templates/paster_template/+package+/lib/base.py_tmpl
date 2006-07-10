@@ -1,9 +1,11 @@
-from pylons import Controller, c, g, h, cache, request, response, session
+from pylons import WSGIController, c, g, h, cache, request, response, session
 from pylons.decorators import jsonify, rest, validate
 from pylons.templating import render, render_response
 import ${package}.models as model
 
-class BaseController(Controller):
-    def __call__(self, **params):
-        # Insert any code to be run per request here
-        return Controller.__call__(self, **params)
+class BaseController(WSGIController):
+    def __call__(self, environ, start_response):
+        # Insert any code to be run per request here. The Routes match
+        # is under environ['pylons.routes_dict'] should you want to check
+        # the action or route vars here
+        return WSGIController.__call__(self, environ, start_response)
