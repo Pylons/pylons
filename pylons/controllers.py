@@ -108,6 +108,32 @@ class Controller(object):
             self._inspect_call(self.__after__)
         return response
 
+class WSGIController(Controller):
+    def __call__(self, environ, start_response):
+        match = environ['pylons.routes_dict']
+        self._req = pylons.request.current_obj()
+        
+        # Keep private methods private
+        if match.get('action').startswith('_'):
+            return pylons.Response(code=404)
+        
+        if hasattr(self, '__before__'):
+            self._inspect_call(self.__before__)
+        response = self._dispatch_call()
+        if hasattr(self, '__after__'):
+            self._inspect_call(self.__after__)
+        
+        # Pull the content we need for a WSGI response
+        status, response_headers, content = response.wsgi_response()
+        start_response(status, response_headers)
+        
+        # Copy the response object into the testing vars if we're testing
+        if environ.get('paste.testing'):
+            environ['paste.testing_variables']['response'] = response
+        
+        return content
+        
+
 class RPCController(Controller):
     resource = 'RPC2'
     

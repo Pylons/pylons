@@ -2,6 +2,15 @@ Pylons Changelog
 =================
 
 0.9 (**dev**)
+* Altered the wsgi dispatch to examine the controller, and instantiate it if
+  it's just a class. Otherwise, if the controller is a subclass of Controller
+  but not of WSGIController, it assumes its an older Controller class that
+  may return a WSGIResponse, and calls it appropriately.
+* Dispatch now fixes up environ to move 'path_info' Route var into the WSGI
+  PATH_INFO, and the rest is pushed into SCRIPT_NAME. This is for use with
+  other WSGI apps under controller mount points.
+* Added WSGIController which takes a normal WSGI interface call and returns
+  the appropriate WSGI response.
 * Added automatic copying of Route variables declared in an action's
   function definition to the 'c' object.
 * WebHelpers' .js files are now automatically published under the 

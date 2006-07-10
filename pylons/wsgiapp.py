@@ -7,6 +7,7 @@ and call the WSGI app as well.
 """
 import sys
 import re
+import inspect
 
 import paste.wsgiwrappers
 from paste.registry import RegistryManager
@@ -20,6 +21,7 @@ import pylons
 import pylons.templating
 from pylons.util import RequestLocal
 from pylons.helpers import Myghty_Compat, redirect_to
+from pylons.controllers import Controller, WSGIController
 
 class PylonsBaseWSGIApp(object):
     """Basic Pylons WSGI Application
@@ -145,19 +147,22 @@ class PylonsBaseWSGIApp(object):
         return controller
         
     def dispatch(self, controller, environ, start_response):
-        """Dispatches to a controller, will instantiate the controller
-        if necessary"""
+        """Dispatches to a controller, will instantiate the controller if
+        necessary"""
         if not controller:
             res = WSGIResponse()
             res.status_code = 404
             return res
         match = environ['pylons.routes_dict']
-        if not getattr(controller, 'wsgi_application', False):
-            # Sanitaze keys
-            # @@ TODO: This should be done in a lazy fashion
-            for k,v in match.iteritems():
-                if v:
-                    match[k] = escapes.url_unescape(v)
+        
+        # Sanitaze keys
+        # @@ TODO: This should be done in a lazy fashion
+        for k,v in match.iteritems():
+            if v:
+                match[k] = escapes.url_unescape(v)
+        
+        # Older subclass of Controller
+        if not issubclass(controller, WSGIController) and issubclass(controller, Controller):
             controller = controller()
             controller.start_response = start_response
             
@@ -167,8 +172,18 @@ class PylonsBaseWSGIApp(object):
             
             return controller(**match)
         
-        self.fixup_environ(environ, match)
-        return controller.wsgi_application(environ, start_response)
+        # If the route included a path_info attribute, we'll assume it
+        # should be pulled, otherwise we call the controller    
+        if match.get('path_info'):
+            self.fixup_environ(environ, match)
+        
+        # If it's a class, instantiate it
+        if not hasattr(controller, '__class__') or \
+            getattr(controller, '__class__') == type:
+            controller = controller()
+        
+        # Controller is assumed to handle a WSGI call
+        return controller(environ, start_response)
     
     def fixup_environ(self, environ, dispatch):
         """Fixes the environ based on the Routes match"""
