@@ -84,19 +84,19 @@ class PylonsBaseWSGIApp(object):
             return content
         elif response:
             return response
+            
+        # Apparently we returned absolutely nothing, use the response
+        # object if in legacy mode, otherwise raise an exception
+        if environ.get('pylons.legacy'):
+            resp = pylons.helpers.response
+            if hasattr(pylons.helpers.response, 'wsgicall'):
+                # Legacy app using run_wsgi
+                return resp.content
+            status, response_headers, content = resp.wsgi_response()
+            start_response(status, response_headers)
+            return content
         else:
-            # Apparently we returned absolutely nothing, use the response
-            # object if in legacy mode, otherwise raise an exception
-            if environ.get('pylons.legacy'):
-                resp = pylons.helpers.response
-                if hasattr(pylons.helpers.response, 'wsgicall'):
-                    # Legacy app using run_wsgi
-                    return resp.content
-                status, response_headers, content = resp.wsgi_response()
-                start_response(status, response_headers)
-                return content
-            else:
-                raise Exception, "No content returned by controller: %s" % controller.__name__
+            raise Exception, "No content returned by controller: %s" % controller.__name__
     
     def setup_app_env(self, environ, start_response):
         """Setup and register all the Pylons objects with the registry"""
