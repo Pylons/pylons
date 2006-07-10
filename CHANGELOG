@@ -2,6 +2,7 @@ Pylons Changelog
 =================
 
 0.9 (**dev**)
+* Relocated 'params' object to only take effect in legacy mode.
 * Updated Pylons template to use WSGIController as the new default Controller.
 * Altered the wsgi dispatch to examine the controller, and instantiate it if
   it's just a class. Otherwise, if the controller is a subclass of Controller

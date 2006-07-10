@@ -105,7 +105,6 @@ class PylonsBaseWSGIApp(object):
         environ['paste.registry'].register(pylons.request, req)
         environ['paste.registry'].register(pylons.c, self.c)
         environ['paste.registry'].register(pylons.g, self.globals)
-        environ['paste.registry'].register(pylons.params, req.params)
         environ['paste.registry'].register(pylons.buffet, self.buffet)
         pylons.h()
         self.c._clear()
@@ -114,6 +113,7 @@ class PylonsBaseWSGIApp(object):
         if environ.get('pylons.legacy'):
             environ['paste.registry'].register(pylons.helpers.response, WSGIResponse())
             environ['paste.registry'].register(pylons.m, Myghty_Compat(environ, start_response))
+            environ['paste.registry'].register(pylons.params, req.params)
         
         econf = environ['pylons.environ_config']
         if econf.get('session'):
