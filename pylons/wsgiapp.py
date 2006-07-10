@@ -20,7 +20,6 @@ import pylons
 import pylons.templating
 from pylons.util import RequestLocal
 from pylons.helpers import Myghty_Compat, redirect_to
-from pylons.controllers import Controller
 
 class PylonsBaseWSGIApp(object):
     """Basic Pylons WSGI Application
@@ -153,7 +152,7 @@ class PylonsBaseWSGIApp(object):
             res.status_code = 404
             return res
         match = environ['pylons.routes_dict']
-        if type(controller) == type(Controller) and issubclass(controller, Controller):
+        if not getattr(controller, 'wsgi_application', False):
             # Sanitaze keys
             # @@ TODO: This should be done in a lazy fashion
             for k,v in match.iteritems():
@@ -169,7 +168,7 @@ class PylonsBaseWSGIApp(object):
             return controller(**match)
         
         self.fixup_environ(environ, match)
-        return controller(environ, start_response)
+        return controller.wsgi_application(environ, start_response)
     
     def fixup_environ(self, environ, dispatch):
         """Fixes the environ based on the Routes match"""
