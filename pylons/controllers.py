@@ -63,7 +63,7 @@ class Controller(object):
         
         c = pylons.c.current_obj()
         if argspec[2]:
-            for k,v in kargs: setattr(c, k, v)
+            for k,v in kargs.iteritems(): setattr(c, k, v)
             return func(**kargs)
         else:
             argnames = argspec[0][1:]
