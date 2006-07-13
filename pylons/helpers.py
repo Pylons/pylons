@@ -84,41 +84,22 @@ class Myghty_Compat(object):
         if status_code == 404:
             raise httpexceptions.HTTPNotFound()
         else:
-            return
+            exc = httpexceptions.get_exception(status_code)(detail=reason)
+            raise exc
 
 def redirect_to(url):
     """Redirect function to raise an httpexception causing a 302 Redirect"""
     raise httpexceptions.HTTPFound(url)
 
-def formfill(m, defaults=None, errors=None):
-    """Formfill Myghty Module Component (LEGACY, use validate decorator)
+def abort(status_code=None, detail="", headers=None, comment=None):
+    """Aborts the request immediately by returning an HTTP exception
     
-    The Formfill module component is for use with Myghty as a wrapper
-    around a ``<form>`` section. The formfill component will then parse
-    the Myghty content block and fill in errors and defaults as needed.
-    
-    Formfill uses `FormEncode <http://formencode.org/>`_ to parse the
-    form and put in errors and defaults.
-    
-    Example::
-        
-        <&| @pylons.helpers:formfill &>
-        <form action="<% h.url_for() %>" method="post">
-        Username: <input type="text" name="username" size="26" />
-        <form:error name="username">
-        Age: <input type="text" name="age" size="3" />
-        <form:error name="age">
-        <input type="submit" value="Send it" />
-        </form>
-        </&>
+    In the event that the status_code is a 300 series error, the detail 
+    attribute will be used as the Location header should one not be specified
+    in the headers attribute.
     
     """
-    if not defaults:
-        defaults = pylons.c.defaults
-    if not errors:
-        errors = pylons.c.errors
-    form = m.content()
-    m.write(htmlfill.render(form, defaults, errors))
-
+    exc = httpexceptions.get_exception(status_code)(detail, headers, comment)
+    raise exc
 
 __all__ = ['etag_cache', 'redirect_to', 'formfill']

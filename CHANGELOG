@@ -2,6 +2,9 @@ Pylons Changelog
 =================
 
 0.9 (**dev**)
+* Adding abort method that raises the appropriate exception for the status
+  code.
+* Removing form_fill, obsolete by the validate decorator.
 * Relocated 'params' object to only take effect in legacy mode.
 * Updated Pylons template to use WSGIController as the new default Controller.
 * Altered the wsgi dispatch to examine the controller, and instantiate it if
