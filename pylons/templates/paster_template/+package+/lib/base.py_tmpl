@@ -1,4 +1,5 @@
-from pylons import WSGIController, c, g, h, cache, request, Response, session
+from pylons import Response, c, g, h, cache, request, session
+from pylons.controllers import WSGIController
 from pylons.decorators import jsonify, rest, validate
 from pylons.templating import render, render_response
 from pylons.helpers import abort, redirect_to

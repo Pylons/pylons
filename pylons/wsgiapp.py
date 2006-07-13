@@ -8,15 +8,14 @@ and call the WSGI app as well.
 import sys
 import re
 import inspect
+import urllib
 
 import paste.wsgiwrappers
 import paste.httpexceptions as httpexceptions
 from paste.registry import RegistryManager
 from paste.wsgiwrappers import WSGIRequest
-from paste.wsgiwrappers import WSGIResponse
 
 from routes import request_config
-import myghty.escapes as escapes
 
 import pylons
 import pylons.templating
@@ -157,16 +156,14 @@ class PylonsBaseWSGIApp(object):
         """Dispatches to a controller, will instantiate the controller if
         necessary"""
         if not controller:
-            res = WSGIResponse()
-            res.status_code = 404
-            return res
+            raise httpexceptions.HTTPNotFound()
         match = environ['pylons.routes_dict']
         
         # Sanitaze keys
         # @@ TODO: This should be done in a lazy fashion
         for k,v in match.iteritems():
             if v:
-                match[k] = escapes.url_unescape(v)
+                match[k] = urllib.unquote_plus(v)
         
         # Older subclass of Controller
         if not issubclass(controller, WSGIController) and issubclass(controller, Controller):
@@ -261,8 +258,12 @@ class PylonsApp(object):
         environ['pylons.environ_config'] = self.econf
         return self.app(environ, start_response)
 
+WSGIResponse = None
+
 class LegacyApp(object):
     def __init__(self, config):
+        global WSGIResponse
+        from paste.wsgiwrappers import WSGIResponse
         self.app = PylonsApp(config)
         self.globals = self.app.globals
     
