@@ -1,4 +1,4 @@
-from pylons import WSGIController, c, g, h, cache, request, response, session
+from pylons import WSGIController, c, g, h, cache, request, Response, session
 from pylons.decorators import jsonify, rest, validate
 from pylons.templating import render, render_response
 import ${package}.models as model
