@@ -25,13 +25,13 @@ class SampleController(BaseController):
         return Response(str(request.params))
     
     def testdefault(self):
-        return render_Response('testkid')
+        return render_response('testkid')
 
     def test_extra_engine(self):
-        return render_Response('kid', 'testkid')
+        return render_response('kid', 'testkid')
     
     def test_template_caching(self):
-        return render_Response('/test_myghty.myt', cache_expire='never')
+        return render_response('/test_myghty.myt', cache_expire='never')
     
     def test_only_post(self):
         return Response('It was a post!')
