@@ -5,9 +5,9 @@ the Myghty compatibility objects for Pylons 0.8 projects and new Myghty Module C
 for use in Myghty templates.
 
 """
+from routes import redirect_to
 from paste.registry import StackedObjectProxy
 import paste.httpexceptions as httpexceptions
-from formencode import htmlfill
 
 import pylons
 import pylons.helpers
@@ -43,53 +43,6 @@ def etag_cache(key=None):
         raise httpexceptions.HTTPNotModified()
     else:
         return resp
-
-class Myghty_Compat(object):
-    """Myghty Compatibility Object for Pylons 0.8 Projects"""
-    def __init__(self, environ, start_response):
-        self.environ = environ
-        self.start_response = start_response
-        self.headers_out = pylons.helpers.response.headers
-        self.headers_in = pylons.request.headers
-        self.request_args = pylons.request.params
-    
-    def write(self, content):
-        pylons.helpers.response.write(content)
-    
-    def out(self, content):
-        pylons.helpers.response.write(content)
-    
-    def cache_self(self, *args, **kargs):
-        return False
-    
-    def subexec(self, *args, **kargs):
-        pylons.helpers.response.write(tmpl.render(*args, **kargs))
-    
-    def comp(self, *args, **kargs):
-        pylons.helpers.response.write(tmpl.render_fragment(*args, **kargs))
-    
-    def scomp(self, *args, **kargs):
-        return tmpl.render_fragment(*args, **kargs)
-    
-    def fetch_component(self, name):
-        return name
-    
-    def get_cache(self, component):
-        return pylons.cache.get_cache(component)
-    
-    def send_redirect(self, path, hard=True):
-        redirect_to(path)
-    
-    def abort(self, status_code=None, reason=""):
-        if status_code == 404:
-            raise httpexceptions.HTTPNotFound()
-        else:
-            exc = httpexceptions.get_exception(status_code)(detail=reason)
-            raise exc
-
-def redirect_to(url):
-    """Redirect function to raise an httpexception causing a 302 Redirect"""
-    raise httpexceptions.HTTPFound(url)
 
 def abort(status_code=None, detail="", headers=None, comment=None):
     """Aborts the request immediately by returning an HTTP exception

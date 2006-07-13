@@ -10,6 +10,7 @@ import re
 import inspect
 
 import paste.wsgiwrappers
+import paste.httpexceptions as httpexceptions
 from paste.registry import RegistryManager
 from paste.wsgiwrappers import WSGIRequest
 from paste.wsgiwrappers import WSGIResponse
@@ -20,7 +21,7 @@ import myghty.escapes as escapes
 import pylons
 import pylons.templating
 from pylons.util import RequestLocal
-from pylons.helpers import Myghty_Compat, redirect_to
+from pylons.legacy import Myghty_Compat
 from pylons.controllers import Controller, WSGIController
 
 class PylonsBaseWSGIApp(object):
@@ -63,12 +64,16 @@ class PylonsBaseWSGIApp(object):
         if environ.get('paste.testing'):
             self.load_test_env(environ)
         
-        # Change our HTTP_METHOD if _method is present
+        # Change our HTTP_METHOD if _method is present, try GET first to avoid
+        # parsing POST unless absolutely necessary.
         req = pylons.request.current_obj()
         old_method = None
-        if req.params.has_key('_method'):
+        if req.GET.has_key('_method'):
             old_method = environ['REQUEST_METHOD']
-            environ['REQUEST_METHOD'] = req.params['_method']
+            environ['REQUEST_METHOD'] = req.GET['_method']
+        elif req.POST.has_key('_method'):
+            old_method = environ['REQUEST_METHOD']
+            environ['REQUEST_METHOD'] = req.POST['_method']
         
         controller = self.resolve(environ, start_response)
         if old_method: environ['REQUEST_METHOD'] = old_method            
@@ -126,6 +131,8 @@ class PylonsBaseWSGIApp(object):
         config = request_config()
         config.mapper = self.mapper
         config.environ = environ
+        def redirect_to(url):
+            raise httpexceptions.HTTPFound(url)
         config.redirect = redirect_to
         match = config.mapper_dict
         if not match:

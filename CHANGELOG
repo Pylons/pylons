@@ -2,6 +2,12 @@ Pylons Changelog
 =================
 
 0.9 (**dev**)
+* Removing 'response' to import, sticking with Response as its more
+  consistent with the fact that Response is a class/factory and not an
+  instance like request, and the other lower-case objects.
+* Added redirect_to under pylons.helpers, and added import from helpers
+  directly into lib/base.py for use in controllers.
+* Consolidated legacy objects into legacy module
 * Adding abort method that raises the appropriate exception for the status
   code.
 * Removing form_fill, obsolete by the validate decorator.

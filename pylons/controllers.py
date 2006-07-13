@@ -110,6 +110,7 @@ class Controller(object):
 
 class WSGIController(Controller):
     def __call__(self, environ, start_response):
+        self.start_response = start_response
         match = environ['pylons.routes_dict']
         self._req = pylons.request.current_obj()
         
@@ -123,15 +124,17 @@ class WSGIController(Controller):
         if hasattr(self, '__after__'):
             self._inspect_call(self.__after__)
         
-        # Pull the content we need for a WSGI response
-        status, response_headers, content = response.wsgi_response()
-        start_response(status, response_headers)
+        if hasattr(response, 'wsgi_response'):
+            # Pull the content we need for a WSGI response
+            status, response_headers, content = response.wsgi_response()
+            start_response(status, response_headers)
         
-        # Copy the response object into the testing vars if we're testing
-        if environ.get('paste.testing'):
-            environ['paste.testing_variables']['response'] = response
+            # Copy the response object into the testing vars if we're testing
+            if environ.get('paste.testing'):
+                environ['paste.testing_variables']['response'] = response
+            response = content
         
-        return content
+        return response
         
 
 class RPCController(Controller):

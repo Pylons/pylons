@@ -1,6 +1,7 @@
 from pylons import WSGIController, c, g, h, cache, request, Response, session
 from pylons.decorators import jsonify, rest, validate
 from pylons.templating import render, render_response
+from pylons.helpers import abort, redirect_to
 import ${package}.models as model
 
 class BaseController(WSGIController):
