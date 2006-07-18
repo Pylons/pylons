@@ -1,8 +1,8 @@
-from ${package}.lib.base import *
+import os.path
 from paste import fileapp
 from pylons.middleware import media_path, error_document_template
-import os.path
 from pylons.util import get_prefix
+from ${package}.lib.base import *
 
 class ErrorController(BaseController):
     """
