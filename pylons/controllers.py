@@ -109,6 +109,7 @@ class Controller(object):
         return response
 
 class WSGIController(Controller):
+    """WSGI Controller that follows WSGI spec for calling and return values"""
     def __call__(self, environ, start_response):
         self.start_response = start_response
         match = environ['pylons.routes_dict']

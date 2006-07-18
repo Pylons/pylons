@@ -2,6 +2,9 @@ Pylons Changelog
 =================
 
 0.9 (**dev**)
+* Fix for multi-word controller names such that front_page / 
+  FrontPageController can be used as a controller name. Patch contributed
+  by Timo Mihaljov.
 * Cleaned up imports in wsgiapp and new project to better reflect where
   things really come from.
 * Removed unnecessary myghty usage from wsgiapp for url unescaping, now

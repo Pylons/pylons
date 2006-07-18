@@ -27,6 +27,25 @@ def get_prefix(environ):
         prefix = ''
     return prefix
 
+def class_name_from_module_name(module_name):
+    """Takes a module name and returns the name of the class it defines.
+
+    If the module name contains dashes, they are replaced with underscores.
+    
+    Example::
+    
+        >>> class_name_from_module_name('with-dashes')
+        'WithDashes'
+        >>> class_name_from_module_name('with_underscores')
+        'WithUnderscores'
+        >>> class_name_from_module_name('oneword')
+        'Oneword'
+    
+    """
+    words = module_name.replace('-', '_').split('_')
+    return ''.join([w.title() for w in words])
+
+
 class RequestLocal(object):
     """This object emulates a dict and supports the full set of dict functions
     and operations.

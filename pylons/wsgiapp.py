@@ -19,7 +19,7 @@ from routes import request_config
 
 import pylons
 import pylons.templating
-from pylons.util import RequestLocal
+from pylons.util import RequestLocal, class_name_from_module_name
 from pylons.legacy import Myghty_Compat
 from pylons.controllers import Controller, WSGIController
 
@@ -144,13 +144,13 @@ class PylonsBaseWSGIApp(object):
         # Pull the controllers class name, import controller
         # @@ TODO: Encapsulate in try/except to raise error if controller
         #          doesn't exist, or class in controller file doesn't exist.
-        controller_name = self.package_name + '.controllers.' \
+        full_module_name = self.package_name + '.controllers.' \
             + controller.lower().replace('/', '.')
-        __import__(controller_name)
-        controller_class = controller.split('/')[-1].title().replace('-', '_')
-        classname = controller_class + 'Controller'
-        controller = getattr(sys.modules[controller_name], classname)
-        return controller
+        
+        __import__(full_module_name)
+        module_name = full_module_name.split('.')[-1]
+        class_name = class_name_from_module_name(module_name) + 'Controller'
+        return getattr(sys.modules[full_module_name], class_name)
         
     def dispatch(self, controller, environ, start_response):
         """Dispatches to a controller, will instantiate the controller if
