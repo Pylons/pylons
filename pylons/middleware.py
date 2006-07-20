@@ -57,16 +57,12 @@ def ErrorHandler(app, global_conf, **errorware):
 #
 
 from paste.recursive import RecursiveMiddleware
-from paste.errordocument import custom_forward
+from paste.errordocument import StatusBasedForward
 from urllib import urlencode
 from paste.deploy.converters import asbool
 from pylons.util import get_prefix
 
-def error_mapper(code, message, environ, global_conf=None, kw=None):
-    if global_conf is None:
-        global_conf = {}
-    if kw is None:
-        kw = {}
+def error_mapper(code, message, environ, global_conf=None, **kw):
     codes = [401, 403, 404]
     if not asbool(global_conf.get('debug', 'true')):
         codes.append(500)
@@ -74,7 +70,7 @@ def error_mapper(code, message, environ, global_conf=None, kw=None):
         url = '%s/error/document/?%s'%(get_prefix(environ), urlencode({'message':message, 'code':code}))
         return url
 
-def ErrorDocuments(app,  global_conf=None, mapper=None, **kw):
+def ErrorDocuments(app, global_conf=None, mapper=None, **kw):
     """Wraps the app in error docs using Paste RecursiveMiddleware and ErrorDocumentsMiddleware
     
     All the args are passed directly into the ErrorDocumentsMiddleware. If no mapper is given,
@@ -84,8 +80,9 @@ def ErrorDocuments(app,  global_conf=None, mapper=None, **kw):
         global_conf = {}
     if mapper is None:
         mapper = error_mapper
-    app = RecursiveMiddleware(app)
-    return custom_forward(app, global_conf=global_conf, mapper=mapper, **kw)
+    return RecursiveMiddleware(StatusBasedForward(app, global_conf=global_conf, mapper=mapper, **kw))
+    #app = RecursiveMiddleware(app)
+    #return custom_forward(app, global_conf=global_conf, mapper=mapper, **kw)
 
 error_document_template = """\
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">

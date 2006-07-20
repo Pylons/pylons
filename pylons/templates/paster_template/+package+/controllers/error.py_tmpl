@@ -17,8 +17,8 @@ class ErrorController(BaseController):
         """
         page = error_document_template % {
             'prefix': get_prefix(request.environ),
-            'code': request.params.get('code', ''), 
-            'message': request.params.get('message', ''),
+            'code': request.params.get('code', [''])[0], 
+            'message': request.params.get('message', [''])[0],
         }
         return Response(page)
 
