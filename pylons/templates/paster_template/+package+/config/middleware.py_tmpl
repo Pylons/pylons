@@ -38,9 +38,6 @@ def make_app(global_conf, **app_conf):
     # @@@ Error Handling @@@
     app = ErrorHandler(app, global_conf, error_template=error_template, **config.errorware)
     
-    # @@@ Establish the Registry for this application @@@
-    app = RegistryManager(app)
-    
     # @@@ Static Files in public directory @@@
     static_app = StaticURLParser(config.paths['static_files'])
 
@@ -53,4 +50,7 @@ def make_app(global_conf, **app_conf):
     # @@@ Display error documents for 401, 403, 404 status codes (if debug is False also intercepts 500) @@@
     app = ErrorDocuments(app, global_conf, mapper=error_mapper, **app_conf)
     
+    # @@@ Establish the Registry for this application @@@
+    app = RegistryManager(app)
+
     return app
