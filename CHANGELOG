@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9 (**dev**)
+* Changed defaut host from 0.0.0.0 to 127.0.0.1
+* Updated paste.errordocuments support
 * Fix for multi-word controller names such that front_page / 
   FrontPageController can be used as a controller name. Patch contributed
   by Timo Mihaljov.
