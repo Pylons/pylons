@@ -197,11 +197,19 @@ You can then edit your ``development.ini`` to add your database DSN::
     ...
     [app:main]
     use = egg:quickwiki
-    # Specify your database connection here
     dsn = postgres://@localhost/quickwiki_test
     ...
     
 In this case I'm connecting to a PostgreSQL database called ``quickwiki_test`` which I created with the command ``createdb quickwiki_test`` but you could use any of MySQL, PostgreSQL, Oracle, MS SQL, SQLite and many others.
+
+You should also edit ``QuickWiki.egg_info/paste_deploy_config.ini_tmpl`` so that when users run ``paster make-config`` the configuration file will already have a section telling them to enter their own database DSN::
+
+    ...
+    [app:main]
+    use = egg:quickwiki
+    # Specify your own database connection here
+    dsn = postgres://@localhost/quickwiki_test
+    ...
 
 You can should then run the ``paster setup-app`` command to setup your tables in the same way and end user would::
 
