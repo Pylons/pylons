@@ -39,7 +39,6 @@ The ``helloworld`` directory within the ``helloworld`` directory is where all yo
 
     - helloworld
         - helloworld
-            - components
             - config
             - controllers
             - docs
@@ -51,10 +50,6 @@ The ``helloworld`` directory within the ``helloworld`` directory is where all yo
             - templates
             - __init__.py
             - websetup.py
-
-The ``components`` directory is for Myghty components that you want available in your Myghty templates.
-
-# XXX Do we really need a components directory in 0.0?
 
 The ``config`` directory contains the configuration options for your web application.
 
