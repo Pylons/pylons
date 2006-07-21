@@ -6,6 +6,7 @@ Creating
 
 * `Installation <install.html>`_
 * `Getting Started <getting_started.html>`_
+* `Quick Wiki Tutorial <quick_wiki.html>`_
 * `Pylons Module Reference <module-index.html>`_
 * `Internationalization <internationalisation.html>`_
 * `Error Documents <error_documents.html>`_
