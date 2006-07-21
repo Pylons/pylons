@@ -11,7 +11,7 @@ host = 127.0.0.1
 port = 5000
 
 [app:main]
-use = egg:${package}
+use = egg:${project}
 myghty_data_dir = %(here)s/data/templates
 cache_data_dir = %(here)s/data/cache
 session_data_dir = %(here)s/data/sessions
