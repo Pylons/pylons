@@ -49,6 +49,11 @@ class PylonsBaseWSGIApp(object):
         self.c = RequestLocal()
         config = globals.pylons_config
         
+        # Create the redirect function we'll use and save it
+        def redirect_to(url):
+            raise httpexceptions.HTTPFound(url)
+        self.redirect_to = redirect_to
+        
         # Initialize Buffet and all our template engines, default engine is the
         # first in the template_engines list
         def_eng = config.template_engines.pop(0)
@@ -130,9 +135,7 @@ class PylonsBaseWSGIApp(object):
         config = request_config()
         config.mapper = self.mapper
         config.environ = environ
-        def redirect_to(url):
-            raise httpexceptions.HTTPFound(url)
-        config.redirect = redirect_to
+        config.redirect = self.redirect_to
         match = config.mapper_dict
         if not match:
             return None
