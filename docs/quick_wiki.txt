@@ -449,7 +449,7 @@ Finally edit ``templates/autohandler`` to add a link to the title list so that t
     % # end if
     </p>
     
-If you visit http://127.0.0.1:5000/list you should see the full titles list and you should be able to visit each page.
+If you visit http://127.0.0.1:5000/page/list you should see the full titles list and you should be able to visit each page.
 
 delete()
 --------
@@ -483,7 +483,7 @@ with this::
     <span id="page-<% title %>"><% title %></span>&nbsp;[<% h.link_to('visit', h.url_for(title=title, action="index")) %>]
     <% h.draggable_element("page-"+ str(title), revert=True) %>
     
-This marks each of the titles as a draggable element that reverts to its orginal position if it isn't dropped over a drop target. If we want to be able to delete the pages we better add a drop target. Try it out at http://127.0.0.1:5000/list by dragging the titles themselves around the screen. Notice how much functionality we got with just the one helper ``h.draggable_element()``.
+This marks each of the titles as a draggable element that reverts to its orginal position if it isn't dropped over a drop target. If we want to be able to delete the pages we better add a drop target. Try it out at http://127.0.0.1:5000/page/list by dragging the titles themselves around the screen. Notice how much functionality we got with just the one helper ``h.draggable_element()``.
 
 We better have somewhere to drop the tites to delete them so add this before the ``<ul id="titles">`` line in ``templates/titles.myt`` ::
 
@@ -525,7 +525,7 @@ The title of the page is obtained from the ``id`` element and the object is load
     
 .. Note:: We passed ``fragment=True`` to the ``render_response()`` global. This treats the template as a fragment and does not try to insert its output into the ``autohandler``. If we hadn't used this an entire page would have been returned and put in place of the titles list which clearly isn't what we wanted.
     
-Visit http://127.0.0.1:5000/list and have a go at deleting some pages. You may need to go back to the FrontPage and create some more if you get carried away!
+Visit http://127.0.0.1:5000/page/list and have a go at deleting some pages. You may need to go back to the FrontPage and create some more if you get carried away!
 
 One last tidy up we can make before we finish. You might have noticed that the ``list.myt`` and ``titles.myt`` use the same code to produce the lists. In the interests of keeping code duplication to a minimum edit ``templates/titles.myt`` to replace this code::
 
