@@ -402,7 +402,10 @@ Add the ``save()`` action::
             c.message = 'Successfully saved'
             return render_response('/page.myt')
             
-.. Note::  ``request.params`` has a number of methods such as ``getone()`` and getall()`` which return parameters as a single item or list respectively. Accessing ``request.params`` as a dictionary returns strings for single values and a list of strings for multiple values.
+.. Note::  
+    ``request.params`` has a number of methods such as ``getone()`` and ``getall()`` which return parameters as a
+     single item or list respectively. Accessing ``request.params`` as a dictionary returns strings for single
+     values and a list of strings for multiple values.
     
     # XXX THIS DOESN'T WORK AT THE MOMENT!
 
