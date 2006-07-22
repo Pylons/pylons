@@ -109,7 +109,13 @@ class Controller(object):
         return response
 
 class WSGIController(Controller):
-    """WSGI Controller that follows WSGI spec for calling and return values"""
+    """WSGI Controller that follows WSGI spec for calling and return values
+    
+    This function works identically to the normal Controller, however it is called
+    with the WSGI interface, and behaves as a WSGI application calling start_response
+    and returning an iterable as content.
+    
+    """
     def __call__(self, environ, start_response):
         self.start_response = start_response
         match = environ['pylons.routes_dict']
@@ -164,4 +170,4 @@ class RPCController(Controller):
             self.__after__(pylons, method, **params)
         return response
 
-__all__ = ['Controller', 'RPCController']
+__all__ = ['Controller', 'WSGIController', 'RPCController']
