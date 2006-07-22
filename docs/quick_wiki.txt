@@ -4,8 +4,6 @@ QuickWiki Tutorial
 :author: James Gardner
 :date: 2006-07-21
 
-.. Warning:: This tutorial is not complete and has not been tested. This is designed to be the main tutorial for how to write a Pylons 0.9 appliaction. If you want to use it before Pylons 0.9 is formally available you will have to adapt it to yourself. It is tested with SQLAlchemy 0.2.6. If you want to use a different version, you may need to make adjustments.
-
 Introduction
 ============
 
@@ -13,10 +11,39 @@ If you haven't done so already read the `installation instructions <install.html
 
 In this tutorial we are going to create a working wiki from scratch using Pylons 0.9 and SQLAlchemy. Our wiki will allow visitors to add, edit or delete formatted wiki pages. 
 
-1) Getting Started
-==================
+.. contents:: Table of Contents
+.. sectnum::
 
-First install Pylons 0.9::
+Starting at the End
+===================
+
+Pylons is designed to be easy for everyone, not just developers so lets start by downloading and installing the finished QuickWiki in exactly the way end users of QuickWiki might do. Once we have explored its features we will set about writing it from scratch.
+
+.. Note:: If you are following this tutorial before the official release of Pylons 0.9 you will have to manually install `Pylons development version <pylonsdev.html>`_ and the latest development version of Paste Deploy before running these commands.
+
+After you have installed `Easy Install <http://peak.telecommunity.com/DevCenter/EasyInstall>`_ run these commands to install QuickWiki and create a config file::
+    
+    > easy_install QuickWiki
+    > paster make-config QuickWiki test.ini
+
+Next edit the configuration file by specifying the ``dsn`` variable in ``[app:main]`` section so that the data source name points to the database you wish to use.
+
+.. Note:: The default data source name ``dsn = postgres://@localhost/quickwiki_test`` uses a PostgreSQL database named ``quickwiki_test`` running on the local machine. You can create this database with the PostgreSQL command ``createdb quickwiki_test`` but you could also use MySQL, Oracle or  SQLite. Firebird and MS-SQL may also work. See the `SQLAlchemy documentation <http://www.sqlalchemy.org/docs/dbengine.myt#dbengine>`_ for more information. You will also need to make sure you have the appropriate Python driver for the database you wish to use. For PostgreSQL this would be `psycopg <http://www.initd.org/projects/psycopg1>`_.
+
+Finally create the database tables and serve the finished application::
+
+    > paster setup-app test.ini
+    > paster serve test.ini
+    
+That's it! Now you can visit http://127.0.0.1:5000 and experiment with the finished Wiki. Note in the title list screen you can drag page titles to the trash area to delete them using AJAX.
+
+When you've finished, stop the server with ``CTRL+C`` because we will start developing our own version.
+
+
+Developing QuickWiki
+====================
+
+If you skipped the section above you wil need to install Pylons 0.9::
 
 	> easy_install -U Pylons[full]==0.9
 
@@ -33,8 +60,8 @@ Now lets start the server and see what we have::
 
 Open a new console and ``cd QuickWiki/quickwiki``. Visit http://127.0.0.1:5000 where you will see the introduction page. Delete the file ``public/index.html`` because we want to see the front page of the wiki instead of this welcome page. If you now refresh the page, the Pylons built-in error document suport will kick in and display an ``Error 404`` page to tell you the file could not be found until later on when we write our controllers.
 
-2) The Model
-============
+The Model
+=========
 
 Pylons uses an Model View Controller architecture so lets start by creating the model. We could use any system we like for the model including `SQLObject <http://www.sqlobject.org>`_ or `SQLAlchemy <http://www.sqlalchemy.org>`_. We are going to use SQLAlchemy.
 
@@ -56,7 +83,7 @@ Edit your ``models/__init__.py`` so that it looks like this::
     
 The first two lines setup SQLAlchemy to support threads and import some useful objects such as the ``Table`` and ``Column`` classes. The second line ``meta = DynamicMetaData()`` is so that we can bind the tables to a database later on. We then define a table called ``pages`` which has two columns, ``title`` (the primary key) and ``content``. 
 
-.. Note:: SQLAlchemy also supports reflecting this information from a database table too so if you had already created the database table SQLAlchemy could have constructed the ``Table`` object for you.
+.. Note:: SQLAlchemy also supports reflecting this information directly from a database table so if we had already created the database table SQLAlchemy could have constructed the ``Table`` object for us.
 
 A core philosophy of SQLAlchemy is that tables and domain classes are different beasts so the next thing we need to do is to create the Python class that will represent the pages of our wiki and map these domain objects to rows in the ``pages`` table using a mapper. Add this to the bottom of ``models/__init__.py``::
 
@@ -107,8 +134,7 @@ One final change, since we have used docutils and SQLAlchemy, both third party p
 
     install_requires=["Pylons>=0.9", "docutils==0.4", "SQLAlchemy>=0.2.6"],
 
-While we are we are making changes to ``setup.py`` we might want to complete some of the other sections too. Set the version number to 0.1.0::
- and add a description and URL which will be used on the Python Cheeseshop when we release it::
+While we are we are making changes to ``setup.py`` we might want to complete some of the other sections too. Set the version number to 0.1.0 and add a description and URL which will be used on the Python Cheeseshop when we release it::
 
     version="0.1.0",
     description="Result of following the Pylons 0.9 Tutorial",
@@ -126,8 +152,8 @@ To test the automatic installation of the dependencies, run the following comman
     
 .. Note:: The command ``python setup.py develop`` installs your application in a special mode so that it behaves exactly as if it had been installed as an egg file by an end user. This is really useful when you are developing an application because it saves you having to create an egg and install it every time you want to test a change.
 
-3) Connecting to the Database
-=============================
+Connecting to the Database
+==========================
 
 All of your project's controllers are derived from the ``BaseController`` in ``lib/base.py`` by default. We will make use of this fact to enable all controllers to with SQLAlchemy support. Add the following code underneath the import statements in ``lib/base.py`` to replace the exisitng ``BaseController`` class::
 
@@ -147,26 +173,10 @@ All of your project's controllers are derived from the ``BaseController`` in ``l
 
 On each request the SQLAlchemy objects will now be connected to the database.
 
-4) End User Setup
-=================
+Configuration and Setup
+=======================
 
-Pylons is designed to be easy for everyone, not just developers. We want end users to be able to install QuickWiki, configure the installation and setup the database tables as easily as possible. Once they have installed `Easy Install <http://peak.telecommunity.com/DevCenter/EasyInstall>`_ this is all they will need to do to get a working QuickWiki::
-    
-    Install QuickWiki
-        ``> easy_install QuickWiki``
-        
-    Create a configuration file
-        ``> paster make-config QuickWiki test.ini``
-
-    Edit the configuration file with the correct database settings
-
-    Create the tables
-        ``> paster setup-app test.ini``
-
-    Serve the appliaction
-        ``> paster serve test.ini``
-
-Luckily Pylons has all this functionality already built in. The only thing we have to do is write the code in the ``websetup.py`` file used by ``paster setup-app``. Edit it to look like this::
+Now lets make the changes necessary to enable QuickWiki to be set up by an end user. Edit ``websetup.py`` used by the ``paster setup-app`` command to look like this::
 
     import sqlalchemy.mods.threadlocal
     from sqlalchemy import *
@@ -188,7 +198,7 @@ Luckily Pylons has all this functionality already built in. The only thing we ha
 
 The line ``from quickwiki.models import *`` imports our ``page`` table, the line ``meta.connect(app_conf['dsn'])`` connects to the database with the DSN the user specifies in the config file and finally ``meta.create_all()`` creates the table. After the tables are created the code adds some data for the simple front page to out wiki.
 
-To test this functionality run you first need to install your QuickWiki if you haven't already done so in order for ``paster`` can find it::
+To test this functionality run you first need to install your QuickWiki if you haven't already done so in order for ``paster`` to find the version we are developing instead of the version we installed at the very start::
 
     > python setup.py develop
     
@@ -199,10 +209,8 @@ You can then edit your ``development.ini`` to add your database DSN::
     use = egg:quickwiki
     dsn = postgres://@localhost/quickwiki_test
     ...
-    
-In this case I'm connecting to a PostgreSQL database called ``quickwiki_test`` which I created with the command ``createdb quickwiki_test`` but you could use any of MySQL, PostgreSQL, Oracle, MS SQL, SQLite and many others.
 
-You should also edit ``QuickWiki.egg_info/paste_deploy_config.ini_tmpl`` so that when users run ``paster make-config`` the configuration file will already have a section telling them to enter their own database DSN::
+You should also edit ``QuickWiki.egg_info/paste_deploy_config.ini_tmpl`` so that when users run ``paster make-config`` the configuration file will already have a section telling them to enter their own database DSN as we did when we installed the finished QuickWiki at the start of the tutorial::
 
     ...
     [app:main]
@@ -211,14 +219,16 @@ You should also edit ``QuickWiki.egg_info/paste_deploy_config.ini_tmpl`` so that
     dsn = postgres://@localhost/quickwiki_test
     ...
 
-You can should then run the ``paster setup-app`` command to setup your tables in the same way and end user would::
+You can should then run the ``paster setup-app`` command to setup your tables in the same way and end user would, remembering to drop and recreate the database if the version tested earlier has already created the tables::
 
     > paster setup-app development.ini
     
-5) Templates
-============
+Templates
+=========
 
-We will make use of Myghty inheritance for our project. Add the main page template in ``templates/autohandler``::
+.. Note:: Pylons uses the Myghty templating language by default, although as is the case with most aspects of Pylons you are free to deviate from the default if you prefer. Pylons also supports Kid and Cheetah out of the box.
+
+We will make use of a feature of the Myghty templating language called inheritance for our project. Add the main page template in ``templates/autohandler``::
 
     <html>
     <head>
@@ -236,18 +246,16 @@ We will make use of Myghty inheritance for our project. Add the main page templa
     </body>
     </html>
 
-This autohandler makes use of various helper functions attatched to the ``h`` object. These are described in the `WebHelpers documentation <http://pylonshq.com/WebHelpers/module-index.html>`_. You can add more helpers to the ``h`` object by adding them to ``lib/helpers.py`` although for this project we don't need to do so.
-
 All our other templates will be automatically inserted into the ``% m.call_next()`` line and the whole page returned when we call the ``render_response()`` global from our controller so that we can easily apply a consistent theme to all our templates. 
 
-.. Note:: Pylons uses the Myghty templating language by default, although as is the case with most aspects of Pylons you are free to deviate from the default if you prefer. Pylons also supports Kid and Cheetah out of the box.
+If you are interested in learning some of the features of Myghty templates have a look at the comprehensive `Myghty Documentation <http://www.myghty.org/docs/>`_. For now we just need to understand that  is replaced with the child template and that anything in ``<%`` and ``%>`` brackets is executed and replaced with the result. Having the ``%`` as the first character on a line is shorthand for putting the whole line in ``<%`` and ``%>`` brackets. 
 
-    If you are interested in learning some of the features of Myghty templates have a look at the comprehensive `Myghty Documentation <http://www.myghty.org/docs/>`_. For now we just need to understand that  is replaced with the child template and that anything in ``<%`` and ``%>`` brackets is executed and replaced with the result. Having the ``%`` as the first character on a line is shorthand for putting the whole line in ``<%`` and ``%>`` brackets. 
-    
-.. Warning:: Your template won't work if there is any space before the ``%`` character in any of your templates.
+This autohandler also makes use of various helper functions attatched to the ``h`` object. These are described in the `WebHelpers documentation <http://pylonshq.com/WebHelpers/module-index.html>`_. You can add more helpers to the ``h`` object by adding them to ``lib/helpers.py`` although for this project we don't need to do so.
 
-6) Routing
-==========
+.. Warning:: Your templates won't work if there is any whitespace before lines starting with a ``%`` character.
+
+Routing
+=======
 
 Before we can add the actions we want to be able to route the requests to them correctly. Edit ``config/routing.py`` so that the route map looks like this::
 
@@ -258,8 +266,8 @@ Before we can add the actions we want to be able to route the requests to them c
     
 Full informaton on the powerful things you can do to route requests to controllers and actions can be found in the `Routes documentation <http://routes.groovie.org/docs/>`_.
 
-7) Controllers
-==============
+Controllers
+===========
 
 Quick Recap: We've setup the model, configured the application, added the routes and setup the base template in autohandler, now we need to write the application! In your project's root directory add a controller called ``page`` to your project with this command::
 
@@ -534,8 +542,8 @@ With this code::
 
 That's it! A working, production-ready wiki in 20 mins. You can visit http://127.0.0.1:5000/ once more to admire your work.
 
-8) Publishing the Finished Thing
-================================
+Publishing the Finished Product
+===============================
 
 After all that hard work it would be good to distribute the finished package wouldn't it? Luckily this is really easy in Pylons too. In the project root directory run this command::
 
@@ -553,25 +561,46 @@ If you want to register your project with the Cheeseshop at http://www.python.or
 
     > python setup.py register 
     
-You will be asked a number of questions and then the information you entered in ``setup.py`` will be used as a basis for the page that is created. Full documentation is available from the Python website. You can even use reStructuredText in the ``description`` and ``long_description`` areas to add formatting to the pages produced.
+.. Warning:: The CheeseShop authentication is very weak and passwords are transmitted in plain text. Don't use any sign in details that you use for important applications as they could be easily intercepted.
 
-Finally you will need to sign in to the cheeseshop with the account details you used when you registered your application and upload the eggs you've created. 
+You will be asked a number of questions and then the information you entered in ``setup.py`` will be used as a basis for the page that is created. 
 
-.. Tip:: In Python 2.5 even this will be automatic by using the ``python setup.py upload`` command but this is not available yet.
+Now visit http://www.python.org/pypi to see the new index with your new package listed.
 
-Now that the application is on cheeseshop anyone can install it with the ``easy_install`` command.
+.. Note:: A `CheeseShop Tutorial <http://wiki.python.org/moin/CheeseShopTutorial>`_ has been written and `full documentation on setup.py <http://docs.python.org/dist/dist.html>`_ is available from the Python website. You can even use `reStructuredText <http://docutils.sourceforge.net/rst.html>`_ in the ``description`` and ``long_description`` areas of ``setup.py`` to add formatting to the pages produced on the CheeseShop. There is also `another tutorial here <http://www.python.org/~jeremy/weblog/030924.html>`_. 
 
+Finally you can sign in to the CheeseShop with the account details you used when you registered your application and upload the eggs you've created. If that seems too difficult you can even use this command which should be run for each version of Python supported to upload the eggs for you::
 
-9) Security
-===========
+    > python setup.py bdist_egg upload
+
+Before this will work you will need to create a ``.pypirc`` file in your home directory containing your username and password so that the ``upload`` command knows who to sign in as. It should look similar to this::
+
+    [server-login]
+    username:james
+    password:password
+
+.. Tip:: This works on windows too but you will need to set your ``HOME`` environment variable first. If your home directory is ``C:\Documents and Settings\James`` you would put your ``.pypirc`` file in that directory and set your ``HOME`` environment variable with this command::
+
+        > SET HOME=C:\Documents and Settings\James
+    
+    You can now use the ``python setup.py bdist_egg upload`` as normal.
+
+Now that the application is on CheeseShop anyone can install it with the ``easy_install`` command exactly as we did right at the very start of this tutorial.
+
+Security
+========
 
 A final word about security. 
 
 .. Danger:: Always set ``debug = false`` in configuration files for production sites and make sure your users do to.
 
-You should NEVER run a production site accessible to the public with debug mode on. If there was a problem with your application and an interactive error page was shown, the visitor would be able to run any Python commands they liked in the same way you can when you are debugging. This could obviously allow them to do all sorts of malicous things the bottom line is always set ``debug = false`` in configuration files for production sites and make sure your users do to.
+You should NEVER run a production site accessible to the public with debug mode on. If there was a problem with your application and an interactive error page was shown, the visitor would be able to run any Python commands they liked in the same way you can when you are debugging. This would obviously allow them to do all sorts of malicous things so it is very important you turn off interactive debugging for production sites by setting ``debug = false`` in configuration files and also that you make users of your software do the same.
 
+Summary
+=======
 
-That's it, I hope you found the tutorial useful. It need one more check through by me but feel free to email any comments to the Pylons mailing list.
+We've gone through the whole cycle of creating and distributing a Pylons application looking at setup and configuration, routing, models, controllers and templates. Hopefully you have an idea of how powerful Pylons is and, once you get used to the concepts introduced in this tutorial, how easy it is to create sophisticated, distributable applications with Pylons.
+
+That's it, I hope you found the tutorial useful. You are encouraged to email any comments to the `Pylons mailing list <http://groups.google.co.uk/group/pylons-discuss>`_ where they will be gratefully received.
 
 James Gardner
