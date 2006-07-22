@@ -23,7 +23,7 @@ Disabling Error Documents Support
 To disable error documents, just remove the following lines from your ``config/middleware.py`` file::
 
     # @@@ Display error documents for 401, 403, 404 status codes (if debug is False also intercepts 500)  @@@
-    app = ErrorDocuments(app, global_conf, mapper=error_mapper, **kw)
+     app = ErrorDocuments(app, global_conf, mapper=error_mapper, **app_conf)
 
 Any status codes will no longer be intercepted. 
 
@@ -39,7 +39,7 @@ Changing the template
 
 If you want to use a different template for the error documents you will need to edit your ``error.py`` controller. Change the ``document()`` action so that rather than using the ``pylons.middleware.error_document_template`` string as a template it uses your own template::
 
-    def document(self, ARGS):
+    def document(self):
         my_template="""
         <html>
         <head><title>Error %(code)s</title></head>
@@ -48,8 +48,8 @@ If you want to use a different template for the error documents you will need to
         <p>%(message)s</p>
         </body>
         </html>
-        """ % {'code':ARGS.get('code', ''), 'message':ARGS.get('message', '')}
-        m.write(my_template)
+        """ % {'code':request.GET('code', ''), 'message':request.GET('message', '')}
+        return Response(my_template)
 
 You probably won't need the other actions in the error controller if you use your own template. The are just a rather clever bit of code so that the default error handler can serve images from the Pylons package without them being copied into your ``public`` directory.
 
@@ -99,7 +99,7 @@ or on Windows::
 Modify your controller's ``index()`` action to look like this::
 
     def index(self):
-        m.abort(500, 'Internal Server Error')
+        abort(500, 'Internal Server Error')
         
 Then start your server as described in the `Getting Started Guide <getting_started.html>`_ and visit http://localhost:5000/error_doc_test/
 

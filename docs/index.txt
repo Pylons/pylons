@@ -6,12 +6,12 @@ Creating
 
 * `Installation <install.html>`_
 * `Getting Started <getting_started.html>`_
-* `Quick Wiki Tutorial <quick_wiki.html>`_
+* `Quick Wiki Tutorial <quick_wiki.html>`_ (Not here yet!)
 * `Pylons Module Reference <module-index.html>`_
 * `Internationalization <internationalisation.html>`_
 * `Error Documents <error_documents.html>`_
 * `Using Other Template Languages <template_plugins.html>`_
-* `Pylons Support for the Web Server Gateway Interface <wsgi.html>`_
+* `Pylons Support for the Web Server Gateway Interface <wsgi.html>`_ (Still being worked on)
 
 Debugging
 =========
@@ -23,6 +23,7 @@ Debugging
 Distribution & Deployment
 =========================
 
+* `Distributing Your Project <deployment.html>`_
 * `Adding Documentation to your Application <adding_docs.html>`_
 * `Application Setup <application_setup.html>`_
 * `Application Configuration <application_configuration.html>`_

@@ -4,7 +4,7 @@ Development Version
 Installing The Development Version
 ==================================
 
-`Subersion <http://subversion.tigris.org>`_ must be installed to retrieve the latest development version of Pylons. Subersion packages are available from `here <http://subversion.tigris.org/project_packages.html#binary-packages>`_. 
+`Subversion <http://subversion.tigris.org>`_ must be installed to retrieve the latest development version of Pylons. `Subversion packages <http://subversion.tigris.org/project_packages.html#binary-packages>`_ are also available. 
 
 Even if Windows users have Tortoise SVN installed they will still need the command line SVN tools described above, both systems can be installed at once.
 
@@ -19,7 +19,7 @@ Otherwise download `ez_setup.py <http://peak.telecommunity.com/dist/ez_setup.py>
     python ez_setup.py -U http://pylonshq.com/svn/Pylons/trunk
 
 
-Working Directlu From the Source Code
+Working Directly From the Source Code
 =====================================
 
 Check out the latest code::

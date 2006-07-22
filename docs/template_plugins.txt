@@ -23,32 +23,25 @@ First, create a directory in ``yourproject`` called ``kidtemplates`` and add a c
     ~/yourproject% mkdir yourproject/kidtemplates
     ~/yourproject% paster controller kid
     
-You will now have a kid.py controller in your controllers directory. Add ``from pylons import buffet``
-to the top of the file so that you have plug-in template rendering access.
+You will now have a kid.py controller in your controllers directory. First, we will need to add Kid to the available template engines.
 
-*Note:* If you plan on using different template languages often, you can save yourself some time later
-by putting the import line in ``yourproject/lib/base.py`` so that ``buffet`` will be available in all
-your controllers.
-
+Edit ``yourproject/config/middleware.py``, right after the 'config.init_app....'::
+    
+    kidopts = {'kid.assume_encoding':'utf-8', 'kid.encoding':'utf-8'}
+    config.add_template_engine('kid', 'yourproject.kidtemplates', kidopts)
+     
 Edit the KidController class so it looks like this::
 
     class KidController(BaseController):
-        def __before__(self, action, **params):
-            buffet.prepare('kid', 'yourproject.kidtemplates')
-    
         def index(self):
             c.title = "Your Page"
             c.message = 'hi'
-            buffet.render('kid', 'test')
+            return render_response('kid', 'test')
 
 Make sure to change ``yourproject.kidtemplates`` to reflect what your project is actually called. The
-first argument to ``buffet.prepare`` indicates what template engine we will use, and the second one
-indicates where the template root path is.
+first argument to ``render`` or ``render_response`` can be the template engine to use, while the second non-keyword argument is the template. If you don't specify a template engine, it will drop back to the default (Myghty, unless you change the default).
 
-You can also call the prepare command in your BaseController's ``__call__`` method if you plan on using
-this template engine setup frequently in many controllers.
-
-Now let's add a Kid template to render, create the file ``yourproject/kidtemplates/test.kid`` with
+Now let's add the Kid template to render, create the file ``yourproject/kidtemplates/test.kid`` with
 the following content::
 
     <html xmlns="http://www.w3.org/1999/xhtml" xmlns:py="http://purl.org/kid/ns#">
@@ -61,21 +54,29 @@ the following content::
         </body>
     </html>
 
-Notice that all the same Pylons variables are made accessible to template engine plug-ins. You will have c, h, m,
-session, and request available in any template language you choose to use. This also makes it easier to switch
-later to Myghty or a different template language without having to update your controller action.
-
 Since the template plug-in's currently expect path's to act as module imports, you will also need to create
 a ``__init__.py`` file inside ``yourproject/kidtemplates``.
 
 Loading ``/kid`` will now return the Kid template that you have created.
 
+Notice that all the same Pylons variables are made accessible to template engine plug-ins. You will have c, h, g,
+session, and request available in any template language you choose to use. This also makes it easier to switch
+later to Myghty or a different template language without having to update your controller action.
 
-Further Notes
-=============
 
-Since Pylons will route all template output through Myghty, you have access to Myghty's powerful caching abilities
-even when using other template languages.
+Switching the Default Template Engine
+=====================================
 
-``buffet.render`` will also take the keyword argument ``as_string`` boolean which will return the rendered template
-as a string if you'd then like to pass it elsewhere.
+In Pylons, customization is not just allowed but actively encouraged. It's quite easy to change the default engine from Myghty to your choice. Let's make Kid the default template engine.
+
+Edit ``yourproject/config/middleware.py``, right after the 'config.init_app....'::
+    
+    myghty = config.template_engines.pop()
+    kidopts = {'kid.assume_encoding':'utf-8', 'kid.encoding':'utf-8'}
+    config.add_template_engine('kid', 'proj.templates', kidopts)
+    config.template_engines.append(myghty)
+
+This swaps the order of the template engines so that Myghty is after Kid, making Kid the new default template engine. The above ``index`` method no longer needs to specify 'kid' now when rendering a template.
+
+.. Note::
+    For more details on the config object, check out the `extensive Config docs <class-pylons.config.Config.html>`_ from the Pylons Module API.

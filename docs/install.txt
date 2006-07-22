@@ -8,9 +8,9 @@ System-wide Install
 
 To install Pylons so it can be used by everyone (you'll need root access).
 
-If you already have easy install::
+If you already have easy install:
 
-    ``easy_install Pylons[full]``
+    easy_install Pylons[full]
 
 Otherwise: 
 

@@ -3,26 +3,24 @@ Advanced Pylons Tinkering
 
 Warning: This section is meant for experts who know what they are doing and want to play with the guts of a Pylons application. Novices should probably steer clear.
 
-NB: You may need to upgrade to the latest version of Pylons for the g = app.globals line to work!
-
-Setting Up a Pylons Applications
-================================
+Setting Up a Pylons Application
+===============================
 
 The Pylons dispatch mechanism
 -----------------------------
 
 In order to really understand all of Pylons it is useful to have an idea of what Pylons does to route a request from a particular URL to a piece of code after Paste has done the work of routing the request from whichever server or deployment option you are using to your Pylons application.
 
-All the guts of a Pylons application are neatly organized into your project's ``config`` directory so that if you want to change the default behavior of Pylons you can do.
+All the guts of a Pylons application are neatly organized into your project's ``config`` directory so that if you want to change the default behavior of Pylons, you can.
 
 Understanding WSGI, Paste and Deployment
 ----------------------------------------
 
 Pylons is based on the Web Server Gateway Interface and all Pylons applications just WSGI applications.
 
-WSGI applications need some way of being run, they can be run from CGI scripts, other web frameworks and various other places but Pylons uses PasteDeploy by default to handle the way Pylons applications are deployed. 
+WSGI applications need some way of being run, they can be run from CGI scripts or other web frameworks and various other places. Pylons uses PasteDeploy by default to handle the way Pylons applications are deployed. 
 
-PasteDeploy uses a simple config file format to configure and application and then this config file can be "deployed" in various different ways such as a standalone serve (``paster serve``) or CGI/FastCGI/SCGI etc etc. Of course it isn't really the config file which is actually deployed, PasteDeploy uses the config file to build the specified WSGI application and it is the application which is deployed.
+PasteDeploy uses a simple config file format to configure an application and then this config file can be deployed in various ways such as a standalone server (``paster serve``) or CGI/FastCGI/SCGI/etc. Of course it isn't really the config file which is actually deployed, PasteDeploy uses the config file to build the specified WSGI application and it is the application which is deployed.
 
 Entry Points
 ------------
@@ -52,9 +50,8 @@ Setting up Your Application
 
 It is the responsibility of the ``middleware.make_app()`` function to set up your application. The configuration setup in the configuration file is supplemented by configuration from the ``load_config()`` function. The configuration from the file and the function contain all the information needed to setup the application::
 
-    app = pylons.wsgiapp.make_app(global_conf, config, **kw)
-    
-# XXX Can we rename this make_app to avoid confusion?
+    app = pylons.wsgiapp.PylonsApp(config)
+
 
 The ``app`` produced is a basic Pylons WSGI application and could be returned to PasteDeploy if desired, but the default is for the app is wrapped in a series of middleware components that you can easily customize to add extra functionality.
 
@@ -156,7 +153,7 @@ Using the paste configuration file
 Global Configuration
 --------------------
 
-Making Before anf After methods
+Making Before and After methods
 ===============================
 
 Structuring Code in the lib directory
@@ -180,7 +177,7 @@ New things to integrate into Pylons
 
 CMS can use the RichText edit in place with a toolbar at the very top of the page. Drag and drop from dojo can build the template.
 
-We should reserve the directories pylons in public and template and controllers begining pylons in controllers?
+We should reserve the directories pylons in public and template and controllers beginning pylons in controllers?
 We can then have a controller database as well as an eggs database
 
 We should do the FormEncode thing using Pyprotocols to extend it.

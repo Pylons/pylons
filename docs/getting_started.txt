@@ -1,11 +1,10 @@
-
 Getting Started
 +++++++++++++++
 
 Installing Pylons
 =================
 
-Read `Installing Pylons <install.html>`_.
+Read `Installing Pylons <install.html>`_ if you haven't already.
 
 Creating a Pylons Project
 =========================
@@ -16,11 +15,11 @@ Create a new project named ``helloworld`` with this command::
 
     paster create --template=pylons helloworld
     
-Windows users may have to configure their PATH as decribed in `Windows Notes <windowsnotes.html>`_ or use a slightly longer version using the appropriate path to their ``Scripts`` directory::
+Windows users may have to configure their PATH as described in `Windows Notes <windowsnotes.html>`_ or use a slightly longer version using the appropriate path to their ``Scripts`` directory::
 
     python "C:\Python24\Scripts\paster" create --template=pylons helloworld
     
-This creates a template pylons project which you can use as a basis for your own project. The directory structure is as follows::
+This creates a new Pylons project which you can use as a basis for your own project. The directory structure is as follows::
 
     - helloworld
         - data
@@ -31,9 +30,9 @@ This creates a template pylons project which you can use as a basis for your own
         - setup.cfg
         - setup.py
 
-The ``setup.py`` file is used to create a re-distributable Python package of your project called an `egg <http://peak.telecommunity.com/DevCenter/PythonEggs>`_. Eggs can be thought of as similar to ``.jar`` files in Java. The ``setup.cfg`` file contains extra information about your project and the ``helloworld.egg-info`` directory contains information about the egg inculding a ``paste_deploy_config.ini_tmpl`` file which is used as a template for the config file when users of your project issue a ``paster make-config`` command. Distributing and deploying your egg is covered in the `Distributing Your Project <deployment.html>`_ documentation and end user configuration is described in `Application Setup <application_setup.html>`_.
+The ``setup.py`` file is used to create a re-distributable Python package of your project called an `egg <http://peak.telecommunity.com/DevCenter/PythonEggs>`_. Eggs can be thought of as similar to ``.jar`` files in Java. The ``setup.cfg`` file contains extra information about your project and the ``helloworld.egg-info`` directory contains information about the egg including a ``paste_deploy_config.ini_tmpl`` file which is used as a template for the config file when users of your project issue a ``paster make-config`` command. Distributing and deploying your egg is covered in the `Distributing Your Project <deployment.html>`_ documentation and end user configuration is described in `Application Setup <application_setup.html>`_.
 
-You may also notice a ``data`` directory which is created the first time you run the code. You can configure the location of the ``data`` directory by editing your ``development.ini`` file.
+You may also notice a ``data`` directory which is created the first time you run the code. You can configure the location of the ``data`` directory by editing your ``development.ini`` file. This directory will hold cached data and sessions used by your app while its running.
 
 The ``helloworld`` directory within the ``helloworld`` directory is where all your application specific code and files are placed. The directory looks like this::
 
@@ -53,28 +52,25 @@ The ``helloworld`` directory within the ``helloworld`` directory is where all yo
 
 The ``config`` directory contains the configuration options for your web application.
 
-The ``controllers`` directory is where your application controllers are written. Controllers are the core of your application where most of your code will be written.
+The ``controllers`` directory is where your application controllers are written. Controllers are the core of your application where the decision is made on what data to load, and how to view it.
 
 The ``docs`` directory is where you can write documentation for your project. You can then turn it into HTML using the command ``setup.py pudge``. 
-
-# XXX currently a problem in lib.base.py when this command is run but project documentation is generated fine if you comment out threadlocal global imports.
 
 The ``i18n`` directory is where your message catalogues are stored to support multiple languages.
 
 The ``lib`` directory is where you can put code that is used between different controllers, third party code, or any other code that doesn't fit in well elsewhere.
 
-The ``models`` directory is for SQLObject or SQLAlchemy model objects. Objects defined in ``models/__init__.py`` will be loaded and present as model.YourObject inside your controllers. The database configuration string can be set in your ``development.ini`` file.
+The ``models`` directory is for your model objects, if you're using an ORM this is where the classes for them should go. Objects defined in ``models/__init__.py`` will be loaded and present as model.YourObject inside your controllers. The database configuration string can be set in your ``development.ini`` file.
 
-The ``public`` directory is where you put all your HTML, image, javascript, css and other static files. It is similar to your htdocs directory in Apache.
+The ``public`` directory is where you put all your HTML, images, Javascript, CSS and other static files. It is similar to the htdocs directory in Apache.
 
-The ``tests`` directroy is where you can put controller and other tests. The controller testing functionality uses TestGears. 
+The ``tests`` directory is where you can put controller and other tests. The controller testing functionality uses Nose and ``paste.fixture``. 
 
-The ``templates`` directory is where templates are stored. Templates contain a mixture of plain text and Python code and are used for creating HTML and other documents in a way that is easy for designers to tweak without them needing to see all the code that goes on behind the scenes. Pylons uses Myghty templates by default but also supports Cheetah, Kid and others through a system called Buffet.
+The ``templates`` directory is where templates are stored. Templates contain a mixture of plain text and Python code and are used for creating HTML and other documents in a way that is easy for designers to tweak without them needing to see all the code that goes on behind the scenes. Pylons uses Myghty templates by default but also supports Cheetah, Kid and others through a system called Buffet. `See how to change template languages <template_plugins.html>`_
 
 The ``__init__.py`` file is present so that the ``helloworld`` directory can be used as a Python module within the egg.
 
-The ``websetup.py`` should contain any code that should be executed when an end user of your application runs the ``paster setup-app`` command described in  `Application Setup <application_setup.html>`_.
-
+The ``websetup.py`` should contain any code that should be executed when an end user of your application runs the ``paster setup-app`` command described in  `Application Setup <application_setup.html>`_. If you're looking for where to put that should be run before your application is, this is the place.
 
 
 Testing the template project
@@ -103,12 +99,12 @@ Try creating a new file named ``test.html`` in the ``helloworld/public`` directo
     </body>
     </html>
     
-If you visit http://127.0.0.1:5000/test.html you will see the message ``Hello World!``. Any files in the ``public`` directory are served in the same way they would be by any webserver, but with built-in caching, and if Pylons has a choice of whether to serve a file from the ``public`` directory or from code in a controller it will always choose the file in ``public``. This behaviour can be changed by altering the order of the ``Cascade`` in ``config/middleware.py``.
+If you visit http://127.0.0.1:5000/test.html you will see the message ``Hello World!``. Any files in the ``public`` directory are served in the same way they would be by any webserver, but with built-in caching, and if Pylons has a choice of whether to serve a file from the ``public`` directory or from code in a controller it will always choose the file in ``public``. This behavior can be changed by altering the order of the ``Cascade`` in ``config/middleware.py``.
 
 Interactive Debugger
 ====================
 
-If you are developing an application you will want to use the interactive debugging which is enabled by default in ``development.ini`` but disabled in config files your users will generate so that they don't accidentally use it on a production site. If debugging was accidentally left on for a production site and an error occured the visitor would be able to execute malicious code using the interactive debugging prompt. 
+If you are developing an application you will want to use the interactive debugging which is enabled by default in ``development.ini`` but disabled in config files your users will generate so that they don't accidentally use it on a production site. If debugging was accidentally left on for a production site and an error occurred the visitor would be able to execute malicious code using the interactive debugging prompt. 
 
 Enable debugging by commenting out the line that looks like this in the ``[app:main]`` section of your ``development.ini`` file::
 
@@ -137,7 +133,7 @@ Here's what a basic controller looks like to print out 'Hello World' and respond
     
     class HelloController(BaseController):
         def index(self):
-            return response('hello world')
+            return Response('hello world')
 
 Pylons uses a powerful and flexible system for routing URLs to the appropriate piece of code and back. 
 
@@ -147,7 +143,7 @@ We would like the hello controller to also be displayed for both the URL http://
     map.connect(':controller/:action/:id')
     map.connect('*url', controller='template', action='view')
 
-This means that an empty URL is matched to the ``index`` action of the ``hello`` controller otherwise the route mapper looks for URLs in the form ``controller/action/id`` but if ``id``, ``action`` or ``controller`` are not specified the request is routed to the ``view`` action of the ``templates`` controller where by default a 404 error is raised.
+This means that an empty URL is matched to the ``index`` action of the ``hello`` controller otherwise the route mapper looks for URLs in the form ``controller/action/id`` but if ``action`` or ``controller`` are not specified the request is routed to the ``view`` action of the ``templates`` controller where by default a 404 error is raised.
 
 Since we have made changes to our routes we must restart the server. If you are using the ``--reload`` option this will happen automatically, otherwise close the old server and start it again using the same command as before. (Note: Myghty template changes do *not* require restarting the server even without the ``--reload`` option.)
 
@@ -157,8 +153,14 @@ Delete the file ``public/index.html`` and the application works as expected.
 
 More information on routes can be found in the `Routes manual <http://routes.groovie.org/manual.html>`_.
 
-Using a template
-================
+Templates and the Request Cycle
+===============================
+
+When your controller's action is called it is expected to either call a WSGI application or return a Response object. In the previous section we saw a basic example which returned a new Response object. To render templates, there's the ``render`` command, and the ``render_response`` command. The latter will render the template, and return it as the content of a new Response object.
+
+.. Note::
+    For the gory details on the available options to ``render`` and ``render_response``, look at the `Pylons templating
+    API <module-pylons.templating.html>`_.
 
 Here's an example template, using Myghty, that prints some request information. 
 
@@ -171,22 +173,38 @@ Create a template file ``helloworld/templates/serverinfo.myt`` containing the fo
     and here's the URL you called: <% h.url_for() %>
     </p>
 
-To use this template you will need to add a new method to your HelloController in ``helloworld/controllers/hello.py``. Add the following function to the end of the class::
+To use this template add a new method to your HelloController in ``helloworld/controllers/hello.py`` with the following function at the end of the class::
 
     def serverinfo(self):
         return render_response('/serverinfo.myt')
 
-The ``render_response('/serverinfo.myt')`` function will call Myghty to render your template. 
+The ``render_response('/serverinfo.myt')`` function will render your template using the default template engine (Myghty). 
 
 If your server is still running you can view the page at: http://127.0.0.1:5000/hello/serverinfo
 
 If not simply restart the server with ``paster serve --reload development.ini`` from the helloworld directory.
 
-# XXX Add some inforation on multiple template types.
-# XXX Add some inforation on the shell.
+
+Using Sessions
+==============
+
+Sessions come enabled for your application and are handled by `Beaker middleware <http://beaker.groovie.org/>`_, which uses the powerful Myghty container API. This provides robust and powerful sessions as well as caching abilities.
+
+Using a session is very easy, here's what using and saving a session in the above function would look like::
+    
+    def serverinfo(self):
+        session['name'] = 'George'
+        session.save()
+        return render_response('/serverinfo.myt')
+
+Session options can be customized via your ``development.ini`` file, and use the same names as the `Myghty docs for sessions <http://www.myghty.org/docs/session.myt#session_options>`_.
+
+.. Note::
+    Remember to always call ``session.save()`` before returning a response to ensure that the session is
+    saved.
 
 
-Controller variables and Template Globals
+Controller Variables and Template Globals
 =========================================
 
 
@@ -199,17 +217,16 @@ session
     Acts as a dict to store session data, see the `Myghty Session docs <http://www.myghty.org/docs/session.myt#session>`_ for usage details
 
 request
-    The current HTTP request object, corresponds to the `r object from Myghty <http://www.myghty.org/docs/globals.myt#globals_globalr>`_. This object contains common methods to
-    access request information like request.method, request.headers_in and request.headers_out.
+    The request object.
 
-response
-    The response object to return
+Response
+    An instance of this class should be returned
 
 render
-    Render a template to return a string
+    Render a template and return a string
 
 render_response
-    Render a template and return a valid ``response`` object. Equivalent to ``response(render(...))``.
+    Render a template and return a valid ``Response`` object. Equivalent to ``Response(render(...))``.
 
 h
     h is the point at which all the Pylons helper functions are utilized from. By default Pylons will load all the helper functions available from the `Web Helpers </WebHelpers/module-index.html>`_ package. Keep in mind when
@@ -218,9 +235,9 @@ h
 
 c
     (described in `Passing Variables to Templates`)
-    
+
 g
-    (described in `Application Global Variables`)
+    (described in `Application Globals and Persistent Objects`)
 
 Passing Variables to Templates
 ------------------------------
@@ -237,21 +254,27 @@ and modify the ``serverinfo.myt`` file in the ``templates`` directory to look li
 
     <p>The value of <tt>c.value</tt> is: 
     <% c.value %>
-    
-You should see ``2`` printed out on the page. If you ask for an attribute on ``c`` that does not exist, rather than throwing an Attribute error an empty string will be returned. This makes it easy to toggle behavior depending on the response. For example::
+
+.. Note::
+    The ``c`` object is available in the other template languages.
+
+You should see ``2`` printed out on the page. If you ask for an attribute on ``c`` that does not exist, rather than throwing an Attribute error, an empty string will be returned. This makes it easy to toggle behavior depending on the response. For example::
 
     <p>Hi there <% c.name or c.full_name or "Joe Smith" %>
 
-There is one rule though, attributes of ``c`` must not start with an ``_`` character so ``c.value = 1`` is fine but ``c._value = 1`` is not. This is because ``c`` has some slightly complicated code which you could accidentally damage if you assigned a variable starting with ``_``. With this rule in place ``c`` is very robust.
+.. Warning::
+    Attributes of ``c`` must not start with an ``_`` character. ``c.value = 1`` is fine but ``c._value = 1`` is not.
+    This is because ``c`` has some slightly complicated code which you could accidentally damage if you assigned
+    a variable starting with ``_``.
 
 The ``c`` global is also reset on each request so that you don't need to worry about a controller still having old values set from a previous request.
 
 Application Globals and Persistent Objects
 ------------------------------------------
 
-There are occasions where you might want information to be available to all controllers and not to be reset on each request. For example you might want a database connection that is made when the application is loaded, is available on all requests and is closed when the application exits or the server is stopped. You can do this through the ``g`` variable. 
+There are occasions where you might want information to be available to all controllers and not reset on each request. For example you might want to initiate a TCP connection that is made when the application is loaded. You can do this through the ``g`` variable. 
 
-The ``g`` variable is an instance of your ``Globals`` class in your application's ``lib/app-globals.py`` file. Any class attributes you set in the ``__init__()`` method will be available as attributes of ``g`` throughout your Pylons application. Any attributes you set on ``g`` during one request will remain changed for all the other requests. You have to be very careful of setting global variables in requests.
+The ``g`` variable is an instance of your ``Globals`` class in your application's ``lib/app-globals.py`` file. Any class attributes you set in the ``__init__()`` method will be available as attributes of ``g`` throughout your Pylons application. Any attributes you set on ``g`` during one request will remain changed for all the other requests. You have to be very careful when setting global variables in requests.
 
 Here is an example of using the ``g`` variable. First modify your ``lib/app_globals.py`` ``Globals`` class so that the ``__init__.py`` method looks like this::
 
@@ -269,6 +292,6 @@ Then add this new method to the end of the ``helloworld/controllers/hello.py``:
 
 This time if you run the server and visit http://127.0.0.1:5000/hello/app_globals_test/ you should see the message ``Hello``. If you visit the page again the message will be changed to ``Hello World!`` and it will remain changed for all subsequent requests because the application global variable was modified on the first request.
 
-The ``__init__()`` method takes the parameters ``global_conf`` and ``app_conf`` which are the values of the global_conf and application configuration variables specified in the ``development.ini`` file. This means you can set global variables based on configuration options. Note that you do not have access to ``m``, ``r``, ``h`` or other variables when adding application globals since they are setup before a request is ever made.
+The ``__init__()`` method takes the parameters ``global_conf`` and ``app_conf`` which are the values of the global_conf and application configuration variables specified in the ``development.ini`` file. This means you can set global variables based on configuration options. Note that you do not have access to ``c``, ``h`` or other variables when adding application globals since they are setup before a request is ever made.
 
 You can add code to the ``__del__()`` method to be run when the application exits.
