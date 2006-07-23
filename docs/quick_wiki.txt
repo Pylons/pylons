@@ -237,7 +237,7 @@ We will make use of a feature of the Myghty templating language called inheritan
     </head>
     <body>
     <div class="content">
-    % m.call_next()
+     % m.call_next()
     <p class="footer">
         Return to the <% h.link_to('FrontPage', h.url_for(action="index", title="FrontPage")) %>
         | <% h.link_to('Edit '+c.title, h.url_for(title=c.title, action='edit')) %>

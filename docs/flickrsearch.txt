@@ -67,7 +67,7 @@ Knowing that we don't need to worry about JavaScript files, edit the file ``temp
     <% h.stylesheet_link_tag('/flickr.css') %>
     </head>
     <body>
-    % m.call_next()
+      % m.call_next()
     </body>
     </html>
     
@@ -119,9 +119,10 @@ Time to create the two templates. Create ``templates/flickr.myt`` with this cont
 
 Create ``templates/photos.myt`` with this content::
 
-    % for photo in c.photos:
-    <img class="photo" src="<% photo %>">
-    % #end for
+    # Ignore this comment
+     % for photo in c.photos:
+        <img class="photo" src="<% photo %>">
+     % #end for
 
 Add Some Style
 ==============
