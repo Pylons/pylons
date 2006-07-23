@@ -31,13 +31,17 @@ def etag_cache(key=None):
         
         class YourController(BaseController):
             def index(self):
-                resp = pylons.etag_cache(key=1)
+                resp = etag_cache(key=1)
                 resp.write(render('/splash.myt'))
                 return resp
     
+    .. Note:: 
+        This works because etag_cache will raise an HTTPNotModified
+        exception if the ETag recieved matches the key provided.
+    
     """
     if_none_match = pylons.request.environ.get('HTTP_IF_NONE_MATCH', None)
-    resp = pylons.response()
+    resp = pylons.Response()
     resp.headers['ETag'] = key
     if str(key) == if_none_match:
         raise httpexceptions.HTTPNotModified()
