@@ -1,98 +1,23 @@
-
 Pylons Support for the Web Server Gateway Interface
 +++++++++++++++++++++++++++++++++++++++++++++++++++
 
+:author: James Gardner
+:date: 2006-07-23
+
 The Web Server Gateway Interface is a specification agreed upon by the Python community to enable interoperability of Python frameworks, middleware and servers. 
 
-Although most Python frameworks allow their applications to be run as WSGI applications, Pylons takes WSGI integration to the next level, supporting WSGI all through the stack. It is hoped that as other frameworks follow suit we will see a new era in web development in Python.
+Although most Python frameworks allow their applications to be run as WSGI applications, Pylons 0.9 takes WSGI integration to the next level, supporting WSGI all through the stack. It is hoped that as other frameworks follow suit we will see a new era in web development in Python.
 
-The principles of WSGI are actually very simple but it can it can be quite hard to explain all the details. For full information you will need to look at the PEP at http://www.python.org/peps/pep-0333.html This guide takes you through the basics of application writing and how Pylons makes use if WSGI.
+The principles of WSGI are actually very simple but it can it can be quite hard to explain all the details. For full information you will need to look at the PEP at http://www.python.org/peps/pep-0333.html 
 
-WSGI Introduction
-=================
-
-WSGI Applications
------------------
-
-The best way to explain the WSGI is to work through an example demonstrating how an application written as a CGI script has to be modified to work as a WSGI application.
-    
-Consider the following CGI script::
-
-    print "Content-Type: text/html\n\n<html>\n<body>\nHello World!\n</body>\n</html>"
-    
-This does nothing more than print the words ``'Hello world!'`` to a web browser. What we have done is sent an HTTP header ``Content-type: text/html\n\n`` and then some HTML to the browser. The webserver may also have sent a ``'200 OK'`` response if the application completed successfully. 
-    
-To create the same result using a WSGI application we would use this code:
-    
-    def application(environ, start_response):
-        start_response('200 OK',[('Content-type','text/html')])
-        return ['<html>\n<body>\nHello World!\n</body>\n</html>']
-
-This is the most basic WSGI application. It is a function named ``application`` which a WSGI server will call and pass two parameters. The first is a dictionary named ``environ`` containing environmental variables and the second is a function named ``start_response`` which must be called before the application returns a value. 
-
-The ``environ`` dictionary contains all the environment variables related to the request including those that would be available in a CGI script and some extra keys relevant to WSGI applications. 
-
-``start_response()`` takes two positional arguments containing the status and headers although they may not be named as such so they are always specified just by their position::
-
-    start_response(status, headers)
-
-The status argument is the HTTP status code to return such as ``"200 OK"``. The headers argument is a list of tuples of header name and value pairs to include in the response.
-
-It sounds complicated but in reality all you are doing is specifying the status code, content-type and other headers in an easy way. Once ``start_response()`` is called the application can return the content as an iterable such as a list of strings as demonstrated in the example above. ``start_response()`` must be called before *any* content is returned and must only be called once.
-    
-You may not be happy with the function ``start_response`` being passed as a parameter to our ``application`` callable. Whilst it is not possible to pass a function as a parameter in some languages it is allowed in Python. This ability to pass callables as function parameters is crucial to understanding how the WSGI works.
-
-Since WSGI applications can return an iterable they are often written to make use of the ``yield`` statement so that part of the return value can be returned while other parts of the application are still executing::
-
-    def application(environ, start_response):
-        start_response('200 OK',[('Content-type','text/html')])
-        yield '<html>\n<body>\n'
-        ... do some work ...
-        yield 'Hello World!\n'
-        ... do some more work ...
-        yield '</body>\n</html>'
-        
-If you don't understand this example read some documentation about `Python generators <http://docs.python.org/tut/node11.html>`_. Generators are only available in Python 2.3 or above.
-
-There are some big advantages in rewriting our code as a WSGI application:
-    
-#. Once a server has loaded our application it can execute it many times without having to reload it on each request. This makes for huge performance gains over a traditional CGI approach.
-    
-#. By using callables in this standard way it is possible to chain together applications called middleware components to provide applications with extra functionality passed in the ``environ`` dictionary with very little programming effort.
-    
-#. The application has control over its status. For example if the application encountered an error it could send an ``500 Internal Server Error`` status message and the WSGI server would display the appropriate error page.
-    
-#. All HTTP headers are sent at the same time before the main content avoiding the possibility of sending content before headers.
-
-#. If all frameworks and servers support this simple interface then the Python community gains massive re-use and interoperability straight away with very little effort.
-
-WSGI Middleware
----------------
-
-# XXX To write.
-
-WSGI Servers and Deployment
----------------------------
-
-* `FastCGI <http://pylonshq.com/project/pylonshq/wiki/FastCGI>`_
-* `Mod Python <http://pylonshq.com/project/pylonshq/wiki/ModPython>`_
-
-# XXX To write.
+This guide takes you through the basics how you can use WSGI applications and middleware in Pylons.
 
 Paste and WSGI
 --------------
 
 Most of Pylons' WSGI capability comes from its close integration with Paste. Paste provides all the tools and middleware necessary to deploy WSGI applications. It can be thought of as a low-level WSGI framework designed for other web frameworks to build upon. Pylons is an example of a framework which makes full use of the possibilities of Paste.
 
-WSGI Support in Pylons
-======================
-
-A Pylons application is a valid WSGI application and is built almost entirely from WSGI middleware. 
-
-Getting the resulting Pylons Application
-----------------------------------------
-
-If you want to, you can get the WSGI application object from the configuration file like this::
+If you want to, you can get the WSGI application object from your Pylons configuration file like this::
 
     from paste.deploy import loadapp
     wsgi_app = loadapp('config:/path/to/config.ini')
@@ -107,28 +32,18 @@ You can then serve the file using a WSGI server. Here is an example using the WS
     httpd.set_app(wsgi_app)
     httpd.serve_forever()
 
-The ``paster serve`` command combines these two steps of creating a WSGI app from a config file and serving the resulting file to give the illusion that it is serving the config file directly.
+The ``paster serve`` command you will be used to using during the development of Pylons projects combines these two steps of creating a WSGI app from the config file and serving the resulting file to give the illusion that it is serving the config file directly.
 
 Because the resulting Pylons application is a WSGI application it means you can do the same things with it that you can do with any WSGI application. For example add a middleware chain to it or serve it via FastCGI/SCGI/CGI/mod_python/AJP or standalone.
 
-Configuring WSGI Components in the Config File
-----------------------------------------------
+You can also configure extra WSGI middleware, applications and more directly using the configuration file. The various options are described in the `Paste Deploy Documentation <http://pythonpaste.org/deploy/>`_ so we won't repeat them here.
 
-You can also configure extra WSGI middleware, applications and more directly using the configuration file. The various options are described in the `Paste Deploy Documentation <http://pythonpaste.org/deploy/>`_.
+Using a WSGI Application as a Pylons 0.9 Controller
+---------------------------------------------------
 
-Configuring Middleware Within a Pylons Application
---------------------------------------------------
+In Pylons 0.9 controllers are derived from ``pylons.controllers.WSGIController`` and are also valid WSGI applications. Unless your controller is derived from the legacy ``pylons.controllers.Controller`` class it is also assumed to be a WSGI applicaiton. This means that you don't actually need to use a Pylons controller class in your controller, any WSGI application will work as long as you give it the same name.
 
-A Pylons application middleware stack is directly exposed in the project's ``config/middleware.py`` file.
-
-# XXX More here, and talk about the ``Cascade``
-
-Using a WSGI Application as a Controller
-----------------------------------------
-
-If a Pylons controller is not a class which has ``pylons.controllers.Controller`` as one of its base classes, it is assumed to be a standard WSGI application. It must still have a valid Pylons controller name but that is the only restriction. 
-
-For example, if you added a ``hello`` controller by typing ``paster controller hello``, you could modify it to look like this::
+For example, if you added a ``hello`` controller by executing ``paster controller hello``, you could modify it to look like this::
 
     def HelloController(environ, start_response):
         start_response('200 OK', [('Content-Type','text/html')])
@@ -141,30 +56,95 @@ or use ``yield`` statements like this::
         yield 'Hello '
         yield 'World!'
         
-or use the standard Pylons response object which is a valid WSGI response which takes care of calling ``start_response()`` for you::
+or use the standard Pylons ``Response`` object which is a valid WSGI response which takes care of calling ``start_response()`` for you::
 
     def HelloController(environ, start_response):
-        return response('Hello World!')
+        return Response('Hello World!')
 
 and you could use the ``render()`` and ``render_response()`` objects exactly like you would in a normal controller action.
 
 As well as writing your WSGI application as a function you could write it as a class::
 
     class HelloController:
-        def call(environ, start_response):
+        def __call__(self, environ, start_response):
             start_response('200 OK', [('Content-Type','text/html')])
             return ['Hello World!']
             
 All the standard Pylons middleware defined in ``config/middleware.py`` is still available.
 
+Running a WSGI Application Wrom Within a Controller
+---------------------------------------------------
 
-Running a WSGI Application From Within a Pylons Controller
-----------------------------------------------------------
+There may be occasions where you don't want to replace your entire controller with a WSGI application but simply want to run a WSGI application from with a controller action. If your project was called ``test`` and you had a WSGI application called ``wsgi_app`` you could even do this::
 
-There may be occasions where you don't want to replace your entire controller with a WSGI application but simply want to run a WSGI application from with a controller action. If your WSGI application was called ``wsgi_app`` you could do do like this::
+    from test.lib.base import *
+
+    def wsgi_app(environ, start_response):
+        start_response('200 OK',[('Content-type','text/html')])
+        return ['<html>\n<body>\nHello World!\n</body>\n</html>']
 
     class HelloController(BaseController):
         def index(self):
             return wsgi_app(request.environ, self.start_response)
 
+Configuring Middleware Within a Pylons Application
+--------------------------------------------------
+
+A Pylons application middleware stack is directly exposed in the project's ``config/middleware.py`` file. This means that you can add and remove pieces from the stack as you choose. 
+
+.. Warning:: If you remove any of the default middleware you are likely to find that various parts of Pylons stop working!
+
+As an example, if you wanted to add middleware that added a new key to the environ dictionary you might do this::
+
+    # YOUR MIDDLEWARE
+    # Put your own middleware here, so that any problems are caught by the error
+    # handling middleware underneath
+    
+    class KeyAdder:
+        def __init__(self, app, key, value):
+            self.app = app
+            if '.' not in key:
+                raise Exception("WSGI environ keys must contain a '.' character")
+            self.key = key
+            self.value = value
+            
+        def __call__(self, environ, start_response):
+            environ[key] = value
+            return self.app(environ, start_response)
+            
+    app = KeyAdder(app, 'test.hello', 'Hello World')
+    
+Then in your controller you could write::
+
+    return Response(request.environ['test.hello'])
+    
+and you would see your ``Hello World!`` message.
+
+Of course, this isn't a particularly useful thing to do. Middleware classes can do one of four things or a combination of them:
+
+    * Change the environ dictionary
+    * Change the status
+    * Change the HTTP headers
+    * Change the response body of the application
+
+With the ability to do these things as a middleware you can create authentication code, error handling middleware and more but the great thing about WSGI is that someone probably already has so you can consult the `wsgi.org middleware list <http://wsgi.org/wsgi/Middleware_and_Utilities>`_ or have a look at the `Paste project <http://pythonpaste.org>`_ and reuse an exisiting piece of middleware.
+
+The Cascade
+-----------
+
+Towards the end of the middleware stack in your project's ``config/middleware.py`` file you will find a special piece of middleware called the cascade::
+
+    # @@@ Cascade @@@ 
+    app = Cascade([static_app, javascripts_app, app])
+    
+Passed a list of applications, ``Cascade`` will try each of them in turn. If one returns a 404 status code then the next application is tried until one of the applications returns a code other than ``200`` in which case its response is returned. If all applications fail, then the last application's failure response is used.
+
+The three WSGI applications in the cascade serve files from your project's ``public`` directory first then if nothing matches, the WebHelpers module JavaScripts are searched and finally if no JavaScripts are found your Pylons app is tried. This is why the ``public/index.html`` file is served before your controller is executed and why you can put ``/javascripts/`` into your HTML and the files will be found. 
+
+You are free to change the order of the cascade or add extra WSGI applications to it before ``app`` so that other locations are checked before your Pylons application is executed.
+
+Summary
+-------
+
+Whilst other frameworks have put WSGI adapters at the end of their stacks so that their applications can be served by WSGI servers, we hope you can see how fully Pylons embraces WSGI throughout its design to be the most flexible and extensible of the main Python web frameworks.
 

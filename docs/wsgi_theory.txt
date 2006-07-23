@@ -1,0 +1,207 @@
+
+Web Server Gateway Interface Theory
++++++++++++++++++++++++++++++++++++
+
+.. Warning:: This is a work in progress and is not complete. It hasn't even been read through to check it makes sense yet!
+
+WSGI Applications
+=================
+
+The best way to explain the WSGI (sometimes pronounced 'whiskey')is to work through an example demonstrating how an application written as a CGI script has to be modified to work as a WSGI application.
+    
+Consider the following CGI script::
+
+    print "Content-Type: text/html\n\n<html>\n<body>\nHello World!\n</body>\n</html>"
+    
+This does nothing more than print the words ``'Hello world!'`` to a web browser. What we have done is sent an HTTP header ``Content-type: text/html\n\n`` and then some HTML to the browser. The webserver may also have sent a ``200 OK`` response if the application completed successfully. 
+    
+To create the same result using a WSGI application we would use this code:
+    
+    def application(environ, start_response):
+        start_response('200 OK',[('Content-type','text/html')])
+        return ['<html>\n<body>\nHello World!\n</body>\n</html>']
+
+This is the most basic WSGI application. It is a function named ``application`` which a WSGI server will call and pass two parameters. The first is a dictionary named ``environ`` containing environment variables and the second is a function named ``start_response`` which must be called before the application returns a value. 
+
+The ``environ`` dictionary contains all the environment variables related to the request including those that would be available in a CGI script and some extra keys relevant to WSGI applications. One particularly useful WSGI key is ``environ['wsgi.errors']`` which you can ``.write()`` error messages to.
+
+``start_response()`` takes two positional arguments containing the status and headers although they may not be named as such so they are always specified just by their position. It also takes an optional ``exc_info`` parameter which we don't need to worry about for simple cases::
+
+    start_response(status, headers, exc_info=None)
+
+The status argument is the HTTP status code to return such as ``"200 OK"``. The headers argument is a list of tuples of header name and value pairs to include in the response. 
+
+It sounds complicated but in reality all you are doing is specifying the status code, content-type and other headers in an easy way. Once ``start_response()`` is called the application can return the content as an iterable such as a list of strings as demonstrated in the example above. ``start_response()`` must be called before *any* content is returned and must only be called once. ``start_response()`` returns an object that you can write to but its use is deprecated, you should output content by returning an iterable after ``start_response()`` is called as described above. 
+    
+You may not be happy with the function ``start_response`` being passed as a parameter to our ``application`` callable. Whilst it is not possible to pass a function as a parameter in some languages it is allowed in Python. This ability to pass callables as function parameters is crucial to understanding how the WSGI works.
+
+Since WSGI applications can return an iterable they are often written to make use of the ``yield`` statement so that part of the return value can be returned while other parts of the application are still executing::
+
+    def application(environ, start_response):
+        start_response('200 OK',[('Content-type','text/html')])
+        yield '<html>\n<body>\n'
+        ... do some work ...
+        yield 'Hello World!\n'
+        ... do some more work ...
+        yield '</body>\n</html>'
+        
+If you don't understand this example read some documentation about `Python generators <http://docs.python.org/tut/node11.html>`_. Generators are only available in Python 2.3 or above.
+
+You can also specify your application object as a class. Our simple application::
+
+    def application(environ, start_response):
+        start_response('200 OK',[('Content-type','text/html')])
+        return ['<html>\n<body>\nHello World!\n</body>\n</html>']
+        
+becomes::
+
+    class Application:
+        def __call__(self, environ, start_response):
+            start_response('200 OK', [('Content-type','text/plain')])
+            return ['Hello World!']
+
+It can also be useful to specify applications as classes so that functionality can be derived from other applications. 
+
+There are some big advantages in rewriting our code as a WSGI application:
+    
+#. Once a server has loaded our application it can execute it many times without having to reload it on each request. This makes for huge performance gains over a traditional CGI approach.
+    
+#. By using callables in this standard way it is possible to chain together applications called middleware components to provide applications with extra functionality passed in the ``environ`` dictionary with very little programming effort.
+    
+#. The application has control over its status. For example if the application encountered an error it could send an ``500 Internal Server Error`` status message and the WSGI server would display the appropriate error page.
+
+#. The application can easily set its own headers.
+
+#. If all frameworks and servers support this simple interface then the Python community gains massive re-use and interoperability straight away with very little effort. For example all Pylons applications can be deployed on any server that supports WSGI.
+
+.. Note::   One point to note when using WSGI is that because applications are loaded into memory once and executed multiple times, you can't use any modules that rely on being reloaded on each request. For example, consider this module here called ``web``::
+
+        import cgi
+        cgi_params = cgi.FieldStorage()
+        
+    and a WSGI application that used it::
+
+        import web
+        
+        def silly_application(environ, start_response):
+            start_response('200 OK', [('Content-type','text/plain')])
+            return ['Here are the CGI variables: %s'%('\n'.join(web.cgi_params.keys()))]
+        
+    The first time you run this code the ``web`` module will be imported and ``cgi_params`` will be initialised so the program will run fine. The second time it is run ``cgi_params`` will already be initialised and so the application will still display the information from the previous request.
+    
+    The bottom line is: **Don't rely on global variables in WSGI applications**
+    
+    The Pylons global variables have all been carefully created to avoid this problem using the `Paste registry <http://pythonpaste.org/module-paste.registry.html>` so you can use those objects without worrying!
+    
+
+WSGI Middleware
+---------------
+
+Consider the slightly more complicated example below using the imaginary session handling module superSession::
+
+    import superSession
+    session = superSession.session()
+    print "Content-type: text/plain\n\n"
+    if session.has_key('visited'):
+        print "You have already visited!"
+    else:
+        session['visited'] = 1
+        print "This is your first visit."
+
+We create a session object and display a different string depending on whether or not the user has visited the site before. We could follow the approach above and create the following WSGI application to do the same thing::
+
+    def application(environ, start_response):
+        import superSession
+        session = superSession.session()
+        if session.has_key('visited'):
+            text = "You have already visited!"
+        else:
+            session['visited'] = 1
+            text = "This is your first visit."
+        start_response('200 OK', [('Content-type','text/plain')])
+        return [text]
+
+This would be perfectly good and work perfectly well. We could now refactor the code again::
+
+    def exampleApplication(environ, start_response):
+        if environ['superSession'].has_key('visited'):
+            text = "You have already visited!"
+        else:
+            environ['superSession']['visited'] = 1
+            text = "This is your first visit."
+        start_response('200 OK', [('Content-type','text/plain')])
+        return [text]
+    
+    def session(application):
+        def app(environ, start_response):
+            if "superSession" not in environ:
+                import superSession
+                environ["superSession"] = superSession.session() # Options would obviously need specifying
+            return application(environ, start_response)
+        return app
+        
+    application = session(exampleApplication)
+
+We have separated out the session code into a different function and added a key to the environ dictionary called "session" which contains the session object. Our exampleApplication then accesses the session object through the environ dictionary. Note how we have renamed our application function to exampleApplication and mapped the name application to the session(exampleApplication) object. The WSGI server will still be able to find a callable named application and so will still be able to run our application.
+
+The session function is now what we call a middleware component as it sits in between the server and the application. It gives the application new functionality but the result of calling session(exampleApplication) is also just a WSGI application (because the combined object still conforms to the rules listed earlier) and so the server can still run the code.
+
+The huge advantage of refactoring code in this way is that the session functionality can now easily be added to any WSGI application using our session function. By chaining together these middleware components (which do not even have to be based on the Web Modules) WSGI applications can gain an enormous amount of functionality for very little programming effort by using existing middleware components. This helps make code easy to maintain and offers a very flexible programming methodology. 
+
+
+
+
+As we learned in the introduction, WSGI middleware components can be chained together since each middleware, application pair is also a valid WSGI application.
+
+In the example given, the Session class changes the environ dictionary to provide the application with more functionality. It could also have been chained with an Auth middleware component to provide auth functionality as shown below::
+
+    def exampleApplication(environ, start_response):
+        if not environ.has_key('imaginaryAuth'):
+            raise Exception{'No auth module found')
+        if environ['superSession'].has_key('visited'):
+            text = "You have already visited!"
+        else:
+            environ['superSession']['visited'] = 1
+            text = "This is your first visit."
+        start_response('200 OK', [('Content-type','text/plain')])
+        return [text]
+        
+    class Session:
+        def __init__(self, application):
+            self.application = application
+
+        def __call__(self, environ, start_response):
+            if "superSession" not in environ:
+                import superSession
+                environ["superSession"] = superSession.session()
+            return self.application(environ, start_response)
+            
+    class Auth:
+        def __init__(self, application):
+            self.application = application
+
+        def __call__(self, environ, start_response):
+            if "imaginaryAuth" not in environ:
+                import imaginaryAuth
+                environ["imaginaryAuth"] = imaginaryAuth.auth()
+            return self.application(environ, start_response)
+        
+    application = Auth(Session(exampleApplication))
+
+Middleware classes usually do one of four things or a combination of them:
+
+    * Change the environ dictionary
+    * Change the application's status
+    * Change the HTTP headers
+    * Change the return value of the application
+
+The most common use is to alter the environ dictionary in order to provide more functionality but here are some other ways in which they can be used.
+
+Error Handling
+    Error handling middleware might catch an error raised, format it for display as HTML, change any HTTP headers and status set and return the correct settings for an error page. 
+    
+User Sign In
+    User sign in middleware might wait for a '403 Forbidden' status and instead display a sign in page, setting a new status of '200 OK', new headers and of course a different result containg the HTML of the sign in page. 
+    
+    
+    
