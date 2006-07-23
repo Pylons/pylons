@@ -109,7 +109,7 @@ Replace the line ``# Goes here`` after ``# @@@ Security middleware @@@`` in ``__
         authenticator=SimplestAuthenticator,
     )
 
-The options to ``Security`` are the same as the options for ``paste.login.middleware`` so you can counsult the  paste documentation for information.
+The options to ``Security`` are the same as the options for ``paste.login.middleware`` so you can consult the  paste documentation for information.
 
 # XXX We do need to explain the options though.
 

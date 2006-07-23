@@ -6,7 +6,7 @@ Porting Rails Flickr Example to Pylons 0.9
 
 Based on `original tutorial for Pylons 0.8 by Nicholas Piel <http://pylonshq.com/project/pylonshq/wiki/RailsFlickrExample>`_
 
-By now you probably have allready seen the `amazing screencast <http://media.rubyonrails.org/video/flickr-rails-ajax.mov>`_ where someone implements a beautiful web interface to `Flickr! <http://www.flickr.com>`_ (an online photo gallery) in under 5 minutes. Well if you haven't seen it yet, you really should do so now. But if you have you would probably be glad to know that this is possible under Pylons too!
+By now you probably have already seen the `amazing screencast <http://media.rubyonrails.org/video/flickr-rails-ajax.mov>`_ where someone implements a beautiful web interface to `Flickr! <http://www.flickr.com>`_ (an online photo gallery) in under 5 minutes. Well if you haven't seen it yet, you really should do so now. But if you have you would probably be glad to know that this is possible under Pylons too!
 
 Getting Started
 ===============

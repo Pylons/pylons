@@ -31,7 +31,7 @@ you can install all the packages you want to use without super-user access.
 Understanding the Setup Process
 =================================
 
-Say you have written a Pylons wiki application called ``wiki``. When a webmaster wants to install your wiki appliction he will run the following command to generate a config file::
+Say you have written a Pylons wiki application called ``wiki``. When a webmaster wants to install your wiki application he will run the following command to generate a config file::
 
     paster make-config wiki wiki_production.ini
     

@@ -109,7 +109,7 @@ You can then serve the file using a WSGI server. Here is an example using the WS
 
 The ``paster serve`` command combines these two steps of creating a WSGI app from a config file and serving the resulting file to give the illusion that it is serving the config file directly.
 
-Because the resulting Pylons application is a WSGI application it means you can do the same things with it that you can do with any WSGI appliaction. For example add a middleware chain to it or serve it via FastCGI/SCGI/CGI/mod_python/AJP or standalone.
+Because the resulting Pylons application is a WSGI application it means you can do the same things with it that you can do with any WSGI application. For example add a middleware chain to it or serve it via FastCGI/SCGI/CGI/mod_python/AJP or standalone.
 
 Configuring WSGI Components in the Config File
 ----------------------------------------------
@@ -146,7 +146,7 @@ or use the standard Pylons response object which is a valid WSGI response which 
     def HelloController(environ, start_response):
         return response('Hello World!')
 
-and you could use the ``render()`` and ``render_response()`` objects exaclty like you would in a normal controller action.
+and you could use the ``render()`` and ``render_response()`` objects exactly like you would in a normal controller action.
 
 As well as writing your WSGI application as a function you could write it as a class::
 

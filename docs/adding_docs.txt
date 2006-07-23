@@ -51,7 +51,7 @@ Once you have mastered reStructuredText you can write documentation until your h
 Using Docstrings
 ================
 
-Docstrings are one of Python's most useful features if used properly. They are described in detail in the Python docuemtnation but basically allow you to document any module, class, method or function, in fact just about anything. Users can then access this documentation interactively.
+Docstrings are one of Python's most useful features if used properly. They are described in detail in the Python documentation but basically allow you to document any module, class, method or function, in fact just about anything. Users can then access this documentation interactively.
 
 Try this::
 

@@ -43,7 +43,7 @@ When you've finished, stop the server with ``CTRL+C`` because we will start deve
 Developing QuickWiki
 ====================
 
-If you skipped the section above you wil need to install Pylons 0.9::
+If you skipped the section above you will need to install Pylons 0.9::
 
 	> easy_install -U Pylons[full]==0.9
 
@@ -58,7 +58,7 @@ Now lets start the server and see what we have::
 
 .. Note:: We have started the server with the ``--reload`` switch. This means any changes we make to code will cause the server to restart if necessary so that you can always test your latest code. 
 
-Open a new console and ``cd QuickWiki/quickwiki``. Visit http://127.0.0.1:5000 where you will see the introduction page. Delete the file ``public/index.html`` because we want to see the front page of the wiki instead of this welcome page. If you now refresh the page, the Pylons built-in error document suport will kick in and display an ``Error 404`` page to tell you the file could not be found until later on when we write our controllers.
+Open a new console and ``cd QuickWiki/quickwiki``. Visit http://127.0.0.1:5000 where you will see the introduction page. Delete the file ``public/index.html`` because we want to see the front page of the wiki instead of this welcome page. If you now refresh the page, the Pylons built-in error document support will kick in and display an ``Error 404`` page to tell you the file could not be found until later on when we write our controllers.
 
 The Model
 =========
@@ -93,9 +93,9 @@ A core philosophy of SQLAlchemy is that tables and domain classes are different 
             
     page_mapper = mapper(Page, pages_table)
 
-Looking ahead, our wiki will need some formatting so we will need to turn the ``content`` field into HTML. Any WikiWords (which are words made by joining together two or more lowercase words with the first letter capitalised) will also need to be converted into hyperlinks. 
+Looking ahead, our wiki will need some formatting so we will need to turn the ``content`` field into HTML. Any WikiWords (which are words made by joining together two or more lowercase words with the first letter capitalized) will also need to be converted into hyperlinks. 
 
-It would be nice if we could add a method to our ``Page`` object to retrieve the fomatted HTML with the WikiWords already converted to hyperlinks. Add the following at the top of the ``models/__init__.py`` file::
+It would be nice if we could add a method to our ``Page`` object to retrieve the formatted HTML with the WikiWords already converted to hyperlinks. Add the following at the top of the ``models/__init__.py`` file::
 
     from pylons import h
     import re
@@ -128,7 +128,7 @@ and then add a ``get_wiki_content()`` method to the ``Page`` object so it looks 
                     )
             return content
 
-This code deserves a bit of explaining. The ``content = None`` line is so that the ``content`` attribute is initilaised to ``None`` when a new ``Page`` object is created. If the ``Page`` object represents a row in the ``pages`` table then ``self.content`` will be the value of the ``content`` field. ``h.link_to()`` and ``h.url_for()`` are standard Pylons helpers which create links to specfic controller actions. In this case we have decided that all WikiWords should link to the ``index`` action of the ``page`` controller which we will create later.
+This code deserves a bit of explaining. The ``content = None`` line is so that the ``content`` attribute is initialized to ``None`` when a new ``Page`` object is created. If the ``Page`` object represents a row in the ``pages`` table then ``self.content`` will be the value of the ``content`` field. ``h.link_to()`` and ``h.url_for()`` are standard Pylons helpers which create links to specific controller actions. In this case we have decided that all WikiWords should link to the ``index`` action of the ``page`` controller which we will create later.
 
 One final change, since we have used docutils and SQLAlchemy, both third party packages, we need to edit our ``setup.py`` file so that anyone installing QuickWiki with `Easy Install <http://peak.telecommunity.com/DevCenter/EasyInstall>`_ will automatically also have these dependencies installed for them too. Edit your ``setup.py`` in your project root directory so that the ``install_requires`` line looks like this::
 
@@ -155,7 +155,7 @@ To test the automatic installation of the dependencies, run the following comman
 Connecting to the Database
 ==========================
 
-All of your project's controllers are derived from the ``BaseController`` in ``lib/base.py`` by default. We will make use of this fact to enable all controllers to with SQLAlchemy support. Add the following code underneath the import statements in ``lib/base.py`` to replace the exisitng ``BaseController`` class::
+All of your project's controllers are derived from the ``BaseController`` in ``lib/base.py`` by default. We will make use of this fact to enable all controllers to with SQLAlchemy support. Add the following code underneath the import statements in ``lib/base.py`` to replace the existing ``BaseController`` class::
 
     ...
     import sqlalchemy.mods.threadlocal
@@ -250,7 +250,7 @@ All our other templates will be automatically inserted into the ``% m.call_next(
 
 If you are interested in learning some of the features of Myghty templates have a look at the comprehensive `Myghty Documentation <http://www.myghty.org/docs/>`_. For now we just need to understand that  is replaced with the child template and that anything in ``<%`` and ``%>`` brackets is executed and replaced with the result. Having the ``%`` as the first character on a line is shorthand for putting the whole line in ``<%`` and ``%>`` brackets. 
 
-This autohandler also makes use of various helper functions attatched to the ``h`` object. These are described in the `WebHelpers documentation <http://pylonshq.com/WebHelpers/module-index.html>`_. You can add more helpers to the ``h`` object by adding them to ``lib/helpers.py`` although for this project we don't need to do so.
+This autohandler also makes use of various helper functions attached to the ``h`` object. These are described in the `WebHelpers documentation <http://pylonshq.com/WebHelpers/module-index.html>`_. You can add more helpers to the ``h`` object by adding them to ``lib/helpers.py`` although for this project we don't need to do so.
 
 .. Warning:: Your templates won't work if there is any whitespace before lines starting with a ``%`` character.
 
@@ -264,7 +264,7 @@ Before we can add the actions we want to be able to route the requests to them c
     map.connect(':title', controller='page', action='index', title='FrontPage')
     map.connect('*url', controller='template', action='view')
     
-Full informaton on the powerful things you can do to route requests to controllers and actions can be found in the `Routes documentation <http://routes.groovie.org/docs/>`_.
+Full information on the powerful things you can do to route requests to controllers and actions can be found in the `Routes documentation <http://routes.groovie.org/docs/>`_.
 
 Controllers
 ===========
@@ -290,7 +290,7 @@ We are going to need the following actions::
     ``delete(self)``
         deletes a page based on an AJAX drag and drop call
 
-Let's get cracking! Add the following import statments to the top of the page controller ``controllers/page.py`` after the existing import statement::
+Let's get cracking! Add the following import statements to the top of the page controller ``controllers/page.py`` after the existing import statement::
 
     import sqlalchemy.mods.threadlocal
     from sqlalchemy import objectstore
@@ -305,7 +305,7 @@ Add the this method to the ``PageController`` class to create a query object for
 index()
 -------
 
-Replace the exisitng ``index()`` action with this::
+Replace the existing ``index()`` action with this::
 
         def index(self, title):
             page = self.query.get_by(title=title)
@@ -358,7 +358,7 @@ Visit http://127.0.0.1:5000/ and you will see the front page of the wiki. We can
         border-top: 1px solid #000;
     }
     
-Refresh the page again and we have a better looking wiki. You will notice that the word ``QuickWiki`` has been turned into a hyperlink by the ``get_wiki_content()`` method we added to our ``Page`` domain object earlier. You can click the link and will see an example of the new page screen from the ``new_page.myt`` template. If you follow the ``Create the page`` link you will see the Pylons automatic error handler kick in to tell you ``Action edit is not implemented``. Well, we better write it next but before we do, have a play with the `interactive debugger <interactive_debugger.html>`_, try clicking on the ``+`` or ``>>`` arrows and you will be able to interactively debug your applicationm it is a tremendously useful tool. 
+Refresh the page again and we have a better looking wiki. You will notice that the word ``QuickWiki`` has been turned into a hyperlink by the ``get_wiki_content()`` method we added to our ``Page`` domain object earlier. You can click the link and will see an example of the new page screen from the ``new_page.myt`` template. If you follow the ``Create the page`` link you will see the Pylons automatic error handler kick in to tell you ``Action edit is not implemented``. Well, we better write it next but before we do, have a play with the `interactive debugger <interactive_debugger.html>`_, try clicking on the ``+`` or ``>>`` arrows and you will be able to interactively debug your application it is a tremendously useful tool. 
 
 edit()
 ------
@@ -380,14 +380,14 @@ and the create the ``templates/edit.myt`` file::
         <% h.submit(value="Save changes", name='commit') %>
     <% h.end_form() %>
 
-.. Note:: You might have noticed that we only set ``c.content`` if the page exists but that it is accessed in ``h.text_area`` even for pages that don't exist and doesn't raise an ``AttributeError``. We are making use of the fact that the ``c`` object returns an empty string ``""`` for any attribute that is accessed. This is a very useful feature of the ``c`` object but can catch you out on occasions where you don't expect this behaviour.
+.. Note:: You might have noticed that we only set ``c.content`` if the page exists but that it is accessed in ``h.text_area`` even for pages that don't exist and doesn't raise an ``AttributeError``. We are making use of the fact that the ``c`` object returns an empty string ``""`` for any attribute that is accessed. This is a very useful feature of the ``c`` object but can catch you out on occasions where you don't expect this behavior.
 
 We are making use of the ``h`` object to create our form and field objects. This saves a bit of manual HTML writing. The form submits to the ``save()`` action to save the new or updated content so let's write that next.
 
 save()
 ------
 
-The first thing the ``save()`` action has to do is to see if the page being saved already exists. If not it creates it with ``page = model.Page()``. Next it needs the updated content. In Pylons you can get request parameters from form submissions, GET or POST requests from the appropraitely named ``request.params`` object. 
+The first thing the ``save()`` action has to do is to see if the page being saved already exists. If not it creates it with ``page = model.Page()``. Next it needs the updated content. In Pylons you can get request parameters from form submissions, GET or POST requests from the appropriately named ``request.params`` object. 
 
 Add the ``save()`` action::
 
@@ -409,7 +409,7 @@ Add the ``save()`` action::
     
     # XXX THIS DOESN'T WORK AT THE MOMENT!
 
-In order for the ``page.myt`` template to display the ``Successfully saved`` message after the page is saved we need to update the ``templates/page.myt`` file. After ``<h1 class="main"><% c.title %></h1>`` add these lines maing sure there is no whitespace before the lines that start with a ``%`` character::
+In order for the ``page.myt`` template to display the ``Successfully saved`` message after the page is saved we need to update the ``templates/page.myt`` file. After ``<h1 class="main"><% c.title %></h1>`` add these lines making sure there is no whitespace before the lines that start with a ``%`` character::
 
     % if c.message:
     <p><% c.message %> </p>
@@ -463,7 +463,7 @@ Add this line to ``templates/autohandler`` before ``</head>``::
 
     <% h.javascript_include_tag('/javascripts/effects.js', builtins=True)  %>
 
-.. Note:: The ``h.javascript_include_tag()`` helper will create links to all the builtin JavaScripts we need and also add ``/javascripts/effects.js`` creating HTML that looks like this when you access it from a browser::
+.. Note:: The ``h.javascript_include_tag()`` helper will create links to all the built-in JavaScripts we need and also add ``/javascripts/effects.js`` creating HTML that looks like this when you access it from a browser::
 
         <script src="/javascripts/prototype.js" type="text/javascript"></script>
         <script src="/javascripts/scriptaculous.js" type="text/javascript"></script>
@@ -486,9 +486,9 @@ with this::
     <span id="page-<% title %>"><% title %></span>&nbsp;[<% h.link_to('visit', h.url_for(title=title, action="index")) %>]
     <% h.draggable_element("page-"+ str(title), revert=True) %>
     
-This marks each of the titles as a draggable element that reverts to its orginal position if it isn't dropped over a drop target. If we want to be able to delete the pages we better add a drop target. Try it out at http://127.0.0.1:5000/page/list by dragging the titles themselves around the screen. Notice how much functionality we got with just the one helper ``h.draggable_element()``.
+This marks each of the titles as a draggable element that reverts to its original position if it isn't dropped over a drop target. If we want to be able to delete the pages we better add a drop target. Try it out at http://127.0.0.1:5000/page/list by dragging the titles themselves around the screen. Notice how much functionality we got with just the one helper ``h.draggable_element()``.
 
-We better have somewhere to drop the tites to delete them so add this before the ``<ul id="titles">`` line in ``templates/titles.myt`` ::
+We better have somewhere to drop the titles to delete them so add this before the ``<ul id="titles">`` line in ``templates/titles.myt`` ::
 
     <div id="trash">
         Delete a page by dragging its title here
@@ -558,7 +558,7 @@ This will create an egg file in ``dist`` which contains everything anyone needs 
     
 You should probably make eggs for each version of Python your users might require by running the above command with both Python 2.3 and 2.4.
 
-If you want to register your project with the Cheeseshop at http://www.python.org/pypi you can run the command below. *Please only do this with your own projects though becasue QuickWiki has already been registered!*
+If you want to register your project with the Cheeseshop at http://www.python.org/pypi you can run the command below. *Please only do this with your own projects though because QuickWiki has already been registered!*
 
 ::
 
@@ -597,7 +597,7 @@ A final word about security.
 
 .. Danger:: Always set ``debug = false`` in configuration files for production sites and make sure your users do to.
 
-You should NEVER run a production site accessible to the public with debug mode on. If there was a problem with your application and an interactive error page was shown, the visitor would be able to run any Python commands they liked in the same way you can when you are debugging. This would obviously allow them to do all sorts of malicous things so it is very important you turn off interactive debugging for production sites by setting ``debug = false`` in configuration files and also that you make users of your software do the same.
+You should NEVER run a production site accessible to the public with debug mode on. If there was a problem with your application and an interactive error page was shown, the visitor would be able to run any Python commands they liked in the same way you can when you are debugging. This would obviously allow them to do all sorts of malicious things so it is very important you turn off interactive debugging for production sites by setting ``debug = false`` in configuration files and also that you make users of your software do the same.
 
 Summary
 =======

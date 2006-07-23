@@ -3,7 +3,7 @@ Beginners Web Development
 
 :author: James Gardner
 :date: 2005-11-24
-:status: Unfinshed First Draft
+:status: Unfinished First Draft
 
 This guide teaches the basics of web programming in Python and is aimed at a developer who is used to programming concepts like functions and classes but who hasn't had much experience with the web or with Python.
 
@@ -181,7 +181,7 @@ There are two approaches to solving this problem. The first is to use a templati
 
 The second approach, which beginners tend to like, is to mix code and template in the same document. Languages like PHP and ASP do this where you put any code in tags and any template code outside the tags. Conceptually this is just like writing an HTML page with an extra tag which runs code. This approach makes it easy to mix and match code and HTML but is not as good at separating presentation from code since the page often contain lots of code.
 
-Pylons projects have a ``templates`` directory which use Myghty templates (a system based on HTML::Mason used to power amazon.com amoungst others) that allows mixing of Python code and other information such as HTML in a fast, extensible format. Myghty also allows for components, inheritance and more. Pylons also supports Cheetah, Kid and other template solutions utilizing the TurboGears template plug-in system.
+Pylons projects have a ``templates`` directory which use Myghty templates (a system based on HTML::Mason used to power amazon.com amongst others) that allows mixing of Python code and other information such as HTML in a fast, extensible format. Myghty also allows for components, inheritance and more. Pylons also supports Cheetah, Kid and other template solutions utilizing the TurboGears template plug-in system.
 
 Routes
 ------

@@ -180,7 +180,7 @@ CMS can use the RichText edit in place with a toolbar at the very top of the pag
 We should reserve the directories pylons in public and template and controllers beginning pylons in controllers?
 We can then have a controller database as well as an eggs database
 
-We should do the FormEncode thing using Pyprotocols to extend it.
+We should do the FormEncode thing using PyProtocols to extend it.
 
 Things which might be perceived as bugs
 =======================================

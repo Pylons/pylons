@@ -66,7 +66,7 @@ There are a number of advantages to this abstraction:
 Summary
 -------
 
-All this conversion, loading and saving malarky might sound rather complicated, and indeed it is. The point is that your web application is almost certainly already doing all this so why not do it in a structured and extensible way that makes it easy to modify your application later on? The Model software does just that.
+All this conversion, loading and saving malarkey might sound rather complicated, and indeed it is. The point is that your web application is almost certainly already doing all this so why not do it in a structured and extensible way that makes it easy to modify your application later on? The Model software does just that.
 
 Our Implementation
 ==================
@@ -353,7 +353,7 @@ As well as being able to convert data to and from the database and to and from t
 Note how we have specified ``Manipulators`` as ``None``. This is because we want our ``BookModel`` class to use the default manipulators for the data structure defined in our ``Book`` class.
 
 
-Customising Our Example to search on ISBN
+Customizing Our Example to search on ISBN
 =========================================
 
 In the real world it isn't necessarily too helpful to have to reference every book by the id that SQLObject created for it when it was added to the database. In our example it we would find it useful to be able to load books by user and ISBN. 

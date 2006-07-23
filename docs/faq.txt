@@ -17,7 +17,7 @@ Frequently Asked Questions
 
 **How do I use an existing WSGI project in Pylons?**
 
-    Pylons applications can run alongside Django, TurboGears and other framework's WSGI applications using Paste Deploy's composit tools in the configuration. 
+    Pylons applications can run alongside Django, TurboGears and other framework's WSGI applications using Paste Deploy's composite tools in the configuration. 
 
     Alternatively, name your WSGI application with the same name you would name a Pylons controller and Pylons will serve your controller as a WSGI application instead of treating it as a Pylons controller. 
 

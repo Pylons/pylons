@@ -60,7 +60,7 @@ There will most likely be a section where you declare your FastCGI servers, and 
 In our example we'll assume you're going to run a Pylons web application listening on a host/port. Changing ``-host`` to
 ``-socket`` will let you use a Pylons web application listening on a socket.
 
-The filename you give in the second option does not need to physically exist on the webserver, URI's that Apache resolve
+The filename you give in the second option does not need to physically exist on the webserver, URIs that Apache resolve
 to this filename will be handled by the FastCGI application.
 
 The other important line to ensure that your Apache webserver has is to indicate that fcgi scripts should be handled
