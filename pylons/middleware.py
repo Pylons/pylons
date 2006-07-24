@@ -220,4 +220,4 @@ a.switch_source:hover {
 </html>
 """
 
-__pudge_all__ = ['ErrorHandler', 'ErrorDocuments']
+__pudge_all__ = ['ErrorHandler', 'ErrorDocuments', 'StaticJavascripts']
