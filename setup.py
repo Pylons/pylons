@@ -87,7 +87,7 @@ the `Pylons download page <http://www.pylonshq.com/download/>`_ .
         'cheetah':["Cheetah>=1.0", "TurboCheetah>=0.9.5"],
         'kid':["kid>=0.9", "TurboKid==dev,>=0.9.1dev"],
         'full':[
-            "docutils>=0.4", "elementtree>=1.2.6", "kid>=0.9", 
+            "docutils>=0.4", "elementtree>=1.2.6",
             "pudge==dev,>=0.1.1dev", "buildutils==dev,>=0.1.2dev",
             "py>=0.8.0_alpha2",
             "Cheetah>=1.0", "TurboCheetah>=0.9.5",
