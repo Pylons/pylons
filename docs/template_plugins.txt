@@ -54,7 +54,7 @@ the following content::
         </body>
     </html>
 
-Since the template plug-in's currently expect paths to act as module imports, you will also need to create
+Since the template plug-ins currently expect paths to act as module imports, you will also need to create
 a ``__init__.py`` file inside ``yourproject/kidtemplates``.
 
 Loading ``/kid`` will now return the Kid template that you have created.
