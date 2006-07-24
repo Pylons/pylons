@@ -1,7 +1,7 @@
 Post install tweaks for Windows
 ===============================
 
-Python scripts installed as part of the Pylons install process will be put in the ``Scripts`` directory of your Python installation, typically in ``C:\Python24\Scripts``. By default on Windows, this directory is not in your ``PATH``: this can cause the following error message when running a command such as ``paster`` from the command prompt::
+Python scripts installed as part of the Pylons install process will be put in the ``Scripts`` directory of your Python installation, typically in ``C:\Python24\Scripts``. By default on Windows, this directory is not in your ``PATH``; this can cause the following error message when running a command such as ``paster`` from the command prompt::
 
 	C:\Documents and Settings\James>paster
 	'paster' is not recognized as an internal or external command,
