@@ -1,7 +1,7 @@
 Application Setup
 +++++++++++++++++
 
-This document describes how a developer can take advantage of Pylon's application setup functionality to allow webmasters to easily setup their application.
+This document describes how a developer can take advantage of Pylons' application setup functionality to allow webmasters to easily setup their application.
 
 Installation refers to the process of downloading and installing the application with easy_install whereas setup refers to the process of setting up an instance of an installed application so it is ready to be deployed. 
 
