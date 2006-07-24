@@ -6,14 +6,14 @@ Introduction
 
 When an application returns a status code other than ``200``, which is the code for "everything went fine", you might wish to display a message to the user explaining what happened with an error document. 
 
-Error documents are a good way of passing on a status message to the user. Anyone familiar with Apache will be aware of how to use the ``ErrorDocument`` directive, well Pylons achieves a similar thing with ``ErrorDocuments`` middleware.
+Pylons provides a facility for displaying customized error messages to users via the ``ErrorDocuments`` middleware. For those familiar with Apache's ``ErrorDocument`` directive, Pylons' `ErrorDocuments`` provides similar functionality.
 
-If you do not display an error document the user might see the browser's default page for that error or a blank screen depending on the browser.
+If an error document is not provided by an application, users will see the browser's default page for that error, or a blank screen, depending on their browser.
 
 The Default Setup
 =================
 
-By default when you create a Pylons application the standard Pylons error document handler will be setup with the default Pylons HTML template and default Pylons error mapper to map the error to your application's error controller, which by default displays the appropriate error document for the status code.
+Newly created Pylons applications come configured with the `ErrorDocuments`` middleware enabled. The middleware is setup to call Pylons ``error_mapper`` function; which in turn calls the application's ``ErrorController``. The ``ErrorController`` renders the actual error document shown to the user; it uses Pylons' ``error_document_template`` HTML by default.
 
 Every part of the error documents system can be configured and customized to provide whatever error handling you like.
 
@@ -37,7 +37,7 @@ Open your configuration file ``development.ini`` and change ``base_path=/`` to w
 Changing the template
 =====================
 
-If you want to use a different template for the error documents you will need to edit your ``error.py`` controller. Change the ``document()`` action so that rather than using the ``pylons.middleware.error_document_template`` string as a template it uses your own template::
+To use a different template for the error documents, modify your ``ErrorController`` (in ``controllers/edit.py``). Change the ``document()`` action so that rather than using the ``pylons.middleware.error_document_template`` HTML string as a template, it uses your own template::
 
     def document(self):
         my_template="""
@@ -51,7 +51,7 @@ If you want to use a different template for the error documents you will need to
         """ % {'code':request.GET('code', ''), 'message':request.GET('message', '')}
         return Response(my_template)
 
-You probably won't need the other actions in the error controller if you use your own template. The are just a rather clever bit of code so that the default error handler can serve images from the Pylons package without them being copied into your ``public`` directory.
+The other actions in the default ``ErrorController`` are most likely unnecessary when using a customized template. They serve images and style sheets from the Pylons package, for use by Pylons' ``error_document_template``, without the need for those files to be located in your application's ``public`` directory.
 
 
 Changing the error mapper
@@ -79,14 +79,14 @@ By default the ``pylons.middleware.error_mapper`` is used. It looks like this::
             url = '%s/error/document/?%s'%(get_prefix(environ), urlencode({'message':message, 'code':code}))
             return url
             
-Note how in debug mode the mapper does not intercept server error 500 codes since if it did, you wouldn't be able to see the error report produced by the PylonsEvalException middleware.
+Note how in debug mode the mapper does not intercept server error 500 codes as they are used for the error report produced by the ``PylonsEvalException`` middleware.
 
 You can create your own error mapper based on this one to intercept different status codes by changing the line ``if code in [401, 403, 404, 500]``. You can even change the URL so that a static file is served from your ``public`` directory rather than by the error controller. Just specify your error_mapper as the ``mapper`` parameter to middleware.
 
 Testing Your Error Document
 ===========================
 
-You can test your error document implementation by aborting a request with ``m.abort()``. The method takes two parameters: the first is an integer representing the error code, the second is the response message to send as part of the status HTTP header.
+You can test your error document implementation by aborting a request with ``abort()``. The method takes two parameters: the first is an integer representing the error code, the second is the response message to send as part of the status HTTP header.
 
 Add a controller to your project named ``error_doc_test``::
     
