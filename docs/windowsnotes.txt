@@ -51,7 +51,7 @@ See `Finally`_ below.
 Finally
 -------
 
-Restarting your computer may be required to enable the change to the ``PATH``. Then, commands may be entered from any location on your filesystem::
+Restarting your computer may be required to enable the change to the ``PATH``. Then commands may be entered from any location on your filesystem::
 
 	C:\Documents and Settings\James>paster
 	Usage: C:\Python24\Scripts\paster-script.py COMMAND
