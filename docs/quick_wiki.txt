@@ -17,7 +17,7 @@ In this tutorial we are going to create a working wiki from scratch using Pylons
 Starting at the End
 ===================
 
-Pylons is designed to be easy for everyone, not just developers so lets start by downloading and installing the finished QuickWiki in exactly the way end users of QuickWiki might do. Once we have explored its features we will set about writing it from scratch.
+Pylons is designed to be easy for everyone, not just developers, so lets start by downloading and installing the finished QuickWiki in exactly the way end users of QuickWiki might do. Once we have explored its features we will set about writing it from scratch.
 
 .. Note:: If you are following this tutorial before the official release of Pylons 0.9 you will have to manually install `Pylons development version <pylonsdev.html>`_ and the latest development version of Paste Deploy before running these commands.
 
@@ -35,7 +35,7 @@ Finally create the database tables and serve the finished application::
     > paster setup-app test.ini
     > paster serve test.ini
     
-That's it! Now you can visit http://127.0.0.1:5000 and experiment with the finished Wiki. Note in the title list screen you can drag page titles to the trash area to delete them using AJAX.
+That's it! Now you can visit http://127.0.0.1:5000 and experiment with the finished Wiki. Note that in the title list screen you can drag page titles to the trash area to delete them via AJAX calls.
 
 When you've finished, stop the server with ``CTRL+C`` because we will start developing our own version.
 
@@ -56,20 +56,20 @@ Now lets start the server and see what we have::
     > cd QuickWiki
     > paster serve --reload development.ini
 
-.. Note:: We have started the server with the ``--reload`` switch. This means any changes we make to code will cause the server to restart if necessary so that you can always test your latest code. 
+.. Note:: We have started the server with the ``--reload`` switch. This means any changes we make to code will cause the server to restart (if necessary); your changes are immediately reflected on the live site. 
 
-Open a new console and ``cd QuickWiki/quickwiki``. Visit http://127.0.0.1:5000 where you will see the introduction page. Delete the file ``public/index.html`` because we want to see the front page of the wiki instead of this welcome page. If you now refresh the page, the Pylons built-in error document support will kick in and display an ``Error 404`` page to tell you the file could not be found until later on when we write our controllers.
+Open a new console and ``cd QuickWiki/quickwiki``. Visit http://127.0.0.1:5000 where you will see the introduction page. Delete the file ``public/index.html`` because we want to see the front page of the wiki instead of this welcome page. If you now refresh the page, the Pylons built-in error document support will kick in and display an ``Error 404`` page to tell you the file could not be found. We'll setup a controller to handle this location later.
 
 The Model
 =========
 
-Pylons uses an Model View Controller architecture so lets start by creating the model. We could use any system we like for the model including `SQLObject <http://www.sqlobject.org>`_ or `SQLAlchemy <http://www.sqlalchemy.org>`_. We are going to use SQLAlchemy.
+Pylons uses a Model View Controller architecture; we'll start by creating the model. We could use any system we like for the model including `SQLObject <http://www.sqlobject.org>`_ or `SQLAlchemy <http://www.sqlalchemy.org>`_. We'll use SQLAlchemy for QuickWiki.
 
 .. Note:: SQLAlchemy is a Python SQL toolkit and Object Relational Mapper that is fast becoming the default choice for many Pylons programmers.
 
-   It provides a full suite of well known enterprise-level persistence patterns, designed for efficient and high-performing database access, adapted into a simple and Pythonic domain language. There is full and detailed documentation available on the SQLAlchemy website at http://sqlalchemy.org/docs/ and you should really read this before you get heavily into SQLAlchemy.
+   It provides a full suite of well known enterprise-level persistence patterns, designed for efficient and high-performance database access, adapted into a simple and Pythonic domain language. There is full and detailed documentation available on the SQLAlchemy website at http://sqlalchemy.org/docs/ and you should really read this before you get heavily into SQLAlchemy.
 
-Edit your ``models/__init__.py`` so that it looks like this::
+Edit your ``models/__init__.py`` so that it looks like::
 
     import sqlalchemy.mods.threadlocal
     from sqlalchemy import *
@@ -85,7 +85,7 @@ The first two lines setup SQLAlchemy to support threads and import some useful o
 
 .. Note:: SQLAlchemy also supports reflecting this information directly from a database table so if we had already created the database table SQLAlchemy could have constructed the ``Table`` object for us.
 
-A core philosophy of SQLAlchemy is that tables and domain classes are different beasts so the next thing we need to do is to create the Python class that will represent the pages of our wiki and map these domain objects to rows in the ``pages`` table using a mapper. Add this to the bottom of ``models/__init__.py``::
+A core philosophy of SQLAlchemy is that tables and domain classes are different beasts. So next, we'll create the Python class that will represent the pages of our wiki and map these domain objects to rows in the ``pages`` table using a mapper. Add this to the bottom of ``models/__init__.py``::
 
     class Page(object):
         def __str__(self):
