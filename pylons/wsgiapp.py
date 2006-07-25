@@ -9,7 +9,6 @@ import sys
 import re
 import inspect
 import urllib
-from types import ClassType
 
 import paste.wsgiwrappers
 import paste.httpexceptions as httpexceptions
@@ -170,7 +169,8 @@ class PylonsBaseWSGIApp(object):
                 match[k] = urllib.unquote_plus(v)
         
         # Older subclass of Controller
-        if type(controller) == ClassType and not issubclass(controller, WSGIController) and issubclass(controller, Controller):
+        if inspect.isclass(controller) and not issubclass(controller, WSGIController) and \
+                issubclass(controller, Controller):
             controller = controller()
             controller.start_response = start_response
             
