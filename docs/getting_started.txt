@@ -81,7 +81,7 @@ We can test the template project like this::
     cd helloworld
     paster serve --reload development.ini
     
-Again Windows users may need a slightly longer version of the command with the path to their ``Scripts`` directory if they haven't followed the instructions in `Windows Notes <windowsnotes.txt>`_::
+Again Windows users may need a slightly longer version of the command with the path to their ``Scripts`` directory if they haven't followed the instructions in `Windows Notes <windowsnotes.html>`_::
 
     python "C:\Python24\Scripts\paster" serve  --reload development.ini
     
@@ -281,14 +281,16 @@ Here is an example of using the ``g`` variable. First modify your ``lib/app_glob
     def __init__(self, defaults, app, **extra):
         self.message = 'Hello'
         
-Then add this new method to the end of the ``helloworld/controllers/hello.py``: 
+Then add this new method to the end of the ``helloworld/controllers/hello.py``::
 
     def app_globals_test(self):
+        resp = Response()
         if g.message == 'Hello':
-            m.write(g.message)
+            resp.write(g.message)
             g.message = 'Hello World!'
         else:
-            m.write(g.message)
+            resp.write(g.message)
+        return resp
 
 This time if you run the server and visit http://127.0.0.1:5000/hello/app_globals_test/ you should see the message ``Hello``. If you visit the page again the message will be changed to ``Hello World!`` and it will remain changed for all subsequent requests because the application global variable was modified on the first request.
 
