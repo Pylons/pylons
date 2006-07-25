@@ -396,18 +396,14 @@ Add the ``save()`` action::
             if not page:
                 page = model.Page()
                 page.title = title
-            page.content = request.params['content'][0]
+            page.content = request.params['content']
             c.title = page.title
             c.content = page.get_wiki_content()
             c.message = 'Successfully saved'
             return render_response('/page.myt')
             
 .. Note::  
-    ``request.params`` has a number of methods such as ``getone()`` and ``getall()`` which return parameters as a
-     single item or list respectively. Accessing ``request.params`` as a dictionary returns strings for single
-     values and a list of strings for multiple values.
-    
-    # XXX THIS DOESN'T WORK AT THE MOMENT!
+    ``request.params`` is a MultiDict object; an ordered dictionary that may contain multiple values for each key. The MultiDict will always return one value for any existing key via the normal dict accessors (params[key], ``params.get()`` and ``params.setdefault()``). When multiple values are expected, use the ``getall()`` method to return all values in a list.
 
 In order for the ``page.myt`` template to display the ``Successfully saved`` message after the page is saved we need to update the ``templates/page.myt`` file. After ``<h1 class="main"><% c.title %></h1>`` add these lines making sure there is no whitespace before the lines that start with a ``%`` character::
 
@@ -483,10 +479,11 @@ Now for the AJAX! We want all the titles in the titles list to be draggable so w
     
 with this::
 
-    <span id="page-<% title %>"><% title %></span>&nbsp;[<% h.link_to('visit', h.url_for(title=title, action="index")) %>]
+    <span id="page-<% title %>"><% title %></span>
+    &nbsp;[<% h.link_to('visit', h.url_for(title=title, action="index")) %>]
     <% h.draggable_element("page-"+ str(title), revert=True) %>
     
-This marks each of the titles as a draggable element that reverts to its original position if it isn't dropped over a drop target. If we want to be able to delete the pages we better add a drop target. Try it out at http://127.0.0.1:5000/page/list by dragging the titles themselves around the screen. Notice how much functionality we got with just the one helper ``h.draggable_element()``.
+This marks each of the titles as a draggable element that reverts to its original position if it isn't dropped over a drop target. If we want to be able to delete the pages we better add a drop target. Try it out at http://127.0.0.1:5000/page/list by dragging the titles themselves around the screen. Notice how much functionality we get with just the one helper ``h.draggable_element()``.
 
 We better have somewhere to drop the titles to delete them so add this before the ``<ul id="titles">`` line in ``templates/titles.myt`` ::
 
@@ -510,7 +507,7 @@ We will also need to add the style for the trash box to the end of ``public/quic
 When a title is dropped on the ``trash`` box an AJAX request will be made to the ``delete()`` action posting an ``id`` parameter with the id of the element that was dropped. The element with id ``titles`` will be replaced with whatever is returned from the action so we better add a ``delete()`` action that returns the new list of titles excluding the one that has been deleted::
 
         def delete(self):
-            title = request.params['id'][0][5:] # XXX This is wrong!
+            title = request.params['id'][5:]
             page = self.query.get_by(title=title)
             objectstore.delete(page)
             objectstore.flush()
