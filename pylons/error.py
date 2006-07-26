@@ -10,7 +10,6 @@ information.
 __all__ = []
 
 import myghty.exception, sys
-
 from paste.evalexception.middleware import *
 from paste.exceptions.formatter import *
 
@@ -271,10 +270,13 @@ error_template = '''\
 
 class InvalidTemplate(Exception):
     pass
+
 from pylons.util import get_prefix
+
 class PylonsEvalException(EvalException):
 
-    def __init__(self, application, global_conf=None, xmlhttp_key=None, error_template=error_template, **errorparams):
+    def __init__(self, application, global_conf=None, xmlhttp_key=None,
+                 error_template=error_template, **errorparams):
         self.application = application
         self.error_template=error_template
         self.debug_infos = {}
@@ -299,7 +301,8 @@ class PylonsEvalException(EvalException):
                 'set_tab':'',
                 'prefix':''}
         except:
-            raise Exception('Invalid template. Please ensure all % signs are properly quoted as %% and no extra substitution strings are present.')
+            raise Exception('Invalid template. Please ensure all % signs are properly '
+                            'quoted as %% and no extra substitution strings are present.')
             
     def eval_javascript(self, base_path, counter):
         base_path += '/_debug' # Note the difference!
