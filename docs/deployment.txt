@@ -20,10 +20,6 @@ If users want to install your software and have installed easy install they can 
 
     easy_install helloworld==0.1.0
     
-Windows users might need to use::
-
-    C:\Python24\Scripts\easy_install helloworld-0.1.0
-    
 This will retrieve the package from the CheeseShop and install it. Alternatively you can install the egg locally::
 
     easy_install -f C:\path\with\the\egg\files\in helloworld==0.1.0

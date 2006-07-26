@@ -92,10 +92,6 @@ Add a controller to your project named ``error_doc_test``::
     
     paster controller error_doc_test
     
-or on Windows::
-
-    python C:/Python24/Scripts/paster controller error_doc_test
-    
 Modify your controller's ``index()`` action to look like this::
 
     def index(self):

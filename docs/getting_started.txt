@@ -15,10 +15,8 @@ Create a new project named ``helloworld`` with this command::
 
     paster create --template=pylons helloworld
     
-Windows users may have to configure their PATH as described in `Windows Notes <windowsnotes.html>`_ or use a slightly longer version using the appropriate path to their ``Scripts`` directory::
+Note: Windows users must configure their ``PATH`` as described in `Windows Notes <windowsnotes.html>`_, otherwise they must specify the full path name to the ``paster`` command.
 
-    python "C:\Python24\Scripts\paster" create --template=pylons helloworld
-    
 This creates a new Pylons project which you can use as a basis for your own project. The directory structure is as follows::
 
     - helloworld
@@ -80,10 +78,6 @@ We can test the template project like this::
     
     cd helloworld
     paster serve --reload development.ini
-    
-Again Windows users may need a slightly longer version of the command with the path to their ``Scripts`` directory if they haven't followed the instructions in `Windows Notes <windowsnotes.html>`_::
-
-    python "C:\Python24\Scripts\paster" serve  --reload development.ini
     
 The command loads our project server configuration file in ``development.ini`` and serves the Pylons application.
 

@@ -10,20 +10,11 @@ Lets call our project ``translate_demo``::
 
     paster create --template=pylons translate_demo
     
-Or on Windows::
-
-    python C:\Python24\Scripts\paster create --template=pylons translate_demo
-    
 Now lets add a friendly controller that says hello::
 
     cd translate_demo
     paster controller hello
     
-Or on Windows::
-
-    cd translate_demo
-    python C:\Python24\Scripts\paster controller hello
-
 Edit ``controllers/hello.py`` controller to look like this making use of the ``_()`` helper method everywhere where the string ``Hello`` appears::
 
     from translate_demo.lib.base import *
@@ -111,10 +102,6 @@ Start the server with the following command::
 
     paster serve --reload development.ini
     
-Or on Windows::
-
-    python C:\Python24\Scripts\paster serve --reload development.ini
-
 Test your controller by visiting http://localhost:5000/hello. You should see the following output::
 
     Default: Hello

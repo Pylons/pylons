@@ -29,10 +29,6 @@ Then add security controllers and templates::
 
     paster security
     
-or on Windows::
-
-    python C:\Python24\Scripts\paster security
-    
 You might also want to add an ``autohandler`` to ``templates/security`` that looks something like this so that your security templates produce proper HTML pages::
 
     <html>
@@ -47,10 +43,6 @@ You might also want to add an ``autohandler`` to ``templates/security`` that loo
 Add a new controller::
 
     paster controller permissions
-    
-or on Windows::
-
-    python C:\Python24\Scripts\paster controller permissions
     
 Now edit your ``permissions.py`` controller to look like this::
 
@@ -123,10 +115,6 @@ Start the server::
 
     paster serve --reload server.conf
     
-or on Windows::
-
-    python "C:\Python24\Scripts\paster" serve --reload server.conf
-
 and visit http://localhost:5000/permissions/ to test that the sign in form is correctly displayed.
 
 You can specify who is allowed to sign in by modifying the `SimplestAuthenticator`` class's ``check_auth()`` method in your ``__init__.py`` file.
@@ -171,10 +159,6 @@ Add a new controller::
 
     paster controller auth
     
-or on Windows::
-
-    python C:\Python24\Scripts\paster controller auth
-    
 Now edit your ``auth.py`` controller to look like this::
 
     from securityapp.lib.base import *
@@ -198,10 +182,6 @@ Start the server::
 
     paster serve --reload server.conf
     
-or on Windows::
-
-    python "C:\Python24\Scripts\paster"  serve --reload server.conf
-
 and visit http://localhost:5000/ to test that the sign in form is correctly displayed. You can try commenting out the line ``app = ShowSignInOn403(app)`` in ``__init__.py`` and you will see that the 403 error no longer results in a sign in being displayed.
 
 NB. The sign in won't appear to do anything yet since even though we are signed in the methods still produce the status codes to make the sign in appear.
