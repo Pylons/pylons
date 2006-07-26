@@ -32,10 +32,10 @@ class Myghty_Compat(object):
         pylons.helpers.response.write(tmpl.render(*args, **kargs))
     
     def comp(self, *args, **kargs):
-        pylons.helpers.response.write(tmpl.render_fragment(*args, **kargs))
+        pylons.helpers.response.write(tmpl.render(fragment=True, *args, **kargs))
     
     def scomp(self, *args, **kargs):
-        return tmpl.render_fragment(*args, **kargs)
+        return tmpl.render(fragment=True, *args, **kargs)
     
     def fetch_component(self, name):
         return name
