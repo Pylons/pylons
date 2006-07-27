@@ -63,6 +63,8 @@ from paste.deploy.converters import asbool
 from pylons.util import get_prefix
 
 def error_mapper(code, message, environ, global_conf=None, **kw):
+    if global_conf is None:
+        global_conf = {}
     codes = [401, 403, 404]
     if not asbool(global_conf.get('debug')):
         codes.append(500)

@@ -67,11 +67,9 @@ By default the ``pylons.middleware.error_mapper`` is used. It looks like this::
     from urllib import urlencode
     from paste.deploy.converters import asbool
     
-    def error_mapper(code, message, environ, global_conf=None, kw=None):
+    def error_mapper(code, message, environ, global_conf=None, **kw):
         if global_conf is None:
             global_conf = {}
-        if kw is None:
-            kw = {}
         codes = [401, 403, 404]
         if not asbool(global_conf.get('debug')):
             codes.append(500)
