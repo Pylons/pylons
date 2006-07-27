@@ -1,3 +1,8 @@
+#
+# ${project} - production environment configuration
+#
+# The %(here) variable will be replaced with the parent directory of this file
+#
 [DEFAULT]
 debug = true
 email_to = you@yourdomain.com
@@ -18,21 +23,13 @@ session_key = ${package}
 session_secret = $${app_instance_secret}
 app_instance_uuid = $${app_instance_uuid}
 
-
-# If you are using SQLObject you will need to specify a
-# dburi. You can do this with a line similar to the 
-# one below but adjusted for your database connection 
-# according to the SQLObject documentation. The %(here)s
-# part is replaced with the current directory which is
-# useful when using sqlite on UNIX based platforms. 
-# For Windows you should look at the SQLObject
-# documentation for a special syntax to use because the
-# path returned by %(here)s contains a : character.
+# Specify the database for SQLObject to use via pylons.database.PackageHub.
+# %(here) may include a ':' character on Windows environments; this can
+# invalidate the URI when specifying a SQLite db via path name. Refer to the
+# SQLObject documentation for a special syntax to preserve the URI.
 #sqlobject.dburi = sqlite:%(here)s/somedb.db
 
-# Do not set debug to true or uncomment the line below
-# on a production environment otherwise in the event of
-# an error occurring the visitor will be presented with
-# interactive debugging tools and these could be used to 
-# execute malicious code.
+# WARNING: *THE LINE BELOW MUST BE UNCOMMENTED ON A PRODUCTION ENVIRONMENT*
+# Debug mode will enable the interactive debugging tool, allowing ANYONE to
+# execute malicious code after an exception is raised.
 set debug = false
