@@ -162,7 +162,7 @@ class PylonsBaseWSGIApp(object):
             raise httpexceptions.HTTPNotFound()
         match = environ['pylons.routes_dict']
         
-        # Sanitaze keys
+        # Sanitize keys
         # @@ TODO: This should be done in a lazy fashion
         for k,v in match.iteritems():
             if v:
