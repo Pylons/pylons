@@ -324,6 +324,8 @@ class PylonsEvalException(EvalException):
     #~ pylons.exposed = True
     
     def respond(self, environ, start_response):
+        if environ.get('paste.throw_errors'):
+            return self.application(environ, start_response)
         base_path = request.construct_url(environ, with_path_info=False,
                                           with_query_string=False)
         environ['paste.throw_errors'] = True
