@@ -211,21 +211,27 @@ session
     Acts as a dict to store session data, see the `Myghty Session docs <http://www.myghty.org/docs/session.myt#session>`_ for usage details
 
 request
-    The request object.
+    The request object
 
 Response
-    An instance of this class should be returned
+    The Response class; an instance of this class should typically be returned by the controller
+
+abort
+    Function to abort the request immediately by raising an HTTPException according to the specified status code
+
+redirect_to
+    Function to redirect the browser to a different location via the HTTP 302 status code (by raising an HTTPException)
 
 render
-    Render a template and return a string
+    Function to render a template and return a string
 
 render_response
-    Render a template and return a valid ``Response`` object. Equivalent to ``Response(render(...))``.
+    Function to render a template and return a valid ``Response`` object. Equivalent to ``Response(render(...))``
 
 h
     h is the point at which all the Pylons helper functions are utilized from. By default Pylons will load all the helper functions available from the `Web Helpers </WebHelpers/module-index.html>`_ package. Keep in mind when
     reading the WebHelpers docs that all the functions listed should be prefixed by `h.` under Pylons as
-    we use namespaces to keep them organized.
+    we use namespaces to keep them organized
 
 c
     (described in `Passing Variables to Templates`)
