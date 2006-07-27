@@ -52,12 +52,12 @@ Modify the ``testexample/controllers/comments.py`` file so it looks like this::
 
     class CommentsController(BaseController):
         def index(self):
-            m.write('Basic output')
+            return Response('Basic output')
 
         def sess(self):
             session['name'] = 'Joe Smith'
             session.save()
-            m.write('Saved a session')
+            return Response('Saved a session')
 
 Then write a basic set of tests to ensure that the controller actions are functioning properly, modify ``testexample/tests/functions/test_comments.py`` to match the following::
 

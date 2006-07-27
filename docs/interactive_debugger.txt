@@ -31,8 +31,8 @@ To trigger an error so that we can explore what's happening just raise an except
     class DocsController(BaseController):
         def view(self, url):
             if request.path_info.endswith('docs'):
-                h.redirect_to('/docs/')
-            m.subexec('/docs/' + url)
+                redirect_to('/docs/')
+            return render_response('/docs/' + url)
 
 Since we want to explore the ``session`` and ``request``, we'll need to bind them first. Here's what our action now looks like with the binding and raising an exception::
 
@@ -40,8 +40,8 @@ Since we want to explore the ``session`` and ``request``, we'll need to bind the
         self._attach_locals()
         raise "hi"
         if request.path_info.endswith('docs'):
-            h.redirect_to('/docs/')
-        m.subexec('/docs/' + url)
+            redirect_to('/docs/')
+        return render_response('/docs/' + url)
 
 Here's what exploring the Traceback from the above example looks like (Excerpt of the relevant portion):
 
