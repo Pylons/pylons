@@ -98,17 +98,17 @@ If you visit http://127.0.0.1:5000/test.html you will see the message ``Hello Wo
 Interactive Debugger
 ====================
 
-If you are developing an application you will want to use the interactive debugging which is enabled by default in ``development.ini`` but disabled in config files your users will generate so that they don't accidentally use it on a production site. If debugging was accidentally left on for a production site and an error occurred the visitor would be able to execute malicious code using the interactive debugging prompt. 
+The interactive debugger is a powerful tool for use during application development. It is enabled by default in the development environment's ``development.ini``. When enabled, it allows debugging of the application through a web page after an exception is raised. On production environments the debugger poses a major security risk; so production ini files generated from the ``paster make-config`` command will have debugging disabled.
 
-Enable debugging by enabling the ``debug`` variable the ``[app:main]`` section of your ``development.ini`` file. Change the line::
+To disable debugging, uncomment the following line in the ``[app:main]`` section of your ``development.ini``::
 
-    set debug = false
+    #set debug = false
     
 to::
 
-    set debug = true
+    set debug = false
 
-If ``debug`` is enabled you will be able to interactively debug your application but as mentioned earlier this should not be used in a production site as it is a MAJOR SECURITY RISK.
+Again; debug must be set to false on production environments as the interactive debugger poses a MAJOR SECURITY RISK.
 
 More information is available in the `Interactive Debugger <interactive_debugger.html>`_ documentation.
 
