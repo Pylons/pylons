@@ -27,13 +27,6 @@ To disable error documents, just remove the following lines from your ``config/m
 
 Any status codes will no longer be intercepted. 
 
-Changing the Base Path
-======================
-
-If you deploy your application in such a way that the URL ``/error/`` does not map onto the error controller in ``controllers/error.py`` then you will need to specify a base path so that it does.
-
-Open your configuration file ``development.ini`` and change ``base_path=/`` to whatever the base path of your application is. For example if your application is at ``/james/apps/my_app/`` then that is the value you should set ``base_path`` to be.
-
 Changing the template
 =====================
 
