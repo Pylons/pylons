@@ -1,5 +1,5 @@
 #
-# ${project} - production environment configuration
+# ${project} - Pylons configuration
 #
 # The %(here) variable will be replaced with the parent directory of this file
 #
