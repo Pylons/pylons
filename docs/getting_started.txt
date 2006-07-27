@@ -100,15 +100,15 @@ Interactive Debugger
 
 If you are developing an application you will want to use the interactive debugging which is enabled by default in ``development.ini`` but disabled in config files your users will generate so that they don't accidentally use it on a production site. If debugging was accidentally left on for a production site and an error occurred the visitor would be able to execute malicious code using the interactive debugging prompt. 
 
-Enable debugging by commenting out the line that looks like this in the ``[app:main]`` section of your ``development.ini`` file::
+Enable debugging by enabling the ``debug`` variable the ``[app:main]`` section of your ``development.ini`` file. Change the line::
 
     set debug = false
     
-so that it looks like this::
+to::
 
-    # set debug = false
+    set debug = true
 
-If debug is not set to ``false`` you will be able to interactively debug your application but as mentioned earlier this should not be used in a production site as it is a MAJOR SECURITY RISK.
+If ``debug`` is enabled you will be able to interactively debug your application but as mentioned earlier this should not be used in a production site as it is a MAJOR SECURITY RISK.
 
 More information is available in the `Interactive Debugger <interactive_debugger.html>`_ documentation.
 

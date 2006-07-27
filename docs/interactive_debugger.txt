@@ -51,7 +51,7 @@ Here's what exploring the Traceback from the above example looks like (Excerpt o
 Email Options
 =============
 
-You can make all sorts of changes to how the debugging works. For example if you set ``debug = false`` in the config file Pylons will email you an error report instead of displaying it as long as you provide your email address at the top of the config file::
+You can make all sorts of changes to how the debugging works. For example if you disable the ``debug`` variable in the config file Pylons will email you an error report instead of displaying it as long as you provide your email address at the top of the config file::
 
     error_email_from = you@example.com
     
