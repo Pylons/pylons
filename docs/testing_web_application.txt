@@ -16,19 +16,12 @@ Pylons will provide several additional attributes for the ``paste.fixture`` resp
 
 ``session``
     Session object
-``request``
+``req``
     Request object
-``m``
-    Myghty object
-``comp_calls``
-    List of component calls, including any ``scomp``, ``comp``, and ``subexec`` thats executed during the request. Each item of the list is a dict with the keys:
-    
-    ``comp_type``
-        The type of component call, i.e. ``scomp``, ``comp``, or ``subexec``
-    ``template``
-        Template name that was called, i.e. ``/some/template.myt``
-    ``params``
-        Dict of keyword args that the component was called with
+``c``
+    Object containing variables passed to templates
+``g``
+    Globals object
 
 To use them, merely access the attributes of the response *after* you've used a get/post command::
 
