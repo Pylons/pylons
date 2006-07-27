@@ -4,6 +4,7 @@ import inspect
 import xmlrpclib
 
 from paste.deploy.config import CONFIG
+from paste.deploy.converters import asbool
 
 import pylons
 
@@ -82,10 +83,10 @@ class Controller(object):
         if isinstance(func, types.MethodType):
             response = self._inspect_call(func)
         else:
-            if CONFIG['global_conf']['debug'] == 'false':
-                response = pylons.Response(code=404)
-            else:
+            if asbool(CONFIG['global_conf'].get('debug')):
                 raise NotImplementedError('Action %s is not implemented' % action)
+            else:
+                response = pylons.Response(code=404)
         return response
     
     def __call__(self, *args, **kargs):
@@ -152,10 +153,11 @@ class RPCController(Controller):
         action = self._req.environ['pylons.routes_dict'].get('action')
         action_method = action.replace('-', '_')
         if action_method != RPCController.resource:
-            if CONFIG['default']['debug'] == 'false':
-                return pylons.Response(code=404)
+            if asbool(CONFIG['global_conf'].get('debug')):
+                raise NotImplementedError('RPCController only supports %s action',
+                                          RPCController.resource)
             else:
-                raise NotImplementedError('RPCController only supports %s action', RPCController.resource)
+                return pylons.Response(code=404)
         d = self._req.environ['wsgi.input'].read()
         params, method = xmlrpclib.loads(d)
         

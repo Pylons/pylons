@@ -68,7 +68,7 @@ Or the name of the package like this::
 Or the debug status like this::
     
     from paste.deploy.converters import asbool
-    debug = asbool(config.get('debug', 'true'))
+    debug = asbool(config.get('debug'))
 
 URL Prefix
 ==========

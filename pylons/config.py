@@ -109,8 +109,8 @@ class Config(object):
         ``global_config``
             Several options are expected to be set for a Pylons web application.
             They will be loaded from the global_config which has the main Paste
-            options. If ``debug`` is set to ``false`` as a global config option,
-            the following option *must* be set:
+            options. If ``debug`` is not enabled as a global config option, the
+            following option *must* be set:
             
             * error_to - The email address to send the debug error to
             
@@ -161,7 +161,7 @@ class Config(object):
         # Load the errorware configuration from the Paste configuration file
         # These all have defaults, and emails are only sent if configured and
         # if this application is running in production mode
-        errorware['debug'] = asbool(global_conf.get('debug', 'true'))
+        errorware['debug'] = asbool(global_conf.get('debug'))
         if not errorware['debug']:
             errorware['debug'] = False
             errorware['error_email'] = global_conf.get('email_to')

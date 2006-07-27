@@ -73,7 +73,7 @@ By default the ``pylons.middleware.error_mapper`` is used. It looks like this::
         if kw is None:
             kw = {}
         codes = [401, 403, 404]
-        if not asbool(global_conf.get('debug', 'true')):
+        if not asbool(global_conf.get('debug')):
             codes.append(500)
         if code in codes:
             url = '%s/error/document/?%s'%(get_prefix(environ), urlencode({'message':message, 'code':code}))

@@ -34,15 +34,15 @@ def run_wsgi(app, m, req):
 def ErrorHandler(app, global_conf, **errorware):
     """ErrorHandler Toggle
     
-    If debug is set, and true, this function will return the
-    app wrapped in our customized Paste EvalException middleware
-    we have called the ``PylonsEvalException``.
+    If debug is enabled, this function will return the app wrapped in
+    our customized Paste EvalException middleware we have called the
+    ``PylonsEvalException``.
     
     Otherwise, the app will be wrapped in the Paste ErrorMiddleware, and
     the ``errorware`` dict will be passed into it.
     
     """
-    if asbool(global_conf.get('debug', 'true')):
+    if asbool(global_conf.get('debug')):
         from pylons.error import PylonsEvalException
         app = PylonsEvalException(app, global_conf, **errorware)
     else:
@@ -64,7 +64,7 @@ from pylons.util import get_prefix
 
 def error_mapper(code, message, environ, global_conf=None, **kw):
     codes = [401, 403, 404]
-    if not asbool(global_conf.get('debug', 'true')):
+    if not asbool(global_conf.get('debug')):
         codes.append(500)
     if code in codes:
         url = '%s/error/document/?%s'%(get_prefix(environ), urlencode({'message':message, 'code':code}))

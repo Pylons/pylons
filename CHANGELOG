@@ -2,6 +2,7 @@ Pylons Changelog
 =================
 
 0.9 (**dev**)
+* config file option 'debug' now defaults to false when undefined
 * Removed the components directory from the template
 * Updated paste.errordocuments support
 * Fix for multi-word controller names such that front_page / 

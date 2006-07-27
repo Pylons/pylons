@@ -47,7 +47,8 @@ def make_app(global_conf, **app_conf):
     # @@@ Cascade @@@ 
     app = Cascade([static_app, javascripts_app, app])
     
-    # @@@ Display error documents for 401, 403, 404 status codes (if debug is False also intercepts 500) @@@
+    # @@@ Display error documents for 401, 403, 404 status codes (if debug is disabled also
+    # intercepts 500) @@@
     app = ErrorDocuments(app, global_conf, mapper=error_mapper, **app_conf)
     
     # @@@ Establish the Registry for this application @@@
