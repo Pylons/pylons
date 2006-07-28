@@ -43,8 +43,8 @@ The ``helloworld`` directory within the ``helloworld`` directory is where all yo
             - lib
             - models
             - public
-            - tests
             - templates
+            - tests
             - __init__.py
             - websetup.py
 
