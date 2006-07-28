@@ -125,7 +125,7 @@ One more useful thing to be able to do is to set the default language to be used
 
     [app:main]
     use = egg:translate_demo
-    cache_dir = %(here)s/cache
+    cache_data_dir = %(here)s/cache
     lang = es
 
 If you are running the server with the ``--reload`` option the server will automatically restart. Otherwise restart the server manually and the output would this time be as follows::
