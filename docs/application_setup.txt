@@ -66,11 +66,11 @@ Using our new wiki example again the ``wiki.egg-info/paste_deploy_config.ini_tmp
     port = 5000
 
     [app:main]
-    use = egg:helloworld
+    use = egg:wiki
     myghty_data_dir = %(here)s/data/templates
     cache_data_dir = %(here)s/data/cache
     session_data_dir = %(here)s/data/sessions
-    session_key = helloworld
+    session_key = wiki
     session_secret = ${app_instance_secret}
     app_instance_uuid = ${app_instance_uuid}
 
