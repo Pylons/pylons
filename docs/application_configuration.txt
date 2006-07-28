@@ -59,16 +59,16 @@ Either way, the ``config`` object returned is the same. It behaves like a dictio
 
 For example you can obtain the location of the cache directory like this::
 
-    cache_dir = config['app']['cache_dir']
+    cache_dir = config['app_conf'].get('cache_data_dir')
     
 Or the name of the package like this::
 
-    package = config['app']['package']
+    package = config['app_conf'].get('package')
     
 Or the debug status like this::
     
     from paste.deploy.converters import asbool
-    debug = asbool(config.get('debug'))
+    debug = asbool(config['app_conf'].get('debug'))
 
 URL Prefix
 ==========
