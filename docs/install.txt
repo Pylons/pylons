@@ -10,14 +10,14 @@ To install Pylons so it can be used by everyone (you'll need root access).
 
 If you already have easy install:
 
-    easy_install Pylons[full]
+    easy_install Pylons
 
 Otherwise: 
 
 #. Download the easy install setup file from http://peak.telecommunity.com/dist/ez_setup.py
-#. Run ``python ez_setup.py Pylons[full]``
+#. Run ``python ez_setup.py Pylons``
 
-If you only want a minimum Pylons install without all the useful extras you can leave out the ``[full]`` part, but please be aware that the documentation assumes you have a full install.
+If want a Pylons install capable of building documentation for you, you can use the ``[full]`` part in the command: ``easy_install Pylons[full]``, but please be aware that some of the documentation tools are under development any may not be stable.
 
 Custom Install Location
 =======================
@@ -30,7 +30,7 @@ Upgrading
 
 To upgrade to the latest version of Pylons run::
 
-    easy_install -U Pylons[full]
+    easy_install -U Pylons
 
 
 Living on the Cutting Edge
