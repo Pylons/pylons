@@ -13,7 +13,7 @@ If an error document is not provided by an application, users will see the brows
 The Default Setup
 =================
 
-Newly created Pylons applications come configured with the `ErrorDocuments`` middleware enabled. The middleware is setup to call Pylons ``error_mapper`` function; which in turn calls the application's ``ErrorController``. The ``ErrorController`` renders the actual error document shown to the user; it uses Pylons' ``error_document_template`` HTML by default.
+Newly created Pylons applications come configured with the ``ErrorDocuments`` middleware enabled. The middleware is setup to call Pylons ``error_mapper`` function; which in turn calls the application's ``ErrorController``. The ``ErrorController`` renders the actual error document shown to the user; it uses Pylons' ``error_document_template`` HTML by default.
 
 Every part of the error documents system can be configured and customized to provide whatever error handling you like.
 
