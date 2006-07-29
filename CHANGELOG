@@ -2,8 +2,11 @@ Pylons Changelog
 =================
 
 0.9.1 (**svn**)
-* Removed [full] recommendation from docs.
+* Fixed issue in PasteScript with new controller sub-directories lacking a
+  __init__.py file. This fixes an import error when using the controller.
+  PasteScript dependency updated to fixed version. Reported by Artur Lew.
 * Removed lowercasing of the module name during resolver import.
+* Removed [full] recommendation from docs.
 
 0.9 (July 28th, 2006)
 * config file option 'debug' now defaults to false when undefined
