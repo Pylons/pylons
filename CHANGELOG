@@ -3,6 +3,7 @@ Pylons Changelog
 
 0.9.1 (**svn**)
 * Removed [full] recommendation from docs.
+* Removed lowercasing of the module name during resolver import.
 
 0.9 (July 28th, 2006)
 * config file option 'debug' now defaults to false when undefined

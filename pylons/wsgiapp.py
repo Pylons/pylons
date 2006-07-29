@@ -148,7 +148,7 @@ class PylonsBaseWSGIApp(object):
         # @@ TODO: Encapsulate in try/except to raise error if controller
         #          doesn't exist, or class in controller file doesn't exist.
         full_module_name = self.package_name + '.controllers.' \
-            + controller.lower().replace('/', '.')
+            + controller.replace('/', '.')
         
         __import__(full_module_name)
         module_name = full_module_name.split('.')[-1]
