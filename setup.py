@@ -59,6 +59,8 @@ the `Pylons download page <http://www.pylonshq.com/download/>`_ .
 
 
 """%version,
+    keywords='web wsgi framework sqlalchemy formencode myghty templates buffet',
+    license='BSD',
     author='Ben Bangert, James Gardner',
     author_email='ben@groovie.org',
     url='http://www.pylonshq.com/',
