@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.1 (**svn**)
+* The 'Debug at: http://hostname/_debug/view/XXXXX' URLs now display the
+  interactive debugger properly skinned.
 * Fixed issue in PasteScript with new controller sub-directories lacking a
   __init__.py file. This fixes an import error when using the controller.
   PasteScript dependency updated to fixed version. Reported by Artur Lew.
