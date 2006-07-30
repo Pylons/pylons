@@ -9,6 +9,7 @@ information.
 """
 __all__ = []
 
+from pylons.util import get_prefix
 import myghty.exception, sys
 from paste.evalexception.middleware import *
 from paste.exceptions.formatter import *
@@ -168,34 +169,194 @@ class HTMLFormatter(formatter.HTMLFormatter):
             # Usually because another error is already on this page,
             # and so the js & CSS are unneeded
             return text, extra_data
+
+class InvalidTemplate(Exception):
+    pass
+
+class PylonsEvalException(EvalException):
+
+    def __init__(self, application, global_conf=None, xmlhttp_key=None,
+                 error_template=error_template, **errorparams):
+        self.application = application
+        self.error_template=error_template
+        self.debug_infos = {}
+        if xmlhttp_key is None:
+            if global_conf is None:
+                xmlhttp_key = '_'
+            else:
+                xmlhttp_key = global_conf.get('xmlhttp_key', '_')
+        self.xmlhttp_key = xmlhttp_key
+        self.errorparams = errorparams
+        self.errorparams['debug_mode'] = self.errorparams['debug']
+        del self.errorparams['debug']
+        
+        for s in ['head','traceback_data','extra_data','myghty_data']:
+            if "%("+s+")s" not in self.error_template:
+                raise InvalidTemplate("Could not find %s in template"%("%("+s+")s"))
+        try:
+            error_template%{'head': '',
+                'traceback_data': '',
+                'extra_data':'',
+                'myghty_data':'',
+                'set_tab':'',
+                'prefix':''}
+        except:
+            raise Exception('Invalid template. Please ensure all % signs are properly '
+                            'quoted as %% and no extra substitution strings are present.')
             
-def format_html(exc_data, include_hidden_frames=False, **ops):
-    if not include_hidden_frames:
-        return HTMLFormatter(**ops).format_collected_data(exc_data)
-    short_er = format_html(exc_data, show_hidden_frames=False, **ops)
-    # @@: This should have a way of seeing if the previous traceback
-    # was actually trimmed at all
-    ops['include_reusable'] = False
-    ops['show_extra_data'] = False
-    long_er = format_html(exc_data, show_hidden_frames=True, **ops)
-    text_er = format_text(exc_data, show_hidden_frames=True, **ops)
+    def respond(self, environ, start_response):
+        if environ.get('paste.throw_errors'):
+            return self.application(environ, start_response)
+        base_path = request.construct_url(environ, with_path_info=False,
+                                          with_query_string=False)
+        environ['paste.throw_errors'] = True
+        started = []
+        def detect_start_response(status, headers, exc_info=None):
+            try:
+                return start_response(status, headers, exc_info)
+            except:
+                raise
+            else:
+                started.append(True)
+        try:
+            __traceback_supplement__ = Supplement, self, environ
+            app_iter = self.application(environ, detect_start_response)
+            try:
+                return_iter = list(app_iter)
+                return return_iter
+            finally:
+                if hasattr(app_iter, 'close'):
+                    app_iter.close()
+        except:
+            exc_info = sys.exc_info()
+            for expected in environ.get('paste.expected_exceptions', []):
+                if isinstance(exc_info[1], expected):
+                    raise
+                    
+            count = debug_counter.next()
+            view_uri = self.make_view_url(environ, base_path, count)
+            if not started:
+                headers = [('content-type', 'text/html')]
+                headers.append(('X-Debug-URL', view_uri))
+                start_response('500 Internal Server Error',
+                               headers,
+                               exc_info)
+            environ['wsgi.errors'].write('Debug at: %s\n' % view_uri)
+
+            exc_data = collector.collect_exception(*exc_info)
+            #debug_info = PylonsDebugInfo(count, exc_info, exc_data, base_path,
+            debug_info = PylonsDebugInfo(count, exc_info, exc_data, get_prefix(environ),
+                                         environ, view_uri, error_template)
+            assert count not in self.debug_infos
+            self.debug_infos[count] = debug_info
+
+            if self.xmlhttp_key:
+                get_vars = wsgilib.parse_querystring(environ)
+                if dict(get_vars).get(self.xmlhttp_key):
+                    exc_data = collector.collect_exception(*exc_info)
+                    html = formatter.format_html(
+                        exc_data, include_hidden_frames=False,
+                        include_reusable=False, show_extra_data=False)
+                    return [html]
+            
+            # @@: it would be nice to deal with bad content types here
+            return debug_info.content()
+
+class PylonsDebugInfo(DebugInfo):
+    def __init__(self, counter, exc_info, exc_data, base_path,
+                 environ, view_uri, error_template):
+        DebugInfo.__init__(self, counter, exc_info, exc_data, base_path,
+                           environ, view_uri)
+        self.error_template = error_template
+
+    def content(self):
+        html, extra_data = format_eval_html(self.exc_data, self.base_path, self.counter)
+        head_html = (formatter.error_css + formatter.hide_display_js)
+        head_html += self.eval_javascript(self.counter)
+        repost_button = make_repost_button(self.environ)
+        myghty_data = '<p>No Myghty information available.</p>'
+        tab = 'traceback_data'
+        if hasattr(self.exc_value, 'htmlformat'):
+            myghty_data = self.exc_value.htmlformat()[333:-14]
+            tab = 'myghty_data'
+        if hasattr(self.exc_value, 'mtrace'):
+            myghty_data = self.exc_value.mtrace.htmlformat()[333:-14]
+            tab = 'myghty_data'
+
+        head_html = (error_head_template % {'prefix':self.base_path}) + head_html
+
+        traceback_data = error_traceback_template % {
+            'prefix':self.base_path,
+            'body':html,
+            'repost_button': repost_button or '',
+        }
+
+        extra_data = """<h1 class="first"><a name="content"></a>Extra Data</h1>""" + \
+            '\n'.join(extra_data)
+        page = self.error_template % {
+            'head': head_html,
+            'traceback_data': traceback_data,
+            'extra_data':extra_data,
+            'myghty_data':myghty_data.replace('<h2>',
+                                              '<h1 class="first">').replace('</h2>',
+                                                                            '</h1>'),
+            'set_tab':tab,
+            'prefix':self.base_path,
+            }
+        return [page]
+
+    def eval_javascript(self, counter):
+        base_path = self.base_path + '/_debug'
+        return (
+            '<script type="text/javascript" src="%s/mochikit/MochiKit.js">'
+            '</script>\n'
+            '<script type="text/javascript" src="%s/media/debug.js">'
+            '</script>\n'
+            '<script type="text/javascript">\n'
+            'debug_base = %r;\n'
+            'debug_count = %r;\n'
+            '</script>\n'
+            % (base_path, base_path, base_path, counter))
+
+class EvalHTMLFormatter(HTMLFormatter):
+
+    def __init__(self, base_path, counter, **kw):
+        super(EvalHTMLFormatter, self).__init__(**kw)
+        self.base_path = base_path
+        self.counter = counter
+    
+    def format_source_line(self, filename, frame):
+        line = formatter.HTMLFormatter.format_source_line(
+            self, filename, frame)
+        return (line +
+                '  <a href="#" class="switch_source" '
+                'tbid="%s" onClick="return showFrame(this)">&nbsp; &nbsp; '
+                '<img src="%s/error/img/plus.jpg" border=0 width=9 '
+                'height=9> &nbsp; &nbsp;</a>'
+                % (frame.tbid, self.base_path))
+
+def format_eval_html(exc_data, base_path, counter):
+    short_er, extra_data = EvalHTMLFormatter(
+        base_path=base_path,
+        counter=counter,
+        include_reusable=False).format_collected_data(exc_data)
+    long_er, extra_data_none = EvalHTMLFormatter(
+        base_path=base_path,
+        counter=counter,
+        show_hidden_frames=True,
+        show_extra_data=False,
+        include_reusable=False).format_collected_data(exc_data)
     return """
     %s
-    <br>
+    <br />
+    <br />
     <script type="text/javascript">
     show_button('full_traceback', 'full traceback')
     </script>
     <div id="full_traceback" class="hidden-data">
     %s
     </div>
-    <br>
-    <script type="text/javascript">
-    show_button('text_version', 'text version')
-    </script>
-    <div id="text_version" class="hidden-data">
-    <textarea style="width: 100%%" rows=10 cols=60>%s</textarea>
-    </div>
-    """ % (short_er, long_er, cgi.escape(text_er)), ''
+    """ % (short_er, long_er), extra_data
 
 error_template = '''\
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -268,133 +429,7 @@ error_template = '''\
 </html>
 '''
 
-class InvalidTemplate(Exception):
-    pass
-
-from pylons.util import get_prefix
-
-class PylonsEvalException(EvalException):
-
-    def __init__(self, application, global_conf=None, xmlhttp_key=None,
-                 error_template=error_template, **errorparams):
-        self.application = application
-        self.error_template=error_template
-        self.debug_infos = {}
-        if xmlhttp_key is None:
-            if global_conf is None:
-                xmlhttp_key = '_'
-            else:
-                xmlhttp_key = global_conf.get('xmlhttp_key', '_')
-        self.xmlhttp_key = xmlhttp_key
-        self.errorparams = errorparams
-        self.errorparams['debug_mode'] = self.errorparams['debug']
-        del self.errorparams['debug']
-        
-        for s in ['head','traceback_data','extra_data','myghty_data']:
-            if "%("+s+")s" not in self.error_template:
-                raise InvalidTemplate("Could not find %s in template"%("%("+s+")s"))
-        try:
-            error_template%{'head': '',
-                'traceback_data': '',
-                'extra_data':'',
-                'myghty_data':'',
-                'set_tab':'',
-                'prefix':''}
-        except:
-            raise Exception('Invalid template. Please ensure all % signs are properly '
-                            'quoted as %% and no extra substitution strings are present.')
-            
-    def eval_javascript(self, base_path, counter):
-        base_path += '/_debug' # Note the difference!
-        return (
-            '<script type="text/javascript" src="%s/mochikit/MochiKit.js">'
-            '</script>\n'
-            '<script type="text/javascript" src="%s/media/debug.js">'
-            '</script>\n'
-            '<script type="text/javascript">\n'
-            'debug_base = %r;\n'
-            'debug_count = %r;\n'
-            '</script>\n'
-            % (base_path, base_path, base_path, counter))
-            
-    #~ def pylons(self, environ, start_response):
-        #~ app = urlparser.StaticURLParser(
-            #~ os.path.join(os.path.dirname(__file__), 'media'))
-        #~ return app(environ, start_response)
-    #~ pylons.exposed = True
-    
-    def respond(self, environ, start_response):
-        if environ.get('paste.throw_errors'):
-            return self.application(environ, start_response)
-        base_path = request.construct_url(environ, with_path_info=False,
-                                          with_query_string=False)
-        environ['paste.throw_errors'] = True
-        started = []
-        def detect_start_response(status, headers, exc_info=None):
-            try:
-                return start_response(status, headers, exc_info)
-            except:
-                raise
-            else:
-                started.append(True)
-        try:
-            __traceback_supplement__ = Supplement, self, environ
-            app_iter = self.application(environ, detect_start_response)
-            try:
-                return_iter = list(app_iter)
-                return return_iter
-            finally:
-                if hasattr(app_iter, 'close'):
-                    app_iter.close()
-        except:
-            exc_info = sys.exc_info()
-            for expected in environ.get('paste.expected_exceptions', []):
-                if isinstance(exc_info[1], expected):
-                    raise
-                    
-            count = debug_counter.next()
-            view_uri = self.make_view_url(environ, base_path, count)
-            if not started:
-                headers = [('content-type', 'text/html')]
-                headers.append(('X-Debug-URL', view_uri))
-                start_response('500 Internal Server Error',
-                               headers,
-                               exc_info)
-            environ['wsgi.errors'].write('Debug at: %s\n' % view_uri)
-
-            exc_data = collector.collect_exception(*exc_info)
-            debug_info = DebugInfo(count, exc_info, exc_data, base_path,
-                                   environ, view_uri)
-            assert count not in self.debug_infos
-            self.debug_infos[count] = debug_info
-
-            if self.xmlhttp_key:
-                get_vars = wsgilib.parse_querystring(environ)
-                if dict(get_vars).get(self.xmlhttp_key):
-                    exc_data = collector.collect_exception(*exc_info)
-                    html = formatter.format_html(
-                        exc_data, include_hidden_frames=False,
-                        include_reusable=False, show_extra_data=False)
-                    return [html]
-            
-            base_path = get_prefix(environ)
-            #base_path = environ['SCRIPT_NAME']
-            
-            # @@: it would be nice to deal with bad content types here
-            html, extra_data = format_eval_html(exc_data, base_path, count)
-            #raise Exception(extra_data)
-            head_html = (formatter.error_css + formatter.hide_display_js)
-            head_html += self.eval_javascript(base_path, count)
-            repost_button = make_repost_button(environ)
-            myghty_data = '<p>No Myghty information available.</p>'
-            tab = 'traceback_data'
-            if hasattr(exc_info[1], 'htmlformat'):
-                myghty_data = exc_info[1].htmlformat()[333:-14]
-                tab = 'myghty_data'
-            if hasattr(exc_info[1], 'mtrace'):
-                myghty_data = exc_info[1].mtrace.htmlformat()[333:-14]
-                tab = 'myghty_data'
-            head_html = ("""
+error_head_template = """
 <!-- 
     This is the Pylons error handler.
 
@@ -437,78 +472,22 @@ function switch_display(id) {
     el.className = "active";
 }   
 </script>
-            """%{'prefix':base_path})+head_html
+"""
 
-            traceback_data = """
-            <div style="float: left; width: 100%%; padding-bottom: 20px;">
-            <h1 class="first"><a name="content"></a>Error Traceback</h1>
-            <div id="error-area" style="display: none; background-color: #600; color: #fff; border: 2px solid black">
-            <button onclick="return clearError()">clear this</button>
-            <div id="error-container"></div>
-            <button onclick="return clearError()">clear this</button>
-            </div>
-            %(body)s
-            <br />
-            <div class="highlight" style="padding: 20px;">
-            <b>Extra Features</b>
-            <table border="0">
-            <tr><td>&gt;&gt;</td><td>Display the lines of code near each part of the traceback</td></tr>
-            <tr><td><img src="%(prefix)s/error/img/plus.jpg" /></td><td>Show a debug prompt to allow you to directly debug the code at the traceback</td></tr>
-            </table>
-            </div>%(repost_button)s"""%{
-                'prefix':base_path,
-                'body':html,
-                'repost_button': repost_button or '',
-            }
-        
-            page = self.error_template % {
-                'head': head_html,
-                'traceback_data': traceback_data,
-                'extra_data':"""<h1 class="first"><a name="content"></a>Extra Data</h1>"""+'\n'.join(extra_data),
-                'myghty_data':myghty_data.replace('<h2>','<h1 class="first">').replace('</h2>','</h1>'),
-                'set_tab':tab,
-                'prefix':base_path,
-                }
-            return [page]
-
-class EvalHTMLFormatter(HTMLFormatter):
-
-    def __init__(self, base_path, counter, **kw):
-        super(EvalHTMLFormatter, self).__init__(**kw)
-        self.base_path = base_path
-        self.counter = counter
-    
-    def format_source_line(self, filename, frame):
-        line = formatter.HTMLFormatter.format_source_line(
-            self, filename, frame)
-        return (line +
-                '  <a href="#" class="switch_source" '
-                'tbid="%s" onClick="return showFrame(this)">&nbsp; &nbsp; '
-                '<img src="%s/error/img/plus.jpg" border=0 width=9 '
-                'height=9> &nbsp; &nbsp;</a>'
-                % (frame.tbid, self.base_path))
-
-def format_eval_html(exc_data, base_path, counter):
-    short_er, extra_data = EvalHTMLFormatter(
-        base_path=base_path,
-        counter=counter,
-        include_reusable=False).format_collected_data(exc_data)
-    #raise Exception(extra_data)
-    long_er, extra_data_none = EvalHTMLFormatter(
-        base_path=base_path,
-        counter=counter,
-        show_hidden_frames=True,
-        show_extra_data=False,
-        include_reusable=False).format_collected_data(exc_data)
-    return """
-    %s
-    <br />
-    <br />
-    <script type="text/javascript">
-    show_button('full_traceback', 'full traceback')
-    </script>
-    <div id="full_traceback" class="hidden-data">
-    %s
-    </div>
-    """ % (short_er, long_er), extra_data
-    
+error_traceback_template = """
+        <div style="float: left; width: 100%%; padding-bottom: 20px;">
+        <h1 class="first"><a name="content"></a>Error Traceback</h1>
+        <div id="error-area" style="display: none; background-color: #600; color: #fff; border: 2px solid black">
+        <button onclick="return clearError()">clear this</button>
+        <div id="error-container"></div>
+        <button onclick="return clearError()">clear this</button>
+        </div>
+        %(body)s
+        <br />
+        <div class="highlight" style="padding: 20px;">
+        <b>Extra Features</b>
+        <table border="0">
+        <tr><td>&gt;&gt;</td><td>Display the lines of code near each part of the traceback</td></tr>
+        <tr><td><img src="%(prefix)s/error/img/plus.jpg" /></td><td>Show a debug prompt to allow you to directly debug the code at the traceback</td></tr>
+        </table>
+        </div>%(repost_button)s"""
