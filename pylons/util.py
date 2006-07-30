@@ -19,12 +19,10 @@ from routes import threadinglocal
 from paste.deploy.config import CONFIG
 
 def get_prefix(environ):
-    prefix = environ['paste.config']['app_conf'].get('prefix')
+    prefix = environ['paste.config']['app_conf'].get('prefix', '')
     if not prefix:
         if environ.get('SCRIPT_NAME', '') != '':
             prefix = environ['SCRIPT_NAME']
-    if not prefix:
-        prefix = ''
     return prefix
 
 def class_name_from_module_name(module_name):
