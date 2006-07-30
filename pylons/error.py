@@ -9,6 +9,7 @@ information.
 """
 __all__ = []
 
+import cgi
 from pylons.util import get_prefix
 import myghty.exception, sys
 from paste.evalexception.middleware import *
@@ -346,17 +347,35 @@ def format_eval_html(exc_data, base_path, counter):
         show_hidden_frames=True,
         show_extra_data=False,
         include_reusable=False).format_collected_data(exc_data)
+    text_er = formatter.format_text(exc_data, show_hidden_frames=True)
     return """
     %s
     <br />
     <br />
-    <script type="text/javascript">
-    show_button('full_traceback', 'full traceback')
-    </script>
+    <style type="text/css">
+            #util-link a, #util-link a:link, #util-link a:visited,
+            #util-link a:active {
+                border-bottom: 2px outset #aaa
+            }
+    </style>
+    <div id="util-link">
+        <script type="text/javascript">
+        show_button('full_traceback', 'full traceback')
+        </script>
+    </div>
     <div id="full_traceback" class="hidden-data">
     %s
     </div>
-    """ % (short_er, long_er), extra_data
+    <br>
+    <div id="util-link">
+        <script type="text/javascript">
+        show_button('text_version', 'text version')
+        </script>
+    </div>
+    <div id="text_version" class="hidden-data">
+    <textarea style="width: 100%%" rows=10 cols=60>%s</textarea>
+    </div>
+    """ % (short_er, long_er, cgi.escape(text_er)), extra_data
 
 error_template = '''\
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">

@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.1 (**svn**)
+* Providing an optional text version of exception tracebacks and the
+  associated extra data within the interactive debugger.
 * The 'Debug at: http://hostname/_debug/view/XXXXX' URLs now display the
   interactive debugger properly skinned.
 * Fixed issue in PasteScript with new controller sub-directories lacking a
