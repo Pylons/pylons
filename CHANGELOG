@@ -2,6 +2,9 @@ Pylons Changelog
 =================
 
 0.9.1 (**svn**)
+* The interactive debugger's 'full traceback' link is now only displayed
+  when the full traceback differs from the regular (includes hidden
+  frames).
 * Providing an optional text version of exception tracebacks and the
   associated extra data within the interactive debugger.
 * The 'Debug at: http://hostname/_debug/view/XXXXX' URLs now display the
