@@ -147,8 +147,34 @@ class WSGIController(Controller):
 
 class RPCController(Controller):
     resource = 'RPC2'
+
+    def __call__(self, environ, start_response):
+
+
+        self.start_response = start_response
+        match = environ['pylons.routes_dict']
+        self._req = pylons.request.current_obj()
+        
+        # Keep private methods private
+        if match.get('action').startswith('_'):
+            return pylons.Response(code=404)
+
+        if  match.get('action') != RPCController.resource:
+            if environ['paste.config']['global_conf']['debug'] == 'false':
+                return pylons.Response(code=404)
+            else:
+                raise NotImplementedError('RPCController only supports %s action', RPCController.resource) 
+        
+        if hasattr(self, '__before__'):
+            self._inspect_call(self.__before__)
+        response = pylons.Response(xmlrpclib.dumps(( self._dispatch_call().wsgi_response()[2] ,)))
+        if hasattr(self, '__after__'):
+            self._inspect_call(self.__after__)
+        return response
+
+
     
-    def __call__(self, action, **kargs):
+    def __call__2(self, action, **kargs):
         self._req = pylons.request.current_obj()
         action = self._req.environ['pylons.routes_dict'].get('action')
         action_method = action.replace('-', '_')
