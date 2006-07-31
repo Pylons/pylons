@@ -26,7 +26,7 @@ After you have installed `Easy Install <http://peak.telecommunity.com/DevCenter/
 
 Next edit the configuration file by specifying the ``dsn`` variable in ``[app:main]`` section so that the data source name points to the database you wish to use.
 
-.. Note:: The default data source name ``dsn = postgres://@localhost/quickwiki_test`` uses a PostgreSQL database named ``quickwiki_test`` running on the local machine. You can create this database with the PostgreSQL command ``createdb quickwiki_test`` but you could also use MySQL, Oracle or  SQLite. Firebird and MS-SQL may also work. See the `SQLAlchemy documentation <http://www.sqlalchemy.org/docs/dbengine.myt#dbengine>`_ for more information. You will also need to make sure you have the appropriate Python driver for the database you wish to use. For PostgreSQL this would be `psycopg <http://www.initd.org/projects/psycopg1>`_.
+.. Note:: The default data source name ``dsn = postgres://@localhost/quickwiki_test`` uses a PostgreSQL database named ``quickwiki_test`` running on the local machine. You can create this database with the PostgreSQL command ``createdb quickwiki_test`` but you could also use MySQL, Oracle or  SQLite. Firebird and MS-SQL may also work. See the `SQLAlchemy documentation <http://www.sqlalchemy.org/docs/dbengine.myt#dbengine_establishing>`_ for more information on how to connect to different databases. SQLite for example requires four forward slashes in its DSN. You will also need to make sure you have the appropriate Python driver for the database you wish to use. For PostgreSQL this would be `psycopg <http://www.initd.org/projects/psycopg1>`_.
 
 Finally create the database tables and serve the finished application::
 
@@ -220,6 +220,8 @@ You should also edit ``QuickWiki.egg_info/paste_deploy_config.ini_tmpl`` so that
 You can should then run the ``paster setup-app`` command to setup your tables in the same way and end user would, remembering to drop and recreate the database if the version tested earlier has already created the tables::
 
     > paster setup-app development.ini
+    
+.. Note:: See the SQLAlchemy note in the `Starting at the End`_ section for information on supported DSNs and a link to the SQLAlchemy documentation about the various options that can be included in them.
     
 Templates
 =========
