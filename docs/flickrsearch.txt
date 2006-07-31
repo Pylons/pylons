@@ -13,10 +13,6 @@ Getting Started
 
 First install Pylons 0.9::
 
-	> easy_install -U http://pylonshq.com/svn/Pylons/trunk
-
-When Pylons 0.9 is released you should install it like this instead::
-
 	> easy_install -U pylons==0.9
 
 Then create your project::

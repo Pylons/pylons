@@ -19,8 +19,6 @@ Starting at the End
 
 Pylons is designed to be easy for everyone, not just developers, so lets start by downloading and installing the finished QuickWiki in exactly the way end users of QuickWiki might do. Once we have explored its features we will set about writing it from scratch.
 
-.. Note:: If you are following this tutorial before the official release of Pylons 0.9 you will have to manually install `Pylons development version <pylonsdev.html>`_ and the latest development version of Paste Deploy before running these commands.
-
 After you have installed `Easy Install <http://peak.telecommunity.com/DevCenter/EasyInstall>`_ run these commands to install QuickWiki and create a config file::
     
     > easy_install QuickWiki
