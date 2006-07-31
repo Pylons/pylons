@@ -134,9 +134,9 @@ One final change, since we have used docutils and SQLAlchemy, both third party p
 
     install_requires=["Pylons>=0.9", "docutils==0.4", "SQLAlchemy>=0.2.6"],
 
-While we are we are making changes to ``setup.py`` we might want to complete some of the other sections too. Set the version number to 0.1.0 and add a description and URL which will be used on the Python Cheeseshop when we release it::
+While we are we are making changes to ``setup.py`` we might want to complete some of the other sections too. Set the version number to 0.1.1 and add a description and URL which will be used on the Python Cheeseshop when we release it::
 
-    version="0.1.0",
+    version="0.1.1",
     description="Result of following the Pylons 0.9 Tutorial",
     url="http://www.pylonshq.com/docs/0.9/quick_wiki.html",
     
@@ -551,7 +551,7 @@ After all that hard work it would be good to distribute the finished package wou
     
 This will create an egg file in ``dist`` which contains everything anyone needs to run your program. They can install it with::
 
-    > easy_install QuickWiki-0.1.0-py2.4.egg
+    > easy_install QuickWiki-0.1.1-py2.4.egg
     
 You should probably make eggs for each version of Python your users might require by running the above command with both Python 2.3 and 2.4.
 
