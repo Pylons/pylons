@@ -4,7 +4,6 @@ This module supplies pylons_config which handles setting up defaults
 for Myghty, Paste errorware, and prefixing Routes if necessary.
 """
 import os
-from myghty.resolver import *
 from paste.deploy.converters import asbool
 
 class Config(object):
