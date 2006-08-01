@@ -1,19 +1,12 @@
-"""Myghty compatibility object, ``etag_cache``, ``redirect_to`` and Myghty Module Components
+"""``etag_cache``, ``redirect_to``, and ``abort`` methods
 
-Additional helper object available for use in Controllers is the etag_cache, along with
-the Myghty compatibility objects for Pylons 0.8 projects and new Myghty Module Components
-for use in Myghty templates.
+Additional helper object available for use in Controllers is the etag_cache.
 
 """
 from routes import redirect_to
-from paste.registry import StackedObjectProxy
 import paste.httpexceptions as httpexceptions
 
 import pylons
-import pylons.helpers
-import pylons.templating as tmpl
-
-response = StackedObjectProxy(name="response")
 
 def etag_cache(key=None):
     """Use the HTTP Entity Tag cache for Browser side caching
@@ -59,4 +52,4 @@ def abort(status_code=None, detail="", headers=None, comment=None):
     exc = httpexceptions.get_exception(status_code)(detail, headers, comment)
     raise exc
 
-__all__ = ['etag_cache', 'redirect_to', 'formfill']
+__all__ = ['etag_cache', 'redirect_to', 'abort']

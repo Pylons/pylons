@@ -19,8 +19,8 @@ from routes import request_config
 
 import pylons
 import pylons.templating
+import pylons.legacy
 from pylons.util import RequestLocal, class_name_from_module_name
-from pylons.legacy import Myghty_Compat
 from pylons.controllers import Controller, WSGIController
 
 class PylonsBaseWSGIApp(object):
@@ -97,8 +97,8 @@ class PylonsBaseWSGIApp(object):
         # Apparently we returned absolutely nothing, use the response
         # object if in legacy mode, otherwise raise an exception
         if environ.get('pylons.legacy'):
-            resp = pylons.helpers.response
-            if hasattr(pylons.helpers.response, 'wsgicall'):
+            resp = pylons.legacy.response
+            if hasattr(pylons.legacy.response, 'wsgicall'):
                 # Legacy app using run_wsgi
                 return resp.content
             status, response_headers, content = resp.wsgi_response()
@@ -120,8 +120,9 @@ class PylonsBaseWSGIApp(object):
         
         # Setup legacy globals
         if environ.get('pylons.legacy'):
-            environ['paste.registry'].register(pylons.helpers.response, WSGIResponse())
-            environ['paste.registry'].register(pylons.m, Myghty_Compat(environ, start_response))
+            environ['paste.registry'].register(pylons.legacy.response, WSGIResponse())
+            environ['paste.registry'].register(pylons.m, 
+                pylons.legacy.Myghty_Compat(environ, start_response))
             environ['paste.registry'].register(pylons.params, req.params)
         
         econf = environ['pylons.environ_config']
