@@ -182,7 +182,7 @@ use the context object 'c' to store conext information.")
   
     def set_lang(self, lang):
         """Set the language used"""
-        project_name = CONFIG['app']['package']
+        project_name = CONFIG['app_conf']['package']
         self.__dict__['_local'].lang = lang
         if lang is None:
             self.__dict__['_local'].translator = _Translator()
