@@ -37,4 +37,5 @@ Useful Resources
 * `Mason Book <http://masonbook.com/book/>`_
 * `Myghty Docs <http://www.myghty.org/docs/>`_
 * `Paste Docs <http://www.pythonpaste.org>`_
+* `FormEncode Docs <http://formencode.org/>`_
 * `Frequently Asked Questions <faq.html>`_
