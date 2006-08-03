@@ -28,7 +28,7 @@ def validate(schema=None, validators=None, form=None):
     the schema or validator list.
     
     If validation was succesfull, the valid result dict will be saved as
-     ``self.form_results``. Otherwise, the action will be re-run as if it was a
+     ``self.form_result``. Otherwise, the action will be re-run as if it was a
      GET, and the output will be filled by FormEncode's htmlfill to fill in the
      form field errors.
     
@@ -41,7 +41,7 @@ def validate(schema=None, validators=None, form=None):
             
             @validate(schema=model.forms.myshema(), form='create')
             def update(self, id):
-                # Do something with self.form_results
+                # Do something with self.form_result
                 pass
         
     """
