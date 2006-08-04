@@ -110,7 +110,7 @@ Time to create the two templates. Create ``templates/flickr.myt`` with this cont
         <% h.text_field("tags") %>
         <% h.submit("Find") %>
     </fieldset>
-    <div id="photos" style="dislay:none"></div>
+    <div id="photos" style="display:none"></div>
     <% h.end_form() %>
 
 Create ``templates/photos.myt`` with this content::
