@@ -261,9 +261,14 @@ def render_response(*args, **kargs):
     
     See ``render`` for information on rendering.
     
+    Example::
+        
+        def view(self):
+            return render_response('/my/template.myt')
+    
     """
     return pylons.Response(render(*args, **kargs))
 
 
 __pudge_all__ = ['render', 'render_response', 'Buffet', 'MyghtyTemplatePlugin']
-__all__ = ['render', 'redner_response', 'Buffet', 'MyghtyTemplatePlugin']
+__all__ = ['render', 'render_response', 'Buffet', 'MyghtyTemplatePlugin']
