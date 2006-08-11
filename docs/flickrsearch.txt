@@ -54,7 +54,7 @@ The ``javascripts_app`` WSGI application maps any requests to ``/javascripts/`` 
 
 Knowing that we don't need to worry about JavaScript files, edit the file ``templates/autohandler`` with the following content:
 
-.. code-block:: XML
+.. code-block:: HyperText
 
     <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
     "http://www.w3.org/TR/html4/strict.dtd">
@@ -101,7 +101,7 @@ It should be pretty straight forward, we import the ``flickr`` API module, set t
 
 Time to create the two templates. Create ``templates/flickr.myt`` with this content:
 
-.. code-block:: XML
+.. code-block:: HyperText
 
     <% h.form_remote_tag(
         url      = h.url(action="search"),

@@ -87,7 +87,7 @@ You can change the theme by creating a new template. For example, a very simple 
 
 The values are automatically substituted by the error middleware. You can also add ``%(prefix)s`` which is replaced by the path to your application so you can include CSS files or images. For example if your application had a file called ``style.css`` in a directory called ``css`` within your ``public`` directory, you could add the following line to your template to ensure that the CSS file was always correctly found:
 
-.. code-block:: XML
+.. code-block:: HyperText
 
     <link rel="stylesheet" href="%(prefix)s/css/style.css" type="text/css" media="screen" />
     

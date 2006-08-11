@@ -87,7 +87,7 @@ If you visit http://127.0.0.1:5000/ you will see the welcome page (``127.0.0.1``
 
 Try creating a new file named ``test.html`` in the ``helloworld/public`` directory with the following content:
 
-.. code-block:: XML
+.. code-block:: HyperText
 
     <html>
         <body>

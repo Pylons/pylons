@@ -166,7 +166,7 @@ Translations Within Templates
 
 You can also use the ``h._()`` command within templates in exactly the same way you do in code. For example:
 
-.. code-block:: XML
+.. code-block:: HyperText
 
     <% h._('Hello') %> 
     
