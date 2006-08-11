@@ -25,13 +25,17 @@ First, create a directory in ``yourproject`` called ``kidtemplates`` and add a c
     
 You will now have a kid.py controller in your controllers directory. First, we will need to add Kid to the available template engines.
 
-Edit ``yourproject/config/middleware.py``, right after the 'config.init_app....'::
+Edit ``yourproject/config/middleware.py``, right after the 'config.init_app....':
+
+.. code-block:: Python
     
     kidopts = {'kid.assume_encoding':'utf-8', 'kid.encoding':'utf-8'}
     config.add_template_engine('kid', 'yourproject.kidtemplates', kidopts)
      
-Edit the KidController class so it looks like this::
+Edit the KidController class so it looks like this:
 
+.. code-block:: Python
+    
     class KidController(BaseController):
         def index(self):
             c.title = "Your Page"
@@ -42,8 +46,10 @@ Make sure to change ``yourproject.kidtemplates`` to reflect what your project is
 first argument to ``render`` or ``render_response`` can be the template engine to use, while the second non-keyword argument is the template. If you don't specify a template engine, it will drop back to the default (Myghty, unless you change the default).
 
 Now let's add the Kid template to render, create the file ``yourproject/kidtemplates/test.kid`` with
-the following content::
+the following content:
 
+.. code-block:: XML
+    
     <html xmlns="http://www.w3.org/1999/xhtml" xmlns:py="http://purl.org/kid/ns#">
         <head>
             <title py:content="c.title">title</title>
@@ -69,7 +75,9 @@ Switching the Default Template Engine
 
 In Pylons, customization is not just allowed but actively encouraged. It's quite easy to change the default engine from Myghty to your choice. Let's make Kid the default template engine.
 
-Edit ``yourproject/config/middleware.py``, right after the 'config.init_app....'::
+Edit ``yourproject/config/middleware.py``, right after the 'config.init_app....':
+
+.. code-block:: Python
     
     myghty = config.template_engines.pop()
     kidopts = {'kid.assume_encoding':'utf-8', 'kid.encoding':'utf-8'}

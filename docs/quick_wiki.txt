@@ -43,7 +43,7 @@ Developing QuickWiki
 
 If you skipped the section above you will need to install Pylons 0.9::
 
-	> easy_install -U Pylons[full]==0.9
+    > easy_install -U Pylons[full]==0.9
 
 Then create your project::
 
