@@ -29,7 +29,9 @@ Then add security controllers and templates::
 
     paster security
     
-You might also want to add an ``autohandler`` to ``templates/security`` that looks something like this so that your security templates produce proper HTML pages::
+You might also want to add an ``autohandler`` to ``templates/security`` that looks something like this so that your security templates produce proper HTML pages:
+
+.. code-block:: XML
 
     <html>
         <head>
@@ -44,7 +46,9 @@ Add a new controller::
 
     paster controller permissions
     
-Now edit your ``permissions.py`` controller to look like this::
+Now edit your ``permissions.py`` controller to look like this:
+
+.. code-block:: Python
 
     from securityapp.lib.base import *
 
@@ -65,7 +69,9 @@ Now edit your ``permissions.py`` controller to look like this::
                 return True
             return False
 
-Edit ``lib/base.py`` to look like this so that we are using a base controller with built in security features::
+Edit ``lib/base.py`` to look like this so that we are using a base controller with built in security features:
+
+.. code-block:: Python
 
     from routes import redirect_to, url_for
     from pylons.FIXME import SecureController
@@ -78,7 +84,9 @@ Edit ``lib/base.py`` to look like this so that we are using a base controller wi
 
 Now you need to add the ``pylons.security.Security`` middleware to your project's ``__init__.py`` file to catch 401 No User HTTP errors for when no user is signed in to display a sign in page. You also need to add the ``pylons.security.ShowSignInOn403`` middleware to catch 403 Access Denied HTTP errors to turn them into 401 errors so that ``paste.login`` can catch them and display a sign in the same way it does for 401 errors.
 
-Replace the line ``# Goes here`` after ``# @@@ Security middleware @@@`` in ``__init__.py`` with the following code::
+Replace the line ``# Goes here`` after ``# @@@ Security middleware @@@`` in ``__init__.py`` with the following code:
+
+.. code-block:: Python
 
     from pylons.security import Security, Authenticator, ShowSignInOn403
     
@@ -117,11 +125,13 @@ Start the server::
     
 and visit http://localhost:5000/permissions/ to test that the sign in form is correctly displayed.
 
-You can specify who is allowed to sign in by modifying the `SimplestAuthenticator`` class's ``check_auth()`` method in your ``__init__.py`` file.
+You can specify who is allowed to sign in by modifying the ``SimplestAuthenticator`` class's ``check_auth()`` method in your ``__init__.py`` file.
 
 Although the example above is very simple, you can do much make much more complicated things too. For example, rather than setting ``private.permissions`` to a string you could set it to a series of specifications or even a callback function. The value you set to the ``.permission`` attribute is the value is passed as the ``permissions`` argument to ``__authorize__()`` and the username of the currently signed in user is passed as the ``user`` argument.
 
-You can access the m, r and other Pylons variables from within the ``__authorize__()`` method like this::
+You can access the m, r and other Pylons variables from within the ``__authorize__()`` method like this:
+
+.. code-block:: Python
 
     from paste.deploy.config import CONFIG 
     m = CONFIG['pylons']['m']
@@ -132,7 +142,9 @@ This all allows you to build a sophisticated security system. See `Testing the S
 Using HTTP sign in
 ------------------
 
-The ``Security`` middleware supports Basic HTTP sign in as well as form based sign in. Try changing the  parameters to ``Security`` in ``__init__.py`` to the following::
+The ``Security`` middleware supports Basic HTTP sign in as well as form based sign in. Try changing the  parameters to ``Security`` in ``__init__.py`` to the following:
+
+.. code-block:: Python
 
     app = Security(
         app,
@@ -159,7 +171,9 @@ Add a new controller::
 
     paster controller auth
     
-Now edit your ``auth.py`` controller to look like this::
+Now edit your ``auth.py`` controller to look like this:
+
+.. code-block:: Python
 
     from securityapp.lib.base import *
 
@@ -186,7 +200,9 @@ and visit http://localhost:5000/ to test that the sign in form is correctly disp
 
 NB. The sign in won't appear to do anything yet since even though we are signed in the methods still produce the status codes to make the sign in appear.
 
-When a user is correctly signed in the environmental variable ``REMOTE_USER`` is set to their username. This means you could add another method to the ``auth.py`` controller as follows::
+When a user is correctly signed in the environmental variable ``REMOTE_USER`` is set to their username. This means you could add another method to the ``auth.py`` controller as follows:
+
+.. code-block:: Python
 
     def private(self, m, r, **params):
         if r.environ.has_key('REMOTE_USER'):

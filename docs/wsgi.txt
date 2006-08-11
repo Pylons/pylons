@@ -17,12 +17,16 @@ Paste and WSGI
 
 Most of Pylons' WSGI capability comes from its close integration with Paste. Paste provides all the tools and middleware necessary to deploy WSGI applications. It can be thought of as a low-level WSGI framework designed for other web frameworks to build upon. Pylons is an example of a framework which makes full use of the possibilities of Paste.
 
-If you want to, you can get the WSGI application object from your Pylons configuration file like this::
+If you want to, you can get the WSGI application object from your Pylons configuration file like this:
+
+.. code-block:: Python
 
     from paste.deploy import loadapp
     wsgi_app = loadapp('config:/path/to/config.ini')
     
-You can then serve the file using a WSGI server. Here is an example using the WSGI Reference Implementation to be included with Python 2.5::
+You can then serve the file using a WSGI server. Here is an example using the WSGI Reference Implementation to be included with Python 2.5:
+
+.. code-block:: Python
 
     from paste.deploy import loadapp
     wsgi_app = loadapp('config:/path/to/config.ini')
@@ -43,27 +47,35 @@ Using a WSGI Application as a Pylons 0.9 Controller
 
 In Pylons 0.9 controllers are derived from ``pylons.controllers.WSGIController`` and are also valid WSGI applications. Unless your controller is derived from the legacy ``pylons.controllers.Controller`` class it is also assumed to be a WSGI applicaiton. This means that you don't actually need to use a Pylons controller class in your controller, any WSGI application will work as long as you give it the same name.
 
-For example, if you added a ``hello`` controller by executing ``paster controller hello``, you could modify it to look like this::
+For example, if you added a ``hello`` controller by executing ``paster controller hello``, you could modify it to look like this:
+
+.. code-block:: Python
 
     def HelloController(environ, start_response):
         start_response('200 OK', [('Content-Type','text/html')])
         return ['Hello World!']
         
-or use ``yield`` statements like this::
+or use ``yield`` statements like this:
+
+.. code-block:: Python
 
     def HelloController(environ, start_response):
         start_response('200 OK', [('Content-Type','text/html')])
         yield 'Hello '
         yield 'World!'
         
-or use the standard Pylons ``Response`` object which is a valid WSGI response which takes care of calling ``start_response()`` for you::
+or use the standard Pylons ``Response`` object which is a valid WSGI response which takes care of calling ``start_response()`` for you:
+
+.. code-block:: Python
 
     def HelloController(environ, start_response):
         return Response('Hello World!')
 
 and you could use the ``render()`` and ``render_response()`` objects exactly like you would in a normal controller action.
 
-As well as writing your WSGI application as a function you could write it as a class::
+As well as writing your WSGI application as a function you could write it as a class:
+
+.. code-block:: Python
 
     class HelloController:
         def __call__(self, environ, start_response):
@@ -75,7 +87,9 @@ All the standard Pylons middleware defined in ``config/middleware.py`` is still 
 Running a WSGI Application Wrom Within a Controller
 ---------------------------------------------------
 
-There may be occasions where you don't want to replace your entire controller with a WSGI application but simply want to run a WSGI application from with a controller action. If your project was called ``test`` and you had a WSGI application called ``wsgi_app`` you could even do this::
+There may be occasions where you don't want to replace your entire controller with a WSGI application but simply want to run a WSGI application from with a controller action. If your project was called ``test`` and you had a WSGI application called ``wsgi_app`` you could even do this:
+
+.. code-block:: Python
 
     from test.lib.base import *
 
@@ -94,7 +108,9 @@ A Pylons application middleware stack is directly exposed in the project's ``con
 
 .. Warning:: If you remove any of the default middleware you are likely to find that various parts of Pylons stop working!
 
-As an example, if you wanted to add middleware that added a new key to the environ dictionary you might do this::
+As an example, if you wanted to add middleware that added a new key to the environ dictionary you might do this:
+
+.. code-block:: Python
 
     # YOUR MIDDLEWARE
     # Put your own middleware here, so that any problems are caught by the error
@@ -114,7 +130,9 @@ As an example, if you wanted to add middleware that added a new key to the envir
             
     app = KeyAdder(app, 'test.hello', 'Hello World')
     
-Then in your controller you could write::
+Then in your controller you could write:
+
+.. code-block:: Python
 
     return Response(request.environ['test.hello'])
     
@@ -132,7 +150,9 @@ With the ability to do these things as a middleware you can create authenticatio
 The Cascade
 -----------
 
-Towards the end of the middleware stack in your project's ``config/middleware.py`` file you will find a special piece of middleware called the cascade::
+Towards the end of the middleware stack in your project's ``config/middleware.py`` file you will find a special piece of middleware called the cascade:
+
+.. code-block:: Python
 
     # @@@ Cascade @@@ 
     app = Cascade([static_app, javascripts_app, app])

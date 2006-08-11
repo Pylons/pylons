@@ -85,12 +85,14 @@ The ``--reload`` option ensures that the server is automatically reloaded if you
 
 If you visit http://127.0.0.1:5000/ you will see the welcome page (``127.0.0.1`` is a special IP address that references your own computer but you can change the hostname by editing the ``development.ini`` file).
 
-Try creating a new file named ``test.html`` in the ``helloworld/public`` directory with the following content::
+Try creating a new file named ``test.html`` in the ``helloworld/public`` directory with the following content:
+
+.. code-block:: XML
 
     <html>
-    <body>
-    Hello World!
-    </body>
+        <body>
+            Hello World!
+        </body>
     </html>
     
 If you visit http://127.0.0.1:5000/test.html you will see the message ``Hello World!``. Any files in the ``public`` directory are served in the same way they would be by any webserver, but with built-in caching, and if Pylons has a choice of whether to serve a file from the ``public`` directory or from code in a controller it will always choose the file in ``public``. This behavior can be changed by altering the order of the ``Cascade`` in ``config/middleware.py``.
@@ -121,7 +123,9 @@ You're now ready to start creating your own web application. First, lets create 
 
 This ``paster`` command will create the ``controllers/hello.py`` file for you with a basic layout as well as a ``helloworld/tests/functional/test_hello.py`` that is used for running functional tests of the controller.
 
-Here's what a basic controller looks like to print out 'Hello World' and respond to http://127.0.0.1:5000/hello. Put the following text in the file ``helloworld/controllers/hello.py``::
+Here's what a basic controller looks like to print out 'Hello World' and respond to http://127.0.0.1:5000/hello. Put the following text in the file ``helloworld/controllers/hello.py``:
+
+.. code-block:: Python
 
     from helloworld.lib.base import *
     
@@ -131,7 +135,9 @@ Here's what a basic controller looks like to print out 'Hello World' and respond
 
 Pylons uses a powerful and flexible system for routing URLs to the appropriate piece of code and back. 
 
-We would like the hello controller to also be displayed for both the URL http://127.0.0.1:5000/hello and the URL http://127.0.0.1:5000/ which is the site route. We need to add a line to the routes config in ``helloworld/config/routing.py`` so it looks like this::
+We would like the hello controller to also be displayed for both the URL http://127.0.0.1:5000/hello and the URL http://127.0.0.1:5000/ which is the site route. We need to add a line to the routes config in ``helloworld/config/routing.py`` so it looks like this:
+
+.. code-block:: Python
 
     map.connect('', controller='hello', action='index')
     map.connect(':controller/:action/:id')
@@ -167,7 +173,9 @@ Create a template file ``helloworld/templates/serverinfo.myt`` containing the fo
     and here's the URL you called: <% h.url_for() %>
     </p>
 
-To use this template add a new method to your HelloController in ``helloworld/controllers/hello.py`` with the following function at the end of the class::
+To use this template add a new method to your HelloController in ``helloworld/controllers/hello.py`` with the following function at the end of the class:
+
+.. code-block:: Python
 
     def serverinfo(self):
         return render_response('/serverinfo.myt')
@@ -184,7 +192,9 @@ Using Sessions
 
 Sessions come enabled for your application and are handled by `Beaker middleware <http://beaker.groovie.org/>`_, which uses the powerful Myghty container API. This provides robust and powerful sessions as well as caching abilities.
 
-Using a session is very easy, here's what using and saving a session in the above function would look like::
+Using a session is very easy, here's what using and saving a session in the above function would look like:
+
+.. code-block:: Python
     
     def serverinfo(self):
         session['name'] = 'George'
@@ -244,7 +254,9 @@ Passing Variables to Templates
 
 Pylons controllers are created for each request. This means you can attach variables to ``self`` if you want them passed around. However, it can be very inconvenient to keep track of all the variables and methods attached to ``self``, especially if you want to pass them to a template.
 
-To make it easier to set up your data for use by the template, the variable ``c`` is made available and is also available in all Myghty templates as the ``c`` global. Let's take a look at using it::
+To make it easier to set up your data for use by the template, the variable ``c`` is made available and is also available in all Myghty templates as the ``c`` global. Let's take a look at using it:
+
+.. code-block:: Python
 
     def serverinfo(self):
         c.value = 2 
@@ -276,12 +288,16 @@ There are occasions where you might want information to be available to all cont
 
 The ``g`` variable is an instance of your ``Globals`` class in your application's ``lib/app-globals.py`` file. Any class attributes you set in the ``__init__()`` method will be available as attributes of ``g`` throughout your Pylons application. Any attributes you set on ``g`` during one request will remain changed for all the other requests. You have to be very careful when setting global variables in requests.
 
-Here is an example of using the ``g`` variable. First modify your ``lib/app_globals.py`` ``Globals`` class so that the ``__init__.py`` method looks like this::
+Here is an example of using the ``g`` variable. First modify your ``lib/app_globals.py`` ``Globals`` class so that the ``__init__.py`` method looks like this:
+
+.. code-block:: Python
 
     def __init__(self, defaults, app, **extra):
         self.message = 'Hello'
         
-Then add this new method to the end of the ``helloworld/controllers/hello.py``::
+Then add this new method to the end of the ``helloworld/controllers/hello.py``:
+
+.. code-block:: Python
 
     def app_globals_test(self):
         resp = Response()

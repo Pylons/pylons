@@ -4,13 +4,17 @@ Logging
 Logging a message
 =================
 
-All WSGI applications can write messages to an error log. The ``wsgi.errors`` environ key is an open file object for writing errors. You can use it in Pylons like this::
+All WSGI applications can write messages to an error log. The ``wsgi.errors`` environ key is an open file object for writing errors. You can use it in Pylons like this:
+
+.. code-block:: Python
 
     request.environ['wsgi.errors'].write('This is an error!')
     
 The above example would write the message ``This is an error!`` to the error log unchanged with no preceding or following whitespace.
     
-Pylons also comes with a helper function called ``log()`` which logs messages to the WSGI error object in a formatted manner. You use it like this::
+Pylons also comes with a helper function called ``log()`` which logs messages to the WSGI error object in a formatted manner. You use it like this:
+
+.. code-block:: Python
 
     h.log('This is an error')
     

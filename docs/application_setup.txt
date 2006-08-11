@@ -90,7 +90,9 @@ The ``paster setup-app`` takes the newly created ``.ini`` file and calls the fun
 
 For example, say your application needs a database setting up. The user will have specified the database to use by editing the config file before they ran the ``paster setup-app`` command. The ``paster setup-app`` command will call the ``wiki.websetup.setup_config()`` function with the details of the database connection so the ``setup_config()`` function can setup the database.
 
-Here's an example which just prints the location of the cache directory::
+Here's an example which just prints the location of the cache directory:
+
+.. code-block:: Python
 
     def setup_config(command, filename, section, vars):
         from paste.deploy import appconfig
@@ -113,13 +115,17 @@ Advanced Use
 
 So far everything we have done has happened through the ``paste.script.appinstall.Installer`` class which looks for the ``paste_deploy_config.ini_tmpl`` and ``websetup.py`` file and behaves accordingly.
 
-If you need more control over how your application is installed you can use your own installer class. Create a file, for example ``wiki/installer.py`` and code your new installer class in the file by deriving it from the existing one::
+If you need more control over how your application is installed you can use your own installer class. Create a file, for example ``wiki/installer.py`` and code your new installer class in the file by deriving it from the existing one:
+
+.. code-block:: Python
 
     from paste.script.appinstall import Installer
     class MyInstaller(Installer):
         pass
 
-You then override the functionality as necessary (have a look at the source code for ``Installer`` as a basis. You then change your application's ``setup.py`` file so that the ``paste.app_install`` entry point ``main`` points to your new installer::
+You then override the functionality as necessary (have a look at the source code for ``Installer`` as a basis. You then change your application's ``setup.py`` file so that the ``paste.app_install`` entry point ``main`` points to your new installer:
+
+.. code-block:: Python
 
     entry_points="""
         ...

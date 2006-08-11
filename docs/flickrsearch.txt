@@ -52,28 +52,32 @@ If you look at ``config/middleware.py`` you will see these lines::
     
 The ``javascripts_app`` WSGI application maps any requests to ``/javascripts/`` straight to the relevant JavaScript in the WebHelpers package. This means you don't have to manually copy the Pylons JavaScript files to your project and that if you upgrade Pylons, you will automatically be using the latest scripts. 
 
-Knowing that we don't need to worry about JavaScript files, edit the file ``templates/autohandler`` with the following content::
+Knowing that we don't need to worry about JavaScript files, edit the file ``templates/autohandler`` with the following content:
+
+.. code-block:: XML
 
     <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
     "http://www.w3.org/TR/html4/strict.dtd">
-    <html>
-    <head>
-    <title>Flickr!</title>
-    <% h.javascript_include_tag('/javascripts/effects.js', builtins=True) %>
-    <% h.stylesheet_link_tag('/flickr.css') %>
-    </head>
-    <body>
-      % m.call_next()
-    </body>
+        <html>
+            <head>
+                <title>Flickr!</title>
+                <% h.javascript_include_tag('/javascripts/effects.js', builtins=True) %>
+                <% h.stylesheet_link_tag('/flickr.css') %>
+            </head>
+        <body>
+    % m.call_next()
+        </body>
     </html>
     
-If you are interested in learning some of the features of Myghty templates have a look at the comprehensive `Myghty Documentation <http://www.myghty.org/docs/>`_. For now we just need to understand that ``% m.call_next()`` is replaced with the child template and that anything in ``<% ... %>`` is executed and replaced with the result. In the JavaScript and stylesheet tags are inserted.
+If you are interested in learning some of the features of Myghty templates have a look at the comprehensive `Myghty Documentation <http://www.myghty.org/docs/>`_. For now we just need to understand that ``% m.call_next()`` is replaced with the child template and that anything in ``<% ... %>`` is executed and replaced with the result. In the JavaScript and stylesheet tags are inserted. Also note that the ``% m.call_next()`` line is to the far left, all Myghty Python statements need to have the ``%`` start as the farthest left character.
 
 
 Write The Controller and Templates
 ==================================
 
-Add the following to your ``controllers/flickr.py``::
+Add the following to your ``controllers/flickr.py``:
+
+.. code-block:: Python
 
     from flickrsearch.lib.base import *
     import flickrsearch.lib.flickr as flickr
@@ -95,7 +99,9 @@ Add the following to your ``controllers/flickr.py``::
             
 It should be pretty straight forward, we import the ``flickr`` API module, set the API_KEY. And define two actions in our controller. The first ``index()`` just renders ``flickr.myt`` with full inheritance, the other ``search()`` uses the ``flickr`` API module to select all photos by using the tag from ``request.params['tags']``. ``request.params`` are given to this action by the form from ``templates/flickr.myt`` with a POST method. It then renders the ``templates/photos.myt`` template by calling the Pylons ``render_response()`` global.
 
-Time to create the two templates. Create ``templates/flickr.myt`` with this content::
+Time to create the two templates. Create ``templates/flickr.myt`` with this content:
+
+.. code-block:: XML
 
     <% h.form_remote_tag(
         url      = h.url(action="search"),
@@ -123,7 +129,9 @@ Create ``templates/photos.myt`` with this content::
 Add Some Style
 ==============
 
-Finally we need to add some style to our project so create the stylesheet ``public/flickr.css``. We are going to use the same stylesheet as the Rails example::
+Finally we need to add some style to our project so create the stylesheet ``public/flickr.css``. We are going to use the same stylesheet as the Rails example:
+
+.. code-block:: CSS
 
     body {
         background-color: #888;

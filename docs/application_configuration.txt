@@ -46,26 +46,36 @@ A number of error handling options can be specified in the config file. These ar
 Getting Information From Configuration Files
 ============================================
 
-All information from your configuration file is available in the ``paste.config`` key of ``environ``. It can be obtained like this::
+All information from your configuration file is available in the ``paste.config`` key of ``environ``. It can be obtained like this:
 
+.. code-block:: Python
+    
     config = request.environ['paste.config']
     
-There is also a handy shortcut for when the ``request`` variable isn't in scope::
+There is also a handy shortcut for when the ``request`` variable isn't in scope:
 
+.. code-block:: Python
+    
     from paste.deploy import CONFIG
     config = CONFIG
 
 Either way, the ``config`` object returned is the same. It behaves like a dictionary and has two keys, ``app`` which contains config keys in the ``[app:main]`` section of the config file and ``default`` which contains the global configuration settings from the ``[DEFAULT]`` section. 
 
-For example you can obtain the location of the cache directory like this::
+For example you can obtain the location of the cache directory like this:
+
+.. code-block:: Python
 
     cache_dir = config['app_conf'].get('cache_data_dir')
     
-Or the name of the package like this::
+Or the name of the package like this:
+
+.. code-block:: Python
 
     package = config['app_conf'].get('package')
     
-Or the debug status like this::
+Or the debug status like this:
+
+.. code-block:: Python
     
     from paste.deploy.converters import asbool
     debug = asbool(config['app_conf'].get('debug'))
@@ -81,7 +91,9 @@ For example to move your entire application to ``/james`` add this to ``[app:mai
     
 In normal operation ``prefix`` should not be used, since it is correctly calculated from ``SCRIPT_NAME``. Even paste deploy composite applications work fine without a prefix.
 
-If you need to find out the prefix being used you can do this from inside a controller::
+If you need to find out the prefix being used you can do this from inside a controller:
+
+.. code-block:: Python
 
     from pylons.util import get_prefix
     prefix = get_prefix(request.environ)

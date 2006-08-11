@@ -26,7 +26,9 @@ Example: Exploring the Traceback
 
 Using the interactive debugger can also be useful to gain a deeper insight into objects present only during the web request like Myghty's ``m`` object, or the ``session`` and ``request`` objects. The thing to keep in mind with some of these objects is that you won't be able to explore them through the interactive debugger unless you first use a supplied Controller method to `bind them to your controller <class-pylons.controllers.Controller.html#_attach_locals>`_.
 
-To trigger an error so that we can explore what's happening just raise an exception inside an action you're curious about. In this example, we'll raise an error in the action that's used to display the page you're reading this on. Here's what the docs controller looks like::
+To trigger an error so that we can explore what's happening just raise an exception inside an action you're curious about. In this example, we'll raise an error in the action that's used to display the page you're reading this on. Here's what the docs controller looks like:
+
+.. code-block:: Python
 
     class DocsController(BaseController):
         def view(self, url):
@@ -34,7 +36,9 @@ To trigger an error so that we can explore what's happening just raise an except
                 redirect_to('/docs/')
             return render_response('/docs/' + url)
 
-Since we want to explore the ``session`` and ``request``, we'll need to bind them first. Here's what our action now looks like with the binding and raising an exception::
+Since we want to explore the ``session`` and ``request``, we'll need to bind them first. Here's what our action now looks like with the binding and raising an exception:
+
+.. code-block:: Python
 
     def view(self, url):
         self._attach_locals()
@@ -62,7 +66,9 @@ Changing the Debugger Theme
 
 If you are using Pylons in a commercial company it is useful to be able to change the theme of the debugger so that if an error occurs, a page with your company logo appears. You might also decide to remove the Pylons logo if you use the debugger a lot so that there is more space to view the traceback.
 
-You can change the theme by creating a new template. For example, a very simple template might look like this::
+You can change the theme by creating a new template. For example, a very simple template might look like this:
+
+.. code-block:: Python
 
     my_error_template = '''
         <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
@@ -79,11 +85,15 @@ You can change the theme by creating a new template. For example, a very simple 
         </html>
     '''
 
-The values are automatically substituted by the error middleware. You can also add ``%(prefix)s`` which is replaced by the path to your application so you can include CSS files or images. For example if your application had a file called ``style.css`` in a directory called ``css`` within your ``public`` directory, you could add the following line to your template to ensure that the CSS file was always correctly found::
+The values are automatically substituted by the error middleware. You can also add ``%(prefix)s`` which is replaced by the path to your application so you can include CSS files or images. For example if your application had a file called ``style.css`` in a directory called ``css`` within your ``public`` directory, you could add the following line to your template to ensure that the CSS file was always correctly found:
+
+.. code-block:: XML
 
     <link rel="stylesheet" href="%(prefix)s/css/style.css" type="text/css" media="screen" />
     
-If you want to retain the ability to switch between the different error displays you need a slightly more complicated example::
+If you want to retain the ability to switch between the different error displays you need a slightly more complicated example:
+
+.. code-block:: Python
 
     my_error_template = '''
         <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
@@ -119,12 +129,16 @@ If you want to retain the ability to switch between the different error displays
     
 In this case when you click on a link the relevant tab is displayed. As long as you keep the same IDs and class names, you can specify your own styles and create a theme like the one used by Pylons by default.
 
-Now that you have a template you need to use it in your application. In ``config/middleware.py`` change the following lines::
+Now that you have a template you need to use it in your application. In ``config/middleware.py`` change the following lines:
+
+.. code-block:: Python
 
     # @@@ Error Handling @@@
     app = ErrorHandler(app, global_conf, error_template=error_template, **config.errorware)
 
-to use your template::
+to use your template:
+
+.. code-block:: Python
 
     # @@@ Error Handling @@@
     my_error_template = '''

@@ -67,7 +67,9 @@ Pylons uses a Model View Controller architecture; we'll start by creating the mo
 
    It provides a full suite of well known enterprise-level persistence patterns, designed for efficient and high-performance database access, adapted into a simple and Pythonic domain language. There is full and detailed documentation available on the SQLAlchemy website at http://sqlalchemy.org/docs/ and you should really read this before you get heavily into SQLAlchemy.
 
-Edit your ``models/__init__.py`` so that it looks like::
+Edit your ``models/__init__.py`` so that it looks like:
+
+.. code-block:: Python
 
     import sqlalchemy.mods.threadlocal
     from sqlalchemy import *
@@ -83,7 +85,9 @@ The first two lines setup SQLAlchemy to support threads and import some useful o
 
 .. Note:: SQLAlchemy also supports reflecting this information directly from a database table so if we had already created the database table SQLAlchemy could have constructed the ``Table`` object for us.
 
-A core philosophy of SQLAlchemy is that tables and domain classes are different beasts. So next, we'll create the Python class that will represent the pages of our wiki and map these domain objects to rows in the ``pages`` table using a mapper. Add this to the bottom of ``models/__init__.py``::
+A core philosophy of SQLAlchemy is that tables and domain classes are different beasts. So next, we'll create the Python class that will represent the pages of our wiki and map these domain objects to rows in the ``pages`` table using a mapper. Add this to the bottom of ``models/__init__.py``:
+
+.. code-block:: Python
 
     class Page(object):
         def __str__(self):
@@ -93,14 +97,18 @@ A core philosophy of SQLAlchemy is that tables and domain classes are different 
 
 Looking ahead, our wiki will need some formatting so we will need to turn the ``content`` field into HTML. Any WikiWords (which are words made by joining together two or more lowercase words with the first letter capitalized) will also need to be converted into hyperlinks. 
 
-It would be nice if we could add a method to our ``Page`` object to retrieve the formatted HTML with the WikiWords already converted to hyperlinks. Add the following at the top of the ``models/__init__.py`` file::
+It would be nice if we could add a method to our ``Page`` object to retrieve the formatted HTML with the WikiWords already converted to hyperlinks. Add the following at the top of the ``models/__init__.py`` file:
+
+.. code-block:: Python
 
     from pylons import h
     import re
     wikiwords = re.compile(r"\b([A-Z]\w+[A-Z]+\w+)")
     from docutils.core import publish_parts
     
-and then add a ``get_wiki_content()`` method to the ``Page`` object so it looks like this::            
+and then add a ``get_wiki_content()`` method to the ``Page`` object so it looks like this:
+
+.. code-block:: Python        
             
     class Page(object):
         def __str__(self):
@@ -153,9 +161,10 @@ To test the automatic installation of the dependencies, run the following comman
 Connecting to the Database
 ==========================
 
-All of your project's controllers are derived from the ``BaseController`` in ``lib/base.py`` by default. We will make use of this fact to enable all controllers to with SQLAlchemy support. Add the following code underneath the import statements in ``lib/base.py`` to replace the existing ``BaseController`` class::
+All of your project's controllers are derived from the ``BaseController`` in ``lib/base.py`` by default. We will make use of this fact to enable all controllers to with SQLAlchemy support. Add the following code underneath the import statements in ``lib/base.py`` to replace the existing ``BaseController`` class:
 
-    ...
+.. code-block:: Python
+    
     import sqlalchemy.mods.threadlocal
     from sqlalchemy import *
 
@@ -174,7 +183,9 @@ On each request the SQLAlchemy objects will now be connected to the database.
 Configuration and Setup
 =======================
 
-Now lets make the changes necessary to enable QuickWiki to be set up by an end user. Edit ``websetup.py`` used by the ``paster setup-app`` command to look like this::
+Now lets make the changes necessary to enable QuickWiki to be set up by an end user. Edit ``websetup.py`` used by the ``paster setup-app`` command to look like this:
+
+.. code-block:: Python
 
     import sqlalchemy.mods.threadlocal
     from sqlalchemy import *
@@ -228,22 +239,24 @@ Templates
 
 .. Note:: Pylons uses the Myghty templating language by default, although as is the case with most aspects of Pylons you are free to deviate from the default if you prefer. Pylons also supports Kid and Cheetah out of the box.
 
-We will make use of a feature of the Myghty templating language called inheritance for our project. Add the main page template in ``templates/autohandler``::
+We will make use of a feature of the Myghty templating language called inheritance for our project. Add the main page template in ``templates/autohandler``:
+
+.. code-block:: XML
 
     <html>
-    <head>
-    <title>QuickWiki</title>
-    <% h.stylesheet_link_tag('/quick.css') %>
-    </head>
-    <body>
-    <div class="content">
+        <head>
+            <title>QuickWiki</title>
+            <% h.stylesheet_link_tag('/quick.css') %>
+        </head>
+        <body>
+            <div class="content">
      % m.call_next()
-    <p class="footer">
-        Return to the <% h.link_to('FrontPage', h.url_for(action="index", title="FrontPage")) %>
-        | <% h.link_to('Edit '+c.title, h.url_for(title=c.title, action='edit')) %>
-    </p>
-    </div>
-    </body>
+            <p class="footer">
+                Return to the <% h.link_to('FrontPage', h.url_for(action="index", title="FrontPage")) %>
+                | <% h.link_to('Edit '+c.title, h.url_for(title=c.title, action='edit')) %>
+            </p>
+            </div>
+        </body>
     </html>
 
 All our other templates will be automatically inserted into the ``% m.call_next()`` line and the whole page returned when we call the ``render_response()`` global from our controller so that we can easily apply a consistent theme to all our templates. 
@@ -257,7 +270,9 @@ This autohandler also makes use of various helper functions attached to the ``h`
 Routing
 =======
 
-Before we can add the actions we want to be able to route the requests to them correctly. Edit ``config/routing.py`` so that the route map looks like this::
+Before we can add the actions we want to be able to route the requests to them correctly. Edit ``config/routing.py`` so that the route map looks like this:
+
+.. code-block:: Python
 
     map.connect('error/:action/:id', controller='error')
     map.connect(':controller/:action/:title', controller='page', action='index', title='FrontPage')
@@ -290,12 +305,16 @@ We are going to need the following actions::
     ``delete(self)``
         deletes a page based on an AJAX drag and drop call
 
-Let's get cracking! Add the following import statements to the top of the page controller ``controllers/page.py`` after the existing import statement::
+Let's get cracking! Add the following import statements to the top of the page controller ``controllers/page.py`` after the existing import statement:
+
+.. code-block:: Python
 
     import sqlalchemy.mods.threadlocal
     from sqlalchemy import objectstore
 
-Add the this method to the ``PageController`` class to create a query object for the ``Page`` on each request::
+Add the this method to the ``PageController`` class to create a query object for the ``Page`` on each request:
+
+.. code-block:: Python
 
         def __before__(self):
             self.query = objectstore.query(model.Page)
@@ -305,7 +324,9 @@ Add the this method to the ``PageController`` class to create a query object for
 index()
 -------
 
-Replace the existing ``index()`` action with this::
+Replace the existing ``index()`` action with this:
+
+.. code-block:: Python
 
         def index(self, title):
             page = self.query.get_by(title=title)
@@ -316,7 +337,9 @@ Replace the existing ``index()`` action with this::
                 return render_response('/new_page.myt')
             abort(404)
             
-Add a template called ``templates/page.myt`` that looks like this::
+Add a template called ``templates/page.myt`` that looks like this:
+
+.. code-block:: XML
 
     <h1 class="main"><% c.title %></h1>
     <% c.content %>
@@ -325,7 +348,9 @@ This template simply displays the page title and content.
 
 .. Note:: Pylons automatically assigns all the action parameters to the context object ``c`` so that you don't have to assign them yourself. In this case, the value of ``title`` will be automatically assigned to ``c.title`` so that it can be used in the templates. We assign ``c.content`` manually in the controller.
 
-We also need a template for pages that don't already exist. They need to display a message and link to the edit action so that they can be created. Add a template called ``templates/new_page.myt`` that looks like this::
+We also need a template for pages that don't already exist. They need to display a message and link to the edit action so that they can be created. Add a template called ``templates/new_page.myt`` that looks like this:
+
+.. code-block:: XML
 
     <h1 class="main"><% c.title %></h1>
     <p>This page doesn't exist yet. 
@@ -335,7 +360,9 @@ At this point we can test our QuickWiki to see how it looks. If you don't alread
 
     > paster serve --reload development.ini
     
-Visit http://127.0.0.1:5000/ and you will see the front page of the wiki. We can spruce it up a little by adding the stylesheet we linked to in the ``templates/autohandler`` file earlier. Add this the file ``public/quick.css`` with the following content::
+Visit http://127.0.0.1:5000/ and you will see the front page of the wiki. We can spruce it up a little by adding the stylesheet we linked to in the ``templates/autohandler`` file earlier. Add this the file ``public/quick.css`` with the following content:
+
+.. code-block:: CSS
 
     body {
         background-color: #888;
@@ -363,15 +390,19 @@ Refresh the page again and we have a better looking wiki. You will notice that t
 edit()
 ------
 
-To edit the wiki page we need to get the content from the database without changing it to HTML to display it in a simple form for editing. Add the ``edit()`` action::
+To edit the wiki page we need to get the content from the database without changing it to HTML to display it in a simple form for editing. Add the ``edit()`` action:
 
-        def edit(self, title):
-            page = self.query.get_by(title=title)
-            if page:
-                c.content = page.content
-            return render_response('/edit.myt')
+.. code-block:: Python
 
-and the create the ``templates/edit.myt`` file::
+    def edit(self, title):
+        page = self.query.get_by(title=title)
+        if page:
+            c.content = page.content
+        return render_response('/edit.myt')
+
+and the create the ``templates/edit.myt`` file:
+
+.. code-block:: XML
 
     <h1 class="main">Editing <% c.title %></h1>
 
@@ -389,18 +420,20 @@ save()
 
 The first thing the ``save()`` action has to do is to see if the page being saved already exists. If not it creates it with ``page = model.Page()``. Next it needs the updated content. In Pylons you can get request parameters from form submissions, GET or POST requests from the appropriately named ``request.params`` object. 
 
-Add the ``save()`` action::
+Add the ``save()`` action:
 
-        def save(self, title):
-            page = self.query.get_by(title=title)
-            if not page:
-                page = model.Page()
-                page.title = title
-            page.content = request.params['content']
-            c.title = page.title
-            c.content = page.get_wiki_content()
-            c.message = 'Successfully saved'
-            return render_response('/page.myt')
+.. code-block:: Python
+
+    def save(self, title):
+        page = self.query.get_by(title=title)
+        if not page:
+            page = model.Page()
+            page.title = title
+        page.content = request.params['content']
+        c.title = page.title
+        c.content = page.get_wiki_content()
+        c.message = 'Successfully saved'
+        return render_response('/page.myt')
             
 .. Note::  
     ``request.params`` is a MultiDict object; an ordered dictionary that may contain multiple values for each key. The MultiDict will always return one value for any existing key via the normal dict accessors (``params[key]``, ``params.get()`` and ``params.setdefault()``). When multiple values are expected, use the ``getall()`` method to return all values in a list.
@@ -420,13 +453,17 @@ It would be nice to get a title list and to be able to delete pages, so that's w
 list()
 ------
 
-Add the ``list()`` action:: 
+Add the ``list()`` action:
+
+.. code-block:: Python
 
         def list(self):
             c.titles = [page.title for page in self.query.select()]
             return render_response('/titles.myt')
 
-The ``list()`` action simply gets all the pages from the database. Create the ``templates/titles.myt`` file to display the list::
+The ``list()`` action simply gets all the pages from the database. Create the ``templates/titles.myt`` file to display the list:
+
+.. code-block:: XML
 
     <h1 class="main">Title List</h1>
 
@@ -438,7 +475,9 @@ The ``list()`` action simply gets all the pages from the database. Create the ``
     % #end for
     </ul>
 
-Finally edit ``templates/autohandler`` to add a link to the title list so that the footer looks like this::
+Finally edit ``templates/autohandler`` to add a link to the title list so that the footer looks like this:
+
+.. code-block:: XML
 
     <p class="footer">
         Return to the <% h.link_to('FrontPage', h.url_for(action="index", title="FrontPage")) %>
@@ -455,29 +494,39 @@ delete()
 
 Since this tutorial is designed to get you familiar with as much of Pylons core functionality as possible we will use some AJAX to allow the user to drag a title from the title list into a trash area that will automatically delete the page.
 
-Add this line to ``templates/autohandler`` before ``</head>``::
+Add this line to ``templates/autohandler`` before ``</head>``:
+
+.. code-block:: XML
 
     <% h.javascript_include_tag('/javascripts/effects.js', builtins=True)  %>
 
-.. Note:: The ``h.javascript_include_tag()`` helper will create links to all the built-in JavaScripts we need and also add ``/javascripts/effects.js`` creating HTML that looks like this when you access it from a browser::
+.. Note:: The ``h.javascript_include_tag()`` helper will create links to all the built-in JavaScripts we need and also add ``/javascripts/effects.js`` creating HTML that looks like this when you access it from a browser:
 
-        <script src="/javascripts/prototype.js" type="text/javascript"></script>
-        <script src="/javascripts/scriptaculous.js" type="text/javascript"></script>
-        <script src="/javascripts/effects.js" type="text/javascript"></script>
+.. code-block:: XML
 
-    If you look at ``config/middleware.py`` you will see these lines::
+    <script src="/javascripts/prototype.js" type="text/javascript"></script>
+    <script src="/javascripts/scriptaculous.js" type="text/javascript"></script>
+    <script src="/javascripts/effects.js" type="text/javascript"></script>
 
-        javascripts_app = StaticJavascripts()
-        ...
-        app = Cascade([static_app, javascripts_app, app])
+If you look at ``config/middleware.py`` you will see these lines:
+
+.. code-block:: Python
+
+    javascripts_app = StaticJavascripts()
+    ...
+    app = Cascade([static_app, javascripts_app, app])
         
-    The ``javascripts_app`` WSGI application maps any requests to ``/javascripts/`` straight to the relevant JavaScript in the WebHelpers package. This means you don't have to manually copy the Pylons JavaScript files to your project and that if you upgrade Pylons, you will automatically be using the latest scripts. 
+The ``javascripts_app`` WSGI application maps any requests to ``/javascripts/`` straight to the relevant JavaScript in the WebHelpers package. This means you don't have to manually copy the Pylons JavaScript files to your project and that if you upgrade Pylons, you will automatically be using the latest scripts. 
 
-Now for the AJAX! We want all the titles in the titles list to be draggable so we enclose each of them with a ``<span>`` element with a unique ID. Edit ``templates/titles.myt`` to replace this line::
+Now for the AJAX! We want all the titles in the titles list to be draggable so we enclose each of them with a ``<span>`` element with a unique ID. Edit ``templates/titles.myt`` to replace this line:
+
+.. code-block:: XML
 
     <% title %>&nbsp;[<% h.link_to('visit', h.url_for(title=title, action="index")) %>]
     
-with this::
+with this:
+
+.. code-block:: XML
 
     <span id="page-<% title %>"><% title %></span>
     &nbsp;[<% h.link_to('visit', h.url_for(title=title, action="index")) %>]
@@ -485,14 +534,18 @@ with this::
     
 This marks each of the titles as a draggable element that reverts to its original position if it isn't dropped over a drop target. If we want to be able to delete the pages we better add a drop target. Try it out at http://127.0.0.1:5000/page/list by dragging the titles themselves around the screen. Notice how much functionality we get with just the one helper ``h.draggable_element()``.
 
-We better have somewhere to drop the titles to delete them so add this before the ``<ul id="titles">`` line in ``templates/titles.myt`` ::
+We better have somewhere to drop the titles to delete them so add this before the ``<ul id="titles">`` line in ``templates/titles.myt`` :
+
+.. code-block:: XML
 
     <div id="trash">
         Delete a page by dragging its title here
     </div>
     <% h.drop_receiving_element("trash", update="titles", url=h.url_for(action="delete")) %>
 
-We will also need to add the style for the trash box to the end of ``public/quick.css``::
+We will also need to add the style for the trash box to the end of ``public/quick.css``:
+
+.. code-block:: CSS
 
     div#trash{
         float: right;
@@ -504,7 +557,9 @@ We will also need to add the style for the trash box to the end of ``public/quic
 
 .. Tip:: It can sometimes be very hard to debug AJAX applications. Pylons can help. if an error occurs in debug mode (the default in ``development.ini``) a debug URL where you can use an interactive debugger will be printed to the error stream, even in an AJAX request. If you copy and paste that address into a bowser address bar you will be able to debug the request.
 
-When a title is dropped on the ``trash`` box an AJAX request will be made to the ``delete()`` action posting an ``id`` parameter with the id of the element that was dropped. The element with id ``titles`` will be replaced with whatever is returned from the action so we better add a ``delete()`` action that returns the new list of titles excluding the one that has been deleted::
+When a title is dropped on the ``trash`` box an AJAX request will be made to the ``delete()`` action posting an ``id`` parameter with the id of the element that was dropped. The element with id ``titles`` will be replaced with whatever is returned from the action so we better add a ``delete()`` action that returns the new list of titles excluding the one that has been deleted:
+
+.. code-block:: Python
 
         def delete(self):
             title = request.params['id'][5:]
@@ -514,7 +569,9 @@ When a title is dropped on the ``trash`` box an AJAX request will be made to the
             c.titles = self.query.select()
             return render_response('/list.myt', fragment=True)
             
-The title of the page is obtained from the ``id`` element and the object is loaded and then deleted. The change is saved ``objectstore.flush()`` before the list of remaining titles is rendered by the template ``templates/list.myt`` which you should create with the following content::
+The title of the page is obtained from the ``id`` element and the object is loaded and then deleted. The change is saved ``objectstore.flush()`` before the list of remaining titles is rendered by the template ``templates/list.myt`` which you should create with the following content:
+
+.. code-block:: XML
 
     % for title in c.titles:
     <li>
@@ -527,7 +584,9 @@ The title of the page is obtained from the ``id`` element and the object is load
     
 Visit http://127.0.0.1:5000/page/list and have a go at deleting some pages. You may need to go back to the FrontPage and create some more if you get carried away!
 
-One last tidy up we can make before we finish. You might have noticed that the ``list.myt`` and ``titles.myt`` use the same code to produce the lists. In the interests of keeping code duplication to a minimum edit ``templates/titles.myt`` to replace this code::
+One last tidy up we can make before we finish. You might have noticed that the ``list.myt`` and ``titles.myt`` use the same code to produce the lists. In the interests of keeping code duplication to a minimum edit ``templates/titles.myt`` to replace this code:
+
+.. code-block:: XML
 
     % for title in c.titles:
     <li>
@@ -536,7 +595,9 @@ One last tidy up we can make before we finish. You might have noticed that the `
     </li>
     % #end for
     
-With this code::
+With this code:
+
+.. code-block:: XML
 
     <% render('/list.myt', fragment=True) %>
 
@@ -590,7 +651,7 @@ Now that the application is on CheeseShop anyone can install it with the ``easy_
 Security
 ========
 
-A final word about security. 
+A final word about security.
 
 .. Danger:: Always set ``debug = false`` in configuration files for production sites and make sure your users do to.
 

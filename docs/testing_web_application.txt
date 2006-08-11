@@ -39,7 +39,9 @@ First let's create a new project and controller for this example::
 
 You'll see that it creates two files when you create a controller. The stub controller, and a test for it under ``testexample/tests/functional/``. 
 
-Modify the ``testexample/controllers/comments.py`` file so it looks like this::
+Modify the ``testexample/controllers/comments.py`` file so it looks like this:
+
+.. code-block:: Python
 
     from testexample.lib.base import *
 
@@ -52,7 +54,9 @@ Modify the ``testexample/controllers/comments.py`` file so it looks like this::
             session.save()
             return Response('Saved a session')
 
-Then write a basic set of tests to ensure that the controller actions are functioning properly, modify ``testexample/tests/functions/test_comments.py`` to match the following::
+Then write a basic set of tests to ensure that the controller actions are functioning properly, modify ``testexample/tests/functions/test_comments.py`` to match the following:
+
+.. code-block:: Python
 
     from testexample.tests import *
 
@@ -74,7 +78,9 @@ Run ``nosetests`` in your main project directory and you should see them all pas
 
     OK
 
-Unfortunately, nosetests (as of 0.8.6 at least) cannot provide detailed information about the results of an assertion should it fail when you use this format for testing. For example, add the following test to the ``test_sess`` function::
+Unfortunately, nosetests (as of 0.8.6 at least) cannot provide detailed information about the results of an assertion should it fail when you use this format for testing. For example, add the following test to the ``test_sess`` function:
+
+.. code-block:: Python
 
     assert response.session.has_key('address') == True
 
@@ -95,7 +101,9 @@ When you run ``nosetests`` you will get the following, not-very-helpful response
 
     FAILED (failures=1)
 
-Since our TestController we inherited from is a standard Python unit testing controller we can use the assertEqual statement which will provide more information. The new test line looks like this::
+Since our TestController we inherited from is a standard Python unit testing controller we can use the assertEqual statement which will provide more information. The new test line looks like this:
+
+.. code-block:: Python
 
     self.assertEqual(response.session.has_key('address'), True)
 
