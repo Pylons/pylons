@@ -223,7 +223,8 @@ class PylonsEvalException(EvalException):
             __traceback_supplement__ = Supplement, self, environ
             app_iter = self.application(environ, detect_start_response)
             try:
-                return app_iter
+                return_iter = list(app_iter)
+                return return_iter
             finally:
                 if hasattr(app_iter, 'close'):
                     app_iter.close()
