@@ -79,7 +79,7 @@ If doctest was run on this file it would have found the example above and execut
 
 This is a very handy way of checking that the examples in your documentation are actually correct.
 
-To run doctest on a module use::
+To run doctest on a module use:
 
 .. code-block:: Python
 
@@ -89,7 +89,7 @@ To run doctest on a module use::
 
 The ``if __name__ == "__main__":`` part ensures that your module won't be tested if it is just imported, only if it is run from the command line 
 
-To run doctest on a file use::
+To run doctest on a file use:
 
 .. code-block:: Python
 

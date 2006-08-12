@@ -44,7 +44,9 @@ To access Flickr! we need a Flickr! API key. You can `get your API key here <htt
 Setup the JavaScripts and autohandler
 =====================================
 
-If you look at ``config/middleware.py`` you will see these lines::
+If you look at ``config/middleware.py`` you will see these lines:
+
+.. code-block:: Python
 
     javascripts_app = StaticJavascripts()
     ...

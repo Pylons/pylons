@@ -439,7 +439,9 @@ Add the ``save()`` action:
 .. Note::  
     ``request.params`` is a MultiDict object; an ordered dictionary that may contain multiple values for each key. The MultiDict will always return one value for any existing key via the normal dict accessors (``params[key]``, ``params.get()`` and ``params.setdefault()``). When multiple values are expected, use the ``getall()`` method to return all values in a list.
 
-In order for the ``page.myt`` template to display the ``Successfully saved`` message after the page is saved we need to update the ``templates/page.myt`` file. After ``<h1 class="main"><% c.title %></h1>`` add these lines making sure there is no whitespace before the lines that start with a ``%`` character::
+In order for the ``page.myt`` template to display the ``Successfully saved`` message after the page is saved we need to update the ``templates/page.myt`` file. After ``<h1 class="main"><% c.title %></h1>`` add these lines making sure there is no whitespace before the lines that start with a ``%`` character:
+
+.. code-block:: HyperText
 
     % if c.message:
     <p><% c.message %> </p>

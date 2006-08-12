@@ -164,7 +164,9 @@ When your controller's action is called it is expected to either call a WSGI app
 
 Here's an example template, using Myghty, that prints some request information. 
 
-Create a template file ``helloworld/templates/serverinfo.myt`` containing the following::
+Create a template file ``helloworld/templates/serverinfo.myt`` containing the following:
+
+.. code-block:: HyperText
 
     <p>Hi, here's the server environment: <br />
     <% str(request.environ) %></p>
@@ -262,7 +264,9 @@ To make it easier to set up your data for use by the template, the variable ``c`
         c.value = 2 
         return render_response('/serverinfo.myt')
 
-and modify the ``serverinfo.myt`` file in the ``templates`` directory to look like this::
+and modify the ``serverinfo.myt`` file in the ``templates`` directory to look like this:
+
+.. code-block:: HyperText
 
     <p>The value of <tt>c.value</tt> is: 
     <% c.value %>

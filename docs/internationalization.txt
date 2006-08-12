@@ -150,9 +150,11 @@ Missing Translations
 
 If your code calls ``h._()`` with a string that doesn't exist in your language catalogue, the string passed to ``h._()`` is returned instead.
 
-Modify the last line of the hello controller to look like this::
+Modify the last line of the hello controller to look like this:
 
-    resp.write("%s: %s %s<br />"%(h.lang, h._('Hello'), h._('World!')))
+.. code-block:: Python
+
+    resp.write("%s: %s %s<br />" % (h.lang, h._('Hello'), h._('World!')))
     
 If you run the example again the output will be::
 
