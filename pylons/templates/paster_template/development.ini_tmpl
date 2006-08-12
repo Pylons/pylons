@@ -1,7 +1,7 @@
 #
 # ${project} - Pylons development environment configuration
 #
-# The %(here) variable will be replaced with the parent directory of this file
+# The %(here)s variable will be replaced with the parent directory of this file
 #
 [DEFAULT]
 debug = true
