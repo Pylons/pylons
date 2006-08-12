@@ -66,7 +66,9 @@ The filename you give in the second option does not need to physically exist on 
 to this filename will be handled by the FastCGI application.
 
 The other important line to ensure that your Apache webserver has is to indicate that fcgi scripts should be handled
-with Fast-CGI::
+with Fast-CGI:
+
+.. code-block:: HyperText
 
     AddHandler fastcgi-script .fcgi
 
