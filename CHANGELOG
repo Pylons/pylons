@@ -4,7 +4,6 @@ Pylons Changelog
 0.9.1 (**svn**)
 * Fixed __all__ export typo in templating.py. Added example of render
   with a template.
-* Fixed bug with iterable being consumed in error middleware.
 * Fixed issue with set_lang not using proper CONFIG var.
 * Minor tweaks to update docs in pylons.helpers and move remaining legacy
   code into legacy module. Updated wsgiapp to refer to new locations of
