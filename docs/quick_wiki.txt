@@ -250,9 +250,10 @@ We will make use of a feature of the Myghty templating language called inheritan
         </head>
         <body>
             <div class="content">
-     % m.call_next()
+    % m.call_next()
             <p class="footer">
-                Return to the <% h.link_to('FrontPage', h.url_for(action="index", title="FrontPage")) %>
+                Return to the
+                <% h.link_to('FrontPage', h.url_for(action="index", title="FrontPage")) %>
                 | <% h.link_to('Edit '+c.title, h.url_for(title=c.title, action='edit')) %>
             </p>
             </div>
@@ -480,7 +481,8 @@ Finally edit ``templates/autohandler`` to add a link to the title list so that t
 .. code-block:: HyperText
 
     <p class="footer">
-        Return to the <% h.link_to('FrontPage', h.url_for(action="index", title="FrontPage")) %>
+        Return to the
+        <% h.link_to('FrontPage', h.url_for(action="index", title="FrontPage")) %>
     % if h.url_for() != '/page/list':
         | <% h.link_to('Edit '+c.title, h.url_for(title=c.title, action='edit')) %>
         | <% h.link_to('Title List', h.url_for(action='list', title=None)) %>
@@ -575,7 +577,8 @@ The title of the page is obtained from the ``id`` element and the object is load
 
     % for title in c.titles:
     <li>
-        <span id="page-<% title %>"><% title %></span>&nbsp;[<% h.link_to('visit', h.url_for(title=title, action="index")) %>]
+        <span id="page-<% title %>"><% title %></span>
+        [<% h.link_to('visit', h.url_for(title=title, action="index")) %>]
         <% h.draggable_element("page-"+ str(title), revert=True) %>
     </li>
     % #end for
@@ -590,7 +593,8 @@ One last tidy up we can make before we finish. You might have noticed that the `
 
     % for title in c.titles:
     <li>
-        <span id="page-<% title %>"><% title %></span>&nbsp;[<% h.link_to('visit', h.url_for(title=title, action="index")) %>]
+        <span id="page-<% title %>"><% title %></span>
+        [<% h.link_to('visit', h.url_for(title=title, action="index")) %>]
         <% h.draggable_element("page-"+ str(title), revert=True) %>
     </li>
     % #end for
