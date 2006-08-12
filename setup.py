@@ -68,10 +68,10 @@ the `Pylons download page <http://www.pylonshq.com/download/>`_ .
     zip_safe=False,
     include_package_data=True,
     install_requires=[
-        "Routes>=1.4", "Myghty>=1.0.2", "Paste>=0.9.6",
-        "PasteDeploy>=0.9.6", "PasteScript==dev,>=0.9.7dev-r5515", "FormEncode>=0.4",
-        "simplejson>=1.3", "WSGIUtils==0.7", "WebHelpers>=0.1.3",
-        "nose>=0.8.7", "Beaker>=0.6",
+        "Routes>=1.4", "Myghty>=1.0.2", "Paste>=0.9.7",
+        "PasteDeploy>=0.9.6", "PasteScript==dev,>=0.9.6", "FormEncode>=0.5.1",
+        "simplejson>=1.4", "WSGIUtils==0.7", "WebHelpers>=0.1.3",
+        "nose>=0.8.7", "Beaker>=0.6.1",
     ],
     classifiers=[
         "Development Status :: 4 - Beta",
