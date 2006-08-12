@@ -75,7 +75,8 @@ By default the ``pylons.middleware.error_mapper`` is used. It looks like this:
         if not asbool(global_conf.get('debug')):
             codes.append(500)
         if code in codes:
-            url = '%s/error/document/?%s'%(get_prefix(environ), urlencode({'message':message, 'code':code}))
+            url = '%s/error/document/?%s' % (get_prefix(environ),
+                                             urlencode({'message':message, 'code':code}))
             return url
             
 Note how in debug mode the mapper does not intercept server error 500 codes as they are used for the error report produced by the ``PylonsEvalException`` middleware.

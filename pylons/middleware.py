@@ -69,7 +69,8 @@ def error_mapper(code, message, environ, global_conf=None, **kw):
     if not asbool(global_conf.get('debug')):
         codes.append(500)
     if code in codes:
-        url = '%s/error/document/?%s'%(get_prefix(environ), urlencode({'message':message, 'code':code}))
+        url = '%s/error/document/?%s' % (get_prefix(environ),
+                                         urlencode({'message':message, 'code':code}))
         return url
 
 def ErrorDocuments(app, global_conf=None, mapper=None, **kw):
