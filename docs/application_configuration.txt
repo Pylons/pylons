@@ -80,22 +80,20 @@ Or the debug status like this:
     from paste.deploy.converters import asbool
     debug = asbool(config['app_conf'].get('debug'))
 
-URL Prefix
-==========
+PrefixMiddleware
+================
 
-In certain rare circumstances you may need to manually override the root URL of your application. For example if you are using a proxy server. To do this you can set the ``prefix`` option in ``[app:main]``. 
+``PrefixMiddleware`` provides a way to manually override the root prefix (``SCRIPT_NAME``) of your application for certain, rare situations.
 
-For example to move your entire application to ``/james`` add this to ``[app:main]``::
+When running an application under a prefix (such as '``/james``') in FastCGI/apache, the ``SCRIPT_NAME`` environment variable is automatically set to to the appropriate value: '``/james``'. Pylons' URL generating functions, such as ``url_for``, always take the ``SCRIPT_NAME`` value into account.
 
-    prefix = /james
-    
-In normal operation ``prefix`` should not be used, since it is correctly calculated from ``SCRIPT_NAME``. Even paste deploy composite applications work fine without a prefix.
+One situation where ``PrefixMiddleware`` is required is when an  application is accessed via a reverse proxy with a prefix. The application is accessed through the reverse proxy via the the URL prefix '``/james``', whereas the reverse proxy forwards those requests to the application at the prefix '``/``'.
 
-If you need to find out the prefix being used you can do this from inside a controller:
+The reverse proxy, being an entirely separate web server, has no way of specifying the ``SCRIPT_NAME`` variable; it must be manually set by a ``PrefixMiddleware``. Without setting ``SCRIPT_NAME``, ``url_for`` might generate a URL such as: '``/purchase_orders/1``', when it should be generating the URL: '``/james/purchase_orders/1``'.
+
+To use a ``PrefixMiddleware`` in your application, create one in the outermost layer of your middleware chain. This can be done by adding the following to the end of your application's ``config/middleware.py`` (right before the ``return app`` line):
 
 .. code-block:: Python
 
-    from pylons.util import get_prefix
-    prefix = get_prefix(request.environ)
-    
-The parameter passed to ``get_prefix()`` is the environ dictionary.
+    # @@@ This app is served behind a proxy via the following prefix (SCRIPT_NAME) @@@
+    app = PrefixMiddleware(app, global_conf, prefix='/james')
