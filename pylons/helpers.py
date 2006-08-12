@@ -18,7 +18,9 @@ def etag_cache(key=None):
     Otherwise, the ETag header will be added to a new response object and
     returned for use in your action.
     
-    Suggested use is within a Controller Action like so::
+    Suggested use is within a Controller Action like so:
+    
+    .. code-block:: Python
     
         import pylons
         

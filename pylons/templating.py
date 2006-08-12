@@ -261,7 +261,9 @@ def render_response(*args, **kargs):
     
     See ``render`` for information on rendering.
     
-    Example::
+    Example:
+    
+    .. code-block:: Python
         
         def view(self):
             return render_response('/my/template.myt')

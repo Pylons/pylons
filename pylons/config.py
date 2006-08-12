@@ -72,7 +72,9 @@ class Config(object):
             multiple configurations of the same engine and lets you alias the
             additional ones to other names.
         
-        Example of Kid addition::
+        Example of Kid addition:
+        
+        .. code-block:: Python
             
             # In yourproj/middleware.py
             # ...
@@ -82,7 +84,9 @@ class Config(object):
             kidopts = {'kid.assume_encoding':'utf-8', 'kid.encoding':'utf-8'}
             config.add_template_engine('kid', 'yourproj.kidtemplates', kidopts)
         
-        Example of changing the default template engine::
+        Example of changing the default template engine:
+        
+        .. code-block:: Python
 
             # In yourproj/middleware.py
             # ...

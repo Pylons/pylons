@@ -176,7 +176,10 @@ use the context object 'c' to store conext information.")
         
         Mark a string to be internationalised as follows:
         
+        .. code-block:: Python
+        
             h._('This should be in lots of langauges')
+        
         """
         return self.__dict__['_local'].translator.gettext(value)
   

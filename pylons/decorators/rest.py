@@ -6,7 +6,9 @@ from pylons.decorator import decorator
 def restrict(*methods):
     """Restricts access to the function depending on HTTP method
     
-    Example::
+    Example:
+    
+    .. code-block:: Python
         
         class SomeController(BaseController):
             
@@ -31,7 +33,9 @@ def dispatch_on(**method_map):
     value being the function to call. The value should *not* be a string, but
     the actual function object that should be called.
     
-    Example::
+    Example:
+    
+    .. code-block:: Python
     
         class SomeController(BaseController):
             

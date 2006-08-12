@@ -32,7 +32,9 @@ def validate(schema=None, validators=None, form=None):
      GET, and the output will be filled by FormEncode's htmlfill to fill in the
      form field errors.
     
-    Example::
+    Example:
+    
+    .. code-block:: Python
         
         class SomeController(BaseController):
             
