@@ -121,7 +121,8 @@ Time to create the two templates. Create ``templates/flickr.myt`` with this cont
 
 Create ``templates/photos.myt`` with this content::
 
-    # Ignore this comment
+.. code-block:: HyperText
+
      % for photo in c.photos:
         <img class="photo" src="<% photo %>">
      % #end for

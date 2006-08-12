@@ -81,6 +81,8 @@ This is a very handy way of checking that the examples in your documentation are
 
 To run doctest on a module use::
 
+.. code-block:: Python
+
     if __name__ == "__main__":
         import doctest
         doctest.testmod()
@@ -88,6 +90,8 @@ To run doctest on a module use::
 The ``if __name__ == "__main__":`` part ensures that your module won't be tested if it is just imported, only if it is run from the command line 
 
 To run doctest on a file use::
+
+.. code-block:: Python
 
     import doctest
     doctest.testfile("docs/index.txt")

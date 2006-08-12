@@ -52,9 +52,11 @@ your Apache.
 
 There will most likely be a section where you declare your FastCGI servers, and whether they're external::
 
+.. code-block:: HyperText
+
     <IfModule mod_fastcgi.c>
-    FastCgiIpcDir /tmp
-    FastCgiExternalServer /some/path/to/app/myapp.fcgi -host some.host.com:6200
+        FastCgiIpcDir /tmp
+        FastCgiExternalServer /some/path/to/app/myapp.fcgi -host some.host.com:6200
     </IfModule>
 
 In our example we'll assume you're going to run a Pylons web application listening on a host/port. Changing ``-host`` to
@@ -69,6 +71,8 @@ with Fast-CGI::
     AddHandler fastcgi-script .fcgi
 
 Finally, to configure your website to use the Fast CGI application you will need to indicate the script to be used::
+
+.. code-block:: HyperText
 
     <VirtualHost *:80>
         ServerAdmin george@monkey.com
