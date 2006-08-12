@@ -211,22 +211,22 @@ To test this functionality run you first need to install your QuickWiki if you h
 
     > python setup.py develop
     
-You can then edit your ``development.ini`` to add your database DSN::
+You can then edit your ``development.ini`` to add your database DSN:
 
-    ...
+.. code-block:: PasteIni
+
     [app:main]
     use = egg:quickwiki
     dsn = postgres://@localhost/quickwiki_test
-    ...
 
-You should also edit ``QuickWiki.egg_info/paste_deploy_config.ini_tmpl`` so that when users run ``paster make-config`` the configuration file will already have a section telling them to enter their own database DSN as we did when we installed the finished QuickWiki at the start of the tutorial::
+You should also edit ``QuickWiki.egg_info/paste_deploy_config.ini_tmpl`` so that when users run ``paster make-config`` the configuration file will already have a section telling them to enter their own database DSN as we did when we installed the finished QuickWiki at the start of the tutorial:
 
-    ...
+.. code-block:: PasteIni
+
     [app:main]
     use = egg:quickwiki
     # Specify your own database connection here
     dsn = postgres://@localhost/quickwiki_test
-    ...
 
 You can should then run the ``paster setup-app`` command to setup your tables in the same way and end user would, remembering to drop and recreate the database if the version tested earlier has already created the tables::
 

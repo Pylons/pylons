@@ -14,13 +14,15 @@ Using Fast-CGI
 Fast-CGI in either a threaded or forking mode. (Threaded is the recommended choice)
 
 Setting a Pylons application to use Fast-CGI is very easy, and merely requires you to change the config line like
-so::
+so:
 
-    #default
+.. code-block:: PasteIni
+
+    # default
     [server:main]
     use = egg:Paste#http
     
-    #Use Fastcgi threaded
+    # Use Fastcgi threaded
     [server:main]
     use = egg:PasteScript#flup_fcgi_thread
     host = 0.0.0.0
@@ -35,7 +37,9 @@ The options in the config file are passed onto flup. The two common ways to run 
 to listen for requests, or listening on a port/host which allows a webserver to send your requests to web applications
 on a different machine.
 
-To configure for a socket, your ``server:main`` section should look like this::
+To configure for a socket, your ``server:main`` section should look like this:
+
+.. code-block:: PasteIni
 
     [server:main]
     use = egg:PasteScript#flup_fcgi_thread

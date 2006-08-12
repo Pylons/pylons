@@ -129,7 +129,9 @@ Then on each controller call the language to be used could be read from the sess
         if s.has_key('lang'):
             h.set_lang(s['lang'])
 
-One more useful thing to be able to do is to set the default language to be used in the configuration file. Just add a ``lang`` variable together with the code of the language you wanted to use in your ``development.ini`` file. For example to set the default language to Spanish you would add ``lang = es`` to your ``development.ini``. The relevant part from the file might look something like this::
+One more useful thing to be able to do is to set the default language to be used in the configuration file. Just add a ``lang`` variable together with the code of the language you wanted to use in your ``development.ini`` file. For example to set the default language to Spanish you would add ``lang = es`` to your ``development.ini``. The relevant part from the file might look something like this:
+
+.. code-block:: PasteIni
 
     [app:main]
     use = egg:translate_demo
