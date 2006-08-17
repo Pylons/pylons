@@ -1,7 +1,11 @@
 Pylons Changelog
 =================
 
-0.9.1 (**svn**)
+0.9.2 (**svn**)
+* Fix for endless error document call when an error document controller
+  wants to throw a error that the error_mapper catches.
+
+0.9.1 (August 11th, 2006)
 * Fixed __all__ export typo in templating.py. Added example of render
   with a template.
 * Fixed issue with set_lang not using proper CONFIG var.
