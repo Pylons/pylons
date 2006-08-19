@@ -39,6 +39,7 @@ class ControllerCommand(Command):
         Creating yourproj/controllers/admin
         Creating yourproj/yourproj/controllers/admin/trackback.py
         Creating yourproj/yourproj/tests/functional/test_admin_trackback.py
+    
     """
     summary = __doc__
     usage = 'CONTROLLER_NAME'
@@ -47,20 +48,39 @@ class ControllerCommand(Command):
     max_args = 1
     group_name = 'pylons'
     
+    default_verbosity = 3
+    
     parser = Command.standard_parser(simulate=True)
     parser.add_option('--no-test',
                       action='store_true',
                       dest='no_test',
                       help="Don't create the test; just the controller")
-
+    
+    def validate_name(self, name):
+        if not name:
+            # This happens when the name is an existing directory
+            raise BadCommand('Please give the name of a controller.')
+        try:
+            __import__(name)
+            raise BadCommand("A module named '%s' already exists.  "
+                             "Please choose another name." % name)
+        except ImportError:
+            # This is actually the result we want
+            pass
+        
+        return True
+        
     def command(self):
         try:
-            self.verbose = 3
             fo = FileOp(source_dir=os.path.join(os.path.dirname(__file__), 'templates'))
             try:
                 name, dir = fo.parse_path_name_args(self.args[0])
             except:
                 raise BadCommand('No egg_info directory was found')
+            
+            # Validate the name
+            self.validate_name(name)
+            
             fullname = os.path.join(dir, name)
             if not fullname.startswith(os.sep): fullname = os.sep + fullname
             testname = fullname.replace(os.sep, '_')[1:]

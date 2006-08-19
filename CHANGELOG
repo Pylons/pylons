@@ -2,6 +2,9 @@ Pylons Changelog
 =================
 
 0.9.2 (**svn**)
+* Fixed controller command to check controller name and refuse to create
+  controllers that have name clashes with existing modules that could be
+  imported. Reported (with patch) by Chuck Adams. Fixes #67.
 * Added capability for 'c' object to throw an exception when an attribute
   is used that doesn't exist. Closes #84.
 * Fix for endless error document call when an error document controller
