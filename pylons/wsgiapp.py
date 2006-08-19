@@ -47,7 +47,7 @@ class PylonsBaseWSGIApp(object):
         self.default_charset = default_charset
         self.settings = dict(charset=default_charset, content_type='text/html')
         config = globals.pylons_config
-        self.c = RequestLocal(attribute_error=config.strict_access)
+        self.c = RequestLocal(name="c", attribute_error=config.strict_access)
         
         # Create the redirect function we'll use and save it
         def redirect_to(url):

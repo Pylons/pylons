@@ -66,7 +66,8 @@ class RequestLocal(object):
         throw an AttributeError
     
     """
-    def __init__(self, attribute_error=False):
+    def __init__(self, name="Unset", attribute_error=False):
+        self.__dict__['name'] = name
         self.__dict__['attribute_error'] = attribute_error
         self.__dict__['_local'] = threadinglocal.local()
         
@@ -80,7 +81,7 @@ class RequestLocal(object):
                 if self.__dict__['attribute_error']:
                     e, msg = sys.exc_info()[:2]
                     raise e, "'%s' object has no attribute '%s'" % \
-                        ('c', name), sys.exc_info()[2]
+                        (self.__dict__['name'], name), sys.exc_info()[2]
                 result = self._local.request.get(name, '')
             return result
     
