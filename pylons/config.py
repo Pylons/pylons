@@ -42,6 +42,9 @@ class Config(object):
         be configured as the default template engine. Each item in the list is
         a dict indicating how to configure the template engine with keys:
         ``engine``, ``template_root``, ``template_options``, and ``alias``
+    ``strict_access``
+        Whether or not the ``c`` object should throw an attribute error when
+        access is attempted to an attribute that doesn't exist.
     
     """
     def __init__(self, myghty, map, paths, environ_config=None):
@@ -53,6 +56,7 @@ class Config(object):
         self.global_conf = {}
         self.app_conf = {}
         self.template_engines = []
+        self.strict_access = False
         self.environ_config = environ_config
     
     def add_template_engine(self, engine, root, options, alias=None):

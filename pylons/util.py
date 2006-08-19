@@ -60,8 +60,14 @@ class RequestLocal(object):
     get is also supported, and is used to 'get' the name requested. Unlike
     normal attribute access, this will return an empty string if the
     attribute does not exist.
+    
+    ``attribute_error``
+        If set to True, then accessing an attribute that doesn't exist will
+        throw an AttributeError
+    
     """
-    def __init__(self):
+    def __init__(self, attribute_error=False):
+        self.__dict__['attribute_error'] = attribute_error
         self.__dict__['_local'] = threadinglocal.local()
         
     def __getattr__(self, name):
@@ -70,7 +76,11 @@ class RequestLocal(object):
         else:
             try:
                 result = getattr(self._local.request, name)
-            except AttributeError:
+            except AttributeError, msg:
+                if self.__dict__['attribute_error']:
+                    e, msg = sys.exc_info()[:2]
+                    raise e, "'%s' object has no attribute '%s'" % \
+                        ('c', name), sys.exc_info()[2]
                 result = self._local.request.get(name, '')
             return result
     
