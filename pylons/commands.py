@@ -85,6 +85,8 @@ class ControllerCommand(Command):
             # Validate the name
             self.validate_name(name)
             
+            fullname = os.path.join(dir, name)
+            
             if not fullname.startswith(os.sep): fullname = os.sep + fullname
             testname = fullname.replace(os.sep, '_')[1:]
             fo.template_vars.update({'name': name.title().replace('-', '_'),
