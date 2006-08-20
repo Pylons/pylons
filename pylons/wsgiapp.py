@@ -9,6 +9,7 @@ import sys
 import re
 import inspect
 import urllib
+import warnings
 
 import paste.wsgiwrappers
 import paste.httpexceptions as httpexceptions
@@ -278,6 +279,11 @@ class LegacyApp(object):
 
 def make_app(config):
     """ Legacy WSGI app creator"""
+    warnings.warn(
+        "Legacy WSGI app in use for pre-0.9 application. This will be "
+        "removed at some point post-1.0 which will require minor updates "
+        "to your application.",
+        DeprecationWarning, 2)
     papp = LegacyApp(config)
     from paste.deploy.config import ConfigMiddleware
     app = ConfigMiddleware(papp, {

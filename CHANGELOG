@@ -2,6 +2,9 @@ Pylons Changelog
 =================
 
 0.9.2 (**svn**)
+* Added deprecation warning for legacy mode activation. Not necessary to
+  update multiple files, as all of legacy mode is enabled via the Legacy
+  WSGI app. Fixes #89.
 * Fixed controller command to check controller name and refuse to create
   controllers that have name clashes with existing modules that could be
   imported. Reported (with patch) by Chuck Adams. Fixes #67.
