@@ -71,7 +71,7 @@ class PylonsBaseWSGIApp(object):
         
         # Change our HTTP_METHOD if _method is present, try GET first to avoid
         # parsing POST unless absolutely necessary.
-        req = pylons.request.current_obj()
+        req = pylons.request._current_obj()
         old_method = None
         if '_method' in environ['QUERY_STRING'] and req.GET.has_key('_method'):
             old_method = environ['REQUEST_METHOD']
@@ -209,9 +209,9 @@ class PylonsBaseWSGIApp(object):
     def load_test_env(self, environ):
         """Sets up our Paste testing environment"""
         testenv = environ['paste.testing_variables']
-        testenv['req'] = pylons.request.current_obj()
-        testenv['c'] = pylons.c.current_obj()
-        testenv['g'] = pylons.g.current_obj()
+        testenv['req'] = pylons.request._current_obj()
+        testenv['c'] = pylons.c._current_obj()
+        testenv['g'] = pylons.g._current_obj()
         econf = environ['pylons.environ_config']
         if econf.get('session'):
             testenv['session'] = environ[econf['session']]

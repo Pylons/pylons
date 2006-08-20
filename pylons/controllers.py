@@ -41,10 +41,9 @@ class Controller(object):
         to the controller so that it can be examined for debugging purposes.
         
         """
-        self.request = pylons.request.current_obj()
-        self.session = pylons.session.current_obj()
-        #self.buffet = pylons.buffet.current_obj()
-        self.c = pylons.c.current_obj()
+        self.request = pylons.request._current_obj()
+        self.session = pylons.session._current_obj()
+        self.c = pylons.c._current_obj()
     
     def _inspect_call(self, func, **kargs):
         """Calls a function with the Routes dict
@@ -62,7 +61,7 @@ class Controller(object):
         # @@ LEGACY: Add in ARGS alias to params
         kargs['ARGS'] = self._req.params
         
-        c = pylons.c.current_obj()
+        c = pylons.c._current_obj()
         if argspec[2]:
             for k,v in kargs.iteritems(): setattr(c, k, v)
             return func(**kargs)
@@ -96,7 +95,7 @@ class Controller(object):
         more fully.
         
         """
-        self._req = pylons.request.current_obj()
+        self._req = pylons.request._current_obj()
         
         # Keep private methods private
         if self._req.environ['pylons.routes_dict'].get('action').startswith('_'):
@@ -120,7 +119,7 @@ class WSGIController(Controller):
     def __call__(self, environ, start_response):
         self.start_response = start_response
         match = environ['pylons.routes_dict']
-        self._req = pylons.request.current_obj()
+        self._req = pylons.request._current_obj()
         
         # Keep private methods private
         if match.get('action').startswith('_'):
@@ -153,7 +152,7 @@ class RPCController(Controller):
 
         self.start_response = start_response
         match = environ['pylons.routes_dict']
-        self._req = pylons.request.current_obj()
+        self._req = pylons.request._current_obj()
         
         # Keep private methods private
         if match.get('action').startswith('_'):
@@ -175,7 +174,7 @@ class RPCController(Controller):
 
     
     def __call__2(self, action, **kargs):
-        self._req = pylons.request.current_obj()
+        self._req = pylons.request._current_obj()
         action = self._req.environ['pylons.routes_dict'].get('action')
         action_method = action.replace('-', '_')
         if action_method != RPCController.resource:
