@@ -2,6 +2,9 @@ Pylons Changelog
 =================
 
 0.9.2 (**svn**)
+* Fixes bug with prior fix for #67. Wasn't properly testing the full package
+  name to include the current project which would incorrectly restrict
+  valid controller names (refs #67).
 * Fixed '_method_' checking to test in a more efficient manner.
 * Added deprecation warning for legacy mode activation. Not necessary to
   update multiple files, as all of legacy mode is enabled via the Legacy

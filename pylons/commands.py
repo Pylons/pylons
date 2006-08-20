@@ -78,10 +78,14 @@ class ControllerCommand(Command):
             except:
                 raise BadCommand('No egg_info directory was found')
             
-            # Validate the name
-            self.validate_name(name)
-            
+            here_dir = os.getcwd()
+            pkg_name = here_dir.split(os.path.sep)[-1].lower()
             fullname = os.path.join(dir, name)
+            controller_name = pkg_name + '.' + fullname.replace(os.sep, '.')
+            
+            # Validate the name
+            self.validate_name(controller_name)
+            
             if not fullname.startswith(os.sep): fullname = os.sep + fullname
             testname = fullname.replace(os.sep, '_')[1:]
             fo.template_vars.update({'name': name.title().replace('-', '_'),
