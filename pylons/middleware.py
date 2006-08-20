@@ -74,6 +74,7 @@ def error_mapper(code, message, environ, global_conf=None, **kw):
     if not asbool(global_conf.get('debug')):
         codes.append(500)
     if code in codes:
+        # StatusBasedForward expects a relative URL (no SCRIPT_NAME)
         url = '/error/document/?%s' % (urlencode({'message':message, 'code':code}))
         return url
 
@@ -88,8 +89,6 @@ def ErrorDocuments(app, global_conf=None, mapper=None, **kw):
     if mapper is None:
         mapper = error_mapper
     return RecursiveMiddleware(StatusBasedForward(app, global_conf=global_conf, mapper=mapper, **kw))
-    #app = RecursiveMiddleware(app)
-    #return custom_forward(app, global_conf=global_conf, mapper=mapper, **kw)
 
 error_document_template = """\
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
