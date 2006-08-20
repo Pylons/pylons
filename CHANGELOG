@@ -2,6 +2,7 @@ Pylons Changelog
 =================
 
 0.9.2 (**svn**)
+* Fixed '_method_' checking to test in a more efficient manner.
 * Added deprecation warning for legacy mode activation. Not necessary to
   update multiple files, as all of legacy mode is enabled via the Legacy
   WSGI app. Fixes #89.
