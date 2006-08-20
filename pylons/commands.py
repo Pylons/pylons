@@ -62,8 +62,12 @@ class ControllerCommand(Command):
             raise BadCommand('Please give the name of a controller.')
         try:
             __import__(name)
-            raise BadCommand("A module named '%s' already exists.  "
-                             "Please choose another name." % name)
+            raise BadCommand("\n\nA module named '%s' is already present in your PYTHON_PATH.\n"
+                             "Choosing a conflicting name will likely cause import problems in\n"
+                             "your controller at some point. It's suggest that you choose an alternate\n"
+                             "name, and if you'd like that name to be accessible as '%s', add a route\n"
+                             "to your projects config/routing.py file similar to:\n"
+                             "  map.connect('%s', controller='my_%s')" % (name, name, name, name))
         except ImportError:
             # This is actually the result we want
             pass
@@ -78,13 +82,8 @@ class ControllerCommand(Command):
             except:
                 raise BadCommand('No egg_info directory was found')
             
-            here_dir = os.getcwd()
-            pkg_name = here_dir.split(os.path.sep)[-1].lower()
-            fullname = os.path.join(dir, name)
-            controller_name = pkg_name + '.' + fullname.replace(os.sep, '.')
-            
             # Validate the name
-            self.validate_name(controller_name)
+            self.validate_name(name)
             
             if not fullname.startswith(os.sep): fullname = os.sep + fullname
             testname = fullname.replace(os.sep, '_')[1:]

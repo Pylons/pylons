@@ -2,6 +2,9 @@ Pylons Changelog
 =================
 
 0.9.2 (**svn**)
+* Switching back to prior controller import check, throwing a more detailed
+  error with a suggest fix should the user really want a URL with that name
+  in it. (refs #67)
 * Fixes bug with prior fix for #67. Wasn't properly testing the full package
   name to include the current project which would incorrectly restrict
   valid controller names (refs #67).
