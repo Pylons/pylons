@@ -21,7 +21,7 @@ def jsonify(func, *args, **kw):
     return response
 jsonify = decorator(jsonify)
 
-def validate(schema=None, validators=None, form=None):
+def validate(schema=None, validators=None, form=None, encode_variables=False):
     """Validate input either for a FormEncode schema, or individual validators
     
     Given a form schema or dict of validators, validate will attempt to validate
@@ -56,7 +56,7 @@ def validate(schema=None, validators=None, form=None):
             try:
                 self.form_result = schema.to_python(defaults)
             except api.Invalid, e:
-                errors = e.unpack_errors()
+                errors = e.unpack_errors(encode_variables)
         if validators:
             if isinstance(validators, dict):
                 for field, validator in validators.iteritems():
