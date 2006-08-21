@@ -56,8 +56,7 @@ def validate(schema=None, validators=None, form=None, variable_decode=False):
         if variable_decode:
             postvars = variabledecode.variable_decode(postvars)
         
-        defaults.update(pylons.request.POST)
-        if 
+        defaults.update(postvars)
         if schema:
             try:
                 self.form_result = schema.to_python(defaults)
