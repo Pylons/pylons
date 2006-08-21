@@ -3,6 +3,7 @@ import types
 import simplejson as json
 import formencode.api as api
 from formencode import htmlfill
+import formencode.variabledecode as variabledecode
 import pylons
 from pylons.decorator import decorator
 import rest
@@ -21,7 +22,7 @@ def jsonify(func, *args, **kw):
     return response
 jsonify = decorator(jsonify)
 
-def validate(schema=None, validators=None, form=None, encode_variables=False):
+def validate(schema=None, validators=None, form=None, variable_decode=False):
     """Validate input either for a FormEncode schema, or individual validators
     
     Given a form schema or dict of validators, validate will attempt to validate
@@ -51,12 +52,17 @@ def validate(schema=None, validators=None, form=None, encode_variables=False):
         defaults, errors = {}, {}
         if not pylons.request.method == 'POST':
             return func(self, *args, **kwargs)
+        postvars = pylons.request.POST.copy()
+        if variable_decode:
+            postvars = variabledecode.variable_decode(postvars)
+        
         defaults.update(pylons.request.POST)
+        if 
         if schema:
             try:
                 self.form_result = schema.to_python(defaults)
             except api.Invalid, e:
-                errors = e.unpack_errors(encode_variables)
+                errors = e.unpack_errors(variable_decode)
         if validators:
             if isinstance(validators, dict):
                 for field, validator in validators.iteritems():
