@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.2 (**svn**)
+* Switched to using Context obj classes instead of RequestLocal which is
+  being phased out.
 * Added an 'encode_variables' option to the validate decorator.
 * Switched all current_obj calls to _current_obj to avoid triggering
   deprecation warnings.

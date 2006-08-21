@@ -18,6 +18,19 @@ import pylons
 from routes import threadinglocal
 from paste.deploy.config import CONFIG
 
+class ContextObj(object):
+    pass
+
+class AttribSafeContextObj(object):
+    def __getattr__(self, name):
+        if name.startswith('_'):
+            return object.__getattribute__(self, name)
+        else:
+            try:
+                return object.__getattribute__(self, name)
+            except AttributeError:
+                return ''
+
 def get_prefix(environ):
     prefix = environ['paste.config']['app_conf'].get('prefix', '')
     if not prefix:
@@ -220,5 +233,5 @@ class PylonsTemplate(Template):
     summary = 'Pylons application template'
     egg_plugins = ['Pylons', 'WebHelpers']
 
-__all__ = ['RequestLocal', 'Helpers']
+__all__ = ['ContextObj', 'AttribSafeContextObj', 'RequestLocal', 'Helpers']
 __pudge_all__ = ['RequestLocal', 'Helpers', 'PylonsTemplate']

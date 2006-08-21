@@ -21,7 +21,7 @@ from routes import request_config
 import pylons
 import pylons.templating
 import pylons.legacy
-from pylons.util import RequestLocal, class_name_from_module_name
+from pylons.util import ContextObj, AttribSafeContextObj, class_name_from_module_name
 from pylons.controllers import Controller, WSGIController
 
 class PylonsBaseWSGIApp(object):
@@ -48,7 +48,6 @@ class PylonsBaseWSGIApp(object):
         self.default_charset = default_charset
         self.settings = dict(charset=default_charset, content_type='text/html')
         config = globals.pylons_config
-        self.c = RequestLocal(name="c", attribute_error=config.strict_access)
         
         # Create the redirect function we'll use and save it
         def redirect_to(url):
@@ -113,11 +112,13 @@ class PylonsBaseWSGIApp(object):
         req = WSGIRequest(environ)
         environ['paste.registry'].register(paste.wsgiwrappers.settings, self.settings)
         environ['paste.registry'].register(pylons.request, req)
-        environ['paste.registry'].register(pylons.c, self.c)
+        if self.globals.pylons_config.strict_access:
+            environ['paste.registry'].register(pylons.c, ContextObj())
+        else:
+            environ['paste.registry'].register(pylons.c, AttribSafeContextObj())
         environ['paste.registry'].register(pylons.g, self.globals)
         environ['paste.registry'].register(pylons.buffet, self.buffet)
         pylons.h()
-        self.c._clear()
         
         # Setup legacy globals
         if environ.get('pylons.legacy'):
