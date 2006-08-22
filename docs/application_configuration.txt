@@ -89,11 +89,25 @@ When running an application under a prefix (such as '``/james``') in FastCGI/apa
 
 One situation where ``PrefixMiddleware`` is required is when an  application is accessed via a reverse proxy with a prefix. The application is accessed through the reverse proxy via the the URL prefix '``/james``', whereas the reverse proxy forwards those requests to the application at the prefix '``/``'.
 
-The reverse proxy, being an entirely separate web server, has no way of specifying the ``SCRIPT_NAME`` variable; it must be manually set by a ``PrefixMiddleware``. Without setting ``SCRIPT_NAME``, ``url_for`` might generate a URL such as: '``/purchase_orders/1``', when it should be generating the URL: '``/james/purchase_orders/1``'.
+The reverse proxy, being an entirely separate web server, has no way of specifying the ``SCRIPT_NAME`` variable; it must be manually set by a ``PrefixMiddleware`` instance. Without setting ``SCRIPT_NAME``, ``url_for`` will generate URLs such as: '``/purchase_orders/1``', when it should be generating: '``/james/purchase_orders/1``'.
 
-To use a ``PrefixMiddleware`` in your application, create one in the outermost layer of your middleware chain. This can be done by adding the following to the end of your application's ``config/middleware.py`` (right before the ``return app`` line):
+To filter your application through a ``PrefixMiddleware`` instance, add the following to the '``[app:main]``' section of your .ini file:
+
+.. code-block:: PasteIni
+
+    filter-with = proxy-prefix
+
+    [filter:proxy-prefix]
+    use = egg:PasteDeploy#prefix
+    prefix = /james
+
+The name ``proxy-prefix`` simply acts as an identifier of the filter section; feel free to rename it.
+
+These .ini settings are equivalent to adding the following to the end of your application's ``config/middleware.py``, right before the ``return app`` line:
 
 .. code-block:: Python
 
     # @@@ This app is served behind a proxy via the following prefix (SCRIPT_NAME) @@@
     app = PrefixMiddleware(app, global_conf, prefix='/james')
+
+Whereas the modification to ``config/middleware.py`` will setup an instance of ``PrefixMiddleware`` under every environment (.ini).
