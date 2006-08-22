@@ -17,7 +17,18 @@ Otherwise:
 #. Download the easy install setup file from http://peak.telecommunity.com/dist/ez_setup.py
 #. Run ``python ez_setup.py Pylons``
 
-If want a Pylons install capable of building documentation for you, you can use the ``[full]`` part in the command: ``easy_install Pylons[full]``, but please be aware that some of the documentation tools are under development any may not be stable.
+.. Note::
+   You may optionally install (or upgrade to at a later date) one of the following 'extras', by specifying the extra name in the command:
+
+         ``easy_install Pylons[extra]``
+
+   ``pudge``:   Support for building documentation, see `Adding Documentation to your Application <adding_docs.html>`_. Be aware that some of the documentation tools are under development and may not be stable
+
+   ``cheetah``: Support for rendering cheetah templates, see `Using Other Template Languages <template_plugins.html>`_
+
+   ``kid``:     Support for rendering kid templates, see `Using Other Template Languages <template_plugins.html>`_
+
+   ``full``:    All of the above
 
 Custom Install Location
 =======================
