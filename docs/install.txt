@@ -1,7 +1,7 @@
 Installing Pylons
 +++++++++++++++++
 
-First, please note that Python 2.3 users on Windows will need to install `subprocess.exe <http://www.pylonshq.com/download/subprocess-0.1-20041012.win32-py2.3.exe>`_ before beginning the installation. All windows users also should read the section `Post install tweaks for Windows </docs/0.9/windowsnotes.html>`_ after installation.
+First, please note that Python 2.3 users on Windows will need to install `subprocess.exe <http://www.pylonshq.com/download/subprocess-0.1-20041012.win32-py2.3.exe>`_ before beginning the installation. All windows users also should read the section `Post install tweaks for Windows <windowsnotes.html>`_ after installation.
 
 System-wide Install
 ===================
@@ -48,7 +48,7 @@ Living on the Cutting Edge
 ==========================
 
 Not satisfied with the latest release? Want to be on the cutting edge or work with Pylons source code?
-Feel free to `get involved </project/>`_ with Pylons and work with the `latest development version </docs/0.9/pylonsdev.html>`_.
+Feel free to `get involved </project/>`_ with Pylons and work with the `latest development version <pylonsdev.html>`_.
 
 
 Packaging Note
