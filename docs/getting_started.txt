@@ -1,10 +1,16 @@
 Getting Started
 +++++++++++++++
 
-Installing Pylons
-=================
+Introduction
+============
 
-Read `Installing Pylons <install.html>`_ if you haven't already.
+If you haven't done so already read the `installation instructions <install.html>`_. This
+document gives you a quick overview of the basic tasks many people will be interested
+in doing.
+
+.. contents:: Table of Contents
+.. sectnum::
+
 
 Creating a Pylons Project
 =========================
