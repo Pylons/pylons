@@ -8,11 +8,12 @@ Creating
 * `Getting Started <getting_started.html>`_
 * `Quick Wiki Tutorial <quick_wiki.html>`_ 
 * `Flickr Search Tutorial <flickrsearch.html>`_ 
-* `Pylons Module Reference <module-index.html>`_
+* `Caching in Templates and Controllers <caching.html>`_
 * `Internationalization <internationalization.html>`_
 * `Error Documents <error_documents.html>`_
 * `Using Other Template Languages <template_plugins.html>`_
 * `Pylons Support for the Web Server Gateway Interface <wsgi.html>`_ 
+* `Pylons Module Reference <module-index.html>`_
 
 Debugging
 =========

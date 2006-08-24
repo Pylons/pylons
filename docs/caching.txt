@@ -1,0 +1,150 @@
+Caching in Templates and Controllers
+++++++++++++++++++++++++++++++++++++
+
+Inevitably, there will be occasions during your applications development or
+deployment where some task takes a significant amount of time to complete. 
+When this occurs, the best way to speed things up is with caching.
+
+There are several ways to cache data under Pylons, depending on where the slowdown
+is occurring:
+
+* Templates - If you're using Myghty templates, they all have built-in
+  `Myghty caching options <http://www.myghty.org/docs/cache.myt>`_ available.
+* Non-Myghty Templates - You can cache the results of the entire template
+  using the `3 cache keyword arguments to the render calls <docs/class-pylons.templating.Buffet.html#render>`_.
+  These render commands can also be used inside templates.
+* Controllers - The ``cache`` object is available in controllers and templates
+  for use in caching anything that can be pickled.
+* Browser-Side Caching - An ETag caching system is available that will allow
+  the browser to use its own cache of the page instead of requiring you to
+  regenerate the entire page. This system will work avoid repeated generations
+  of content, but if the browser has never seen the page it will still be
+  generated. Therefore using ETag caching in addition to one of the other types
+  of caching listed above will get you optimal through-put and avoid resource
+  intensive operations.
+  **Note that this only helps if the entire page can be cached.**
+
+The two primary concepts to keep in mind when caching is that cache's have a
+*namespace* and can have *keys* under that namespace. Consider that for a single
+template, there might be multiple versions of the template you wish to keep
+a cache for. The key's in the namespace are the "version" and the name of the
+template is the "namespace". **Both of these values must be Python strings.**
+
+In templates, the cache "namespace" will be set to the name of the template
+being rendered automatically. Nothing else is required for caching, unless you
+wish to control how long the template is cached for, and have multiple versions
+of the template cached.
+
+Using the Cache object
+======================
+
+Inside a controller, the ``cache`` object will be available. If you have an action
+or block of code that is resource or time intensive, it can be handy to cache
+the result. The ``cache`` object can cache any Python structure that can be
+`pickled <http://docs.python.org/lib/module-pickle.html>`_.
+
+Because the ``cache`` object uses Myghty's Container API, the syntax looks almost
+identical to the `programmatic caching docs for Myghty <http://www.myghty.org/docs/cache.myt#caching_interface>`_. Consider an action where
+you'd like to cache some code that does a time-consuming or resource intensive
+lookup and returns an object that can be pickled (list, dict, tuple, etc.):
+
+.. code-block:: Python
+
+    def some_action(self, day):
+        # hypothetical action that uses a 'day' variable as its key
+        
+        def expensive_function():
+            # do something that takes a lot of cpu/resources
+        
+        # Get a cache for a specific namespace, you can name it whatever
+        # you want
+        mycache = cache.get_cache('my_function')
+        
+        # Get the value, this will create the cache copy the first time
+        # and any time it expires (in seconds, so 3600 = one hour)
+        c.myvalue = mycache.get_value(day, createfunc=expensive_function,
+            type="memory", expiretime=3600)
+        
+        return render_response('/some/template.myt')
+
+Notice how the get_value() function takes the exact same arguments as the 
+example in the Myghty docs. A "createfunc" keyword isn't necessary, as you
+can also give it standard strings to cache.
+
+
+Using Cache keywords to ``render``
+==================================
+
+All ``render`` commmands have caching functionality built in. To use it, merely
+add the appropriate cache keyword to your ``render`` call.
+
+.. code-block:: Python
+    
+    class SampleController(BaseController):
+        
+        def index(self):
+            # Cache the template for 10 mins
+            return render_response('/index.myt', cache_expire=600)
+        
+        def show(self, id):
+            # Cache this version of the template for 3 mins
+            return render_response('/show.myt', cache_key=id, cache_expire=180)
+        
+        def feed(self):
+            # Cache for 20 mins to memory
+            return render_response('/feed.myt', cache_type='memory', cache_expire=1200)
+        
+        def home(self, user):
+            # Cache this version of a page forever (until the cache dir is cleaned)
+            return render_response('/home.myt', cache_key=user, cache_expire='never')
+
+While these example show the ``render_response`` command, they also apply to the
+``render`` command.
+
+
+ETag Caching
+============
+
+Caching via ETag involves sending the browser an ETag header so that it knows 
+to save and possibly use a cached copy of the page from its own cache, instead
+of your application sending it another.
+
+Since the ETag cache relies on sending headers to the browser, it works in a
+slightly different manner. The ``etag_cache`` function will return a ``Response``
+object with the proper HTTP headers set if the browser doesn't yet have a copy
+of the page. Otherwise a 304 HTTP Exception will be thrown that is caught by
+Paste middlware and turned into a proper 304 response to the browser. This will
+cause the browser to use its own copy.
+
+ETag based caching requires a single key, which is sent in the ETag HTTP header
+back to the browser. The `RFC specification for HTTP headers <http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html>`_ indicates that your
+ETag header merely needs to be a string. This value does not need to be unique
+for every URL, as the browser determines whether to use its own copy based on
+the URL and the ETag key.
+
+.. code-block:: Python
+    
+    def my_action(self):
+        resp = etag_cache('somekey')
+        resp.write(render('/show.myt', cache_expire=3600))
+        return resp
+
+.. note::
+    In this example that we're using template caching in addition to ETag
+    caching. If a new visitor comes to the site, we avoid re-rendering the
+    template if a cached copy exists, and repeat hits to the page by that
+    user will then trigger the ETag cache. This example also will never
+    change the ETag key, so the browsers cache will always be used if it
+    has one.
+
+Your ETag cache key will likely change depending on how often you want to have
+the browser fetch a fresh copy of the page.
+
+
+About
+=====
+
+Pylons comes with caching middleware enabled that is part of the same package that
+provides the session handling, `Beaker <http://beaker.groovie.org>`_. This
+powerful package uses Myghty's `Container API <http://www.myghty.org/trac/wiki/ContainerAPI>`_
+which supports backends in memory, the filesystem, and memcached.
