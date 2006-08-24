@@ -4,8 +4,6 @@ Form Handling in Pylons
 :author: James Gardner
 :date: 2006-08-24
 
-# XXX 1st draft: not finished, not tested, not concise in places. Needs splitting into two or more documents before release.
-
 Background
 ==========
 
@@ -13,10 +11,11 @@ When a user submits a form on a website the data is submitted to the URL specifi
 
 If the form contains a file upload field such as ``<input type="file" name="file" />`` then the HTML ``<form>`` tag must also specify ``enctype="multipart/form-data"`` and ``method`` must be ``POST``.
 
+
 Getting Started
 ===============
 
-First `install Pylons <http://pylonshq.com/install/>`_ and follow the `Getting Started Guide <http://pylonshq.com/docs/current/getting_started.html>`_ until you have a working "Hello World!" application.
+First `install Pylons <http://pylonshq.com/install/>`_ and follow the `Getting Started Guide <http://pylonshq.com/docs/current/getting_started.html>`_ so that you have a running ``HelloWorld`` application with a ``hello`` controller available at http://localhost:5000/hello served with the ``--reload`` option.
 
 Add two actions that looks like this::
 
@@ -37,18 +36,17 @@ Add a new template called ``form.myt`` in the ``templates`` directory that conta
 
 If the server is still running (see the Getting Started Guide) you can visit http://localhost:5000/hello/form and you will see the form. Try entering the email address ``test@example.com`` and clicking Submit. The URL should change to http://localhost:5000/hello/email?email=test%40example.com and you should see the text ``Your email is test@example.com``.
 
-In Pylons all form variables can be accessed from the ``request.params`` object which can be imported with ``from pylons import request`` or is already available in both templates and controllers by default. It behaves like a dictionary with the keys being the names of the fields in the form and the value returned being a string with all the characters decoded back to their correct representation. For example note how the ``@`` character was converted by the browser to ``%40`` in the URL and was converted back ready for use in request.params.
+In Pylons all form variables can be accessed from the ``request.params`` object which can be accessed by importing the ``request`` object with ``from pylons import request`` but it is already available in both templates and controllers by default. It behaves like a dictionary with the keys being the names of the fields in the form and the value returned being a string with all the characters decoded back to their correct representation. For example note how the ``@`` character was converted by the browser to ``%40`` in the URL and was converted back ready for use in request.params.
  
 .. Note:: ``request`` is actually a ``WSGIRequest`` object `documented here <http://pythonpaste.org/class-paste.wsgiwrappers.WSGIRequest.html#params>`_ and ``request.params`` is a ``MultiDict`` with `documentation here <http://pythonpaste.org/class-paste.util.multidict.MultiDict.html>`_.
 
-If you have two fields with the same name in the form then using the dictionary interface will return a list of strings rather than a single string. You can get the first string by using the ``.getfirst()`` method. If you want to get a value if it exists but use a default otherwise you could use ``request.params.get('email', 'default@example.com')``. 
+If you have two fields with the same name in the form then using the dictionary interface will return the first string. You can get the all strings returned as a list by using the ``.getall()`` method. If you only expect one value and want to enforce this you should use ``.getone()`` which raises an error if more than one value with the same name is submitted. By default if a field is submitted without a value, the dictionary interface returns an empty string so the usual ``.get(key, default)`` method you can use on dictionaries to return a default if the key doesn't exist will not return the default if used on ``request.params`` for a key if it was submitted empty but only if it is not in the form at all.
 
-# XXX is this still true??
 
-POST vs GET and the resubmitted data problem
---------------------------------------------
+POST vs GET and the Re-Submitted Data Problem
+---------------------------------------------
 
-If you change the ``form.myt`` template so that the method is ``POST`` you and rerun the example you will see that the message is displayed as before but the URL displayed in the browser is http://localhost:5000/hello/email without the query string. Instead the data is sent as part of the HTTP header information but Pylons makes it available in exaclty the same way as for GET requests. If you are writing forms that contain password fields you should usually use POST to prevent the password being visible to anyone who might be looking at the user's screen.
+If you change the ``form.myt`` template so that the method is ``POST`` and you re-run the example you will see that the message is displayed as before but the URL displayed in the browser is simply http://localhost:5000/hello/email without the query string. Instead the data is sent as part of the HTTP header information but Pylons makes it available in exaclty the same way as for GET requests through the use of ``request.params``. If you are writing forms that contain password fields you should usually use POST to prevent the password being visible to anyone who might be looking at the user's screen.
 
 When writing form-based applications you will occasionaly find users will press refresh immediatley after submitting a form. This has the effect of repeating whatever actions were performed the first time the form was submitted but often the user will simply expect that the current page will be shown again. If your form was submitted with a POST, most browsers will display a message to the user asking them if they wish to resubmit the data but this will not happen with a GET so POST is preferable to GET in those cercumstances.
 
@@ -61,7 +59,7 @@ Of course, the best way to solve this issue is to structure your code differentl
     
         def email(self):
             # Code to perform some action based on the form data
-            ...
+            # ...
             h.redirect_to(action='result')
 
         def result(self):
@@ -69,11 +67,7 @@ Of course, the best way to solve this issue is to structure your code differentl
 
 In this case once the form is submitted the data is saved and an HTTP redirect occurs so that the browser redirects to http://localhost:5000/hello/result so that pushing refresh simply redisplays the message rather than re-performing the action.
 
-One downside of this approach is that you cannot set cookies or other HTTP information as part of the action since they are lost when ``h.redirect_to()`` executes...
-
-# XXX This could be resolved by h.redirect() performing differently
-
-... but even if the headers were sent some browsers do not set cookies on redirection so the solution when you need to set a cookie and redirect is to return a page that immediately does a meta refresh to the correct URL::
+One downside of this approach is that you cannot set cookies or other HTTP information as part of the action since they are lost when ``h.redirect_to()`` executes but even if the headers were sent some browsers do not set cookies on redirection so the solution when you need to set a cookie and redirect is to return a page that immediately does a meta refresh to the correct URL::
 
     # in the controller
 
@@ -93,22 +87,24 @@ One downside of this approach is that you cannot set cookies or other HTTP infor
                 </BODY>
                 </HTML>
                 """%(
-                    redirct_to,       
+                    redirect_to,       
                     h.link_to(redirect_to, redirect_to)
                 )
             )
+
 
 Using the Helpers
 =================
 
 Creating forms can also be done using Pylons' `built in helpers <http://pylonshq.com/WebHelpers/module-index.html>`_. Here is the same form created in the previous section but this time using the helpers::
 
-    <% h.form_start('test', method='get', action='hello/email') %>
-    Email Address: <% h.input('email') %>
-                   <% h.submit('submit', value='Submit') %>
-    <% h.form_end() %>
+    <% h.form(h.url(action='email'), method='get') %>
+    Email Address: <% h.text_field('email') %>
+                   <% h.submit('Submit') %>
+    <% h.end_form() %>
 
 You can then also make use of the built-in script.aculo.us funtionality too or override the default behaviour of any of the helpers by defining a new function of the same name at the bottom of your project's ``lib/helpers.py`` file.
+
 
 Validation the Long Way
 =======================
@@ -141,50 +137,49 @@ We can use the ``EmailForm`` schema like this::
 
 If the values entered are valid the schema's ``to_python()`` method returns a dictionary of the validated and coerced form_result. This means that you can guarantee that the ``form_result`` dictionary contains values from your form that contain valid values but are also the correct Python object for the data type being represented by the field. In this case the email address is a string so ``request.params['email']`` happens to be the same as ``form_result['email']`` but if our form contained a field for age in years and we had used a ``formencode.validators.Int()`` validator, the value in ``form_result`` for the age would also be the correct type, in this case a Python integer.
 
-FormEncode comes with a useful set of validators but you can also easily create your own and you can read the FormEncode documentation for more information on this. If you do create your own validators you will find it very useful that all FormEncode schemas' ``.to_python()`` methods take a second argument named ``state``. This means you can pass the Pylons ``c`` object into your validators so that you can set any variables that your validators need in order to validate a partcular field as an attribute of the ``c`` object and then pass the ``c`` object to the schema as follows::
+.. Note :: FormEncode comes with a useful set of validators but you can also easily create your own and you can read the FormEncode documentation for more information on this. If you do create your own validators you will find it very useful that all FormEncode schemas' ``.to_python()`` methods take a second argument named ``state``. This means you can pass the Pylons ``c`` object into your validators so that you can set any variables that your validators need in order to validate a partcular field as an attribute of the ``c`` object and then pass the ``c`` object to the schema as follows::
 
-    c.domain = 'example.com'
-    form_result = schema.to_python(request.params, c)
-
-The schema passes ``c`` to each validator in turn so that you can do things like this::
-
-    class SimpleEmail(formencode.Email):
-        def _to_python(self, value, c):
-            if not value.endswith(c.domain):
-                raise formencode.Invalid('Email addresses must end in '+c.domain, value, c)
-            return formencode.Email._to_python(self, value, c)
-
-In reality the invlaid error message isn't very useful. We really want to be able to redisplay the form with the value entered and the error message produced. Replace the line::
+        c.domain = 'example.com'
+        form_result = schema.to_python(request.params, c)
+    
+    The schema passes ``c`` to each validator in turn so that you can do things like this::
+    
+        class SimpleEmail(formencode.Email):
+            def _to_python(self, value, c):
+                if not value.endswith(c.domain):
+                    raise formencode.Invalid('Email addresses must end in '+c.domain, value, c)
+                return formencode.Email._to_python(self, value, c)
+    
+In reality the invalid error message we get if we don't enter a valid email address isn't very useful. We really want to be able to redisplay the form with the value entered and the error message produced. Replace the line::
 
     return Response('Invalid: '+str(error))
 
 with the lines::
 
-    c.form_result = error.values
+    c.form_result = error.value
     c.form_errors = error.error_dict or {}
     return render_response('/form.myt')
 
 Now we will need to make some tweaks to ``form.myt``. Make it look like this::
 
-    <% h.form_start('test', method='get', action='hello/email') %>
-
+    <% h.form(h.url(action='email'), method='get') %>
+    
     % if c.form_errors:
     <h2>Please correct the errors</h2>
     % else:
     <h2>Enter Email Address</h2>
     % #end if
-
-   
+    
+    
     % if c.form_errors:
-    Email Address: <% h.input('email', value=c.form_result['email']) %> 
+    Email Address: <% h.text_field('email', value=c.form_result['email'] or '') %> 
     <p><% c.form_errors['email'] %></p>
     % else:
-    Email Address: <% h.input('email') %> 
+    Email Address: <% h.text_field('email') %> 
     % #end if
      
-    <% h.submit('submit', value='Submit') %>
-    <% h.form_end() %>
-
+    <% h.submit('Submit') %>
+    <% h.end_form() %>
 
 Now when the form is invalid the ``form.myt`` template is re-rendered with the error messages.
 
@@ -196,12 +191,17 @@ Pylons comes with a ``validate`` decorator which if you use like this::
 
     from pylons.decorators import validate
 
-    ...
+    #...
+
     # in the controller
 
-        @validate(schema=FormEmail(), form='form'):
+        @validate(schema=EmailForm(), form='form')
         def email(self):
             return Response('Your email is: %s'%self.form_result.get('email'))
+
+Validation only occurs on POST requests so we need to alter our form definition so that the method is POST not GET::
+
+    <% h.form(h.url(action='email'), method='post') %>
 
 If validation is succesfull, the valid result dict will be saved as ``self.form_result`` so it can be used in the action. Otherwise, the action will be re-run as if it was a GET request to the controller action specified in ``form``, and the output will be filled by FormEncode's htmlfill to fill in the form field errors. For simple cases this is really handy because it also avoids having to write code in your templates to display error messages if they are present. 
 
@@ -209,85 +209,29 @@ This does exactly the same thing as the example above but works with the origina
 
 .. Note:: Python 2.3 doesn't support decorators so rather than using the ``@validate()`` syntax you can use ``[validate()]`` immediately before the line specifying the action. Pylons understands that this is meant to be used in the same way a real decorator should be.
 
-Alternatives Techniques
-=======================
 
-If you are going to be creating a lot of forms you may wish to consider using FormBuild to help create your forms. FormBuild can currently be found at www.3aims.com/formbuild although will soon have its own site at formbuild.org.
+Advanced Form Handling with FormBuild
+=====================================
 
-The basic principle of FormBuild is that your forms should be built from form generating classes rather than directly in HTML so that you have complete programatic control over how all forms across your site look and behave. 
+If you are going to be creating a lot of forms you may wish to consider using `FormBuild <http://formbuild.org>`_ to help create your forms.
 
-Creating forms through an API has a lot of advantages for example when you are asked by a client to put error messages above fields rather than next to them you only have to change the relevant part of your FormBuild form definition not every template containing a form in your site. Although form generation is done through an API it doesn't mean that API itself can't use templates to generate components. In fact this approach is recommended as it gives you the flexibility to be able to modify layouts in templates whilst maintaining an API.
+FormBuild was specifically written for Pylons to complement FormEncode in the creation and validation of forms. To use it you create a custom Form object and use that object to build all your forms. You can then use a sophisticated API to modify all aspects of the generation and use of all forms built with your custom Form by modifying its definition without any need to change the form templates. The system is highly extensible and so over time it is hoped users will contribute all manor of advanced form definitions for building, modifying or automatically creating forms, integrating with database systems to form CRUD systems or simply adding new types of field.
 
-A full tutorial for using FormBuild in Pylons can be found here. # XXX
+Here is an one example of how you might use it in a controller to handle a form submission::
 
-Using FormBuild in Pylons
-=========================
-
-Be sure to have read the FormBuild manual first so you have an idea of what FormBuild actually does and why the abstraction of form generation into a set of carefully structured classes is useful. If you simply need to generate one form with a few fields the use of FormBuild is overkill and you might want to consider coding your form directly using Pylons' web helpers as described here. 
-
-# XXX
-
-Create a new directory in your project's ``models`` directory named ``forms``. Within it create empty files named ``__init__.py``, ``schema.py``, ``values.py``, ``validators.py`` and ``build.py``.
-
-Edit ``build.py`` so that it looks like this::
-
-    import formbuild
-
-    class StandardForm(Form):
-        pass
-
-Edit ``schema.py`` so that it looks like this::
-    
-    import formencode
-
-    class EmailForm(formencode.Schema):
-        allow_extra_fields = True
-        filter_extra_fields = True
-        email = formencode.validators.Email(not_empty=True)
-
-Edit ``__init__.py`` so that it looks like this::
-
-    import schema
-    import build
-
-In this example we don't have any values to be added to select boxes or any custom validators in our schema so ``values.py`` and ``validators.py`` remain empty.
-
-We can now use our setup in an application as follows::
-
-    import formbuild
-
-    # in a controller
-        
         def form(self):
             results, errors, response = formbuild.handle(
-                schema=model.form.schema.Profile_BasicSchema(), 
-                template='form.myt',
-                form=model.form.build.StandardForm
+                schema=Schema(),        # Your FormEncode schema for the form to be validated
+                template='form.myt',    # The template containg the code that builds your form
+                form=Form               # The FormBuild Form definition you wish to use
             )
             if response:
+                # The form validation failed so re-display the form with the auto-generted response
+                # containing submitted values and errors or do something with the errors
                 return response
-            return Response('Your email is: %s'%results.get('email'))
+            else:
+                # The form validated, do something useful with results.
+                ...
 
-``formbuild.handle`` is a special function specifically for Pylons which takes a FormEncode ``Schema``, a template to render and the FormBuild ``Form`` as arguments and returns a dictionary ``results`` containing results coerced to Python objects for all fields it could validate, a dictionary ``errorrs`` containing the error messages associated with each field which could not be validated and a ``response``, a value that is ``None`` if the form was valid or a pre-rendered response of the template with all error messages and values included so that you can just return it to ask the user to correct the mistakes.
-
-All aspects of the handling are customisable. For example if you want to specify the values to be handled, perhaps if you are initially populating the form with data from a database rather than from request.params you can specify a dictionary of data as the ``data`` parameter. If you want the rendering to be done differently you can specify a new function to the ``render`` parameter.
-
-The new ``form.myt`` looks like this::
-
-    <% c.form.start("form", action=h.url_for(action='email'), method="GET") %>
-
-    <& c.form.field( 
-        name='title', 
-        caption='Title', 
-        field='text'
-    ) &>
-
-    <% c.form.end() %>
-
-A note on CRUD systems
-======================
-
-Another approach is to create form objects that as well as representing HTML fields and the values those fields contain, also represent a field in a database. This approach is very good if your application only uses field types that already exist but can quickly get very compliacted when you want to create your own custom field types. Part of the Pylons philosophy is to model underlying techonlogy as closely as possible with the simplest interface possible rather than to model a work process that makes certain tasks easy at the expense of flexibility for other tasks. Although the Pylons team have made various efforts at creating such a system we haven't been able to create one that is comprehensive enough to offer the flexibility real world examples would need. Our approach is therefore to offer tools to create forms in a generic but easy way (FormBuild), tools to validate forms (FromEncode) and tools to store the results in database (SQLAlchemy). At some point in the future when users have contributes their own FormEncode schema and FormBuild layouts and fields a suitable way of directly linking FormBuild and FormEncode might become apparant but since creating forms and validating data are fundamentally two separate things we are maintaining two separate libraries but would welcome a third project to combine them in a similar vein to how ActiveMapper combines SQLAlchemy tables and mappers. We might eventually create another project that unified ActiveMapper with the project that unifies FormBuild and FormEncode to create a great CRUD system that has clearly defined APIs at every level allowing the developer to take a high level view or get down to the nitty-gritty.
-
-
+Full documentation of all features is available in the `FormBuild manual <http://formbuild.org/manual.html>`_ which you should read before looking at `Using FormBuild in Pylons <http://formbuild.org/pylons.html>`_
 
