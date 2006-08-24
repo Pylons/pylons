@@ -26,12 +26,13 @@ def validate(schema=None, validators=None, form=None, variable_decode=False):
     """Validate input either for a FormEncode schema, or individual validators
     
     Given a form schema or dict of validators, validate will attempt to validate
-    the schema or validator list.
+    the schema or validator list as long as a POST request is made. No 
+    validation is performed on GET requests.
     
-    If validation was succesfull, the valid result dict will be saved as
-     ``self.form_result``. Otherwise, the action will be re-run as if it was a
-     GET, and the output will be filled by FormEncode's htmlfill to fill in the
-     form field errors.
+    If validation was succesfull, the valid result dict will be saved
+    as ``self.form_result``. Otherwise, the action will be re-run as if it was a
+    GET, and the output will be filled by FormEncode's htmlfill to fill in the
+    form field errors.
     
     Example:
     
