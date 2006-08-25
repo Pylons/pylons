@@ -1,12 +1,10 @@
 Form Handling in Pylons
 +++++++++++++++++++++++
 
-Background
+The Basics
 ==========
 
-When a user submits a form on a website the data is submitted to the URL specified in the ``action`` attribute of the ``<form>`` tag. The data can be submitted either via HTTP ``GET`` or ``POST`` as specified by the ``method`` attribute of the ``<form>`` tag. If no action is specified the data is submitted to the current URL without the query string so you should always specify an action.
-
-If the form contains a file upload field such as ``<input type="file" name="file" />`` then the HTML ``<form>`` tag must also specify ``enctype="multipart/form-data"`` and ``method`` must be ``POST``.
+When a user submits a form on a website the data is submitted to the URL specified in the ``action`` attribute of the ``<form>`` tag. The data can be submitted either via HTTP ``GET`` or ``POST`` as specified by the ``method`` attribute of the ``<form>`` tag. If your form doesn't specify an ``action``, then it's submitted to the current URL, generally you'll want to specify an ``action``. When a file upload field such as ``<input type="file" name="file" />`` is present, then the HTML ``<form>`` tag must also specify ``enctype="multipart/form-data"`` and ``method`` must be ``POST``.
 
 
 Getting Started
