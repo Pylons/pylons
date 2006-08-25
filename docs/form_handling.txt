@@ -17,6 +17,7 @@ First `install Pylons </install/>`_ and follow the `Getting Started Guide </docs
 Add two actions that looks like this:
 
 .. code-block:: Python
+    
     # in the controller
 
     def form(self):  
@@ -24,7 +25,7 @@ Add two actions that looks like this:
 
     def email(self):
         return Response('Your email is: %s' % request.params['email'])
-    
+
 Add a new template called ``form.myt`` in the ``templates`` directory that contains the following:
 
 .. code-block:: Hypertext
