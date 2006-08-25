@@ -6,8 +6,9 @@ Creating
 
 * `Installation <install.html>`_
 * `Getting Started <getting_started.html>`_
-* `Quick Wiki Tutorial <quick_wiki.html>`_ 
-* `Flickr Search Tutorial <flickrsearch.html>`_ 
+* `Quick Wiki Tutorial <quick_wiki.html>`_
+* `Flickr Search Tutorial <flickrsearch.html>`_
+* `Form Handling with FormEncode` <form_handling.html>`_
 * `Caching in Templates and Controllers <caching.html>`_
 * `Internationalization <internationalization.html>`_
 * `Error Documents <error_documents.html>`_
