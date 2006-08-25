@@ -1,9 +1,6 @@
 Form Handling in Pylons
 +++++++++++++++++++++++
 
-:author: James Gardner
-:date: 2006-08-24
-
 Background
 ==========
 
@@ -15,19 +12,22 @@ If the form contains a file upload field such as ``<input type="file" name="file
 Getting Started
 ===============
 
-First `install Pylons <http://pylonshq.com/install/>`_ and follow the `Getting Started Guide <http://pylonshq.com/docs/current/getting_started.html>`_ so that you have a running ``HelloWorld`` application with a ``hello`` controller available at http://localhost:5000/hello served with the ``--reload`` option.
+First `install Pylons </install/>`_ and follow the `Getting Started Guide </docs/getting_started.html>`_ so that you have a running ``HelloWorld`` application with a ``hello`` controller available at http://localhost:5000/hello served with the ``--reload`` option.
 
-Add two actions that looks like this::
+Add two actions that looks like this:
 
+.. code-block:: Python
     # in the controller
 
-        def form(self):  
-            return render_response('/form.myt')  
+    def form(self):  
+        return render_response('/form.myt')  
+
+    def email(self):
+        return Response('Your email is: %s' % request.params['email'])
     
-        def email(self):
-            return Response('Your email is: %s'%request.params['email'])
-    
-Add a new template called ``form.myt`` in the ``templates`` directory that contains the following::
+Add a new template called ``form.myt`` in the ``templates`` directory that contains the following:
+
+.. code-block:: Hypertext
 
     <form name="test" method="GET" action="/hello/email">
     Email Address: <input type="text" name="email" />
@@ -36,34 +36,41 @@ Add a new template called ``form.myt`` in the ``templates`` directory that conta
 
 If the server is still running (see the Getting Started Guide) you can visit http://localhost:5000/hello/form and you will see the form. Try entering the email address ``test@example.com`` and clicking Submit. The URL should change to http://localhost:5000/hello/email?email=test%40example.com and you should see the text ``Your email is test@example.com``.
 
-In Pylons all form variables can be accessed from the ``request.params`` object which can be accessed by importing the ``request`` object with ``from pylons import request`` but it is already available in both templates and controllers by default. It behaves like a dictionary with the keys being the names of the fields in the form and the value returned being a string with all the characters decoded back to their correct representation. For example note how the ``@`` character was converted by the browser to ``%40`` in the URL and was converted back ready for use in request.params.
+In Pylons all form variables can be accessed from the ``request.params`` object which behaves like a dictionary. The keys are the names of the fields in the form and the value is a string with all the characters entity decoded. For example note how the ``@`` character was converted by the browser to ``%40`` in the URL and was converted back ready for use in ``request.params``.
  
 .. Note:: ``request`` is actually a ``WSGIRequest`` object `documented here <http://pythonpaste.org/class-paste.wsgiwrappers.WSGIRequest.html#params>`_ and ``request.params`` is a ``MultiDict`` with `documentation here <http://pythonpaste.org/class-paste.util.multidict.MultiDict.html>`_.
 
-If you have two fields with the same name in the form then using the dictionary interface will return the first string. You can get the all strings returned as a list by using the ``.getall()`` method. If you only expect one value and want to enforce this you should use ``.getone()`` which raises an error if more than one value with the same name is submitted. By default if a field is submitted without a value, the dictionary interface returns an empty string so the usual ``.get(key, default)`` method you can use on dictionaries to return a default if the key doesn't exist will not return the default if used on ``request.params`` for a key if it was submitted empty but only if it is not in the form at all.
+If you have two fields with the same name in the form then using the dictionary interface will return the first string. You can get all the strings returned as a list by using the ``.getall()`` method. If you only expect one value and want to enforce this you should use ``.getone()`` which raises an error if more than one value with the same name is submitted. 
+
+By default if a field is submitted without a value, the dictionary interface returns an empty string. This means that using ``.get(key, default)`` on ``request.params`` will only return a default if the value was not present in the form.
 
 
 POST vs GET and the Re-Submitted Data Problem
 ---------------------------------------------
 
-If you change the ``form.myt`` template so that the method is ``POST`` and you re-run the example you will see that the message is displayed as before but the URL displayed in the browser is simply http://localhost:5000/hello/email without the query string. Instead the data is sent as part of the HTTP header information but Pylons makes it available in exaclty the same way as for GET requests through the use of ``request.params``. If you are writing forms that contain password fields you should usually use POST to prevent the password being visible to anyone who might be looking at the user's screen.
+If you change the ``form.myt`` template so that the method is ``POST`` and you re-run the example you will see the same message is displayed as before. However, the URL displayed in the browser is simply http://localhost:5000/hello/email without the query string. The data is sent in the body of the request instead of the URL, but Pylons makes it available in the same way as for GET requests through the use of ``request.params``. 
 
-When writing form-based applications you will occasionaly find users will press refresh immediatley after submitting a form. This has the effect of repeating whatever actions were performed the first time the form was submitted but often the user will simply expect that the current page will be shown again. If your form was submitted with a POST, most browsers will display a message to the user asking them if they wish to resubmit the data but this will not happen with a GET so POST is preferable to GET in those cercumstances.
+.. note:: 
+    If you are writing forms that contain password fields you should usually use POST to prevent the password being visible to anyone who might be looking at the user's screen.
 
-Of course, the best way to solve this issue is to structure your code differently so ::
+When writing form-based applications you will occasionally find users will press refresh immediately after submitting a form. This has the effect of repeating whatever actions were performed the first time the form was submitted but often the user will simply expect that the current page will be shown again. If your form was submitted with a POST, most browsers will display a message to the user asking them if they wish to resubmit the data but this will not happen with a GET so POST is preferable to GET in those circumstances.
+
+Of course, the best way to solve this issue is to structure your code differently so:
+
+.. code-block:: Python
 
     # in the controller
 
-        def form(self):  
-            return render_response('/form.myt')  
-    
-        def email(self):
-            # Code to perform some action based on the form data
-            # ...
-            h.redirect_to(action='result')
+    def form(self):  
+        return render_response('/form.myt')  
 
-        def result(self):
-            return Response('Your data was successfully submitted')
+    def email(self):
+        # Code to perform some action based on the form data
+        # ...
+        h.redirect_to(action='result')
+
+    def result(self):
+        return Response('Your data was successfully submitted')
 
 In this case once the form is submitted the data is saved and an HTTP redirect occurs so that the browser redirects to http://localhost:5000/hello/result so that pushing refresh simply redisplays the message rather than re-performing the action.
 
