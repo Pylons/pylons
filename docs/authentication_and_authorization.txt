@@ -55,7 +55,7 @@ method name should start with an ``_`` underscore character.
 
 Consider this example:
 
-.. code-block::
+.. code-block:: Python
 
     from helloworld.lib.base import *
 
@@ -80,7 +80,7 @@ functionality to your controller is by making use of the ``__before__()`` method
 Add the following ``__before__()`` method to your controller. It will be
 executed before the action is called on each request. 
 
-.. code-block::
+.. code-block:: Python
 
     from helloworld.lib.base import *
 
@@ -154,7 +154,7 @@ Using HTTP Basic Authorisation
 If you wish to restrict access to an entire site you can add some simple
 middleware to your ``config/middleware.py`` file. Immediately after the lines:
 
-.. code-block::
+.. code-block:: Python
 
     # YOUR MIDDLEWARE
     # Put your own middleware here, so that any problems are caught by the error
@@ -162,7 +162,7 @@ middleware to your ``config/middleware.py`` file. Immediately after the lines:
     
 add the following:
 
-.. code-block::
+.. code-block:: Python
 
     from paste.auth.basic import AuthBasicHandler
     
@@ -182,7 +182,7 @@ until they close the browser window.
 You can find out in your code which user has signed in by looking at the
 ``request.environ['REMOTE_USER']`` varibale which contains the username:
 
-.. code-block::
+.. code-block:: Python
 
     # in your Hello controller
 
@@ -211,14 +211,14 @@ cookie so that they don't have to sign in each time.
 
 Remove the middleware code from the last example and this time after the lines:
 
-.. code-block::
+.. code-block:: Python
 
     # @@@ Change HTTPExceptions to HTTP responses @@@
     app = httpexceptions.make_middleware(app, global_conf)
 
 Add this:
 
-.. code-block::
+.. code-block:: Python
 
     from paste.auth.cookie import AuthCookieHandler
     from paste.auth.form import AuthFormHandler
@@ -258,7 +258,7 @@ user immediately gains access to the content they were looking for.
 To sign out you will need to write an action that removes the cookie
 information. Something like this should work fine::
 
-.. code-block::
+.. code-block:: Python
 
     # in your Hello controller
 
@@ -296,13 +296,13 @@ Add a new authfunc method to ``lib/app_globals.py``::
 
 In ``config/middleware.py`` you can now specify the authfunc as ``g.authfunc``:
 
-.. code-block::
+.. code-block:: Python
     
         app = AuthFormHandler(app, g.authfunc, template)
  
 The ``g.authfunc()`` method is also available in your controllers:
 
-.. code-block::
+.. code-block:: Python
 
     # in your Hello controller
 
@@ -330,7 +330,7 @@ application simply has to use ``abort(401)`` when a user is not signed in or
 
 Once you have setup AuthKit you can write code that looks like this:
 
-.. code-block::
+.. code-block:: Python
 
     # in your Hello controller
 
@@ -361,7 +361,7 @@ wouldn't need to write your authentication and authorisation checks manually as
 described above. Instead you would derive your controller from one of AuthKit's
 ``SecureController`` s and specify some permissions:
 
-.. code-block::
+.. code-block:: Python
 
     class HelloController(SecureController):
 
