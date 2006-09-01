@@ -88,53 +88,49 @@ def make_controller():
     # Make sure all files are added to the repository:
     assert '?' not in res.stdout
 
-def do_pytest():
-    projenv.writefile('development.ini',
-                      frompath='development.ini')
+def _do_proj_test(copydict, emptyfiles=[]):
+    """Given a dict of files, where the key is a filename in test_files, the value is
+    the destination in the new projects dir. emptyfiles is a list of files that should
+    be created and empty."""
+    for original, newfile in copydict.iteritems():
+        projenv.writefile(newfile, frompath=original)
+    for fi in emptyfiles:
+        projenv.writefile(fi)
     res = projenv.run(_get_script_name('nosetests')+' projectname/tests',
                       expect_stderr=True,
                       cwd=os.path.join(testenv.cwd, 'ProjectName').replace('\\','/'))
+
+def do_pytest():
+    _do_proj_test({'development.ini':'development.ini'})
 
 def do_test_known():
-    projenv.writefile('projectname/controllers/sample.py',
-                      frompath='controller_sample.py')
-    projenv.writefile('projectname/lib/app_globals.py',
-                      frompath='app_globals.py')
-    projenv.writefile('projectname/tests/functional/test_sample.py',
-                      frompath='functional_sample_controller_sample1.py')
-    res = projenv.run(_get_script_name('nosetests')+' projectname/tests',
-                      expect_stderr=True,
-                      cwd=os.path.join(testenv.cwd, 'ProjectName').replace('\\','/'))
+    copydict = {
+        'controller_sample.py':'projectname/controllers/sample.py',
+        'app_globals.py':'projectname/lib/app_globals.py',
+        'functional_sample_controller_sample1.py':'projectname/tests/functional/test_sample.py',
+    }
+    _do_proj_test(copydict)
 
 def do_kid_default():
-    projenv.writefile('projectname/kidtemplates/testkid.kid',
-                      frompath='testkid.kid')
-    projenv.writefile('projectname/kidtemplates/__init__.py')
-    projenv.writefile('projectname/config/middleware.py',
-                      frompath='middleware_def_engine.py')
-    projenv.writefile('projectname/tests/functional/test_sample2.py',
-                      frompath='functional_sample_controller_sample2.py')
-    res = projenv.run(_get_script_name('nosetests')+' projectname/tests',
-                      expect_stderr=True,
-                      cwd=os.path.join(testenv.cwd, 'ProjectName').replace('\\','/'))
+    copydict = {
+        'testkid.kid':'projectname/kidtemplates/testkid.kid',
+        'middleware_def_engine.py':'projectname/config/middleware.py',
+        'functional_sample_controller_sample2.py':'projectname/tests/functional/test_sample2.py'
+    }
+    empty = ['projectname/kidtemplates/__init__.py']
+    _do_proj_test(copydict, empty)
 
 def do_two_engines():
-    projenv.writefile('projectname/config/middleware.py',
-                      frompath='middleware_two_engines.py')
-    projenv.writefile('projectname/templates/test_myghty.myt',
-                      frompath='test_myghty.myt')    
-    projenv.writefile('projectname/tests/functional/test_sample2.py',
-                      frompath='functional_sample_controller_sample3.py')
-    res = projenv.run(_get_script_name('nosetests')+' projectname/tests',
-                      expect_stderr=True,
-                      cwd=os.path.join(testenv.cwd, 'ProjectName').replace('\\','/'))
+    copydict = {
+        'middleware_two_engines.py':'projectname/config/middleware.py',
+        'test_myghty.myt':'projectname/templates/test_myghty.myt',
+        'functional_sample_controller_sample3.py':'projectname/tests/functional/test_sample2.py',
+    }
+    _do_proj_test(copydict)
 
 def do_crazy_decorators():
-    projenv.writefile('projectname/tests/functional/test_sample3.py',
-                      frompath='functional_sample_controller_sample4.py')
-    res = projenv.run(_get_script_name('nosetests')+' projectname/tests',
-                      expect_stderr=True,
-                      cwd=os.path.join(testenv.cwd, 'ProjectName').replace('\\','/'))
+    _do_proj_test({'functional_sample_controller_sample4.py':'projectname/tests/functional/test_sample3.py'})
+
 def do_legacy_app():
     legacyenv = TestFileEnvironment(
         os.path.join(testenv.base_path, 'legacyapp').replace('\\','/'),
