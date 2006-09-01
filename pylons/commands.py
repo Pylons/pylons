@@ -90,9 +90,7 @@ class ControllerCommand(Command):
             if not fullname.startswith(os.sep): fullname = os.sep + fullname
             testname = fullname.replace(os.sep, '_')[1:]
             fo.template_vars.update({'name': name.title().replace('-', '_'),
-                                  'fullname': fullname,
-                                  'fname': os.path.join(dir, name),
-                                  'lname': name})
+                                  'fname': os.path.join(dir, name)})
             fo.copy_file(template='controller.py_tmpl',
                          dest=os.path.join('controllers', dir), filename=name)
             if not self.options.no_test:
