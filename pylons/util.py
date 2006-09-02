@@ -8,28 +8,27 @@ is available via ``pylons.c`` and is cleared every request by Pylons.
 PylonsTemplate is a Paste Template sub-class that configures the source
 directory and default plug-ins for a new Pylons project.
 """
+import gettext
+import os.path
 import sys
-import os.path, gettext
-
+from paste.deploy.config import CONFIG
 from paste.script.templates import Template
-
+from routes import threadinglocal
 import pylons
 
-from routes import threadinglocal
-from paste.deploy.config import CONFIG
-
 class ContextObj(object):
+    """ The 'c' object, with strict attribute access (raises an Exception when
+    the attribute does not exist) """
     pass
 
 class AttribSafeContextObj(object):
+    """ The 'c' object, with lax attribute access (returns '' when the attribute
+    does not exist) """
     def __getattr__(self, name):
-        if name.startswith('_'):
+        try:
             return object.__getattribute__(self, name)
-        else:
-            try:
-                return object.__getattribute__(self, name)
-            except AttributeError:
-                return ''
+        except AttributeError:
+            return ''
 
 def get_prefix(environ):
     prefix = environ['paste.config']['app_conf'].get('prefix', '')
@@ -55,7 +54,6 @@ def class_name_from_module_name(module_name):
     """
     words = module_name.replace('-', '_').split('_')
     return ''.join([w.title() for w in words])
-
 
 class RequestLocal(object):
     """This object emulates a dict and supports the full set of dict functions
@@ -182,8 +180,9 @@ class Helpers(object):
     
     def __setattr__(self, name, value):
         if name not in ['lang']:
-            raise AttributeError("Helper attributes cannot be set. You should \
-use the context object 'c' to store conext information.")
+            raise AttributeError('Helper attributes cannot be set, except for '
+                                 "the special 'lang' attribute. Use the "
+                                 "context object 'c' to store context data.")
         else:
             self.set_lang(value)
 
@@ -226,7 +225,6 @@ use the context object 'c' to store conext information.")
 
     def get_lang(self):
         return self.__dict__['_local'].lang
-
 
 class PylonsTemplate(Template):
     _template_dir = 'templates/paster_template'
