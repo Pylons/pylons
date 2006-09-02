@@ -64,7 +64,7 @@ class ControllerCommand(Command):
             __import__(name)
             raise BadCommand("\n\nA module named '%s' is already present in your PYTHON_PATH.\n"
                              "Choosing a conflicting name will likely cause import problems in\n"
-                             "your controller at some point. It's suggest that you choose an alternate\n"
+                             "your controller at some point. It's suggested that you choose an alternate\n"
                              "name, and if you'd like that name to be accessible as '%s', add a route\n"
                              "to your projects config/routing.py file similar to:\n"
                              "  map.connect('%s', controller='my_%s')" % (name, name, name, name))
