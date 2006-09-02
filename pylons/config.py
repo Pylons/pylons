@@ -42,22 +42,27 @@ class Config(object):
         be configured as the default template engine. Each item in the list is
         a dict indicating how to configure the template engine with keys:
         ``engine``, ``template_root``, ``template_options``, and ``alias``
-    ``strict_access``
+    ``default_charset``
+        The default character encoding specified to the browser via the
+        'charset' parameter of the HTTP response's Content-Type header.
+    ``strict_c``
         Whether or not the ``c`` object should throw an attribute error when
         access is attempted to an attribute that doesn't exist.
     
     """
-    def __init__(self, myghty, map, paths, environ_config=None):
+    def __init__(self, myghty, map, paths, environ_config=None, default_charset='UTF-8',
+                 strict_c=False):
         if environ_config is None:
             environ_config = {}
         self.myghty = myghty
         self.map = map
         self.paths = paths
+        self.environ_config = environ_config
+        self.default_charset = default_charset
+        self.strict_c = strict_c
         self.global_conf = {}
         self.app_conf = {}
         self.template_engines = []
-        self.strict_access = False
-        self.environ_config = environ_config
     
     def add_template_engine(self, engine, root, options, alias=None):
         """Add additional template engines for configuration on Pylons WSGI init

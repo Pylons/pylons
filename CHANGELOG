@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.2 (**svn**)
+* Moved the 'default_charset' option from PylonsApp's constructor to
+  Config's.
 * Added 'error' controller route to the top of the Pylons template to avoid
   the common issue people discover when removing the generic default route.
 * Changing validate decorator to have variable_decode option, which will
@@ -11,7 +13,7 @@ Pylons Changelog
 * Added an 'encode_variables' option to the validate decorator.
 * Switched all current_obj calls to _current_obj to avoid triggering
   deprecation warnings.
-* Added xhr to Request object in Paste.
+* Added is_xhr to Request object in Paste.
 * Bumping up dependency to latest Paste.
 * Switching back to prior controller import check, throwing a more detailed
   error with a suggest fix should the user really want a URL with that name

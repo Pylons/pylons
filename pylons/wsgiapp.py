@@ -41,13 +41,20 @@ class PylonsBaseWSGIApp(object):
     "monkey-patching" this class. Subclassing is the preferred approach.
     
     """
-    def __init__(self, mapper, package_name, globals, default_charset='UTF-8'):
+    def __init__(self, mapper, package_name, globals, default_charset=None):
         self.mapper = mapper
         self.globals = globals
         self.package_name = package_name
-        self.default_charset = default_charset
-        self.settings = dict(charset=default_charset, content_type='text/html')
         config = globals.pylons_config
+        if default_charset:
+            warnings.warn(
+                "The 'default_charset' keyword argument to the PylonsBaseWSGIApp "
+                "constructor is deprecated. Please specify 'default_charset' to the Config "
+                'object in your config/environment.py file instead, e.g.:\n'
+                'return pylons.config.Config(myghty, map, paths, '
+                "default_charset='%s')" % default_charset, DeprecationWarning, 2)
+            config.default_charset = default_charset
+        self.settings = dict(content_type='text/html', charset=config.default_charset)
         
         # Create the redirect function we'll use and save it
         def redirect_to(url):
@@ -112,7 +119,7 @@ class PylonsBaseWSGIApp(object):
         req = WSGIRequest(environ)
         environ['paste.registry'].register(paste.wsgiwrappers.settings, self.settings)
         environ['paste.registry'].register(pylons.request, req)
-        if self.globals.pylons_config.strict_access:
+        if self.globals.pylons_config.strict_c:
             environ['paste.registry'].register(pylons.c, ContextObj())
         else:
             environ['paste.registry'].register(pylons.c, AttribSafeContextObj())
@@ -230,8 +237,17 @@ class PylonsApp(object):
     then no session/cache objects will be available.
     
     """
-    def __init__(self, config, default_charset='UTF-8'):
+    def __init__(self, config, default_charset=None):
         self.config = config
+        if default_charset:
+            warnings.warn(
+                "The 'default_charset' keyword argument to the PylonsApp constructor is "
+                "deprecated. Please specify 'default_charset' to the Config object in your "
+                'config/environment.py file instead, e.g.:\n'
+                'return pylons.config.Config(myghty, map, paths, '
+                "default_charset='%s')" % default_charset, DeprecationWarning, 2)
+            self.config.default_charset = default_charset
+
         g = None
         try:
             package = __import__(config.package + '.lib.app_globals', globals(), locals(), ['Globals'])
@@ -242,7 +258,7 @@ class PylonsApp(object):
             g.pylons_config = config
         
         # Create the base Pylons wsgi app
-        app = PylonsBaseWSGIApp(config.map, config.package, g, default_charset)
+        app = PylonsBaseWSGIApp(config.map, config.package, g)
         
         # Pull user-specified environ overrides, or just setup default
         # session and caching objects
