@@ -55,79 +55,6 @@ def class_name_from_module_name(module_name):
     words = module_name.replace('-', '_').split('_')
     return ''.join([w.title() for w in words])
 
-class RequestLocal(object):
-    """This object emulates a dict and supports the full set of dict functions
-    and operations.
-    
-    Internally, the dict is attached to a threading local object and
-    all access is passed through to the thread-safe object.
-    
-    This difference means that the object must be initialized per-thread
-    with a _clear() call before the object can be used, and it should be
-    _clear()'ed every request call.
-    
-    The RequestLocal object also support attribute assignment, which is
-    then internally stored as if they used item assignment. Attribute
-    get is also supported, and is used to 'get' the name requested. Unlike
-    normal attribute access, this will return an empty string if the
-    attribute does not exist.
-    
-    ``attribute_error``
-        If set to True, then accessing an attribute that doesn't exist will
-        throw an AttributeError
-    
-    """
-    def __init__(self, name="Unset", attribute_error=False):
-        self.__dict__['name'] = name
-        self.__dict__['attribute_error'] = attribute_error
-        self.__dict__['_local'] = threadinglocal.local()
-        
-    def __getattr__(self, name):
-        if name.startswith('_'):
-            return object.__getattribute__(self, name)
-        else:
-            try:
-                result = getattr(self._local.request, name)
-            except AttributeError, msg:
-                if self.__dict__['attribute_error']:
-                    e, msg = sys.exc_info()[:2]
-                    raise e, "'%s' object has no attribute '%s'" % \
-                        (self.__dict__['name'], name), sys.exc_info()[2]
-                result = self._local.request.get(name, '')
-            return result
-    
-    def __setattr__(self, key, value):
-        if key.startswith('_'):
-            raise AttributeError("You cannot set attributes begining with '_' \
-on  the 'temp' object use temp['%s'] instead"%key)
-            #object.__setattr__(self, key, value)
-        else:
-            self.__setitem__(key, value)
-    
-    def __len__(self):
-        return self._local.request.__len__()
-    
-    def __getitem__(self, key):
-        return self._local.request.__getitem__(key)
-    
-    def __setitem__(self, key, value):
-        self._local.request.__setitem__(key, value)
-    
-    def __delitem__(self, key):
-        self._local.request.__delitem__(key)
-    
-    def __iter__(self):
-        return self._local.request.__iter__()
-    
-    def __contains__(self, item):
-        return self._local.request.__contains__(item)
-    
-    def _clear(self):
-        self._local.request = {}
-    
-    def __repr__(self):
-        return self._local.request.__repr__()
-
 class LanguageError(Exception):
     """Exception raised when a problem occurs with changing languages"""
     pass
@@ -139,7 +66,7 @@ class _Translator(object):
 
 class Helpers(object):
     def __init__(self, **_pylons):
-        self.__dict__['_local'] = RequestLocal()
+        self.__dict__['_local'] = None
         self.__dict__['_pylons'] = _pylons
     
     def __call__(self):
@@ -151,7 +78,7 @@ class Helpers(object):
         the helpers space that will be used for fetching helper names as well
         as translation.
         """
-        self.__dict__['_local']._clear()
+        self.__dict__['_local'] = threadinglocal.local()
         project_name = CONFIG['app_conf']['package']
         try:
             helpers_name = project_name + '.config.helpers'
@@ -172,11 +99,11 @@ class Helpers(object):
     def __getattr__(self, name):
         if hasattr(self.__dict__['_local'].helpers, name):
             return getattr(self.__dict__['_local'].helpers, name)
-        elif name in self.__dict__['_local'].keys() and name != '_local' and \
-            len(str(name))>0 and str(name)[0] != '_':
-            return getattr(self.__dict__['_local'],name)
+        elif hasattr(self.__dict__['_local'], name) and \
+                not name.startswith('__'):
+            return getattr(self.__dict__['_local'], name)
         else:
-            raise AttributeError('No such helper %s'%repr(name))
+            raise AttributeError("No such helper: '%s'" % repr(name))
     
     def __setattr__(self, name, value):
         if name not in ['lang']:
@@ -231,5 +158,5 @@ class PylonsTemplate(Template):
     summary = 'Pylons application template'
     egg_plugins = ['Pylons', 'WebHelpers']
 
-__all__ = ['ContextObj', 'AttribSafeContextObj', 'RequestLocal', 'Helpers']
-__pudge_all__ = ['RequestLocal', 'Helpers', 'PylonsTemplate']
+__all__ = ['AttribSafeContextObj', 'ContextObj', 'Helpers', 'class_name_from_module_name']
+__pudge_all__ = __all__ + ['PylonsTemplate']
