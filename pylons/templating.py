@@ -215,13 +215,13 @@ class MyghtyTemplatePlugin(object):
         pass
 
     def render(self, info, format="html", fragment=False, template=None):
-        self.interpreter.global_args.update(info.pop('_global_args'))
+        global_args = info.pop('_global_args')
         vars = info
         buf = StringIO()
         if fragment:
-            self.interpreter.execute(template, request_args=vars, out_buffer=buf, disable_wrapping=True)
+            self.interpreter.execute(template, request_args=vars, global_args=global_args, out_buffer=buf, disable_wrapping=True)
         else:
-            self.interpreter.execute(template, request_args=vars, out_buffer=buf)
+            self.interpreter.execute(template, request_args=vars, global_args=global_args, out_buffer=buf)
         return buf.getvalue()
 
 available_engines = {}
