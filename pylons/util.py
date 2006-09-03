@@ -37,48 +37,21 @@ class _Translator(object):
         return value
 
 class Helpers(object):
-    def __init__(self, **_pylons):
-        self.__dict__['_local'] = None
-        self.__dict__['_pylons'] = _pylons
+    def __init__(self, **opts):
+        pass
     
-    def __call__(self):
-        """Initialize Helpers object for request with helpers module/object
-        
-        When called, the Helpers object will return itself, after initializing
-        itself for the current thread/request. It is intended to be run at the
-        begginning of every request to clear the thread local it uses and setup
-        the helpers space that will be used for fetching helper names as well
-        as translation.
-        """
-        self.__dict__['_local'] = threadinglocal.local()
-        project_name = CONFIG['app_conf']['package']
-        try:
-            helpers_name = project_name + '.config.helpers'
-            __import__(helpers_name)
-        except:
-            helpers_name = project_name + '.lib.helpers'
-            __import__(helpers_name)
-        helpers = sys.modules[helpers_name]
-        self.__dict__['_local'].helpers = helpers
-        self.__dict__['_local'].translator = _Translator()
-        self.__dict__['_local'].config = CONFIG
-        if CONFIG['app_conf'].has_key('lang'):
-            self.set_lang(CONFIG['app_conf']['lang'])
-        else:
-            self.__dict__['_local'].lang = None
-        return self
-        
     def __getattr__(self, name):
-        if hasattr(self.__dict__['_local'].helpers, name):
-            return getattr(self.__dict__['_local'].helpers, name)
-        elif hasattr(self.__dict__['_local'], name) and \
-                not name.startswith('__'):
-            return getattr(self.__dict__['_local'], name)
+        if hasattr(pylons.request._oldh, name):
+            return getattr(pylons.request._oldh, name)
+        elif hasattr(pylons.request, '_h') and hasattr(pylons.request._h, name):
+            return getattr(pylons.request._h, name)
+        elif name in pylons.translator:
+            return pylons.translator[name]
         else:
             raise AttributeError("No such helper: '%s'" % repr(name))
     
     def __setattr__(self, name, value):
-        if name not in ['lang']:
+        if name != 'lang':
             raise AttributeError('Helper attributes cannot be set, except for '
                                  "the special 'lang' attribute. Use the "
                                  "context object 'c' to store context data.")
@@ -96,34 +69,34 @@ class Helpers(object):
     def _(self, value):
         """Mark a string for translation
         
-        Mark a string to be internationalised as follows:
+        Mark a string to be internationalized as follows:
         
         .. code-block:: Python
         
-            h._('This should be in lots of langauges')
+            h._('This should be in lots of languages')
         
         """
-        return self.__dict__['_local'].translator.gettext(value)
+        return pylons.translator['translator'].gettext(value)
   
     def set_lang(self, lang):
         """Set the language used"""
         project_name = CONFIG['app_conf']['package']
-        self.__dict__['_local'].lang = lang
+        pylons.translator['lang'] = lang
         if lang is None:
-            self.__dict__['_local'].translator = _Translator()
+            pylons.translator['translator'] = _Translator()
         else:
             from pkg_resources import resource_string, resource_stream, \
                 resource_exists, resource_filename
             from pylons.i18n.translation import egg_translation
             catalog_path = os.path.join('i18n', lang, 'LC_MESSAGES')
             if not resource_exists(project_name, catalog_path):
-                raise LanguageError('Langauge catalog %s not found' % \
+                raise LanguageError('Language catalog %s not found' % \
                                     os.path.join(project_name, catalog_path))
-            self.__dict__['_local'].translator = \
+            pylons.translator['translator'] = \
                 egg_translation(project_name, lang=catalog_path)
 
     def get_lang(self):
-        return self.__dict__['_local'].lang
+        return pylons.translator['lang']
 
 class PylonsTemplate(Template):
     _template_dir = 'templates/paster_template'
@@ -155,5 +128,42 @@ def class_name_from_module_name(module_name):
     words = module_name.replace('-', '_').split('_')
     return ''.join([w.title() for w in words])
 
-__all__ = ['AttribSafeContextObj', 'ContextObj', 'Helpers', 'class_name_from_module_name']
+def log(msg):
+    """Log a message to the output log."""
+    pylons.request.environ['wsgi.errors'].write('=> %s\n'%str(msg))
+
+def _(value):
+    """Mark a string for translation
+    
+    Mark a string to be internationalized as follows:
+    
+    .. code-block:: Python
+    
+        h._('This should be in lots of languages')
+    
+    """
+    return pylons.translator['translator'].gettext(value)
+
+def set_lang(lang):
+    """Set the language used"""
+    project_name = CONFIG['app_conf']['package']
+    pylons.translator['lang'] = lang
+    if lang is None:
+        pylons.translator['translator'] = _Translator()
+    else:
+        from pkg_resources import resource_string, resource_stream, \
+            resource_exists, resource_filename
+        from pylons.i18n.translation import egg_translation
+        catalog_path = os.path.join('i18n', lang, 'LC_MESSAGES')
+        if not resource_exists(project_name, catalog_path):
+            raise LanguageError('Language catalog %s not found' % \
+                                os.path.join(project_name, catalog_path))
+        pylons.translator['translator'] = \
+            egg_translation(project_name, lang=catalog_path)
+
+def get_lang():
+    return pylons.translator['lang']
+
+__all__ = ['AttribSafeContextObj', 'ContextObj', 'Helpers', 'class_name_from_module_name',
+    'log', '_', 'set_lang', 'get_lang']
 __pudge_all__ = __all__ + ['PylonsTemplate']

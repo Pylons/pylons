@@ -16,4 +16,6 @@ request = StackedObjectProxy(name="Request")
 buffet = StackedObjectProxy(name="Buffet")
 h = Helpers(c=c, session=session, request=request, buffet=buffet)
 
-__all__ = ['Controller', 'RPCController', 'jsonify']
+translator = StackedObjectProxy(name="Translator")
+
+__all__ = ['Controller', 'RPCController', 'Response', 'jsonify']

@@ -71,17 +71,17 @@ class Buffet(object):
             dict(engine=Engine(options=config), root=template_root)
     
     def _update_names(self, ns):
-        d = {}
-        d.update(ns)
+        d = ns
         d.update(dict(
-            c=pylons.c,
+            c=pylons.c._current_obj(),
             h=pylons.h,
-            m=pylons.m,
-            request=pylons.request,
-            g=pylons.g,
-            session=pylons.session,
+            request=pylons.request._current_obj(),
+            g=pylons.g._current_obj(),
+            session=pylons.session._current_obj(),
             render=render,
         ))
+        if hasattr(d['request'], '_h'):
+            d['h'] = d['request']._h
         return d
     
     def render(self, engine_name=None, template_name=None,
@@ -158,6 +158,10 @@ class Buffet(object):
             if not engine_name.startswith('pylons'):
                 full_path = os.path.join(engine_config['root'], template_name)
                 full_path = full_path.replace(os.path.sep, '.').lstrip('.')
+        else:
+            if namespace is None:
+                namespace = {}
+            namespace['_global_args'] = self._update_names({})
                 
         # If one of them is not None then the user did set something
         if cache_key is not None or cache_expire is not None or cache_type is not None:
@@ -213,6 +217,7 @@ class MyghtyTemplatePlugin(object):
         pass
 
     def render(self, info, format="html", fragment=False, template=None):
+        self.interpreter.global_args = info.pop('_global_args')
         vars = info
         buf = StringIO()
         if fragment:

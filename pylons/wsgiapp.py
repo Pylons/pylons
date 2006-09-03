@@ -21,7 +21,7 @@ from routes import request_config
 import pylons
 import pylons.templating
 import pylons.legacy
-from pylons.util import ContextObj, AttribSafeContextObj, class_name_from_module_name
+from pylons.util import ContextObj, AttribSafeContextObj, _Translator, class_name_from_module_name
 from pylons.controllers import Controller, WSGIController
 
 class PylonsBaseWSGIApp(object):
@@ -117,6 +117,32 @@ class PylonsBaseWSGIApp(object):
     def setup_app_env(self, environ, start_response):
         """Setup and register all the Pylons objects with the registry"""
         req = WSGIRequest(environ)
+        
+        # This is a legacy test for pre-0.9.2 projects to continue using the old
+        # style Helper. New style directly uses the projects lib.helpers module
+        # for 'normal' Python import usage with no surprises.
+        __import__(self.package_name + '.lib.base')
+        their_h = getattr(sys.modules[self.package_name + '.lib.base'], 'h', None)
+        __import__(self.package_name + '.lib.helpers')
+        if their_h != pylons.h and their_h is not None:
+            # We're using the new Helper import style
+            req._h = sys.modules[self.package_name + '.lib.helpers']
+        else:
+            # We still need to keep a reference to their helpers for the old
+            # Helpers object.
+            req._oldh = sys.modules[self.package_name + '.lib.helpers']
+        
+        # Setup the translator global object
+        trans = dict(translator=_Translator())
+        trans['CONFIG'] = dict(app_conf=self.globals.pylons_config.app_conf,
+            global_conf=self.globals.pylons_config.global_conf)
+        if self.globals.pylons_config.app_conf.has_key('lang'):
+            trans['translator'](self.globals.pylons_config.app_conf['lang'])
+        else:
+            trans['lang'] = None
+        environ['paste.registry'].register(pylons.translator, trans)
+        
+        # Setup the basic pylons global objects
         environ['paste.registry'].register(paste.wsgiwrappers.settings, self.settings)
         environ['paste.registry'].register(pylons.request, req)
         if self.globals.pylons_config.strict_c:
@@ -125,7 +151,6 @@ class PylonsBaseWSGIApp(object):
             environ['paste.registry'].register(pylons.c, AttribSafeContextObj())
         environ['paste.registry'].register(pylons.g, self.globals)
         environ['paste.registry'].register(pylons.buffet, self.buffet)
-        pylons.h()
         
         # Setup legacy globals
         if environ.get('pylons.legacy'):
