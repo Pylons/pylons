@@ -219,9 +219,11 @@ class MyghtyTemplatePlugin(object):
         vars = info
         buf = StringIO()
         if fragment:
-            self.interpreter.execute(template, request_args=vars, global_args=global_args, out_buffer=buf, disable_wrapping=True)
+            self.interpreter.execute(template, request_args=vars, 
+                global_args=global_args, out_buffer=buf, disable_wrapping=True)
         else:
-            self.interpreter.execute(template, request_args=vars, global_args=global_args, out_buffer=buf)
+            self.interpreter.execute(template, request_args=vars, 
+                global_args=global_args, out_buffer=buf)
         return buf.getvalue()
 
 available_engines = {}
