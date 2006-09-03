@@ -1,9 +1,6 @@
-"""Helpers object, RequestLocal object, and Paste Template config
+"""Helpers object, Paste Template config and misc. functionality.
 
 The util module provides the main Helper object used by Pylons.
-
-The RequestLocal thread-local is utilized by Pylons as the ``c`` object that
-is available via ``pylons.c`` and is cleared every request by Pylons.
 
 PylonsTemplate is a Paste Template sub-class that configures the source
 directory and default plug-ins for a new Pylons project.
@@ -29,31 +26,6 @@ class AttribSafeContextObj(object):
             return object.__getattribute__(self, name)
         except AttributeError:
             return ''
-
-def get_prefix(environ):
-    prefix = environ['paste.config']['app_conf'].get('prefix', '')
-    if not prefix:
-        if environ.get('SCRIPT_NAME', '') != '':
-            prefix = environ['SCRIPT_NAME']
-    return prefix
-
-def class_name_from_module_name(module_name):
-    """Takes a module name and returns the name of the class it defines.
-
-    If the module name contains dashes, they are replaced with underscores.
-    
-    Example::
-    
-        >>> class_name_from_module_name('with-dashes')
-        'WithDashes'
-        >>> class_name_from_module_name('with_underscores')
-        'WithUnderscores'
-        >>> class_name_from_module_name('oneword')
-        'Oneword'
-    
-    """
-    words = module_name.replace('-', '_').split('_')
-    return ''.join([w.title() for w in words])
 
 class LanguageError(Exception):
     """Exception raised when a problem occurs with changing languages"""
@@ -157,6 +129,31 @@ class PylonsTemplate(Template):
     _template_dir = 'templates/paster_template'
     summary = 'Pylons application template'
     egg_plugins = ['Pylons', 'WebHelpers']
+
+def get_prefix(environ):
+    prefix = environ['paste.config']['app_conf'].get('prefix', '')
+    if not prefix:
+        if environ.get('SCRIPT_NAME', '') != '':
+            prefix = environ['SCRIPT_NAME']
+    return prefix
+
+def class_name_from_module_name(module_name):
+    """Takes a module name and returns the name of the class it defines.
+
+    If the module name contains dashes, they are replaced with underscores.
+    
+    Example::
+    
+        >>> class_name_from_module_name('with-dashes')
+        'WithDashes'
+        >>> class_name_from_module_name('with_underscores')
+        'WithUnderscores'
+        >>> class_name_from_module_name('oneword')
+        'Oneword'
+    
+    """
+    words = module_name.replace('-', '_').split('_')
+    return ''.join([w.title() for w in words])
 
 __all__ = ['AttribSafeContextObj', 'ContextObj', 'Helpers', 'class_name_from_module_name']
 __pudge_all__ = __all__ + ['PylonsTemplate']
