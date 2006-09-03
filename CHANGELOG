@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.2 (**svn**)
+* Re-organized helpers, switched Helpers class to use static methods to reduce
+  code duplication.
 * Helpers cleanup:
     - Old-style Helper object uses StackedObjectProxy just like the new
       scheme, thus avoiding possible WSGI stack issues.
