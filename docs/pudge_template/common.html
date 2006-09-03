@@ -16,6 +16,8 @@ def sigil_for_type(type):
 
 pp = pprint.PrettyPrinter(depth=3)
 
+top_level_module = seperator_needed = None
+
 ?>
 <templates xmlns:py="http://purl.org/kid/ns#"
            py:extends="pudge.generator.Page">
@@ -91,9 +93,30 @@ pp = pprint.PrettyPrinter(depth=3)
   <dl py:def="module_index_table(modules, qualified_names=0)" 
       py:if="not isinstance(modules, list) or len(modules)" 
       class="pudge-module-list">
+    <?python
+    global top_level_module
+    top_level_module = None
+    ?>
     <div py:for="module in modules" py:strip="">
+    <?python
+    global top_level_module, seperator_needed
+    orig = top_level_module
+    myname = qualified_names and module.qualified_name() or module.name
+    if top_level_module is None:
+        top_level_module = myname.split('.')[0]
+        seperator_needed = False
+    elif myname.split('.')[0] != top_level_module:
+    	seperator_needed = True
+    	top_level_module = myname.split('.')[0]
+    else:
+        seperator_needed = False
+    ?>
+    <div py:if="seperator_needed" py:strip="True"><hr size="1" noshade="noshade" /></div>
+    
+    <h2 py:if="orig is None or seperator_needed" py:content="myname.split('.')[0].title()" />
+    
     <dt><tt><a href="${link_to(module)}" class="pudge-obj-link">
-        ${qualified_names and module.qualified_name() or module.name}
+        ${myname}
         </a></tt>
     </dt>
     <dd py:if="module.blurb()">
@@ -101,7 +124,7 @@ pp = pprint.PrettyPrinter(depth=3)
     </dd>
     </div>
   </dl>
-  
+    
   <span class="prefix" 
         py:def="member_sigil(type)">${sigil_for_type(type)}</span>
 
