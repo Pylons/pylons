@@ -154,20 +154,6 @@ class Config(object):
         if prefix:
             self.map.prefix = app_conf['prefix']
             self.map._created_regs = False
-                
-        myghty_defaults = {}
-        
-        # Raise a complete error for the error middleware to catch
-        myghty_defaults['raise_error'] = True
-        
-        # Standard Pylons configuration directives for Myghty
-        myghty_defaults.setdefault('allow_globals', [])
-                
-        myghty_defaults['allow_globals'].extend(
-            ['c', 'h', 's', 'session', 'request', 'params', 'g', 'render', 'render_fragment']
-        )
-        myghty_defaults['component_root'] = [{os.path.basename(path): path} for \
-                                             path in self.paths['templates']]
         
         errorware = {}
         # Load the errorware configuration from the Paste configuration file
@@ -184,8 +170,24 @@ class Config(object):
                                             global_conf.get('error_email_from', 'pylons@yourapp.com'))
             errorware['error_message'] = global_conf.get('error_message', 'An internal server error occurred')
         
+        # Standard Pylons configuration directives for Myghty
+        myghty_defaults = {}
+        
+        # Raise a complete error for the error middleware to catch
+        myghty_defaults['raise_error'] = True
+        myghty_defaults['component_root'] = [{os.path.basename(path): path} for \
+                                             path in self.paths['templates']]
+        
         # Merge in the user-supplied Myghty values
         myghty_defaults.update(self.myghty)
+        
+        # Merge additional globals
+        myghty_defaults.setdefault('allow_globals', [])
+                
+        myghty_defaults['allow_globals'].extend(
+            ['c', 'h', 's', 'session', 'request', 'params', 'g', 'render', 'render_fragment']
+        )
+        
         self.myghty = myghty_defaults
         myghty_template_options = {}
         if app_conf.get('cache_dir', False):

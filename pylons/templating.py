@@ -162,7 +162,14 @@ class Buffet(object):
             if namespace is None:
                 namespace = {}
             namespace['_global_args'] = self._update_names({})
-                
+            
+            # If they passed in a variable thats listed in the global_args,
+            # update the global args one instead of duplicating it
+            interp = engine_config['engine'].interpreter
+            for key in interp.global_args.keys() + interp.init_params.get('allow_globals', []):
+                if key in namespace:
+                    namespace['_global_args'][key] = namespace.pop(key)
+        
         # If one of them is not None then the user did set something
         if cache_key is not None or cache_expire is not None or cache_type is not None:
             if not cache_type:
@@ -202,22 +209,13 @@ class MyghtyTemplatePlugin(object):
         for k, v in options.iteritems():
             if k.startswith('myghty.'):
                 myt_opts[k[7:]] = v
-        myt_opts['global_args'] = dict(
-            c=pylons.c,
-            h=pylons.h,
-            request=pylons.request,
-            g=pylons.g,
-            session=pylons.session,
-            s=pylons.session,
-            render=render,
-        )
         self.interpreter = Interpreter(**myt_opts)
     
     def load_template(self, template_path):
         pass
 
     def render(self, info, format="html", fragment=False, template=None):
-        self.interpreter.global_args = info.pop('_global_args')
+        self.interpreter.global_args.update(info.pop('_global_args'))
         vars = info
         buf = StringIO()
         if fragment:
