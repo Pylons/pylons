@@ -8,6 +8,7 @@ directory and default plug-ins for a new Pylons project.
 import gettext
 import os.path
 import sys
+import warnings
 from paste.deploy.config import CONFIG
 from paste.script.templates import Template
 from routes import threadinglocal
@@ -107,6 +108,10 @@ class Helpers(object):
         elif hasattr(pylons.request, '_h') and hasattr(pylons.request._h, name):
             return getattr(pylons.request._h, name)
         elif name in pylons.translator:
+            if name == 'lang':
+                warnings.warn('Getting the translator language via h.lang is '
+                              'deprecated: Please use h.get_lang() instead',
+                              DeprecationWarning, 2)
             return pylons.translator[name]
         else:
             raise AttributeError("No such helper: '%s'" % repr(name))
@@ -117,6 +122,9 @@ class Helpers(object):
                                  "the special 'lang' attribute. Use the "
                                  "context object 'c' to store context data.")
         else:
+            warnings.warn("Setting the translator language via h.lang = '%s' is "
+                          "deprecated: Please use h.set_lang('%s') instead" % \
+                          (value, value), DeprecationWarning, 2)
             self.set_lang(value)
     
     def translate(self, value):

@@ -16,6 +16,7 @@ Pylons Changelog
     - Added translator global to __init__.py for use with new Helpers cleanup.
     - Copied Helpers function methods directly into util so they can be used
       stand-alone.
+    - Deprecated h.lang (for h.set_lang/h.get_lang)
 * Moved the 'default_charset' option from PylonsApp's constructor to
   Config's.
 * Added 'error' controller route to the top of the Pylons template to avoid

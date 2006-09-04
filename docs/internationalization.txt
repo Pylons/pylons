@@ -27,8 +27,8 @@ Edit ``controllers/hello.py`` controller to look like this making use of the ``_
             resp = Response()
             resp.write('Default: %s<br />'%h._('Hello'))
             for lang in ['fr','en','es']:
-                h.lang = lang
-                resp.write("%s: %s<br />"%(h.lang, h._('Hello')))
+                h.set_lang(lang)
+                resp.write("%s: %s<br />"%(h.get_lang(), h._('Hello')))
             return resp
     
 The controller has now been internationalized but it won't function properly until we have specified the alternative languages.
@@ -154,7 +154,7 @@ Modify the last line of the hello controller to look like this:
 
 .. code-block:: Python
 
-    resp.write("%s: %s %s<br />" % (h.lang, h._('Hello'), h._('World!')))
+    resp.write("%s: %s %s<br />" % (h.get_lang(), h._('Hello'), h._('World!')))
     
 If you run the example again the output will be::
 
