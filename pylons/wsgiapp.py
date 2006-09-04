@@ -123,14 +123,20 @@ class PylonsBaseWSGIApp(object):
         # for 'normal' Python import usage with no surprises.
         __import__(self.package_name + '.lib.base')
         their_h = getattr(sys.modules[self.package_name + '.lib.base'], 'h', None)
-        __import__(self.package_name + '.lib.helpers')
+
+        try: 
+            helpers_name = self.package_name + '.config.helpers' 
+            __import__(helpers_name) 
+        except: 
+            helpers_name = self.package_name + '.lib.helpers' 
+            __import__(helpers_name)
         if their_h != pylons.h and their_h is not None:
             # We're using the new Helper import style
-            req._h = sys.modules[self.package_name + '.lib.helpers']
+            req._h = sys.modules[helpers_name]
         else:
             # We still need to keep a reference to their helpers for the old
             # Helpers object.
-            req._oldh = sys.modules[self.package_name + '.lib.helpers']
+            req._oldh = sys.modules[helpers_name]
         
         # Setup the translator global object
         trans = dict(translator=_Translator())
