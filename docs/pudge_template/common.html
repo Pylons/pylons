@@ -90,7 +90,7 @@ top_level_module = seperator_needed = None
   
   <!-- view source link -->
   
-  <dl py:def="module_index_table(modules, qualified_names=0)" 
+  <dl py:def="module_index_table(modules, qualified_names=0, split_packages=False)" 
       py:if="not isinstance(modules, list) or len(modules)" 
       class="pudge-module-list">
     <?python
@@ -111,9 +111,9 @@ top_level_module = seperator_needed = None
     else:
         seperator_needed = False
     ?>
-    <div py:if="seperator_needed" py:strip="True"><hr size="1" noshade="noshade" /></div>
+    <div py:if="seperator_needed and split_packages" py:strip="True"><hr size="1" noshade="noshade" /></div>
     
-    <h2 py:if="orig is None or seperator_needed" py:content="myname.split('.')[0].title()" />
+    <h2 py:if="(orig is None or seperator_needed) and split_packages" py:content="myname.split('.')[0].title()" />
     
     <dt><tt><a href="${link_to(module)}" class="pudge-obj-link">
         ${myname}

@@ -24,6 +24,11 @@ def initialize(self):
         members.sort(lambda x, y: cmp(sortkey(x), sortkey(y)))
         sections.append((title, members))
     self.sections = sections
+
+def member_sort(members):
+    def s(a, b):
+        return cmp(a.name, b.name)
+    return sorted(members, cmp=s)
 ?>
 <div xmlns:py="http://purl.org/kid/ns#"
      py:extends="'layout.html', 'common.html', 'transitions.html'"
@@ -85,7 +90,7 @@ def initialize(self):
        py:if="members" py:strip="">
     <a name="${section_title.lower()}" />
     <h2>${section_title}</h2>
-    <div py:for="member in members" py:if="section_title != 'Modules'"
+    <div py:for="member in member_sort(members)" py:if="section_title != 'Modules'"
          py:replace="render_object(member)" />
     <div py:if="members and section_title == 'Modules'" py:strip="">
       <a name="modules" />
