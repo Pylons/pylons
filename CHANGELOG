@@ -2,6 +2,9 @@ Pylons Changelog
 =================
 
 0.9.2 (**svn**)
+* Added g object to the shell. Works as long as the Pylons app can respond
+  to a path of '/'. The pylons.g variable will also be setup properly for
+  use in the shell.
 * Myghty template options are now passed properly to the template creation, and
   allow_globals now works to add Myghty template globals.
 * Re-organized helpers, switched Helpers class to use static methods to reduce

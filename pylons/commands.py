@@ -11,6 +11,7 @@ import os
 import os.path
 import sys
 import glob
+import pylons
 
 from paste.script.command import Command, BadCommand
 from paste.script.filemaker import FileOp
@@ -165,21 +166,32 @@ class ShellCommand(Command):
         
         make_map = getattr(sys.modules[routing_package], 'make_map')
         mapper = make_map()
+        test_app = app=paste.fixture.TestApp(wsgiapp)
+        g = None
+        try:
+            g = test_app.get('/').g
+        except:
+            pass
         
         locs.update(
             dict(
                 model=sys.modules[models_package],
                 mapper=mapper,
                 wsgiapp=wsgiapp,
-                app=paste.fixture.TestApp(wsgiapp),
+                app=test_app,
                 h=sys.modules[helpers_package],
             )
         )
-                
+        if g:
+            locs['g'] = g
+            pylons.g.push_object(g)
+        
         banner = "Pylons Interactive Shell\nPython %s\n\n" % sys.version
         banner += "Additional Objects:\n"
         banner += "  %-10s -  %s\n" % ('mapper', 'Routes mapper object')
         banner += "  %-10s -  %s\n" % ('h', 'Helper object')
+        if g:
+            banner += "  %-10s -  %s\n" % ('g', 'Globals object')
         banner += "  %-10s -  %s\n" % ('model', 'Models from models package')
         banner += "  %-10s -  %s\n" % ('wsgiapp', 'This projects WSGI App instance')
         banner += "  %-10s -  %s\n" % ('app', 'paste.fixture wrapped around wsgiapp')
