@@ -55,7 +55,7 @@ Pylons can be installed with `Easy Install
     > easy_install Pylons 
 
 Dependant packages are automatically installed from 
-the `Pylons download page <http://www.pylonshq.com/download/>`_ .
+the `Pylons download page <http://pylonshq.com/download/>`_ .
 
 
 """%version,
@@ -68,7 +68,7 @@ the `Pylons download page <http://www.pylonshq.com/download/>`_ .
     zip_safe=False,
     include_package_data=True,
     install_requires=[
-        "Routes>=1.4", "Myghty>=1.0.2", "Paste>=0.9.8",
+        "Routes>=1.4", "Myghty>=1.0.2", "Paste>=0.9.8.1",
         "PasteDeploy>=0.9.6", "PasteScript>=0.9.8", "FormEncode>=0.5.1",
         "simplejson>=1.4", "WebHelpers>=0.2", "nose>=0.8.7", "Beaker>=0.6.1",
     ],
