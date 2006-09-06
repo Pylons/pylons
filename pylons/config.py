@@ -60,6 +60,8 @@ class Config(object):
         self.environ_config = environ_config
         self.default_charset = default_charset
         self.strict_c = strict_c
+        if 'output_encoding' not in myghty:
+            myghty['output_encoding'] = default_charset
         self.global_conf = {}
         self.app_conf = {}
         self.template_engines = []

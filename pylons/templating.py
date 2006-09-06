@@ -22,9 +22,8 @@ try:
     from cStringIO import StringIO
 except ImportError:
     from StringIO import StringIO
-
-from myghty.interp import Interpreter
-
+import myghty.interp
+import paste.wsgiwrappers
 import pylons
 
 class BuffetError(Exception):
@@ -210,21 +209,25 @@ class MyghtyTemplatePlugin(object):
         for k, v in options.iteritems():
             if k.startswith('myghty.'):
                 myt_opts[k[7:]] = v
-        self.interpreter = Interpreter(**myt_opts)
+        self.interpreter = myghty.interp.Interpreter(**myt_opts)
     
     def load_template(self, template_path):
         pass
 
-    def render(self, info, format="html", fragment=False, template=None):
-        global_args = info.pop('_global_args')
-        vars = info
+    def render(self, info, format="html", fragment=False, template=None,
+               output_encoding=None, encoding_errors=None, disable_unicode=False):
         buf = StringIO()
+        global_args = info.pop('_global_args')
+        optional_args = dict(disable_unicode=disable_unicode)
         if fragment:
-            self.interpreter.execute(template, request_args=vars, 
-                global_args=global_args, out_buffer=buf, disable_wrapping=True)
-        else:
-            self.interpreter.execute(template, request_args=vars, 
-                global_args=global_args, out_buffer=buf)
+            optional_args['disable_wrapping'] = True
+        if output_encoding:
+            optional_args['output_encoding'] = output_encoding
+        if encoding_errors:
+            optional_args['encoding_errors'] = encoding_errors
+        self.interpreter.execute(template, request_args=info,
+                                 global_args=global_args, out_buffer=buf,
+                                 **optional_args)
         return buf.getvalue()
 
 available_engines = {}
@@ -254,13 +257,18 @@ def render(*args, **kargs):
     fragment = kargs.pop('fragment', False)
     args = list(args)
     template = args.pop()
-    cache_args = dict(cache_expire=kargs.pop('cache_expire', None), 
-                      cache_type=kargs.pop('cache_type', None),
-                      cache_key=kargs.pop('cache_key', None))
+    render_args = dict(cache_expire=kargs.pop('cache_expire', None), 
+                       cache_type=kargs.pop('cache_type', None),
+                       cache_key=kargs.pop('cache_key', None),
+                       output_encoding=kargs.pop('output_encoding', None),
+                       encoding_errors=kargs.pop('encoding_errors', None),
+                       disable_unicode=kargs.pop('disable_unicode', None))
     if args: 
         engine = args.pop()
-        return pylons.buffet.render(engine, template, fragment=fragment, namespace=kargs, **cache_args)
-    return pylons.buffet.render(template_name=template, fragment=fragment, namespace=kargs, **cache_args)
+        return pylons.buffet.render(engine, template, fragment=fragment,
+                                    namespace=kargs, **render_args)
+    return pylons.buffet.render(template_name=template, fragment=fragment,
+                                namespace=kargs, **render_args)
 
 def render_response(*args, **kargs):
     """Returns the rendered response within a Response object
@@ -275,7 +283,15 @@ def render_response(*args, **kargs):
             return render_response('/my/template.myt')
     
     """
-    return pylons.Response(render(*args, **kargs))
+    response = pylons.Response(render(*args, **kargs))
+    output_encoding = kargs.get('output_encoding')
+    encoding_errors = kargs.get('encoding_errors')
+    if output_encoding:
+        response.headers['Content-Type'] = '%s; charset=%s' % \
+            (paste.wsgiwrappers.settings['content_type'], output_encoding)
+    if encoding_errors:
+        response.encoding_errors = encoding_errors
+    return response
 
 
 __pudge_all__ = ['render', 'render_response', 'Buffet', 'MyghtyTemplatePlugin']
