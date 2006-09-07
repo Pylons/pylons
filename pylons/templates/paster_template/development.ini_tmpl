@@ -7,7 +7,7 @@
 debug = true
 email_to = you@yourdomain.com
 smtp_server = localhost
-error_email_from = paste@exceptions.com
+error_email_from = paste@localhost
 
 [server:main]
 use = egg:Paste#http
