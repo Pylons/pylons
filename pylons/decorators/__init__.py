@@ -65,6 +65,8 @@ def validate(schema=None, validators=None, form=None, variable_decode=False):
                 errors = e.unpack_errors(variable_decode)
         if validators:
             if isinstance(validators, dict):
+                if not hasattr(self, 'form_result'):
+                    self.form_result = {}
                 for field, validator in validators.iteritems():
                     try:
                         self.form_result[field] = \
