@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.2 (**svn**)
+* Fixed legacy (0.8) controller methods' **ARGS (also m.request_args and
+  pylons.params) to be of the expected mixed dictionary instead of MultiDict.
 * Fixed _attach_locals not attaching g and cache objects.
 * Added g object to the shell. Works as long as the Pylons app can respond
   to a path of '/'. The pylons.g variable will also be setup properly for

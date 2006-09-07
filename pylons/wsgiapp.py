@@ -160,10 +160,12 @@ class PylonsBaseWSGIApp(object):
         
         # Setup legacy globals
         if environ.get('pylons.legacy'):
+            # Legacy mixed dictionary instead of MultiDict
+            req._legacy_params = req.params.mixed()
             environ['paste.registry'].register(pylons.legacy.response, WSGIResponse())
             environ['paste.registry'].register(pylons.m, 
                 pylons.legacy.Myghty_Compat(environ, start_response))
-            environ['paste.registry'].register(pylons.params, req.params)
+            environ['paste.registry'].register(pylons.params, req._legacy_params)
         
         econf = environ['pylons.environ_config']
         if econf.get('session'):

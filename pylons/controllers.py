@@ -62,7 +62,7 @@ class Controller(object):
         kargs = self._req.environ['pylons.routes_dict'].copy()
         
         # @@ LEGACY: Add in ARGS alias to params
-        kargs['ARGS'] = self._req.params
+        kargs['ARGS'] = self._req._legacy_params
         
         c = pylons.c._current_obj()
         if argspec[2]:

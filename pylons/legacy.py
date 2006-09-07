@@ -23,7 +23,7 @@ class Myghty_Compat(object):
         self.start_response = start_response
         self.headers_out = response.headers
         self.headers_in = pylons.request.headers
-        self.request_args = pylons.request.params
+        self.request_args = pylons.request._legacy_params
     
     def write(self, content):
         response.write(content)
