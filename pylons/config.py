@@ -193,7 +193,7 @@ class Config(object):
         self.myghty = myghty_defaults
         myghty_template_options = {}
         if app_conf.get('cache_dir', False):
-            myghty_defaults['data_dir'] = app_conf['cache_dir']
+            myghty_defaults['data_dir'] = os.path.join(app_conf['cache_dir'], 'templates')
         else:
             myghty_defaults['data_dir'] = app_conf['myghty_data_dir']
         
@@ -208,7 +208,7 @@ class Config(object):
         if not app_conf.has_key('session_data_dir'):
             app_conf['session_data_dir'] = os.path.join(app_conf['cache_dir'], 'sessions')
         if not app_conf.has_key('cache_data_dir'):
-            app_conf['cache_data_dir'] = app_conf['cache_dir']
+            app_conf['cache_data_dir'] = os.path.join(app_conf['cache_dir'], 'cache')
         
         # Prepare our default template engine
         self.add_template_engine('pylonsmyghty', None, myghty_template_options)

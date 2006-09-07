@@ -16,11 +16,16 @@ port = 5000
 
 [app:main]
 use = egg:${project}
-myghty_data_dir = %(here)s/data/templates
-cache_data_dir = %(here)s/data/cache
-session_data_dir = %(here)s/data/sessions
+cache_dir = %(here)s/data
 session_key = ${package}
 session_secret = somesecret
+
+# If you'd like to fine-tune the individual locations of the cache data dirs
+# for Myghty, the Cache data, or the Session saves, un-comment the desired
+# settings here:
+# myghty_data_dir = %(here)s/data/templates
+# cache_data_dir = %(here)s/data/cache
+# session_data_dir = %(here)s/data/sessions
 
 # Specify the database for SQLObject to use via pylons.database.PackageHub.
 # %(here) may include a ':' character on Windows environments; this can
