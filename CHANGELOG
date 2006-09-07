@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.2 (**svn**)
+* Updated default template controller to provide better example of directly
+  serving Myghty templates.
 * Fixed legacy (0.8) controller methods' **ARGS (also m.request_args and
   pylons.params) to be of the expected mixed dictionary instead of MultiDict.
 * Fixed _attach_locals not attaching g and cache objects.
