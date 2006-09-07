@@ -70,7 +70,7 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
     install_requires=[
         "Routes>=1.4.1", "Myghty>=1.0.2", "Paste>=0.9.8.1",
         "PasteDeploy>=0.9.6", "PasteScript>=0.9.8", "FormEncode>=0.5.1",
-        "simplejson>=1.4", "WebHelpers>=0.2", "nose>=0.8.7", "Beaker>=0.6.1",
+        "simplejson>=1.4", "WebHelpers>=0.2.1", "nose>=0.9.0", "Beaker>=0.6.1",
     ],
     classifiers=[
         "Development Status :: 4 - Beta",
