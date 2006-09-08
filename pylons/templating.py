@@ -262,15 +262,15 @@ def render(*args, **kargs):
     fragment = kargs.pop('fragment', False)
     args = list(args)
     template = args.pop()
-    render_args = dict(cache_expire=kargs.pop('cache_expire', None), 
+    cache_args = dict(cache_expire=kargs.pop('cache_expire', None), 
                        cache_type=kargs.pop('cache_type', None),
                        cache_key=kargs.pop('cache_key', None))
     if args: 
         engine = args.pop()
         return pylons.buffet.render(engine, template, fragment=fragment,
-                                    namespace=kargs, **render_args)
+                                    namespace=kargs, **cache_args)
     return pylons.buffet.render(template_name=template, fragment=fragment,
-                                namespace=kargs, **render_args)
+                                namespace=kargs, **cache_args)
 
 def render_response(*args, **kargs):
     """Returns the rendered response within a Response object
