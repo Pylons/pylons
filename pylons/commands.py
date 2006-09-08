@@ -12,6 +12,7 @@ import os.path
 import sys
 import glob
 import pylons
+import pylons.util as util
 
 from paste.script.command import Command, BadCommand
 from paste.script.filemaker import FileOp
@@ -84,13 +85,14 @@ class ControllerCommand(Command):
                 raise BadCommand('No egg_info directory was found')
             
             # Validate the name
+            name = name.replace('-', '_')
             self.validate_name(name)
             
             fullname = os.path.join(dir, name)
-            
+            controller_name = util.class_name_from_module_name(name.split('/')[-1])
             if not fullname.startswith(os.sep): fullname = os.sep + fullname
             testname = fullname.replace(os.sep, '_')[1:]
-            fo.template_vars.update({'name': name.title().replace('-', '_'),
+            fo.template_vars.update({'name': controller_name,
                                   'fname': os.path.join(dir, name)})
             fo.copy_file(template='controller.py_tmpl',
                          dest=os.path.join('controllers', dir), filename=name)
