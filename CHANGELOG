@@ -1,7 +1,7 @@
 Pylons Changelog
 =================
 
-0.9.2 (**svn**)
+0.9.2 (Sept. 7th, 2006)
 * Fixed problem with dashes in controller names, resolves #107.
 * Updated default ini file to use localhost from address. Refs #104.
 * Updated default development.ini to use a single cache_dir setting which
