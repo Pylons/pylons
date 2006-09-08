@@ -162,6 +162,11 @@ class Buffet(object):
             if namespace is None:
                 namespace = {}
             namespace['_global_args'] = self._update_names({})
+
+            # Reserved myghty keywords
+            for key in ('output_encoding', 'encoding_errors', 'disable_unicode'):
+                if key in namespace:
+                    options[key] = namespace.pop(key)
             
             # If they passed in a variable thats listed in the global_args,
             # update the global args one instead of duplicating it
@@ -259,10 +264,7 @@ def render(*args, **kargs):
     template = args.pop()
     render_args = dict(cache_expire=kargs.pop('cache_expire', None), 
                        cache_type=kargs.pop('cache_type', None),
-                       cache_key=kargs.pop('cache_key', None),
-                       output_encoding=kargs.pop('output_encoding', None),
-                       encoding_errors=kargs.pop('encoding_errors', None),
-                       disable_unicode=kargs.pop('disable_unicode', None))
+                       cache_key=kargs.pop('cache_key', None))
     if args: 
         engine = args.pop()
         return pylons.buffet.render(engine, template, fragment=fragment,
