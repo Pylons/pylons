@@ -107,10 +107,10 @@ class Helpers(object):
         pass
     
     def __getattr__(self, name):
-        if hasattr(pylons.request._oldh, name):
-            return getattr(pylons.request._oldh, name)
-        elif hasattr(pylons.request, '_h') and hasattr(pylons.request._h, name):
+        if hasattr(pylons.request, '_h') and hasattr(pylons.request._h, name):
             return getattr(pylons.request._h, name)
+        elif hasattr(pylons.request, '_oldh') and hasattr(pylons.request._oldh, name):
+            return getattr(pylons.request._oldh, name)
         elif name in pylons.translator:
             if name == 'lang':
                 warnings.warn('Getting the translator language via h.lang is '
