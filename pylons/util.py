@@ -51,7 +51,11 @@ def get_lang():
     return pylons.translator['lang']
 
 def get_prefix(environ):
-    prefix = environ['paste.config']['app_conf'].get('prefix', '')
+    if environ.has_key('paste.config'):
+        prefix = environ['paste.config']['app_conf'].get('prefix', '')
+    else:
+        # Not ideal but if the error occurs before the paste.config is available not a lot we can do
+        prefix = ''
     if not prefix:
         if environ.get('SCRIPT_NAME', '') != '':
             prefix = environ['SCRIPT_NAME']
