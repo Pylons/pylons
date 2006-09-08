@@ -101,8 +101,8 @@ It would be nice if we could add a method to our ``Page`` object to retrieve the
 
 .. code-block:: Python
 
-    from pylons import h
     import re
+    from quickwiki.lib.base import h
     wikiwords = re.compile(r"\b([A-Z]\w+[A-Z]+\w+)")
     from docutils.core import publish_parts
     
