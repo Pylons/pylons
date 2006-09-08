@@ -289,7 +289,7 @@ Quick Recap: We've setup the model, configured the application, added the routes
 
     > paster controller page
 
-We are going to need the following actions::
+We are going to need the following actions:
 
     ``index(self, title)``
         displays a page based on the title
