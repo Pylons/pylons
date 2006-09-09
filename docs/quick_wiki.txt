@@ -102,7 +102,7 @@ It would be nice if we could add a method to our ``Page`` object to retrieve the
 .. code-block:: Python
 
     import re
-    from quickwiki.lib.base import h
+    import quickwiki.lib.helpers as h
     wikiwords = re.compile(r"\b([A-Z]\w+[A-Z]+\w+)")
     from docutils.core import publish_parts
     
