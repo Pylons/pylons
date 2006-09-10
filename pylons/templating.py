@@ -220,16 +220,18 @@ class MyghtyTemplatePlugin(object):
         pass
 
     def render(self, info, format="html", fragment=False, template=None,
-               output_encoding=None, encoding_errors=None, disable_unicode=False):
+               output_encoding=None, encoding_errors=None, disable_unicode=None):
         buf = StringIO()
         global_args = info.pop('_global_args')
-        optional_args = dict(disable_unicode=disable_unicode)
+        optional_args = {}
         if fragment:
             optional_args['disable_wrapping'] = True
         if output_encoding:
             optional_args['output_encoding'] = output_encoding
         if encoding_errors:
             optional_args['encoding_errors'] = encoding_errors
+        if disable_unicode:
+            optional_args['disable_unicode'] = disable_unicode
         self.interpreter.execute(template, request_args=info,
                                  global_args=global_args, out_buffer=buf,
                                  **optional_args)
