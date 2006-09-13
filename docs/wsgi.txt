@@ -84,7 +84,7 @@ As well as writing your WSGI application as a function you could write it as a c
             
 All the standard Pylons middleware defined in ``config/middleware.py`` is still available.
 
-Running a WSGI Application Wrom Within a Controller
+Running a WSGI Application From Within a Controller
 ---------------------------------------------------
 
 There may be occasions where you don't want to replace your entire controller with a WSGI application but simply want to run a WSGI application from with a controller action. If your project was called ``test`` and you had a WSGI application called ``wsgi_app`` you could even do this:
