@@ -21,7 +21,7 @@ from routes import request_config
 import pylons
 import pylons.templating
 import pylons.legacy
-from pylons.util import ContextObj, AttribSafeContextObj, _Translator, class_name_from_module_name
+from pylons.util import ContextObj, AttribSafeContextObj, _Translator, set_lang, class_name_from_module_name
 from pylons.controllers import Controller, WSGIController
 
 class PylonsBaseWSGIApp(object):
@@ -142,11 +142,8 @@ class PylonsBaseWSGIApp(object):
         trans = dict(translator=_Translator())
         trans['CONFIG'] = dict(app_conf=self.globals.pylons_config.app_conf,
             global_conf=self.globals.pylons_config.global_conf)
-        if self.globals.pylons_config.app_conf.has_key('lang'):
-            trans['translator'](self.globals.pylons_config.app_conf['lang'])
-        else:
-            trans['lang'] = None
         environ['paste.registry'].register(pylons.translator, trans)
+        set_lang(self.globals.pylons_config.app_conf.get('lang'))
         
         # Setup the basic pylons global objects
         environ['paste.registry'].register(paste.wsgiwrappers.settings, self.settings)
