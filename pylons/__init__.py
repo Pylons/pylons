@@ -5,7 +5,6 @@ from paste.wsgiwrappers import WSGIResponse as Response
 
 from pylons.controllers import Controller, RPCController
 from pylons.decorators import jsonify
-from pylons.util import Helpers
 from pylons.legacy import m, params
 
 c = StackedObjectProxy(name="C")
@@ -14,7 +13,7 @@ cache = StackedObjectProxy(name="Cache")
 session = StackedObjectProxy(name="Session")
 request = StackedObjectProxy(name="Request")
 buffet = StackedObjectProxy(name="Buffet")
-h = Helpers(c=c, session=session, request=request, buffet=buffet)
+h = StackedObjectProxy(name="h")
 
 translator = StackedObjectProxy(name="Translator")
 

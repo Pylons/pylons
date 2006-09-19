@@ -102,44 +102,6 @@ class _Translator(object):
     def gettext(self, value):
         return value
 
-class Helpers(object):
-    def __init__(self, **opts):
-        pass
-    
-    def __getattr__(self, name):
-        if hasattr(pylons.request, '_h') and hasattr(pylons.request._h, name):
-            return getattr(pylons.request._h, name)
-        elif hasattr(pylons.request, '_oldh') and hasattr(pylons.request._oldh, name):
-            return getattr(pylons.request._oldh, name)
-        elif name in pylons.translator:
-            if name == 'lang':
-                warnings.warn('Getting the translator language via h.lang is '
-                              'deprecated: Please use h.get_lang() instead',
-                              DeprecationWarning, 2)
-            return pylons.translator[name]
-        else:
-            raise AttributeError("No such helper: '%s'" % repr(name))
-    
-    def __setattr__(self, name, value):
-        if name != 'lang':
-            raise AttributeError('Helper attributes cannot be set, except for '
-                                 "the special 'lang' attribute. Use the "
-                                 "context object 'c' to store context data.")
-        else:
-            warnings.warn("Setting the translator language via h.lang = '%s' is "
-                          "deprecated: Please use h.set_lang('%s') instead" % \
-                          (value, value), DeprecationWarning, 2)
-            self.set_lang(value)
-    
-    def translate(self, value):
-        """Deprecated, use _()"""
-        raise NotImplementedError('Use h._() instead')
-    
-    log = staticmethod(log)
-    _ = staticmethod(_)
-    set_lang = staticmethod(set_lang)
-    get_lang = staticmethod(get_lang)
-
 class PylonsTemplate(Template):
     _template_dir = 'templates/paster_template'
     summary = 'Pylons application template'

@@ -73,15 +73,13 @@ class Buffet(object):
         d = ns
         d.update(dict(
             c=pylons.c._current_obj(),
-            h=pylons.h,
+            h=pylons.h._current_obj(),
             request=pylons.request._current_obj(),
             g=pylons.g._current_obj(),
             session=pylons.session._current_obj(),
             s=pylons.session._current_obj(),
             render=render,
         ))
-        if hasattr(d['request'], '_h'):
-            d['h'] = d['request']._h
         return d
     
     def render(self, engine_name=None, template_name=None,

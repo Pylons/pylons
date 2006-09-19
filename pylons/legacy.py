@@ -4,11 +4,13 @@ Myghty compatibility object, old-style ``params`` and ``m`` globals. The
 ``response`` object is used to buffer the output.
 
 """
+import sys
+
 from paste.registry import StackedObjectProxy
 import paste.httpexceptions as httpexceptions
 
 import pylons
-import pylons.helpers
+import pylons.util
 import pylons.templating as tmpl
 
 # Legacy objects
@@ -16,6 +18,23 @@ m = StackedObjectProxy(name="m legacy object")
 response = StackedObjectProxy(name="response")
 params = StackedObjectProxy(name="params")
 
+def load_h(package_name):
+    # This is a legacy test for pre-0.9.3 projects to continue using the old
+    # style Helper imports. The proper style is to pass the helpers module ref
+    # to the PylonsApp during initialization.
+    __import__(package_name + '.lib.base')
+    their_h = getattr(sys.modules[package_name + '.lib.base'], 'h', None)
+    if their_h:
+        return their_h
+    
+    try:
+        helpers_name = package_name + '.lib.helpers'
+        __import__(helpers_name) 
+    except: 
+        helpers_name = package_name + '.config.helpers'
+        __import__(helpers_name)
+    return sys.modules[helpers_name]
+    
 class Myghty_Compat(object):
     """Myghty Compatibility Object for Pylons 0.8 Projects"""
     def __init__(self, environ, start_response):

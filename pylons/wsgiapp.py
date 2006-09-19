@@ -41,8 +41,9 @@ class PylonsBaseWSGIApp(object):
     "monkey-patching" this class. Subclassing is the preferred approach.
     
     """
-    def __init__(self, mapper, package_name, globals, default_charset=None):
+    def __init__(self, mapper, package_name, globals, helpers=None, default_charset=None):
         self.mapper = mapper
+        self.helpers = helpers
         self.globals = globals
         self.package_name = package_name
         config = globals.pylons_config
@@ -118,25 +119,8 @@ class PylonsBaseWSGIApp(object):
         """Setup and register all the Pylons objects with the registry"""
         req = WSGIRequest(environ)
         
-        # This is a legacy test for pre-0.9.2 projects to continue using the old
-        # style Helper. New style directly uses the projects lib.helpers module
-        # for 'normal' Python import usage with no surprises.
-        __import__(self.package_name + '.lib.base')
-        their_h = getattr(sys.modules[self.package_name + '.lib.base'], 'h', None)
-
-        try: 
-            helpers_name = self.package_name + '.config.helpers' 
-            __import__(helpers_name) 
-        except: 
-            helpers_name = self.package_name + '.lib.helpers' 
-            __import__(helpers_name)
-        if their_h != pylons.h and their_h is not None:
-            # We're using the new Helper import style
-            req._h = sys.modules[helpers_name]
-        else:
-            # We still need to keep a reference to their helpers for the old
-            # Helpers object.
-            req._oldh = sys.modules[helpers_name]
+        helpers = self.helpers or pylons.legacy.load_h(self.package_name)
+        environ['paste.registry'].register(pylons.h, helpers)
         
         # Setup the translator global object
         trans = dict(translator=_Translator())
@@ -267,7 +251,7 @@ class PylonsApp(object):
     then no session/cache objects will be available.
     
     """
-    def __init__(self, config, default_charset=None):
+    def __init__(self, config, default_charset=None, helpers=None):
         self.config = config
         if default_charset:
             warnings.warn(
@@ -288,18 +272,18 @@ class PylonsApp(object):
             g.pylons_config = config
         
         # Create the base Pylons wsgi app
-        app = PylonsBaseWSGIApp(config.map, config.package, g)
+        app = PylonsBaseWSGIApp(config.map, config.package, g, helpers=helpers)
         
         # Pull user-specified environ overrides, or just setup default
         # session and caching objects
         self.econf = econf = config.environ_config.copy()
-        if not econf.has_key('session'):
+        if 'session' not in econf:
             from beaker.session import SessionMiddleware
             econf['session'] = 'beaker.session'
             app = SessionMiddleware(app, config.global_conf, 
                 auto_register=True, **config.app_conf)
         
-        if not econf.has_key('cache'):
+        if 'cache' not in econf:
             from beaker.cache import CacheMiddleware
             econf['cache'] = 'beaker.cache'
             app = CacheMiddleware(app, config.global_conf, **config.app_conf)

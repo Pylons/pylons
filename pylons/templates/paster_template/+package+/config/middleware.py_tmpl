@@ -9,6 +9,7 @@ from pylons.middleware import ErrorHandler, ErrorDocuments, StaticJavascripts, e
 import pylons.wsgiapp
 
 from ${package}.config.environment import load_environment
+import ${package}.lib.helpers
 
 def make_app(global_conf, **app_conf):
     """Create a WSGI application and return it
@@ -23,7 +24,7 @@ def make_app(global_conf, **app_conf):
     config.init_app(global_conf, app_conf, package='${package}')
         
     # Load our default Pylons WSGI app and make g available
-    app = pylons.wsgiapp.PylonsApp(config)
+    app = pylons.wsgiapp.PylonsApp(config, helpers=${package}.lib.helpers)
     g = app.globals
     app = ConfigMiddleware(app, {'app_conf':app_conf,
         'global_conf':global_conf})
