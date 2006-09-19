@@ -119,19 +119,10 @@ and then add a ``get_wiki_content()`` method to the ``Page`` object so it looks 
         def get_wiki_content(self):
             content = publish_parts(self.content, writer_name="html")["html_body"]
             titles = wikiwords.findall(content)
-            if titles:
-                for title in titles:
-                    content = content.replace(
-                        title, 
-                        h.link_to(
-                            title, 
-                            h.url_for(
-                                controller='page',
-                                action='index', 
-                                title=title
-                            ),
-                        ),
-                    )
+            for title in titles:
+                content = content.replace(title, h.link_to(title, 
+                        h.url_for(controller='page', action='index', 
+                            title=title)))
             return content
 
 This code deserves a bit of explaining. The ``content = None`` line is so that the ``content`` attribute is initialized to ``None`` when a new ``Page`` object is created. If the ``Page`` object represents a row in the ``pages`` table then ``self.content`` will be the value of the ``content`` field. ``h.link_to()`` and ``h.url_for()`` are standard Pylons helpers which create links to specific controller actions. In this case we have decided that all WikiWords should link to the ``index`` action of the ``page`` controller which we will create later.
