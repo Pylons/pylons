@@ -251,7 +251,7 @@ class PylonsApp(object):
     then no session/cache objects will be available.
     
     """
-    def __init__(self, config, default_charset=None, helpers=None):
+    def __init__(self, config, default_charset=None, helpers=None, g=None):
         self.config = config
         if default_charset:
             warnings.warn(
@@ -262,13 +262,14 @@ class PylonsApp(object):
                 "default_charset='%s')" % default_charset, DeprecationWarning, 2)
             self.config.default_charset = default_charset
 
-        g = None
-        try:
-            package = __import__(config.package + '.lib.app_globals', globals(), locals(), ['Globals'])
-        except ImportError:
-            pass
-        else:
-            g = package.Globals(config.global_conf, config.app_conf, config=config)
+        if not g:
+            try:
+                globals_package = __import__(config.package + '.lib.app_globals', globals(), locals(), ['Globals'])
+                g = getattr(globals_package, Globals)
+            except ImportError:
+                pass
+        if g:
+            g(config.global_conf, config.app_conf, config=config)
             g.pylons_config = config
         
         # Create the base Pylons wsgi app

@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.3 (**svn**)
+* Added option for PylonsApp to take a globals object to avoid checking a
+  hardcoded path for a Globals object.
 * Removed old Helpers legacy object entirely, replaced pylons.h with proper
   StackedObjectProxy. Cleaned up PylonsApp and PylonsBaseApp to accept a
   helpers reference so that Pylons can be ignorant of where the helpers came
