@@ -107,6 +107,12 @@ class PylonsTemplate(Template):
     summary = 'Pylons application template'
     egg_plugins = ['Pylons', 'WebHelpers']
 
+class MinimalPylonsTemplate(Template):
+    _template_dir = 'templates/minimal_project'
+    summary = 'Pylons minimal application template'
+    egg_plugins = ['Pylons', 'WebHelpers']
+    
+
 __all__ = ['AttribSafeContextObj', 'ContextObj', 'Helpers', 'class_name_from_module_name',
     'log', '_', 'set_lang', 'get_lang']
 __pudge_all__ = __all__ + ['PylonsTemplate']

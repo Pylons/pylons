@@ -1,0 +1,9 @@
+"""Setup your Routes options here"""
+import os
+from routes import Mapper
+
+def make_map(global_conf={}, app_conf={}):
+    root_path = os.path.dirname(os.path.abspath(__file__))
+    map = Mapper(directory=os.path.join(root_path, 'controllers'))
+    map.connect(':controller/:action/:id')
+    return map

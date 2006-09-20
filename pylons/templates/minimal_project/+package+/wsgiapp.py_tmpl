@@ -1,0 +1,59 @@
+import os
+
+from paste import httpexceptions
+from paste.cascade import Cascade
+from paste.urlparser import StaticURLParser
+from paste.registry import RegistryManager
+from paste.deploy.config import ConfigMiddleware
+from paste.deploy.converters import asbool
+
+import pylons.wsgiapp
+import pylons.config
+from pylons.error import error_template
+from pylons.middleware import ErrorHandler, ErrorDocuments, StaticJavascripts, error_mapper
+
+import ${package}.helpers
+from ${package}.routing import make_map
+
+def load_environment(global_conf={}, app_conf={}):
+    map = make_map(global_conf, app_conf)
+    root_path = os.path.dirname(os.path.abspath(__file__))
+    paths = {'root_path': root_path,
+             'controllers': os.path.join(root_path, 'controllers'),
+             'templates': [os.path.join(root_path, path) for path in \
+                           ('components', 'templates')],
+             'static_files': os.path.join(root_path, 'public')
+             }
+    myghty = {}
+    myghty['log_errors'] = True
+    return pylons.config.Config(myghty, map, paths)
+
+class Globals(object):
+    def __init__(self, global_conf, app_conf, **extra):
+        pass
+
+def make_app(global_conf, full_stack=True, **app_conf):
+    """Create a WSGI application and return it"""
+    # Load our Pylons configuration defaults
+    config = load_environment(global_conf, app_conf)
+    config.init_app(global_conf, app_conf, package='${package}')
+        
+    # Load our default Pylons WSGI app and make g available
+    app = pylons.wsgiapp.PylonsApp(config, helpers=${package}.helpers, g=Globals)
+    g = app.globals
+    app = ConfigMiddleware(app, {'app_conf':app_conf,
+        'global_conf':global_conf})
+    
+    # <-- YOUR MIDDLEWARE HERE
+    
+    static_app = StaticURLParser(config.paths['static_files'])
+    javascripts_app = StaticJavascripts()
+    app = Cascade([static_app, javascripts_app, app])
+    
+    # Build the rest of the stack, see a full template for more details
+    if asbool(full_stack):
+        app = httpexceptions.make_middleware(app, global_conf)
+        app = ErrorHandler(app, global_conf, error_template=error_template, **config.errorware)
+    
+    app = RegistryManager(app)
+    return app

@@ -102,6 +102,7 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
 
     [paste.paster_create_template]
     pylons=pylons.util:PylonsTemplate
+    pylons_minimal=pylons.util:MinimalPylonsTemplate
     
     [distutils.commands]
     lang_extract = pylons.i18n:LangExtract
