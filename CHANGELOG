@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.3 (**svn**)
+* Fixed SCGI bug with QUERY_STRING test when WSGI states it doesn't have to
+  exist. Reported by Riklaunim.
 * Added pylons_minimal template, prone to fine-tuning.
 * Added option for PylonsApp to take a globals object to avoid checking a
   hardcoded path for a Globals object.

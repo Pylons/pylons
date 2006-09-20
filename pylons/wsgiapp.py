@@ -80,7 +80,7 @@ class PylonsBaseWSGIApp(object):
         # parsing POST unless absolutely necessary.
         req = pylons.request._current_obj()
         old_method = None
-        if '_method' in environ['QUERY_STRING'] and req.GET.has_key('_method'):
+        if '_method' in environ.get('QUERY_STRING', '') and req.GET.has_key('_method'):
             old_method = environ['REQUEST_METHOD']
             environ['REQUEST_METHOD'] = req.GET['_method']
         elif environ['REQUEST_METHOD'] == 'POST' and req.POST.has_key('_method'):
