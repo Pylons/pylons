@@ -103,7 +103,7 @@ class _Translator(object):
         return value
 
 class PylonsTemplate(Template):
-    _template_dir = 'templates/paster_template'
+    _template_dir = 'templates/default_project'
     summary = 'Pylons application template'
     egg_plugins = ['Pylons', 'WebHelpers']
 

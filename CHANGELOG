@@ -2,6 +2,10 @@ Pylons Changelog
 =================
 
 0.9.3 (**svn**)
+* Removed old Helpers legacy object entirely, replaced pylons.h with proper
+  StackedObjectProxy. Cleaned up PylonsApp and PylonsBaseApp to accept a
+  helpers reference so that Pylons can be ignorant of where the helpers came
+  from.
 * Fixed bug with lang app_conf option being set improperly. Reported
   by Laurent.
 * Fixed pylons.h to work proper with new and old-style helper imports.
