@@ -265,7 +265,7 @@ class PylonsApp(object):
         if not g:
             try:
                 globals_package = __import__(config.package + '.lib.app_globals', globals(), locals(), ['Globals'])
-                g = getattr(globals_package, Globals)
+                g = getattr(globals_package, 'Globals')
             except ImportError:
                 pass
         if g:
