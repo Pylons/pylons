@@ -25,6 +25,7 @@ except ImportError:
 import myghty.interp
 import paste.wsgiwrappers
 import pylons
+import pylons.util
 
 class BuffetError(Exception):
     pass
@@ -78,6 +79,7 @@ class Buffet(object):
             g=pylons.g._current_obj(),
             session=pylons.session._current_obj(),
             s=pylons.session._current_obj(),
+            _=pylons.util._,
             render=render,
         ))
         return d

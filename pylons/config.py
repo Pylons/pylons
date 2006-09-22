@@ -187,7 +187,7 @@ class Config(object):
         myghty_defaults.setdefault('allow_globals', [])
                 
         myghty_defaults['allow_globals'].extend(
-            ['c', 'h', 's', 'session', 'request', 'params', 'g', 'render', 'render_fragment']
+            ['c', 'h', 's', '_', 'session', 'request', 'params', 'g', 'render', 'render_fragment']
         )
         
         self.myghty = myghty_defaults

@@ -3,6 +3,7 @@ from pylons.controllers import WSGIController
 from pylons.decorators import jsonify, rest, validate
 from pylons.templating import render, render_response
 from pylons.helpers import abort, redirect_to, etag_cache
+from pylons.util import _
 import ${package}.models as model
 import ${package}.lib.helpers as h
 
