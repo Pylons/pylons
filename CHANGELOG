@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.3 (**svn**)
+* Added 's' and 'l' Myghty escaping flags to default project templates. 
+  Suggested by Jamie Wilkinson. Closes #110.
 * Fixed SCGI bug with QUERY_STRING test when WSGI states it doesn't have to
   exist. Reported by Riklaunim.
 * Added pylons_minimal template, prone to fine-tuning.

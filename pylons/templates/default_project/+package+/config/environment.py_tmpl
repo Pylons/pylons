@@ -1,6 +1,7 @@
 import os
 
 import pylons.config
+import webhelpers
 
 from ${package}.config.routing import make_map
 
@@ -19,6 +20,7 @@ def load_environment(global_conf={}, app_conf={}):
     # available to the Myghty handler are available for your use here
     myghty = {}
     myghty['log_errors'] = True
+    myghty['escapes'] = dict(l=webhelpers.auto_link, s=webhelpers.simple_format)
     
     # Add your own Myghty config options here, note that all config options will override
     # any Pylons config options
