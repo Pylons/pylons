@@ -7,11 +7,8 @@ directory and default plug-ins for a new Pylons project.
 """
 import gettext
 import os.path
-import sys
-import warnings
 from paste.deploy.config import CONFIG
 from paste.script.templates import Template
-from routes import threadinglocal
 import pylons
 
 def log(msg):
@@ -37,8 +34,7 @@ def set_lang(lang):
     if lang is None:
         pylons.translator['translator'] = _Translator()
     else:
-        from pkg_resources import resource_string, resource_stream, \
-            resource_exists, resource_filename
+        from pkg_resources import resource_exists
         from pylons.i18n.translation import egg_translation
         catalog_path = os.path.join('i18n', lang, 'LC_MESSAGES')
         if not resource_exists(project_name, catalog_path):
