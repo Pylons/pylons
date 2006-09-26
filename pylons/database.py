@@ -21,9 +21,7 @@ class AutoConnectHub(ConnectionHub):
     
     def __init__(self, uri=None):
         if not uri:
-            conf = CONFIG.current_conf()
-            appconf = conf.get('app_conf', conf.get('app'))
-            uri = appconf.get('sqlobject.dburi')
+            uri = CONFIG['app_conf'].get('sqlobject.dburi')
         self.uri = uri
         ConnectionHub.__init__(self)
     
@@ -123,14 +121,13 @@ class PackageHub(object):
     def set_hub(self):
         dburi = self.dburi
         if not dburi:
-            conf = CONFIG.current_conf()
-            appconf = conf.get('app_conf', conf.get('app'))
-            dburi = appconf.get("%s.dburi" % self.packagename, None)
+            appconf = CONFIG['app_conf']
+            dburi = appconf.get("%s.dburi" % self.packagename)
             if not dburi:
-                dburi = appconf.get("sqlobject.dburi", None)
+                dburi = appconf.get("sqlobject.dburi")
         if not dburi:
             raise KeyError, "No database configuration found!"
-        hub = _hubs.get(dburi, None)
+        hub = _hubs.get(dburi)
         if not hub:
             hub = AutoConnectHub(dburi)
             _hubs[dburi] = hub
