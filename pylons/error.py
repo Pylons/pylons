@@ -342,6 +342,7 @@ def format_eval_html(exc_data, base_path, counter):
         counter=counter,
         include_reusable=False)
     short_er, extra_data = short_formatter.format_collected_data(exc_data)
+    short_text_er = formatter.format_text(exc_data, show_extra_data=False)
     long_formatter = EvalHTMLFormatter(
         base_path=base_path,
         counter=counter,
@@ -349,12 +350,28 @@ def format_eval_html(exc_data, base_path, counter):
         show_extra_data=False,
         include_reusable=False)
     long_er, extra_data_none = long_formatter.format_collected_data(exc_data)
-    text_er = formatter.format_text(exc_data, show_hidden_frames=True)
+    long_text_er = formatter.format_text(exc_data, show_hidden_frames=True,
+                                         show_extra_data=False)
+
+    extra_data_text = format_extra_data_text(exc_data)
+    if extra_data_text:
+        extra_data.append("""
+        <br />
+        <div id="util-link">
+            <script type="text/javascript">
+            show_button('extra_data_text', 'text version')
+            </script>
+        </div>
+        <div id="extra_data_text" class="hidden-data">
+        <textarea style="width: 100%%" rows=%s cols=60>%s</textarea>
+        </div>
+        """ % (len(extra_data_text.splitlines()), extra_data_text))
 
     if short_formatter.filter_frames(exc_data.frames) != \
         long_formatter.filter_frames(exc_data.frames):
         # Only display the full traceback when it differs from the
         # short version
+        long_text_er = cgi.escape(long_text_er)
         full_traceback_html = """
         <br />
         <div id="util-link">
@@ -364,11 +381,21 @@ def format_eval_html(exc_data, base_path, counter):
         </div>
         <div id="full_traceback" class="hidden-data">
         %s
+            <br />
+            <div id="util-link">
+                <script type="text/javascript">
+                show_button('long_text_version', 'full traceback text version')
+                </script>
+            </div>
+            <div id="long_text_version" class="hidden-data">
+            <textarea style="width: 100%%" rows=%s cols=60>%s</textarea>
+            </div>
         </div>
-        """ % long_er
+        """ % (long_er, len(long_text_er.splitlines()), long_text_er)
     else:
         full_traceback_html = ''
 
+    short_text_er = cgi.escape(short_text_er)
     return """
     <style type="text/css">
             #util-link a, #util-link a:link, #util-link a:visited,
@@ -378,17 +405,42 @@ def format_eval_html(exc_data, base_path, counter):
     </style>
     %s
     <br />
-    %s
     <br />
     <div id="util-link">
         <script type="text/javascript">
-        show_button('text_version', 'text version')
+        show_button('short_text_version', 'text version')
         </script>
     </div>
-    <div id="text_version" class="hidden-data">
-    <textarea style="width: 100%%" rows=10 cols=60>%s</textarea>
+    <div id="short_text_version" class="hidden-data">
+    <textarea style="width: 100%%" rows=%s cols=60>%s</textarea>
     </div>
-    """ % (short_er, full_traceback_html, cgi.escape(text_er)), extra_data
+    %s
+    """ % (short_er, len(short_text_er.splitlines()), short_text_er,
+           full_traceback_html), extra_data
+
+def format_extra_data_text(exc_data):
+    """ Return a text representation of the 'extra_data' dict when one exists """
+    extra_data_text = ''
+    if not exc_data.extra_data:
+        return extra_data_text
+
+    text_formatter = TextFormatter()
+    by_title = {}
+    for name, value_list in exc_data.extra_data.items():
+        if isinstance(name, tuple):
+            importance, title = name
+        else:
+            importance, title = 'normal', name
+        if importance != 'extra':
+            continue
+        for value in value_list:
+            by_title[title] = text_formatter.format_extra_data(importance, title, value)
+
+    titles = by_title.keys()
+    titles.sort()
+    for title in titles:
+        extra_data_text += by_title[title]
+    return extra_data_text
 
 error_template = '''\
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
