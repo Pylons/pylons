@@ -174,6 +174,9 @@ class PylonsBaseWSGIApp(object):
         full_module_name = self.package_name + '.controllers.' \
             + controller.replace('/', '.')
         
+        # Hide the traceback here if the import fails (bad syntax and such)
+        __traceback_hide__ = 'before_and_this'
+        
         __import__(full_module_name)
         module_name = controller.split('/')[-1]
         class_name = class_name_from_module_name(module_name) + 'Controller'

@@ -2,6 +2,9 @@ Pylons Changelog
 =================
 
 0.9.3 (**svn**)
+* Added traceback hiding so that more of the traceback relating to Pylons code
+  is removed from the default traceback making it easier to focus on the code
+  in an app that actually caused the problem. Closes #119.
 * Added ability to use '_' translation method directly from templates and in
   the controller without having to use it under h._.
 * Added 's' and 'l' Myghty escaping flags to default project templates. 

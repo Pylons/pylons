@@ -65,6 +65,9 @@ class Controller(object):
         if self._req.environ.get('pylons.legacy'):
             kargs['ARGS'] = self._req._legacy_params
         
+        # Hide the traceback for everything above this controller
+        __traceback_hide__ = 'before_and_this'
+        
         c = pylons.c._current_obj()
         if argspec[2]:
             for k,v in kargs.iteritems(): setattr(c, k, v)
