@@ -29,13 +29,12 @@ def _(value):
 
 def set_lang(lang):
     """Set the language used"""
-    project_name = CONFIG['app_conf']['package']
-    pylons.translator['lang'] = lang
     if lang is None:
         pylons.translator['translator'] = _Translator()
     else:
         from pkg_resources import resource_exists
         from pylons.i18n.translation import egg_translation
+        project_name = CONFIG['app_conf']['package']
         catalog_path = os.path.join('i18n', lang, 'LC_MESSAGES')
         if not resource_exists(project_name, catalog_path):
             raise LanguageError('Language catalog %s not found' % \
@@ -44,7 +43,7 @@ def set_lang(lang):
             egg_translation(project_name, lang=catalog_path)
 
 def get_lang():
-    return pylons.translator['lang']
+    return pylons.translator.get('lang')
 
 def get_prefix(environ):
     if environ.has_key('paste.config'):
