@@ -128,8 +128,7 @@ The first line imports some useful SQLAlchmey objects such as the ``Table`` and 
 
 .. Note:: SQLAlchemy also supports reflecting this information directly from a database table so if we had already created the database table SQLAlchemy could have constructed the ``Table`` object for us.
 
-.. Note:: A primary key is a unique ID for each row in
-a database table. In the example above we are using the page title as a natural primary key. Some people prefer to use integer primary keys for all tables, so-called surrogate primary keys. The author of this tutorial uses both methods in his own code and is not advocating one method over the other, it is important that you choose the best database structure for your application. `Read more about Primary keys on WikiPedia <http://en.wikipedia.org/wiki/Primary_key>`_.
+.. Note:: A primary key is a unique ID for each row in a database table. In the example above we are using the page title as a natural primary key. Some people prefer to use integer primary keys for all tables, so-called surrogate primary keys. The author of this tutorial uses both methods in his own code and is not advocating one method over the other, it is important that you choose the best database structure for your application. `Read more about Primary keys on WikiPedia <http://en.wikipedia.org/wiki/Primary_key>`_.
 
 .. Note:: It is useful to define the metadata with the model rather than in the ``lib/database.py`` file so that the model can be imported in code that does not have the config information setup that the ``lib/database.py`` file relies on. This enables us to write code such as that in ``websetup.py`` which will come later in this tutorial.
 
