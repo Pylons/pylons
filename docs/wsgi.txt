@@ -45,7 +45,7 @@ You can also configure extra WSGI middleware, applications and more directly usi
 Using a WSGI Application as a Pylons 0.9 Controller
 ---------------------------------------------------
 
-In Pylons 0.9 controllers are derived from ``pylons.controllers.WSGIController`` and are also valid WSGI applications. Unless your controller is derived from the legacy ``pylons.controllers.Controller`` class it is also assumed to be a WSGI applicaiton. This means that you don't actually need to use a Pylons controller class in your controller, any WSGI application will work as long as you give it the same name.
+In Pylons 0.9 controllers are derived from ``pylons.controllers.WSGIController`` and are also valid WSGI applications. Unless your controller is derived from the legacy ``pylons.controllers.Controller`` class it is also assumed to be a WSGI application. This means that you don't actually need to use a Pylons controller class in your controller, any WSGI application will work as long as you give it the same name.
 
 For example, if you added a ``hello`` controller by executing ``paster controller hello``, you could modify it to look like this:
 
