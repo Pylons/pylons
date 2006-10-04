@@ -272,7 +272,7 @@ class PylonsApp(object):
             except ImportError:
                 pass
         if g:
-            g(config.global_conf, config.app_conf, config=config)
+            g = g(config.global_conf, config.app_conf, config=config)
             g.pylons_config = config
         
         # Create the base Pylons wsgi app
