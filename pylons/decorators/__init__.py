@@ -22,7 +22,8 @@ def jsonify(func, *args, **kw):
     return response
 jsonify = decorator(jsonify)
 
-def validate(schema=None, validators=None, form=None, variable_decode=False):
+def validate(schema=None, validators=None, form=None, variable_decode=False,
+             dict_char='.', list_char='-'):
     """Validate input either for a FormEncode schema, or individual validators
     
     Given a form schema or dict of validators, validate will attempt to validate
@@ -55,14 +56,15 @@ def validate(schema=None, validators=None, form=None, variable_decode=False):
             return func(self, *args, **kwargs)
         postvars = pylons.request.POST.copy()
         if variable_decode:
-            postvars = variabledecode.variable_decode(postvars)
+            postvars = variabledecode.variable_decode(postvars, dict_char,
+                                                      list_char)
         
         defaults.update(postvars)
         if schema:
             try:
                 self.form_result = schema.to_python(defaults)
             except api.Invalid, e:
-                errors = e.unpack_errors(variable_decode)
+                errors = e.unpack_errors(variable_decode, dict_char, list_char)
         if validators:
             if isinstance(validators, dict):
                 if not hasattr(self, 'form_result'):

@@ -69,7 +69,7 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
     include_package_data=True,
     install_requires=[
         "Routes>=1.5", "Myghty>=1.1", "Paste>=0.9.8.1",
-        "PasteDeploy>=0.9.6", "PasteScript>=0.9.8", "FormEncode>=0.5.1",
+        "PasteDeploy>=0.9.6", "PasteScript>=0.9.8", "FormEncode>=0.6",
         "simplejson>=1.4", "WebHelpers>=0.2.1", "nose>=0.9.0", "Beaker>=0.6.1",
     ],
     classifiers=[
