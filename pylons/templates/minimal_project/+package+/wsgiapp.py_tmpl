@@ -20,12 +20,10 @@ def load_environment(global_conf={}, app_conf={}):
     root_path = os.path.dirname(os.path.abspath(__file__))
     paths = {'root_path': root_path,
              'controllers': os.path.join(root_path, 'controllers'),
-             'templates': [os.path.join(root_path, path) for path in \
-                           ('components', 'templates')],
+             'templates': [os.path.join(root_path, 'templates')],
              'static_files': os.path.join(root_path, 'public')
              }
-    myghty = {}
-    myghty['log_errors'] = True
+    myghty = dict(log_errors=True)
     return pylons.config.Config(myghty, map, paths)
 
 class Globals(object):
@@ -45,15 +43,15 @@ def make_app(global_conf, full_stack=True, **app_conf):
         'global_conf':global_conf})
     
     # <-- YOUR MIDDLEWARE HERE
-    
-    static_app = StaticURLParser(config.paths['static_files'])
-    javascripts_app = StaticJavascripts()
-    app = Cascade([static_app, javascripts_app, app])
-    
+        
     # Build the rest of the stack, see a full template for more details
     if asbool(full_stack):
         app = httpexceptions.make_middleware(app, global_conf)
         app = ErrorHandler(app, global_conf, error_template=error_template, **config.errorware)
     
     app = RegistryManager(app)
+    
+    static_app = StaticURLParser(config.paths['static_files'])
+    javascripts_app = StaticJavascripts()
+    app = Cascade([static_app, javascripts_app, app])
     return app
