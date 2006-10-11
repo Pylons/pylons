@@ -4,6 +4,7 @@ Myghty compatibility object, old-style ``params`` and ``m`` globals. The
 ``response`` object is used to buffer the output.
 
 """
+import types
 import sys
 
 from paste.registry import StackedObjectProxy
@@ -24,15 +25,31 @@ def load_h(package_name):
     # to the PylonsApp during initialization.
     __import__(package_name + '.lib.base')
     their_h = getattr(sys.modules[package_name + '.lib.base'], 'h', None)
-    if their_h:
+    if isinstance(their_h, types.ModuleType):
+        # lib.base.h is a module (and thus not pylons.h) -- assume lib.base uses
+        # new style (self contained) helpers via:
+        # import ${package}.lib.helpers as h
         return their_h
-    
+
+    # Assume lib.base.h is a StackedObjectProxy -- lib.base is using pre 0.9.2
+    # style helpers via:
+    # from pylons import h
     try:
         helpers_name = package_name + '.lib.helpers'
         __import__(helpers_name) 
-    except: 
+    except:
+        # pylons 0.8.x support
         helpers_name = package_name + '.config.helpers'
         __import__(helpers_name)
+    helpers_module = sys.modules[helpers_name]
+
+    # Pre 0.9.2 lib.helpers did not import the pylons helper functions, manually
+    # add them. Don't overwrite user functions (allowing pylons helpers to be
+    # overridden)
+    for func_name in ('_', 'log', 'set_lang', 'get_lang'):
+        if not hasattr(helpers_module, func_name):
+            setattr(helpers_module, func_name, getattr(pylons.util, func_name))
+
     return sys.modules[helpers_name]
     
 class Myghty_Compat(object):
