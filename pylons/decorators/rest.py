@@ -30,8 +30,8 @@ def dispatch_on(**method_map):
     
     Multiple keyword arguments should be passed, with the keyword corresponding
     to the HTTP method to dispatch on (DELETE, POST, GET, etc.) and the
-    value being the function to call. The value should *not* be a string, but
-    the actual function object that should be called.
+    value being the function to call. The value should be a string indicating
+    the name of the function to dispatch to.
     
     Example:
     
