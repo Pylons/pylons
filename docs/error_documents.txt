@@ -32,7 +32,7 @@ Any status codes will no longer be intercepted.
 Changing the template
 =====================
 
-To use a different template for the error documents, modify your ``ErrorController`` (in ``controllers/edit.py``). Change the ``document()`` action so that rather than using the ``pylons.middleware.error_document_template`` HTML string as a template, it uses your own template:
+To use a different template for the error documents, modify your ``ErrorController`` (in ``controllers/error.py``). Change the ``document()`` action so that rather than using the ``pylons.middleware.error_document_template`` HTML string as a template, it uses your own template:
 
 .. code-block:: Python
 
