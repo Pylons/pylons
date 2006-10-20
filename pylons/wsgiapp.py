@@ -19,8 +19,6 @@ from paste.wsgiwrappers import WSGIRequest
 from routes import request_config
 
 import pylons
-import pylons.templating
-import pylons.legacy
 from pylons.util import ContextObj, AttribSafeContextObj, _Translator, set_lang, class_name_from_module_name
 from pylons.controllers import Controller, WSGIController
 
@@ -304,7 +302,8 @@ WSGIResponse = None
 class LegacyApp(object):
     def __init__(self, config):
         global WSGIResponse
-        from paste.wsgiwrappers import WSGIResponse
+        from paste.wsgiwrappers import WSGIResponse as WResponse
+        WSGIResponse = WResponse
         self.app = PylonsApp(config)
         self.globals = self.app.globals
     

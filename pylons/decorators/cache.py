@@ -3,9 +3,9 @@ import inspect
 import pylons
 from pylons.decorator import decorator
 
-def response_cache(key="cache_default", expire="never", type="dbm", GET=False):
-    """Cache decorator. Caches action or other function that returns a 
-    pickle-able object.
+def beaker_cache(key="cache_default", expire="never", type="dbm", GET=False):
+    """Cache decorator utilizing Beaker. Caches action or other function that
+    returns a pickle-able object as a result.
     
     Optional arguments:
     
@@ -46,7 +46,7 @@ def _make_key(f, key, args, kwargs, GET):
     """Helps make unique key from largs, kewargs and request.GET"""
     if key == "cache_default":
         if GET == True:
-            cache_key = repr(dict(request.GET))
+            cache_key = repr(dict(pylons.request.GET))
         else:
             cache_key = repr(kwargs.items())
             largs_keys = _make_dict_from_args(f, args)
@@ -55,9 +55,9 @@ def _make_key(f, key, args, kwargs, GET):
         cache_key = f.__name__
     else:
         if GET == True:
-            dic = request.GET
+            dic = pylons.request.GET
         else:
-            largs_keys = _make_dict_from_largs(f, largs)
+            largs_keys = _make_dict_from_args(f, args)
             dic = kwargs.copy()
             dic.update(largs_keys)
         if isinstance(key, list):

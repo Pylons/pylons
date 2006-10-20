@@ -11,7 +11,6 @@ from paste.registry import StackedObjectProxy
 import paste.httpexceptions as httpexceptions
 
 import pylons
-import pylons.util
 import pylons.templating as tmpl
 
 # Legacy objects

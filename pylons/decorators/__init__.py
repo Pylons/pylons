@@ -5,8 +5,6 @@ from formencode import htmlfill
 import formencode.variabledecode as variabledecode
 import pylons
 from pylons.decorator import decorator
-import rest
-from cache import response_cache
 
 def jsonify(func, *args, **kw):
     """Action decorator that formats output for JSON

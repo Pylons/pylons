@@ -8,15 +8,12 @@ Currently available commands are::
     controller, shell
 """
 import os
-import os.path
 import sys
-import glob
 import pylons
 import pylons.util as util
 
 from paste.script.command import Command, BadCommand
 from paste.script.filemaker import FileOp
-from paste.script import pluginlib, copydir
 from paste.deploy import loadapp, appconfig
 import paste.deploy.config
 import paste.fixture

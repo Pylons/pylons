@@ -45,12 +45,7 @@ class AutoConnectHub(ConnectionHub):
                 raise AttributeError(
                     "No connection has been defined for this thread "
                     "or process")
-
-    def reset(self):
-        """Used for testing purposes. This drops all of the connections
-        that are being held."""
-        self.threadingLocal = threading_local()
-        
+    
     def begin(self):
         """Starts a transaction."""
         conn = self.getConnection()

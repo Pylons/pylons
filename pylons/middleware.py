@@ -59,8 +59,6 @@ def ErrorHandler(app, global_conf, **errorware):
 from paste.recursive import RecursiveMiddleware
 from paste.errordocument import StatusBasedForward
 from urllib import urlencode
-from paste.deploy.converters import asbool
-from pylons.util import get_prefix
 
 def error_mapper(code, message, environ, global_conf=None, **kw):
     if environ.get('pylons.error_call'):

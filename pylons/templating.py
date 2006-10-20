@@ -25,7 +25,6 @@ except ImportError:
 import myghty.interp
 import paste.wsgiwrappers
 import pylons
-import pylons.util
 
 class BuffetError(Exception):
     pass

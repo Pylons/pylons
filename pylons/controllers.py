@@ -59,11 +59,14 @@ class Controller(object):
         
         """
         argspec = inspect.getargspec(func)
-        kargs = self._req.environ['pylons.routes_dict'].copy()
+        req = pylons.request._current_obj()
+        kargs = req.environ['pylons.routes_dict'].copy()
+        kargs.update(dict(environ=req.environ, 
+            start_response=self.start_response))
         
         # @@ LEGACY: Add in ARGS alias to params
-        if self._req.environ.get('pylons.legacy'):
-            kargs['ARGS'] = self._req._legacy_params
+        if 'pylons.legacy' in req.environ:
+            kargs['ARGS'] = req._legacy_params
         
         # Hide the traceback for everything above this controller
         __traceback_hide__ = 'before_and_this'
@@ -83,7 +86,8 @@ class Controller(object):
     
     def _dispatch_call(self):
         """Handles dispatching the request to the function"""
-        action = self._req.environ['pylons.routes_dict'].get('action')
+        req = pylons.request._current_obj()
+        action = req.environ['pylons.routes_dict'].get('action')
         action_method = action.replace('-', '_')
         func = getattr(self, action_method, None)
         if isinstance(func, types.MethodType):
@@ -102,10 +106,10 @@ class Controller(object):
         more fully.
         
         """
-        self._req = pylons.request._current_obj()
+        req = pylons.request._current_obj()
         
         # Keep private methods private
-        if self._req.environ['pylons.routes_dict'].get('action').startswith('_'):
+        if req.environ['pylons.routes_dict'].get('action', '').startswith('_'):
             return pylons.Response(code=404)
         
         if hasattr(self, '__before__'):
@@ -125,11 +129,10 @@ class WSGIController(Controller):
     """
     def __call__(self, environ, start_response):
         self.start_response = start_response
-        match = environ['pylons.routes_dict']
-        self._req = pylons.request._current_obj()
+        req = pylons.request._current_obj()
         
         # Keep private methods private
-        if match.get('action').startswith('_'):
+        if environ['pylons.routes_dict'].get('action', '').startswith('_'):
             return pylons.Response(code=404)
         
         if hasattr(self, '__before__'):
@@ -144,7 +147,7 @@ class WSGIController(Controller):
             start_response(status, response_headers)
         
             # Copy the response object into the testing vars if we're testing
-            if environ.get('paste.testing'):
+            if 'paste.testing' in environ:
                 environ['paste.testing_variables']['response'] = response
             response = content
         
@@ -155,14 +158,12 @@ class RPCController(Controller):
     resource = 'RPC2'
 
     def __call__(self, environ, start_response):
-
-
         self.start_response = start_response
         match = environ['pylons.routes_dict']
-        self._req = pylons.request._current_obj()
+        req = pylons.request._current_obj()
         
         # Keep private methods private
-        if match.get('action').startswith('_'):
+        if match.get('action', '').startswith('_'):
             return pylons.Response(code=404)
 
         if  match.get('action') != RPCController.resource:
@@ -181,8 +182,8 @@ class RPCController(Controller):
 
     
     def __call__2(self, action, **kargs):
-        self._req = pylons.request._current_obj()
-        action = self._req.environ['pylons.routes_dict'].get('action')
+        req = pylons.request._current_obj()
+        action = req.environ['pylons.routes_dict'].get('action')
         action_method = action.replace('-', '_')
         if action_method != RPCController.resource:
             if asbool(CONFIG['global_conf'].get('debug')):
@@ -190,7 +191,7 @@ class RPCController(Controller):
                                           RPCController.resource)
             else:
                 return pylons.Response(code=404)
-        d = self._req.environ['wsgi.input'].read()
+        d = req.environ['wsgi.input'].read()
         params, method = xmlrpclib.loads(d)
         
         if hasattr(self, '__before__'):

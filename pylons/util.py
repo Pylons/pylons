@@ -5,7 +5,6 @@ The util module provides the main Helper object used by Pylons.
 PylonsTemplate is a Paste Template sub-class that configures the source
 directory and default plug-ins for a new Pylons project.
 """
-import gettext
 import os.path
 from paste.deploy.config import CONFIG
 from paste.script.templates import Template

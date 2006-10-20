@@ -10,10 +10,12 @@ information.
 __all__ = []
 
 import cgi
-from pylons.util import get_prefix
-import myghty.exception, sys
+import sys
+
 from paste.evalexception.middleware import *
 from paste.exceptions.formatter import *
+
+from pylons.util import get_prefix
 
 class Supplement(errormiddleware.Supplement):
     """This is a supplement used to display standard WSGI information in
