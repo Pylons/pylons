@@ -47,6 +47,7 @@ class Controller(object):
         self.session = pylons.session._current_obj()
         self.request = pylons.request._current_obj()
         self.buffet = pylons.buffet._current_obj()
+        self.start_response = None
     
     def _inspect_call(self, func, **kargs):
         """Calls a function with the Routes dict
@@ -73,7 +74,8 @@ class Controller(object):
         
         c = pylons.c._current_obj()
         if argspec[2]:
-            for k,v in kargs.iteritems(): setattr(c, k, v)
+            for k, val in kargs.iteritems():
+                setattr(c, k, val)
             return func(**kargs)
         else:
             argnames = argspec[0][1:]
@@ -94,7 +96,8 @@ class Controller(object):
             response = self._inspect_call(func)
         else:
             if asbool(CONFIG['global_conf'].get('debug')):
-                raise NotImplementedError('Action %s is not implemented' % action)
+                raise NotImplementedError(
+                    'Action %s is not implemented' % action)
             else:
                 response = pylons.Response(code=404)
         return response
@@ -129,7 +132,6 @@ class WSGIController(Controller):
     """
     def __call__(self, environ, start_response):
         self.start_response = start_response
-        req = pylons.request._current_obj()
         
         # Keep private methods private
         if environ['pylons.routes_dict'].get('action', '').startswith('_'):
@@ -160,7 +162,6 @@ class RPCController(Controller):
     def __call__(self, environ, start_response):
         self.start_response = start_response
         match = environ['pylons.routes_dict']
-        req = pylons.request._current_obj()
         
         # Keep private methods private
         if match.get('action', '').startswith('_'):
@@ -170,16 +171,20 @@ class RPCController(Controller):
             if environ['paste.config']['global_conf']['debug'] == 'false':
                 return pylons.Response(code=404)
             else:
-                raise NotImplementedError('RPCController only supports %s action', RPCController.resource) 
+                raise NotImplementedError(
+                    'RPCController only supports %s action', 
+                    RPCController.resource)
         
         if hasattr(self, '__before__'):
             self._inspect_call(self.__before__)
-        response = pylons.Response(xmlrpclib.dumps(( self._dispatch_call().wsgi_response()[2] ,)))
+        response = pylons.Response(
+            xmlrpclib.dumps(
+                (self._dispatch_call().wsgi_response()[2],)
+            )
+        )
         if hasattr(self, '__after__'):
             self._inspect_call(self.__after__)
         return response
-
-
     
     def __call__2(self, action, **kargs):
         req = pylons.request._current_obj()
@@ -187,8 +192,9 @@ class RPCController(Controller):
         action_method = action.replace('-', '_')
         if action_method != RPCController.resource:
             if asbool(CONFIG['global_conf'].get('debug')):
-                raise NotImplementedError('RPCController only supports %s action',
-                                          RPCController.resource)
+                raise NotImplementedError(
+                    'RPCController only supports %s action',
+                    RPCController.resource)
             else:
                 return pylons.Response(code=404)
         d = req.environ['wsgi.input'].read()

@@ -50,8 +50,8 @@ class Config(object):
         access is attempted to an attribute that doesn't exist.
     
     """
-    def __init__(self, myghty, map, paths, environ_config=None, default_charset='UTF-8',
-                 strict_c=False):
+    def __init__(self, myghty, map, paths, environ_config=None, 
+        default_charset='UTF-8', strict_c=False):
         if environ_config is None:
             environ_config = {}
         self.myghty = myghty
@@ -114,7 +114,8 @@ class Config(object):
             config.template_engines.append(old_default)
         
         """
-        config = dict(engine=engine, template_root=root, template_options=options, alias=alias)
+        config = dict(engine=engine, template_root=root, 
+            template_options=options, alias=alias)
         self.template_engines.append(config)
     
     def init_app(self, global_conf, app_conf, package):
@@ -166,19 +167,22 @@ class Config(object):
             errorware['debug'] = False
             errorware['error_email'] = global_conf.get('email_to')
             errorware['error_log'] = global_conf.get('error_log', None)
-            errorware['smtp_server'] = global_conf.get('smtp_server', 'localhost')
-            errorware['error_subject_prefix'] = global_conf.get('error_subject_prefix', 'WebApp Error: ')
+            errorware['smtp_server'] = global_conf.get('smtp_server', 
+                'localhost')
+            errorware['error_subject_prefix'] = global_conf.get(
+                'error_subject_prefix', 'WebApp Error: ')
             errorware['from_address'] = global_conf.get('from_address', 
-                                            global_conf.get('error_email_from', 'pylons@yourapp.com'))
-            errorware['error_message'] = global_conf.get('error_message', 'An internal server error occurred')
+                global_conf.get('error_email_from', 'pylons@yourapp.com'))
+            errorware['error_message'] = global_conf.get('error_message', 
+                'An internal server error occurred')
         
         # Standard Pylons configuration directives for Myghty
         myghty_defaults = {}
         
         # Raise a complete error for the error middleware to catch
         myghty_defaults['raise_error'] = True
-        myghty_defaults['component_root'] = [{os.path.basename(path): path} for \
-                                             path in self.paths['templates']]
+        myghty_defaults['component_root'] = [{os.path.basename(path): path} \
+            for path in self.paths['templates']]
         
         # Merge in the user-supplied Myghty values
         myghty_defaults.update(self.myghty)
@@ -187,13 +191,15 @@ class Config(object):
         myghty_defaults.setdefault('allow_globals', [])
                 
         myghty_defaults['allow_globals'].extend(
-            ['c', 'h', 's', '_', 'session', 'request', 'params', 'g', 'render', 'render_fragment']
+            ['c', 'h', 's', '_', 'session', 'request', 'params', 'g', 'render',
+            'render_fragment']
         )
         
         self.myghty = myghty_defaults
         myghty_template_options = {}
         if app_conf.get('cache_dir', False):
-            myghty_defaults['data_dir'] = os.path.join(app_conf['cache_dir'], 'templates')
+            myghty_defaults['data_dir'] = os.path.join(app_conf['cache_dir'], 
+                'templates')
         else:
             myghty_defaults['data_dir'] = app_conf['myghty_data_dir']
         
@@ -206,9 +212,11 @@ class Config(object):
                 self.app_conf[k] = v
         
         if not app_conf.has_key('session_data_dir'):
-            app_conf['session_data_dir'] = os.path.join(app_conf['cache_dir'], 'sessions')
+            app_conf['session_data_dir'] = os.path.join(app_conf['cache_dir'], 
+                'sessions')
         if not app_conf.has_key('cache_data_dir'):
-            app_conf['cache_data_dir'] = os.path.join(app_conf['cache_dir'], 'cache')
+            app_conf['cache_data_dir'] = os.path.join(app_conf['cache_dir'], 
+            'cache')
         
         # Prepare our default template engine
         self.add_template_engine('pylonsmyghty', None, myghty_template_options)
