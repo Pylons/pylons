@@ -7,6 +7,7 @@ import formencode.variabledecode as variabledecode
 import pylons
 from pylons.decorator import decorator
 import rest
+from cache import response_cache
 
 def jsonify(func, *args, **kw):
     """Action decorator that formats output for JSON
@@ -23,7 +24,7 @@ def jsonify(func, *args, **kw):
 jsonify = decorator(jsonify)
 
 def validate(schema=None, validators=None, form=None, variable_decode=False,
-             dict_char='.', list_char='-'):
+             dict_char='.', list_char='-', POST_only=True):
     """Validate input either for a FormEncode schema, or individual validators
     
     Given a form schema or dict of validators, validate will attempt to validate
@@ -34,6 +35,9 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
     as ``self.form_result``. Otherwise, the action will be re-run as if it was a
     GET, and the output will be filled by FormEncode's htmlfill to fill in the
     form field errors.
+    
+    If you'd like validate to also check GET (query) variables during its 
+    validation, set the ``POST_only`` keyword argument to False.
     
     Example:
     
@@ -54,7 +58,10 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
         defaults, errors = {}, {}
         if not pylons.request.method == 'POST':
             return func(self, *args, **kwargs)
-        postvars = pylons.request.POST.copy()
+        if POST_only:
+            postvars = pylons.request.POST.copy()
+        else:
+            postvars = pylons.request.params.copy()
         if variable_decode:
             postvars = variabledecode.variable_decode(postvars, dict_char,
                                                       list_char)
