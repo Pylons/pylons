@@ -1,5 +1,4 @@
 """Custom Decorators, currently ``jsonify``, ``validate``, and 2 REST decorators"""
-import types
 import simplejson as json
 import formencode.api as api
 from formencode import htmlfill
