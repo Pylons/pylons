@@ -37,13 +37,13 @@ def svn_repos_setup():
 def paster_create():
     global projenv
     sys.stderr.write(' '.join(['paster', 'create', '--verbose', '--no-interactive',
-                      '--svn-repository=' + testenv.svn_url,
+                      #'--svn-repository=' + testenv.svn_url,
                       '--template=pylons',
                       'ProjectName',
                       'version=0.1',
                       ]))
     res = testenv.run(_get_script_name('paster'), 'create', '--verbose', '--no-interactive',
-                      '--svn-repository=' + testenv.svn_url,
+                      #'--svn-repository=' + testenv.svn_url,
                       '--template=pylons',
                       'ProjectName',
                       'version=0.1',
@@ -69,7 +69,7 @@ def paster_create():
     testenv.run(_get_script_name('python')+' setup.py egg_info',
                 cwd=os.path.join(testenv.cwd, 'ProjectName').replace('\\','/'),
                 expect_stderr=True)
-    testenv.run(_get_script_name('svn'), 'commit', '-m', 'Created project', 'ProjectName')
+    #testenv.run(_get_script_name('svn'), 'commit', '-m', 'Created project', 'ProjectName')
     # A new environment with a new
     projenv = TestFileEnvironment(
         os.path.join(testenv.base_path, 'ProjectName').replace('\\','/'),
@@ -84,7 +84,7 @@ def make_controller():
     res = projenv.run(_get_script_name('paster')+' controller sample')
     assert os.path.join('projectname','controllers','sample.py') in res.files_created
     assert os.path.join('projectname','tests','functional','test_sample.py') in res.files_created
-    res = projenv.run(_get_script_name('svn')+' status')
+    #res = projenv.run(_get_script_name('svn')+' status')
     # Make sure all files are added to the repository:
     assert '?' not in res.stdout
 
@@ -144,9 +144,9 @@ def do_legacy_app():
 
 def make_tag():
     global tagenv
-    res = projenv.run(_get_script_name('svn')+' commit -m "updates"')
+    #res = projenv.run(_get_script_name('svn')+' commit -m "updates"')
     # Space at the end needed so run() doesn't add \n causing svntag to complain
-    res = projenv.run(_get_script_name('python')+' setup.py svntag --version=0.5 ')
+    #res = projenv.run(_get_script_name('python')+' setup.py svntag --version=0.5 ')
     # XXX Still fails => setuptools problem on win32?
     assert 'Tagging 0.5 version' in res.stdout
     assert 'Auto-update of version strings' in res.stdout
@@ -161,7 +161,7 @@ def make_tag():
         template_path=template_path)
 
 def test_project():
-    yield svn_repos_setup
+    #yield svn_repos_setup
     yield paster_create
     yield make_controller
     yield do_pytest
