@@ -1,8 +1,8 @@
 """Provides convenient access to an SQLObject-managed database.
 
-This module enables easy use of an SQLObject database by providing an auto-connect
-hub that will utilize the db uri string given in the Paste conf file called
-``sqlobject.dburi``
+This module enables easy use of an SQLObject database by providing an 
+auto-connect hub that will utilize the db uri string given in the Paste conf
+file called ``sqlobject.dburi``.
 
 It is based heavily (if not 99%) on the TurboGears file of the same name.
 """
@@ -25,7 +25,7 @@ class AutoConnectHub(ConnectionHub):
         self.uri = uri
         ConnectionHub.__init__(self)
     
-    def getConnection(self):
+    def get_connection(self):
         try:
             conn = self.threadingLocal.connection
             return conn
@@ -48,7 +48,7 @@ class AutoConnectHub(ConnectionHub):
     
     def begin(self):
         """Starts a transaction."""
-        conn = self.getConnection()
+        conn = self.get_connection()
         if isinstance(conn, Transaction):
             if conn._obsolete:
                 conn.begin()
@@ -86,7 +86,7 @@ _hubs = dict()
 class PackageHub(object):
     """Transparently proxies to an AutoConnectHub for the URI
     that is appropriate for this package. A package URI is
-    configured via "packagename.dburi" in the global CherryPy
+    configured via "packagename.dburi" in the Paste ini file
     settings. If there is no package DB URI configured, the
     default (provided by "sqlobject.dburi") is used.
     
