@@ -16,13 +16,14 @@ def restrict(*methods):
             def comment(self, id):
     
     """
-    def check_methods(func, *args, **kw):
+    def check_methods(func, *args, **kwargs):
+        """Wrapper for restrict"""
         if pylons.request.method not in methods:
             response = pylons.Response()
             response.headers['Allow'] = ','.join(methods)
             response.status_code = 405
             return response
-        return func(*args, **kw)
+        return func(*args, **kwargs)
     return decorator(check_methods)
 
 def dispatch_on(**method_map):
@@ -47,12 +48,13 @@ def dispatch_on(**method_map):
                 # Do something if its a post to comment
     
     """
-    def dispatcher(func, self, *args, **kw):
+    def dispatcher(func, self, *args, **kwargs):
+        """Wrapper for dispatch_on"""
         alt_method = method_map.get(pylons.request.method)
         if alt_method:
             alt_method = getattr(self, alt_method)
-            return self._inspect_call(alt_method, **kw)
-        return func(self, *args, **kw)
+            return self._inspect_call(alt_method, **kwargs)
+        return func(self, *args, **kwargs)
     return decorator(dispatcher)
 
 __all__ = ['restrict', 'dispatch_on']

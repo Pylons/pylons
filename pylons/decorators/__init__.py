@@ -1,4 +1,4 @@
-"""Custom Decorators, currently ``jsonify``, ``validate``, and 2 REST decorators"""
+"""Pylons Decorators: ``jsonify``, ``validate``, REST, and Cache decorators"""
 import simplejson as json
 import formencode.api as api
 from formencode import htmlfill
@@ -6,7 +6,7 @@ import formencode.variabledecode as variabledecode
 import pylons
 from pylons.decorator import decorator
 
-def jsonify(func, *args, **kw):
+def jsonify(func, *args, **kwargs):
     """Action decorator that formats output for JSON
     
     Given a function that will return content, this decorator will
@@ -16,12 +16,12 @@ def jsonify(func, *args, **kw):
     """
     response = pylons.Response()
     response.headers['Content-Type'] = 'text/javascript'
-    response.content.append(json.dumps(func(*args, **kw)))
+    response.content.append(json.dumps(func(*args, **kwargs)))
     return response
 jsonify = decorator(jsonify)
 
 def validate(schema=None, validators=None, form=None, variable_decode=False,
-             dict_char='.', list_char='-', POST_only=True):
+             dict_char='.', list_char='-', post_only=True):
     """Validate input either for a FormEncode schema, or individual validators
     
     Given a form schema or dict of validators, validate will attempt to validate
@@ -34,7 +34,7 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
     form field errors.
     
     If you'd like validate to also check GET (query) variables during its 
-    validation, set the ``POST_only`` keyword argument to False.
+    validation, set the ``post_only`` keyword argument to False.
     
     Example:
     
@@ -51,11 +51,12 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
                 pass
         
     """
-    def validate(func, self, *args, **kwargs):
+    def wrapper(func, self, *args, **kwargs):
+        """Decorator Wrapper function"""
         defaults, errors = {}, {}
         if not pylons.request.method == 'POST':
             return func(self, *args, **kwargs)
-        if POST_only:
+        if post_only:
             postvars = pylons.request.POST.copy()
         else:
             postvars = pylons.request.params.copy()
@@ -87,6 +88,6 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
             response.content = [htmlfill.render(form_content, defaults, errors)]
             return response
         return func(self, *args, **kwargs)
-    return decorator(validate)
+    return decorator(wrapper)
 
 __all__ = ['jsonify', 'validate', 'rest']
