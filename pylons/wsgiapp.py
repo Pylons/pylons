@@ -143,7 +143,7 @@ class PylonsBaseWSGIApp(object):
             req._legacy_params = req.params.mixed()
             environ['paste.registry'].register(pylons.legacy.response, WSGIResponse())
             environ['paste.registry'].register(pylons.m, 
-                pylons.legacy.Myghty_Compat(environ, start_response))
+                pylons.legacy.MyghtyCompat(environ, start_response))
             environ['paste.registry'].register(pylons.params, req._legacy_params)
         
         econf = environ['pylons.environ_config']

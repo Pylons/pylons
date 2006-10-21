@@ -1,6 +1,6 @@
 from pylons import Response, c, g, cache, request, session
 from pylons.controllers import WSGIController
-from pylons.decorators import jsonify, rest, validate
+from pylons.decorators import jsonify, validate
 from pylons.templating import render, render_response
 from pylons.helpers import abort, redirect_to, etag_cache
 import ${package}.helpers as h

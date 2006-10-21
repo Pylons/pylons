@@ -12,9 +12,8 @@ that provides a template API hook as the ``pylonsmyghty`` engine. This version
 of BuffetMyghty disregards some of the TurboGears API spec so that traditional
 Myghty template names can be used with ``/`` and file extensions.
 
-The render functions are intended as the primary user-visible rendering commands
-and hook into Buffet to make rendering content easy.
-
+The render functions are intended as the primary user-visible rendering 
+commands and hook into Buffet to make rendering content easy.
 """
 import pkg_resources
 import os
@@ -22,11 +21,13 @@ try:
     from cStringIO import StringIO
 except ImportError:
     from StringIO import StringIO
-import myghty.interp
 import paste.wsgiwrappers
 import pylons
 
+PYLONS_VARS = ['c', 'h', 'g', '_', 'request', 'session', 'params']
+
 class BuffetError(Exception):
+    """Buffet Exception"""
     pass
 
 class Buffet(object):
@@ -70,6 +71,8 @@ class Buffet(object):
             dict(engine=Engine(options=config), root=template_root)
     
     def _update_names(self, ns):
+        """Given a dict, update the dict with the Pylons vars and their 
+        respective objects"""
         d = ns
         d.update(dict(
             c=pylons.c._current_obj(),
@@ -115,41 +118,65 @@ class Buffet(object):
         ``cache_key``
             Key to cache this copy of the template under.
         ``cache_type``
-            Valid options are ``dbm``, ``file``, ``memory``, or ``ext:memcached``.
+            Valid options are ``dbm``, ``file``, ``memory``, or 
+            ``ext:memcached``.
         ``cache_expire``
-            Time in seconds to cache this template with this ``cache_key`` for. Or
-            use 'never' to designate that the cache should never expire.
+            Time in seconds to cache this template with this ``cache_key`` for.
+            Or use 'never' to designate that the cache should never expire.
         
-        The minimum key required to trigger caching is ``cache_expire='never'`` which
-        will cache the template forever seconds with no key.
+        The minimum key required to trigger caching is ``cache_expire='never'``
+        which will cache the template forever seconds with no key.
         
         All other keyword options are passed directly to the template engine
         used.
-        
         """
         if not engine_name and self.default_engine:
             engine_name = self.default_engine
         engine_config = self.engines.get(engine_name)
         
         if not engine_config:
-            raise Exception, "No engine with that name configured: %s" % engine_name
+            raise Exception, \
+                "No engine with that name configured: %s" % engine_name
         
         full_path = template_name
                 
-        if engine_name != 'pylonsmyghty':
-            if namespace==None:
-                if include_pylons_variables is False:
-                    raise BuffetError('You must specify ``namespace`` if ``include_pylons_variables`` is '
-                                      'False')
+        if engine_name == 'pylonsmyghty':
+            if namespace is None:
+                namespace = {}
+            namespace['_global_args'] = self._update_names({})
+
+            # Reserved myghty keywords
+            for key in ('output_encoding', 'encoding_errors', 
+                        'disable_unicode'):
+                if key in namespace:
+                    options[key] = namespace.pop(key)
+            
+            # If they passed in a variable thats listed in the global_args,
+            # update the global args one instead of duplicating it
+            interp = engine_config['engine'].interpreter
+            for key in interp.global_args.keys() + \
+                interp.init_params.get('allow_globals', []):
+                if key in namespace:
+                    namespace['_global_args'][key] = namespace.pop(key)
+        else:
+            if namespace is None:
+                if not include_pylons_variables:
+                    raise BuffetError('You must specify ``namespace`` if \
+                        ``include_pylons_variables`` is False')
                 else:
                     namespace = self._update_names({})
             elif isinstance(namespace, dict):
-                if include_pylons_variables is True:
-                    for k in ['c','h','g','request','session', 'params']:
-                        if k in namespace:
-                            raise Exception('The variable %s specified in namespace conflicts '
-                                'with the Pylons variable of the same name. Set ``include_pylons_variables`` '
-                                'to ``False`` if you do not want to use Pylons variables in your template'%k)
+                if include_pylons_variables:
+                    var_conflicts = list(
+                        [x for x in PYLONS_VARS if x in namespace]
+                    )
+                    if var_conflicts:
+                        raise Exception(
+                            'The variable(s) %s specified in the namespace '
+                            'conflicts with Pylons variable(s) of the same '
+                            'name. Set ``include_pylons_variables`` to '
+                            '``False`` if you do not want to use Pylons '
+                            'variables in your template' % var_conflicts)
                     namespace = self._update_names(namespace)
             else:
                 namespace = self._update_names(namespace)
@@ -157,25 +184,10 @@ class Buffet(object):
             if not engine_name.startswith('pylons'):
                 full_path = os.path.join(engine_config['root'], template_name)
                 full_path = full_path.replace(os.path.sep, '.').lstrip('.')
-        else:
-            if namespace is None:
-                namespace = {}
-            namespace['_global_args'] = self._update_names({})
-
-            # Reserved myghty keywords
-            for key in ('output_encoding', 'encoding_errors', 'disable_unicode'):
-                if key in namespace:
-                    options[key] = namespace.pop(key)
-            
-            # If they passed in a variable thats listed in the global_args,
-            # update the global args one instead of duplicating it
-            interp = engine_config['engine'].interpreter
-            for key in interp.global_args.keys() + interp.init_params.get('allow_globals', []):
-                if key in namespace:
-                    namespace['_global_args'][key] = namespace.pop(key)
         
         # If one of them is not None then the user did set something
-        if cache_key is not None or cache_expire is not None or cache_type is not None:
+        if cache_key is not None or cache_expire is not None or cache_type \
+            is not None:
             if not cache_type:
                 cache_type = 'dbm'
             if not cache_key:
@@ -183,43 +195,53 @@ class Buffet(object):
             if cache_expire == 'never':
                 cache_expire = None
             def content():
-                return engine_config['engine'].render(namespace, template=full_path, **options)
+                return engine_config['engine'].render(namespace, 
+                    template=full_path, **options)
             tfile = full_path
             if options.get('fragment', False):
                 tfile += '_frag'
             mycache = pylons.cache.get_cache(tfile)
-            content = mycache.get_value(cache_key, createfunc=content, type=cache_type,
-                expiretime=cache_expire)
+            content = mycache.get_value(cache_key, createfunc=content, 
+                type=cache_type, expiretime=cache_expire)
             return content
         
-        return engine_config['engine'].render(namespace, template=full_path, **options)
+        return engine_config['engine'].render(namespace, template=full_path, 
+            **options)
         
 class TemplateEngineMissing(Exception):
+    """Exception to toss when an engine is missing"""
     pass
 
 class MyghtyTemplatePlugin(object):
     """Myghty Template Plugin
     
-    This Myghty Template Plugin varies from the official BuffetMyghty in that it will
-    properly populate all the default Myghty variables needed and render fragments.
+    This Myghty Template Plugin varies from the official BuffetMyghty in that 
+    it will properly populate all the default Myghty variables needed and 
+    render fragments.
     
     """
     extension = "myt"
 
     def __init__(self, extra_vars_func=None, options=None):
+        """Initialize Myghty template engine"""
         if options is None:
             options = {}
         myt_opts = {}
         for k, v in options.iteritems():
             if k.startswith('myghty.'):
                 myt_opts[k[7:]] = v
+        import myghty.interp
         self.interpreter = myghty.interp.Interpreter(**myt_opts)
     
     def load_template(self, template_path):
+        """Unused method for TG plug-in API compatibility"""
         pass
 
     def render(self, info, format="html", fragment=False, template=None,
-               output_encoding=None, encoding_errors=None, disable_unicode=None):
+               output_encoding=None, encoding_errors=None,
+               disable_unicode=None):
+        """Render the template indicated with info as the namespace and globals
+        from the ``info['_global_args']`` key."""
         buf = StringIO()
         global_args = info.pop('_global_args')
         optional_args = {}
@@ -255,9 +277,10 @@ def render(*args, **kargs):
     
     .. admonition:: Note
         
-        Not all template languages support the concept of a fragment. In those template
-        languages that do support the fragment option, this usually implies that the
-        template will be rendered without extending or inheriting any site skin.
+        Not all template languages support the concept of a fragment. In those
+        template languages that do support the fragment option, this usually 
+        implies that the template will be rendered without extending or 
+        inheriting any site skin.
     
     """
     fragment = kargs.pop('fragment', False)
