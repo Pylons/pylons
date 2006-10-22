@@ -81,7 +81,7 @@ class Controller(object):
             argnames = argspec[0][1:]
             args = []
             for name in argnames:
-                if kargs.has_key(name):
+                if name in kargs:
                     setattr(c, name, kargs[name])
                     args.append(kargs[name])
             return func(*args)

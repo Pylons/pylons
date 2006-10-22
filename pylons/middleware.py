@@ -47,7 +47,7 @@ def ErrorHandler(app, global_conf, **errorware):
         app = PylonsEvalException(app, global_conf, **errorware)
     else:
         from paste.exceptions.errormiddleware import ErrorMiddleware
-        if errorware.has_key('error_template'):
+        if 'error_template' in errorware:
             del errorware['error_template']
         app = ErrorMiddleware(app, global_conf, **errorware)
     return app
