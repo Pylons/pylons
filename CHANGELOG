@@ -21,6 +21,7 @@ Pylons Changelog
 * Fixed bug with lang app_conf option being set improperly. Reported
   by Laurent.
 * Fixed pylons.h to work proper with new and old-style helper imports.
+* Fixed render functions always passing disable_unicode=False to Myghty.
 
 0.9.2 (Sept. 7th, 2006)
 * Fixed problem with dashes in controller names, resolves #107.
