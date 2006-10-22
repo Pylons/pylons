@@ -197,11 +197,11 @@ class Config(object):
         
         self.myghty = myghty_defaults
         myghty_template_options = {}
-        if 'cache_dir' in app_conf:
-            myghty_defaults['data_dir'] = os.path.join(app_conf['cache_dir'], 
-                'templates')
         if 'myghty_data_dir' in app_conf:
             myghty_defaults['data_dir'] = app_conf['myghty_data_dir']
+        elif 'cache_dir' in app_conf:
+            myghty_defaults['data_dir'] = os.path.join(app_conf['cache_dir'], 
+                'templates')
         
         # Copy Myghty defaults and options into template options
         for k, v in self.myghty.iteritems():
