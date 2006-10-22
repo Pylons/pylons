@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.3 (**svn**)
+* Fixed config to use myghty_data_dir instead of cache_dir setting if its 
+  set as well. Reported by Shannon -jj Behrens.
 * Added traceback hiding so that more of the traceback relating to Pylons code
   is removed from the default traceback making it easier to focus on the code
   in an app that actually caused the problem. Closes #119.
