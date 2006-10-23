@@ -191,7 +191,7 @@ class ShellCommand(Command):
                 h=sys.modules[helpers_package],
             )
         )
-        if g:
+        if global_obj:
             locs['g'] = global_obj
             pylons.g.push_object(global_obj)
         
@@ -199,7 +199,7 @@ class ShellCommand(Command):
         banner += "Additional Objects:\n"
         banner += "  %-10s -  %s\n" % ('mapper', 'Routes mapper object')
         banner += "  %-10s -  %s\n" % ('h', 'Helper object')
-        if g:
+        if global_obj:
             banner += "  %-10s -  %s\n" % ('g', 'Globals object')
         banner += "  %-10s -  %s\n" % ('model', 'Models from models package')
         banner += "  %-10s -  %s\n" % ('wsgiapp', 
