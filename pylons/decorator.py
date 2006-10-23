@@ -11,7 +11,10 @@ http://www.phyast.pitt.edu/~micheles/python/documentation.html
 
 __all__ = ["decorator", "newfunc", "getinfo"]
 
-import inspect, new, itertools, sys
+import inspect
+import itertools
+import new
+import sys
 
 def getinfo(func):
     """Return an info dictionary containing:
