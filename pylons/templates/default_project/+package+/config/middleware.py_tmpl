@@ -2,13 +2,14 @@ from paste import httpexceptions
 from paste.cascade import Cascade
 from paste.urlparser import StaticURLParser
 from paste.registry import RegistryManager
-from paste.deploy.config import CONFIG, ConfigMiddleware
+from paste.deploy.config import ConfigMiddleware
 
 from pylons.error import error_template
 from pylons.middleware import ErrorHandler, ErrorDocuments, StaticJavascripts, error_mapper
 import pylons.wsgiapp
 
 from ${package}.config.environment import load_environment
+import ${package}.lib.helpers
 
 def make_app(global_conf, **app_conf):
     """Create a WSGI application and return it
@@ -18,16 +19,11 @@ def make_app(global_conf, **app_conf):
     to ensure they're treated properly.
     
     """
-    process_config = {'global_conf': global_conf,
-                      'app_conf': app_conf}
-    CONFIG.push_process_config(process_config)
-
     # Load our Pylons configuration defaults
     config = load_environment(global_conf, app_conf)
     config.init_app(global_conf, app_conf, package='${package}')
         
     # Load our default Pylons WSGI app and make g available
-    import ${package}.lib.helpers
     app = pylons.wsgiapp.PylonsApp(config, helpers=${package}.lib.helpers)
     g = app.globals
     app = ConfigMiddleware(app, {'app_conf':app_conf,
@@ -59,5 +55,4 @@ def make_app(global_conf, **app_conf):
     # @@@ Establish the Registry for this application @@@
     app = RegistryManager(app)
 
-    CONFIG.pop_process_config(process_config)
     return app
