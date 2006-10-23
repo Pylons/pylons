@@ -1,4 +1,5 @@
 from projectname.lib.base import *
+from pylons.decorators import rest
 
 class SampleController(BaseController):
     def index(self):
