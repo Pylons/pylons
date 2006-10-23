@@ -96,7 +96,7 @@ def _do_proj_test(copydict, emptyfiles=[]):
         projenv.writefile(newfile, frompath=original)
     for fi in emptyfiles:
         projenv.writefile(fi)
-    res = projenv.run(_get_script_name('nosetests')+' projectname/tests',
+    res = projenv.run(_get_script_name('nosetests'),
                       expect_stderr=True,
                       cwd=os.path.join(testenv.cwd, 'ProjectName').replace('\\','/'))
 
