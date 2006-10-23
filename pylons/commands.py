@@ -241,4 +241,8 @@ class ShellCommand(Command):
                         raise EOFError
             
             shell = CustomShell(locals=locs)
+            try:
+                import readline
+            except ImportError:
+                pass
             shell.interact(banner)
