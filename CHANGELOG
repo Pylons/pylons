@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.3 (**svn**)
+* A controller's __after__ method will now be called after actions invoke
+  redirect_to (or raise any HTTPException). Reported by David Turner.
 * Fixed config to use myghty_data_dir instead of cache_dir setting if its 
   set as well. Reported by Shannon -jj Behrens.
 * Added traceback hiding so that more of the traceback relating to Pylons code

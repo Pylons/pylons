@@ -3,6 +3,7 @@ import types
 import inspect
 import xmlrpclib
 
+from paste.httpexceptions import HTTPException
 from paste.deploy.config import CONFIG
 from paste.deploy.converters import asbool
 
@@ -117,8 +118,15 @@ class Controller(object):
         
         if hasattr(self, '__before__'):
             self._inspect_call(self.__before__, **kargs)
-        response = self._dispatch_call()
-        if hasattr(self, '__after__'):
+
+        if not hasattr(self, '__after__'):
+            response = self._dispatch_call()
+        else:
+            try:
+                response = self._dispatch_call()
+            except HTTPException:
+                self._inspect_call(self.__after__)
+                raise
             self._inspect_call(self.__after__)
         return response
 
@@ -139,10 +147,17 @@ class WSGIController(Controller):
         
         if hasattr(self, '__before__'):
             self._inspect_call(self.__before__)
-        response = self._dispatch_call()
-        if hasattr(self, '__after__'):
+
+        if not hasattr(self, '__after__'):
+            response = self._dispatch_call()
+        else:
+            try:
+                response = self._dispatch_call()
+            except HTTPException:
+                self._inspect_call(self.__after__)
+                raise
             self._inspect_call(self.__after__)
-        
+
         if hasattr(response, 'wsgi_response'):
             # Pull the content we need for a WSGI response
             status, response_headers, content = response.wsgi_response()
