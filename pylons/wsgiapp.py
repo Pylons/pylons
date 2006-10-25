@@ -80,10 +80,10 @@ class PylonsBaseWSGIApp(object):
         old_method = None
         if '_method' in environ.get('QUERY_STRING', '') and '_method' in req.GET:
             old_method = environ['REQUEST_METHOD']
-            environ['REQUEST_METHOD'] = req.GET['_method']
+            environ['REQUEST_METHOD'] = req.GET['_method'].upper()
         elif environ['REQUEST_METHOD'] == 'POST' and '_method' in req.POST:
             old_method = environ['REQUEST_METHOD']
-            environ['REQUEST_METHOD'] = req.POST['_method']
+            environ['REQUEST_METHOD'] = req.POST['_method'].upper()
         
         controller = self.resolve(environ, start_response)
         if old_method: environ['REQUEST_METHOD'] = old_method            
