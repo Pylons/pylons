@@ -39,7 +39,12 @@ class PylonsBaseWSGIApp(object):
     "monkey-patching" this class. Subclassing is the preferred approach.
     
     """
-    def __init__(self, mapper, package_name, globals, helpers=None, default_charset=None):
+    def __init__(self, mapper, package_name, globals, 
+                 helpers=None, default_charset=None):
+        """Initialize a base Pylons WSGI application
+        
+        The base Pylons WSGI application requires several keywords, if no helpers or
+        """
         self.mapper = mapper
         self.helpers = helpers
         self.globals = globals
@@ -106,7 +111,16 @@ class PylonsBaseWSGIApp(object):
             resp = pylons.legacy.response
             if hasattr(pylons.legacy.response, 'wsgicall'):
                 # Legacy app using run_wsgi
+                warnings.warn(
+                    "Using run_wsgi is deprecated. You should use return "
+                    "wsgiapp(request.environ, self.start_response) instead. ",
+                    DeprecationWarning, 2)
                 return resp.content
+            warnings.warn(
+                "Running in legacy mode, ensure that your controller actions "
+                "are returning a Pylons Response and not using the 'm' object "
+                "as it has been deprecated.",
+                DeprecationWarning, 2)
             status, response_headers, content = resp.wsgi_response()
             start_response(status, response_headers)
             return content
@@ -264,11 +278,23 @@ class PylonsApp(object):
             self.config.default_charset = default_charset
 
         if not g:
+            warnings.warn(
+                "Having the 'g' object load from a default app_globals module "
+                " is deprecated. Please update your middleware.py with:\n"
+                "import MYPROJ.lib.app_globals as app_globals\n"
+                "where MYPROJ is the name of your project and edit the "
+                "PylonsApp instantiation with:\n"
+                "app = pylons.wsgiapp.PylonsApp(config, helpers=MYPROJ.helpers, "
+                "g=app_globals.Globals)\n",
+                DeprecationWarning, 2)
             try:
                 globals_package = __import__(config.package + '.lib.app_globals', globals(), locals(), ['Globals'])
                 g = getattr(globals_package, 'Globals')
             except ImportError:
                 pass
+        if not g:
+            # Assign a default globals object
+            g = type("Globals", (), {})
         if g:
             g = g(config.global_conf, config.app_conf, config=config)
             g.pylons_config = config
@@ -284,13 +310,10 @@ class PylonsApp(object):
             econf['session'] = 'beaker.session'
             app = SessionMiddleware(app, config.global_conf, 
                 auto_register=True, **config.app_conf)
-        
         if 'cache' not in econf:
             from beaker.cache import CacheMiddleware
             econf['cache'] = 'beaker.cache'
             app = CacheMiddleware(app, config.global_conf, **config.app_conf)
-        
-        self.globals = g
         self.app = app
     
     def __call__(self, environ, start_response):
@@ -315,7 +338,7 @@ def make_app(config):
     """ Legacy WSGI app creator"""
     warnings.warn(
         "Legacy WSGI app in use for pre-0.9 application. This will be "
-        "removed at some point post-1.0 which will require minor updates "
+        "removed before the release of 1.0 which will require minor updates "
         "to your application.",
         DeprecationWarning, 2)
     papp = LegacyApp(config)

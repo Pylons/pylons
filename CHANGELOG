@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.3 (**svn**)
+* Added deprecation warnings to legacy objects and for 1.0 functionality that
+  will change.
 * Added cache decorator and Cheetah template functional tests. Patch and unit
   tests provided by Climbus.
 * Fixed readline support in the stock interactive console paster shell.
