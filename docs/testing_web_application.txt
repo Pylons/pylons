@@ -19,85 +19,6 @@ your system, it can be installed via setuptools with::
     ``paste.fixture`` is currently incompatible with Windows, we are working 
     on remedying this.
 
-Testing Pylons Objects
-======================
-
-Pylons will provide several additional attributes for the ``paste.fixture`` response object that let you access various objects that were created during the web request:
-
-``session``
-    Session object
-``req``
-    Request object    
-``c``
-    Object containing variables passed to templates
-``g``
-    Globals object
-
-To use them, merely access the attributes of the response *after* you've used
-a get/post command::
-
-    response = app.get('/some/url')
-    assert response.session['var'] == 4
-    assert 'REQUEST_METHOD' in response.req.environ
-
-.. note::
-    The ``paste.fixture`` response object already has a TestRequest object 
-    assigned to it, therefore Pylons assigns its ``request`` object to the 
-    response as ``req``.
-
-Testing Your Own Objects
-========================
-
-Paste's fixture testing allows you to designate your own objects that you'd 
-like to access in your tests. This powerful functionality makes it easy to 
-test the value of objects that are normally only retained for the duration of
-a single request.
-
-Before making objects available for testing, its useful to know when your 
-application is being tested. Paste will provide an environ variable called
-``paste.testing`` that you can test for the presence and truth of so that your
-application only populates the testing objects when it has to.
-
-Populating the ``paste.fixture`` response object with your objects is done by
-adding them to the environ dict under the key ``paste.testing_variables``. 
-Pylons creates this dict before calling your application, so testing for its
-existence and adding new values to it is recommended. All variables assigned
-to the ``paste.testing_variables`` dict will be available on the response 
-object with the key being the attribute name.
-
-Example:
-
-.. code-block:: Python
-    
-    # testexample/lib/base.py
-    
-    from pylons import Response, c, g, cache, request, session
-    from pylons.controllers import WSGIController
-    from pylons.decorators import jsonify, rest, validate
-    from pylons.templating import render, render_response
-    from pylons.helpers import abort, redirect_to, etag_cache
-    import testexample.models as model
-    import testexample.helpers as h
-
-    class BaseController(WSGIController):
-        def __call__(self, environ, start_response):
-            # Create a custom email object
-            email = MyCustomEmailObj()
-            email.name = 'Fred Smith'
-            if 'paste.testing_variables' in request.environ:
-                request.environ['paste.testing_variables']['email'] = email
-            return WSGIController.__call__(self, environ, start_response)
-    
-    
-    # testexample/tests/functional/test_controller.py
-    from testexample.tests import *
-
-    class TestCommentsController(TestController):
-        def test_index(self):
-            response = self.app.get(url_for(controller='/'))
-            assert response.email.name == 'Fred Smith'
-    
-
 Example: Testing a Controller
 =============================
 
@@ -187,6 +108,89 @@ Which provides the more useful failure message::
       File "~/TestExample/testexample/tests/functional/test_comments.py", line 12, in test_sess
         self.assertEqual(response.session.has_key('address'), True)
     AssertionError: False != True
+
+
+Testing Pylons Objects
+======================
+
+Pylons will provide several additional attributes for the ``paste.fixture`` response object that let you access various objects that were created during the web request:
+
+``session``
+    Session object
+``req``
+    Request object    
+``c``
+    Object containing variables passed to templates
+``g``
+    Globals object
+
+To use them, merely access the attributes of the response *after* you've used
+a get/post command::
+
+    response = app.get('/some/url')
+    assert response.session['var'] == 4
+    assert 'REQUEST_METHOD' in response.req.environ
+
+.. note::
+    The ``paste.fixture`` response object already has a TestRequest object 
+    assigned to it, therefore Pylons assigns its ``request`` object to the 
+    response as ``req``.
+
+Testing Your Own Objects
+========================
+
+Paste's fixture testing allows you to designate your own objects that you'd 
+like to access in your tests. This powerful functionality makes it easy to 
+test the value of objects that are normally only retained for the duration of
+a single request.
+
+Before making objects available for testing, its useful to know when your 
+application is being tested. Paste will provide an environ variable called
+``paste.testing`` that you can test for the presence and truth of so that your
+application only populates the testing objects when it has to.
+
+Populating the ``paste.fixture`` response object with your objects is done by
+adding them to the environ dict under the key ``paste.testing_variables``. 
+Pylons creates this dict before calling your application, so testing for its
+existence and adding new values to it is recommended. All variables assigned
+to the ``paste.testing_variables`` dict will be available on the response 
+object with the key being the attribute name.
+
+Example:
+
+.. code-block:: Python
+    
+    # testexample/lib/base.py
+    
+    from pylons import Response, c, g, cache, request, session
+    from pylons.controllers import WSGIController
+    from pylons.decorators import jsonify, rest, validate
+    from pylons.templating import render, render_response
+    from pylons.helpers import abort, redirect_to, etag_cache
+    import testexample.models as model
+    import testexample.helpers as h
+
+    class BaseController(WSGIController):
+        def __call__(self, environ, start_response):
+            # Create a custom email object
+            email = MyCustomEmailObj()
+            email.name = 'Fred Smith'
+            if 'paste.testing_variables' in request.environ:
+                request.environ['paste.testing_variables']['email'] = email
+            return WSGIController.__call__(self, environ, start_response)
+    
+    
+    # testexample/tests/functional/test_controller.py
+    from testexample.tests import *
+
+    class TestCommentsController(TestController):
+        def test_index(self):
+            response = self.app.get(url_for(controller='/'))
+            assert response.email.name == 'Fred Smith'
+    
+
+More Details
+============
     
 For more details on running tests using get/post, and testing the response, headers, etc., see the Paste document on web application testing:
 
