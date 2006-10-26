@@ -45,3 +45,7 @@ class SampleController(BaseController):
     def impossible(self):
         return Response('This should never be shown')
     impossible = rest.restrict('POST')(rest.dispatch_on(POST='test_only_post')(impossible))
+
+    def testcheetah(self):
+        c.test = "This is in c var"
+        return render_response('testcheetah')

@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.3 (**svn**)
+* Added cache decorator and Cheetah template functional tests. Patch and unit
+  tests provided by Climbus.
 * Fixed readline support in the stock interactive console paster shell.
   Reported by Alex Conrad.
 * A controller's __after__ method will now be called after actions invoke

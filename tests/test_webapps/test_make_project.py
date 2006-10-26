@@ -88,10 +88,12 @@ def make_controller():
     # Make sure all files are added to the repository:
     assert '?' not in res.stdout
 
-def _do_proj_test(copydict, emptyfiles=[]):
+def _do_proj_test(copydict, emptyfiles=None):
     """Given a dict of files, where the key is a filename in test_files, the value is
     the destination in the new projects dir. emptyfiles is a list of files that should
     be created and empty."""
+    if not emptyfiles:
+        emptyfiles = []
     for original, newfile in copydict.iteritems():
         projenv.writefile(newfile, frompath=original)
     for fi in emptyfiles:
@@ -131,6 +133,36 @@ def do_two_engines():
 def do_crazy_decorators():
     _do_proj_test({'functional_sample_controller_sample4.py':'projectname/tests/functional/test_sample3.py'})
 
+def do_cheetah():
+    copydict = {
+        'controller_sample.py':'projectname/controllers/sample.py',
+        'testcheetah.tmpl':'projectname/cheetah/testcheetah.tmpl',
+        'middleware_cheetah_engine.py':'projectname/config/middleware.py',
+        'functional_sample_controller_cheetah.py':'projectname/tests/functional/test_cheetah.py',
+    }
+    empty = [
+         'projectname/cheetah/__init__.py',
+         'projectname/tests/functional/test_sample.py',
+         'projectname/tests/functional/test_sample2.py',
+         'projectname/tests/functional/test_sample3.py'
+     ]
+    _do_proj_test(copydict, empty)
+
+def do_cache_decorator():
+    copydict = {
+        'middleware_def_engine.py':'projectname/config/middleware.py',
+        'app_globals.py':'projectname/lib/app_globals.py',
+        'cache_controller.py':'projectname/controllers/cache.py',
+        'functional_controller_cache_decorator.py':'projectname/tests/functional/test_cache.py',
+    }
+    empty = [
+        'projectname/tests/functional/test_cheetah.py',
+        'projectname/tests/functional/test_sample.py',
+        'projectname/tests/functional/test_sample2.py',
+        'projectname/tests/functional/test_sample3.py'
+     ]
+    _do_proj_test(copydict, empty)
+
 def do_legacy_app():
     legacyenv = TestFileEnvironment(
         os.path.join(testenv.base_path, 'legacyapp').replace('\\','/'),
@@ -168,7 +200,9 @@ def test_project():
     yield do_test_known
     yield do_kid_default
     yield do_two_engines
+    yield do_cheetah
     yield do_crazy_decorators
+    yield do_cache_decorator
     #yield do_legacy_app
     #yield make_tag
     
