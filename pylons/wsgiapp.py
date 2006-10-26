@@ -85,10 +85,10 @@ class PylonsBaseWSGIApp(object):
         old_method = None
         if '_method' in environ.get('QUERY_STRING', '') and '_method' in req.GET:
             old_method = environ['REQUEST_METHOD']
-            environ['REQUEST_METHOD'] = req.GET['_method'].upper()
+            environ['REQUEST_METHOD'] = req.GET['_method']
         elif environ['REQUEST_METHOD'] == 'POST' and '_method' in req.POST:
             old_method = environ['REQUEST_METHOD']
-            environ['REQUEST_METHOD'] = req.POST['_method'].upper()
+            environ['REQUEST_METHOD'] = req.POST['_method']
         
         controller = self.resolve(environ, start_response)
         if old_method: environ['REQUEST_METHOD'] = old_method            
@@ -310,10 +310,13 @@ class PylonsApp(object):
             econf['session'] = 'beaker.session'
             app = SessionMiddleware(app, config.global_conf, 
                 auto_register=True, **config.app_conf)
+        
         if 'cache' not in econf:
             from beaker.cache import CacheMiddleware
             econf['cache'] = 'beaker.cache'
             app = CacheMiddleware(app, config.global_conf, **config.app_conf)
+        
+        self.globals = g
         self.app = app
     
     def __call__(self, environ, start_response):

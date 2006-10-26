@@ -8,6 +8,8 @@ from pylons.error import error_template
 from pylons.middleware import ErrorHandler, ErrorDocuments, error_mapper
 import pylons.wsgiapp
 
+import projectname.lib.helpers
+import projectname.lib.app_globals as app_globals
 from projectname.config.environment import load_environment
 
 def make_app(global_conf, **app_conf):
@@ -27,7 +29,8 @@ def make_app(global_conf, **app_conf):
     config.add_template_engine('kid', 'projectname.kidtemplates', kidopts)
         
     # Load our default Pylons WSGI app and make g available
-    app = pylons.wsgiapp.PylonsApp(config)
+    app = pylons.wsgiapp.PylonsApp(config, helpers=projectname.lib.helpers,
+                                   g=app_globals.Globals)
     g = app.globals
     app = ConfigMiddleware(app, {'app_conf':app_conf,
         'global_conf':global_conf})
