@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.3 (**svn**)
+* Updated project template to support full_stack option to make it easier to
+  use Pylons apps within larger WSGI stacks.
 * Added deprecation warnings to legacy objects and for 1.0 functionality that
   will change.
 * Added cache decorator and Cheetah template functional tests. Patch and unit

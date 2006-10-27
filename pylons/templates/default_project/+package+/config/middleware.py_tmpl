@@ -3,6 +3,7 @@ from paste.cascade import Cascade
 from paste.urlparser import StaticURLParser
 from paste.registry import RegistryManager
 from paste.deploy.config import ConfigMiddleware
+from paste.deploy.converters import asbool
 
 from pylons.error import error_template
 from pylons.middleware import ErrorHandler, ErrorDocuments, StaticJavascripts, error_mapper
@@ -12,7 +13,7 @@ from ${package}.config.environment import load_environment
 import ${package}.lib.helpers
 import ${package}.lib.app_globals as app_globals
 
-def make_app(global_conf, **app_conf):
+def make_app(global_conf, full_stack=True, **app_conf):
     """Create a WSGI application and return it
     
     global_conf is a dict representing the Paste configuration options, the
@@ -35,26 +36,24 @@ def make_app(global_conf, **app_conf):
     # Put your own middleware here, so that any problems are caught by the error
     # handling middleware underneath
     
-    # @@@ Change HTTPExceptions to HTTP responses @@@
-    app = httpexceptions.make_middleware(app, global_conf)
+    # If errror handling and exception catching will be handled by middleware
+    # for multiple apps, you will want to set full_stack = False in your config
+    # file so that it can catch the problems.
+    if asbool(full_stack):
+        # Change HTTPExceptions to HTTP responses
+        app = httpexceptions.make_middleware(app, global_conf)
     
-    # @@@ Error Handling @@@
-    app = ErrorHandler(app, global_conf, error_template=error_template, **config.errorware)
+        # Error Handling
+        app = ErrorHandler(app, global_conf, error_template=error_template, **config.errorware)
     
-    # @@@ Static Files in public directory @@@
-    static_app = StaticURLParser(config.paths['static_files'])
-
-    # @@@ WebHelper's static javascript files @@@
-    javascripts_app = StaticJavascripts()
+        # Display error documents for 401, 403, 404 status codes (if debug is disabled also
+        # intercepts 500)
+        app = ErrorDocuments(app, global_conf, mapper=error_mapper, **app_conf)
     
-    # @@@ Cascade @@@ 
-    app = Cascade([static_app, javascripts_app, app])
-    
-    # @@@ Display error documents for 401, 403, 404 status codes (if debug is disabled also
-    # intercepts 500) @@@
-    app = ErrorDocuments(app, global_conf, mapper=error_mapper, **app_conf)
-    
-    # @@@ Establish the Registry for this application @@@
+    # Establish the Registry for this application
     app = RegistryManager(app)
-
+    
+    static_app = StaticURLParser(config.paths['static_files'])
+    javascripts_app = StaticJavascripts()
+    app = Cascade([static_app, javascripts_app, app])
     return app
