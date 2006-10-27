@@ -24,7 +24,9 @@ Since Myghty compiles its templates to Python modules, it can be difficult to ac
 Example: Exploring the Traceback
 ==================================
 
-Using the interactive debugger can also be useful to gain a deeper insight into objects present only during the web request like Myghty's ``m`` object, or the ``session`` and ``request`` objects. The thing to keep in mind with some of these objects is that you won't be able to explore them through the interactive debugger unless you first use a supplied Controller method to `bind them to your controller <class-pylons.controllers.Controller.html#_attach_locals>`_.
+Using the interactive debugger can also be useful to gain a deeper insight into objects present only during the web request like the ``session`` and ``request`` objects. 
+
+There is one slight complication to bear in mind when using the interactive debugger. Pylons uses the `Paste registry <http://pythonpaste.org/module-paste.registry.html>`_ to enable certain objects such as the ``session`` and ``request`` objects to be imported as module globals but to always return the correct data for the particular thread that is executing. This happens automatically in your code during a request but not in the interactive debugger. To use these variables in the interactive debugger you have to add ``self._attach_locals()`` to your action before the exception occurs to `bind them to your controller <class-pylons.controllers.Controller.html#_attach_locals>`_. You can then access them in the interactive debugger as ``self.request`` and ``self.session`` instead.  
 
 To trigger an error so that we can explore what's happening just raise an exception inside an action you're curious about. In this example, we'll raise an error in the action that's used to display the page you're reading this on. Here's what the docs controller looks like:
 
