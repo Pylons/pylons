@@ -1,0 +1,27 @@
+Hosting
++++++++
+
+Pylons applications are very flexible and can be hosted in a number of different ways. Instructions for the various deployment options are described and maintained on the publicly editable `Pylons wiki <http://pylonshq.com/project/>`_. There is also a `hosting page`_ describing different user's setups for specific web hosts.
+
+WebFaction
+==========
+
+Choosing a hosting provider for your Pylons application can sometimes be a difficult task because there are so many different options. To make the decision easier the Pylons team can highly recommend `WebFaction`_ as our preferred host. WebFaction offer professional Python hosting and `fully support Pylons <http://www.webfaction.com/pylons-hosting>`_.
+
+WebFaction's basic Pylons plan (`Shared 2 <http://www.webfaction.com/shared_hosting>`_) starts at $11.50/month and includes a massive 100GB/month bandwidth and 2GB disk space. They also provide a `control panel <http://blog.webfaction.com/control-panel-demo>`_ which can generate a Pylons application and hook it up to your URL in just a few clicks of a mouse.
+
+WebFaction have a strong community focus and offer `free Trac and subversion hosting <http://www.webfaction.com/freetrac>`_ for Open Source projects. They have also offered to donate 50% of their profits on Pylons hosting back in support of the Pylons project so by choosing WebFaction to host your Pylons project you will also be directly supporting Pylons.
+
+Other Hosting Companies
+=======================
+
+If you choose not to use `WebFaction`_ there are plenty of other web hosts available but you have to be careful to ensure the host provides everything you need. 
+
+Pylons applications can technically be hosted on any web hosting service supporting Python and CGI. If you are using CGI you will probably want to ensure your hosting provider offers `mod_rewrite <http://httpd.apache.org/docs/1.3/mod/mod_rewrite.html>`_ so that you don't have to have your ``cgi-bin`` directory visible in every URL. For really good performance though it is better to choose a host which supports `mod_python http://www.modpython.org/>`_ or `FastCGI <http://www.fastcgi.com/>`_ or who will let you run a standalone server. 
+
+It is worth reading carefully through the `wiki page <http://pylonshq.com/project/>`_. describing the deployment option you wish to use to ensure the host you are considering supports all the requirements. Also, whilst hosting providers often support Python itself they don't always provide the modules such as MySQLdb or the Python Imaging Library which Python developers frequently use so it is worth checking before signing up.
+
+If you have successfully hosted Pylons applications with other hosting companies please add a section to the `hosting page <http://pylonshq.com/project/pylonshq/wiki/Hosting>`_ on the wiki describing your setup.
+
+.. _WebFaction : http://www.webfaction.com
+.. _`hosting page` : http://pylonshq.com/project/pylonshq/wiki/Hosting

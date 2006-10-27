@@ -20,12 +20,13 @@ Debugging
 =========
 
 * `Logging <logging.html>`_
-* `Interactive Testing <interactive_debugger.html>`_
+* `Interactive Application Debugging <interactive_debugger.html>`_
 * `Unit Testing with paste.fixture <testing_web_application.html>`_
 
 Distribution & Deployment
 =========================
 
+* `Hosting <hosting.html>`_
 * `Distributing Your Project <deployment.html>`_
 * `Adding Documentation to your Application <adding_docs.html>`_
 * `Application Setup <application_setup.html>`_
