@@ -8,7 +8,7 @@ System-wide Install
 
 To install Pylons so it can be used by everyone (you'll need root access).
 
-If you already have easy install:
+If you already have easy install::
 
     easy_install Pylons
 
@@ -49,6 +49,24 @@ Living on the Cutting Edge
 
 Not satisfied with the latest release? Want to be on the cutting edge or work with Pylons source code?
 Feel free to `get involved </project/>`_ with Pylons and work with the `latest development version <pylonsdev.html>`_.
+
+
+Easy Install Problems
+=====================
+
+Occasionally Easy Install fails to find a package it is looking for or a new version of a package which Pylons depends on is released which doesn't install correctly. In this situation ensure you have the latest version of ``setuptools`` by running::
+
+    easy_install -U setuptools
+    
+Try to install Pylons again and if one of the dependencies still fails you should easy_install a working version of the package manually before installing Pylons. 
+
+As an example, if say you had a problem installing Myghty you could specify a location where easy_install should look for the latest version::
+
+    easy_install -U -f http://pylonshq.com/download/ Myghty
+
+Alternatively you could easy_install Myghty directly by specifying the URL of the distribution you want to install. In this case we are installing Myghty 1.1 from the cheeseshop, but you will need to install the appropriate file for the version of Pylons you are using::
+
+    easy_install -U http://cheeseshop.python.org/packages/source/M/Myghty/Myghty-1.1.tar.gz#md5=5865361811dca4054f1ec60ac32ee965
 
 
 Packaging Note
