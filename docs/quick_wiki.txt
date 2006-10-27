@@ -6,7 +6,7 @@ QuickWiki Tutorial
 
 .. Note:: 
 
-    Python 2.5 users will need to install the latest Cheeath 2.0rc7 and wait for a fixed version of FormEncode (patch already submitted to the FormEncode list) before QuickWiki will install correctly.
+    This tutorial will also work with SQLAlchemy 0.3 and has also been tested with Python 2.5.
     
     
 Introduction
@@ -132,6 +132,8 @@ The first line imports some useful SQLAlchmey objects such as the ``Table`` and 
 
 .. Note:: It is useful to define the metadata with the model rather than in the ``lib/database.py`` file so that the model can be imported in code that does not have the config information setup that the ``lib/database.py`` file relies on. This enables us to write code such as that in ``websetup.py`` which will come later in this tutorial.
 
+.. Note::  There are other ways of setting up SQLAlchemy to work with Pylons, one alternative is described in the article `SqlAlchemyWithPylons <http://pylonshq.com/project/pylonshq/wiki/SqlAlchemyWithPylons>`_ on the publically editable Pylons wiki.   
+    
 A core philosophy of SQLAlchemy is that tables and domain classes are different beasts. So next, we'll create the Python class that will represent the pages of our wiki and map these domain objects to rows in the ``pages`` table using a mapper. Add this to the bottom of ``models/__init__.py``:
 
 .. code-block:: Python
@@ -646,6 +648,12 @@ With this code:
     <% render('/list.myt', fragment=True) %>
 
 That's it! A working, production-ready wiki in 20 mins. You can visit http://127.0.0.1:5000/ once more to admire your work.
+
+.. Note::
+
+    If you use MySQL as your database you might find that after a few hours your connection to the database gets lost. This is because MySQL has a connection timeout. You could use an `SQLAlchemy connection pool <http://www.sqlalchemy.org/docs/pooling.myt>`_ and specify the ``recycle`` option.
+    
+    The SQLAlchemy documentation describes how 
 
 Publishing the Finished Product
 ===============================
