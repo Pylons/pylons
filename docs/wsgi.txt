@@ -4,13 +4,9 @@ Pylons Support for the Web Server Gateway Interface
 :author: James Gardner
 :date: 2006-07-23
 
-The Web Server Gateway Interface is a specification agreed upon by the Python community to enable interoperability of Python frameworks, middleware and servers. 
+<p>The Web Server Gateway Interface defined in <a href="http://www.python.org/dev/peps/pep-0333/">PEP 333</a> is a standard interface between web servers and Python web applications or frameworks, to promote web application portability across a variety of web servers.</p>
 
-Although most Python frameworks allow their applications to be run as WSGI applications, Pylons 0.9 takes WSGI integration to the next level, supporting WSGI all through the stack. It is hoped that as other frameworks follow suit we will see a new era in web development in Python.
-
-The principles of WSGI are actually very simple but it can it can be quite hard to explain all the details. For full information you will need to look at the PEP at http://www.python.org/peps/pep-0333.html 
-
-This guide takes you through the basics how you can use WSGI applications and middleware in Pylons.
+<p>Pylons supports the Web Server Gateway Interface (or WSGI for short, pronounced "whiskey") throughout its stack. This is important for developers because it means that as well coming with all the features you would expect of a modern web framework, Pylons is also extremely flexible. With the WSGI it is possible to change any part of the Pylons stack to add new functionality or modify a request or a response without having to take apart the whole framework.</p>
 
 Paste and WSGI
 --------------
@@ -163,8 +159,13 @@ The three WSGI applications in the cascade serve files from your project's ``pub
 
 You are free to change the order of the cascade or add extra WSGI applications to it before ``app`` so that other locations are checked before your Pylons application is executed.
 
-Summary
--------
+Useful Resources
+----------------
 
 Whilst other frameworks have put WSGI adapters at the end of their stacks so that their applications can be served by WSGI servers, we hope you can see how fully Pylons embraces WSGI throughout its design to be the most flexible and extensible of the main Python web frameworks.
 
+To find out more about the Web Server Gateway Interface you might find the following resources useful:
+
+* `PEP 333 <http://www.python.org/dev/peps/pep-0333/>`_
+* `The WSGI website at wsgi.org <http://wsgi.org>`_
+* XML.com articles: Introducing WSGI - Pythons Secret Web Weapon.html `Part 1 <http://www.xml.com/pub/a/2006/09/27/introducing-wsgi-pythons-secret-web-weapon.html>`_ `Part 2 <http://www.xml.com/pub/a/2006/10/04/introducing-wsgi-pythons-secret-web-weapon-part-two.html>`_
