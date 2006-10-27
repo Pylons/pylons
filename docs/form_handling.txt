@@ -221,12 +221,10 @@ Now we will need to make some tweaks to ``form.myt``. Make it look like this:
 Now when the form is invalid the ``form.myt`` template is re-rendered with the error messages.
 
 
-Advanced Form Handling with FormBuild
-=====================================
+Other Form Tools
+================
 
-If you are going to be creating a lot of forms you may wish to consider using `FormBuild <http://formbuild.org>`_ to help create your forms.
-
-FormBuild was specifically written for Pylons to complement FormEncode in the creation and validation of forms. To use it you create a custom Form object and use that object to build all your forms. You can then use a sophisticated API to modify all aspects of the generation and use of all forms built with your custom Form by modifying its definition without any need to change the form templates. The system is highly extensible and so over time it is hoped users will contribute all manor of advanced form definitions for building, modifying or automatically creating forms, integrating with database systems to form CRUD systems or simply adding new types of field.
+If you are going to be creating a lot of forms you may wish to consider using `FormBuild <http://formbuild.org>`_ to help create your forms. To use it you create a custom Form object and use that object to build all your forms. You can then use the API to modify all aspects of the generation and use of all forms built with your custom Form by modifying its definition without any need to change the form templates.
 
 Here is an one example of how you might use it in a controller to handle a form submission:
 
@@ -249,4 +247,6 @@ Here is an one example of how you might use it in a controller to handle a form 
                 ...
 
 Full documentation of all features is available in the `FormBuild manual <http://formbuild.org/manual.html>`_ which you should read before looking at `Using FormBuild in Pylons <http://formbuild.org/pylons.html>`_
+
+Looking forward it is likely Pylons will soon be able to use the TurboGears widgets system which will probably become the recommended way to build forms in Pylons.
 
