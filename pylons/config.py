@@ -48,7 +48,6 @@ class Config(object):
     ``strict_c``
         Whether or not the ``c`` object should throw an attribute error when
         access is attempted to an attribute that doesn't exist.
-    
     """
     def __init__(self, myghty, map, paths, environ_config=None, 
         default_charset='UTF-8', strict_c=False):
@@ -112,7 +111,6 @@ class Config(object):
             
             # Add old default as additional engine
             config.template_engines.append(old_default)
-        
         """
         config = dict(engine=engine, template_root=root, 
             template_options=options, alias=alias)
@@ -142,7 +140,6 @@ class Config(object):
             that into account.
         ``package``
             The name of the application package, to be stored in the app_conf.
-        
         """
         self.global_conf = global_conf
         self.app_conf = app_conf

@@ -30,7 +30,6 @@ class Controller(object):
     In the event that an action is not found to handle the request, the Controller
     will raise an "Action Not Found" error if in debug mode, otherwise a ``404 Not Found``
     error will be returned.
-    
     """
     __pudge_all__ = ['_inspect_call', '__call__', '_attach_locals']
     
@@ -40,7 +39,6 @@ class Controller(object):
         When debugging, the Pylons special objects are unavailable because they
         are thread locals. This function pulls the actual object and attaches it
         to the controller so that it can be examined for debugging purposes.
-        
         """
         self.c = pylons.c._current_obj()
         self.g = pylons.g._current_obj()
@@ -58,7 +56,6 @@ class Controller(object):
         
         If the function has been decorated, it is assumed that the decorator
         preserved the function signature.
-        
         """
         argspec = inspect.getargspec(func)
         req = pylons.request._current_obj()
@@ -108,7 +105,6 @@ class Controller(object):
         
         This is called when dispatched to as the Controller class docs explain
         more fully.
-        
         """
         req = pylons.request._current_obj()
         
@@ -136,7 +132,6 @@ class WSGIController(Controller):
     This function works identically to the normal Controller, however it is called
     with the WSGI interface, and behaves as a WSGI application calling start_response
     and returning an iterable as content.
-    
     """
     def __call__(self, environ, start_response):
         self.start_response = start_response

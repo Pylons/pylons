@@ -36,7 +36,6 @@ class Buffet(object):
     Buffet implements template language plug-in support modeled highly on the
     `Buffet Project <http://projects.dowski.com/projects/buffet>`_ from which
     this class inherits its name.
-    
     """
     def __init__(self, default_engine=None, template_root=None, 
         default_options=None, **config):
@@ -59,7 +58,6 @@ class Buffet(object):
         can also be aliased if you wish to use multiplate configurations of the
         same template engines, or prefer a shorter name when rendering a template
         with the engine of your choice.
-        
         """
         Engine = available_engines.get(engine_name, None)
         if not Engine:
@@ -218,7 +216,6 @@ class MyghtyTemplatePlugin(object):
     This Myghty Template Plugin varies from the official BuffetMyghty in that 
     it will properly populate all the default Myghty variables needed and 
     render fragments.
-    
     """
     extension = "myt"
 
@@ -281,7 +278,6 @@ def render(*args, **kargs):
         template languages that do support the fragment option, this usually 
         implies that the template will be rendered without extending or 
         inheriting any site skin.
-    
     """
     fragment = kargs.pop('fragment', False)
     args = list(args)
@@ -307,7 +303,6 @@ def render_response(*args, **kargs):
         
         def view(self):
             return render_response('/my/template.myt')
-    
     """
     response = pylons.Response(render(*args, **kargs))
     output_encoding = kargs.get('output_encoding')

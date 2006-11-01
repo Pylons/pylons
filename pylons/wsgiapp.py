@@ -3,7 +3,6 @@
 This module is responsible for creating the basic Pylons WSGI application. It's generally
 assumed that it will be called by Paste, though any WSGI application server could create
 and call the WSGI app as well.
-
 """
 import sys
 import re
@@ -37,13 +36,14 @@ class PylonsBaseWSGIApp(object):
     
     Resolving the URL and dispatching can be customized by sub-classing or
     "monkey-patching" this class. Subclassing is the preferred approach.
-    
     """
     def __init__(self, mapper, package_name, globals, 
                  helpers=None, default_charset=None):
         """Initialize a base Pylons WSGI application
         
-        The base Pylons WSGI application requires several keywords, if no helpers or
+        The base Pylons WSGI application requires several keywords, if no 
+        helpers reference is given, a legacy warning will be raised and it
+        will attempt to search the project for a helpers.py module.
         """
         self.mapper = mapper
         self.helpers = helpers
@@ -264,7 +264,6 @@ class PylonsApp(object):
     in the config object by supplying other keys to look for in the environ
     where objects for the session/cache will be. If they're set to none,
     then no session/cache objects will be available.
-    
     """
     def __init__(self, config, default_charset=None, helpers=None, g=None):
         self.config = config

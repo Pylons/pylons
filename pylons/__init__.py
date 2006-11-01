@@ -1,5 +1,4 @@
 """Base objects to be exported for use in Controllers"""
-
 from paste.registry import StackedObjectProxy
 from paste.wsgiwrappers import WSGIResponse as Response
 

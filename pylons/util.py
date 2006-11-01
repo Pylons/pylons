@@ -22,7 +22,6 @@ def _(value):
     .. code-block:: Python
     
         h._('This should be in lots of languages')
-    
     """
     return pylons.translator['translator'].gettext(value)
 
@@ -68,7 +67,6 @@ def class_name_from_module_name(module_name):
         'WithUnderscores'
         >>> class_name_from_module_name('oneword')
         'Oneword'
-    
     """
     words = module_name.replace('-', '_').split('_')
     return ''.join([w.title() for w in words])

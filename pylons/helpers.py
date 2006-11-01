@@ -1,7 +1,6 @@
 """``etag_cache``, ``redirect_to``, and ``abort`` methods
 
 Additional helper object available for use in Controllers is the etag_cache.
-
 """
 from routes import redirect_to
 import paste.httpexceptions as httpexceptions
@@ -33,7 +32,6 @@ def etag_cache(key=None):
     .. Note:: 
         This works because etag_cache will raise an HTTPNotModified
         exception if the ETag recieved matches the key provided.
-    
     """
     if_none_match = pylons.request.environ.get('HTTP_IF_NONE_MATCH', None)
     resp = pylons.Response()
@@ -49,7 +47,6 @@ def abort(status_code=None, detail="", headers=None, comment=None):
     In the event that the status_code is a 300 series error, the detail 
     attribute will be used as the Location header should one not be specified
     in the headers attribute.
-    
     """
     exc = httpexceptions.get_exception(status_code)(detail, headers, comment)
     raise exc

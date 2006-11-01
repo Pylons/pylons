@@ -12,9 +12,9 @@ class Globals(object):
     pass
 
 class StaticJavascripts(object):
-    """
-    Middleware for intercepting requests for WebHelpers' included javascript files.
-
+    """Middleware for intercepting requests for WebHelpers' included 
+    javascript files.
+    
     Triggered when PATH_INFO begins with '/javascripts/'.
     """
     def __init__(self):
@@ -40,7 +40,6 @@ def ErrorHandler(app, global_conf, **errorware):
     
     Otherwise, the app will be wrapped in the Paste ErrorMiddleware, and
     the ``errorware`` dict will be passed into it.
-    
     """
     if asbool(global_conf.get('debug')):
         from pylons.error import PylonsEvalException

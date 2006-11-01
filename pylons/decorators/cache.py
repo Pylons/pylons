@@ -26,7 +26,7 @@ def beaker_cache(key="cache_default", expire="never", type="dbm",
         Uses the query arguments as the key, defaults to False
 
     If cache_enabled is set to False in the .ini file, then cache is disabled 
-    globaly
+    globally.
     """
     def wrapper(func, *args, **kwargs):
         """Decorator wrapper"""

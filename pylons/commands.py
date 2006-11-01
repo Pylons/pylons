@@ -61,7 +61,6 @@ class ControllerCommand(Command):
         Creating yourproj/controllers/admin
         Creating yourproj/yourproj/controllers/admin/trackback.py
         Creating yourproj/yourproj/tests/functional/test_admin_trackback.py
-    
     """
     summary = __doc__
     usage = 'CONTROLLER_NAME'

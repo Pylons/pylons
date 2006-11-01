@@ -12,7 +12,6 @@ def jsonify(func, *args, **kwargs):
     Given a function that will return content, this decorator will
     turn the result into JSON, with a content-type of 'text/javascript'
     and output it.
-    
     """
     response = pylons.Response()
     response.headers['Content-Type'] = 'text/javascript'
@@ -49,7 +48,6 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
             def update(self, id):
                 # Do something with self.form_result
                 pass
-        
     """
     def wrapper(func, self, *args, **kwargs):
         """Decorator Wrapper function"""
@@ -90,4 +88,4 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
         return func(self, *args, **kwargs)
     return decorator(wrapper)
 
-__all__ = ['jsonify', 'validate', 'rest']
+__all__ = ['jsonify', 'validate']

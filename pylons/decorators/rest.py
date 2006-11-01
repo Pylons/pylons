@@ -14,7 +14,6 @@ def restrict(*methods):
             
             @pylons.rest.restrict('GET')
             def comment(self, id):
-    
     """
     def check_methods(func, *args, **kwargs):
         """Wrapper for restrict"""
@@ -46,7 +45,6 @@ def dispatch_on(**method_map):
             
             def create_comment(self, id):
                 # Do something if its a post to comment
-    
     """
     def dispatcher(func, self, *args, **kwargs):
         """Wrapper for dispatch_on"""
