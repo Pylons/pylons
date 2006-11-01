@@ -12,6 +12,19 @@ If you already have easy install::
 
     easy_install Pylons
 
+.. Note::
+    On rare occasions, the python.org Cheeseshop goes down. It is still 
+    possible to install Pylons and its dependencies however by specifying our
+    local package directory for installation with:
+    
+        ``easy_install -f http://pylonshq.com/download/ Pylons``
+    
+    Which will use the packages necessary for the latest release. If you're 
+    using an older version of Pylons, you can get the packages that went with
+    it by specifying the version desired:
+    
+        ``easy_install -f http://pylonshq.com/download/0.8.2/ Pylons``
+
 Otherwise: 
 
 #. Download the easy install setup file from http://peak.telecommunity.com/dist/ez_setup.py
