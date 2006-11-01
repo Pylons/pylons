@@ -281,12 +281,12 @@ class PylonsApp(object):
                 "Having the 'g' object load from a default app_globals module "
                 "is deprecated. Please update your middleware.py with:\n\n"
                 "    import MYPROJ.lib.app_globals as app_globals\n"
-                "    import MYPROJ.lib.helpers as helpers\n\n"
+                "    import MYPROJ.lib.helpers\n\n"
                 "where MYPROJ is the name of your project.\n"
                 "Then edit the PylonsApp instantiation with:\n\n"
                 "    app = pylons.wsgiapp.PylonsApp(\n"
                 "        config, \n"
-                "        helpers=helpers, \n"
+                "        helpers=MYPROJ.lib.helpers, \n"
                 "        g=app_globals.Globals\n"
                 "    )\n\n",
                 DeprecationWarning, 2)

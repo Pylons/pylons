@@ -28,11 +28,11 @@ def load_h(package_name):
         "Pylons 0.9.3 and above now passes the helpers module reference in "
         "directly. It's highly recommended that you update your middleware.py "
         "module so that the Pylons app load looks similar to:\n"
-        "app = pylons.wsgiapp.PylonsApp(config, helpers=MYPROJ.helpers, "
+        "app = pylons.wsgiapp.PylonsApp(config, helpers=MYPROJ.lib.helpers, "
         "g=app_globals.Globals)\n"
         "Where MYPROJ is the name of your project. Also make sure to add an "
         "import line to the middleware.py to import the helpers modules:\n"
-        "import MYPROJ.helpers\n"
+        "import MYPROJ.lib.helpers\n"
         "This will be required on all projects 1.0 and beyond.",
         DeprecationWarning, 2)
     __import__(package_name + '.lib.base')
