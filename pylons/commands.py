@@ -135,7 +135,6 @@ class ShellCommand(Command):
     def command(self):
         """Main command to create a new shell"""
         self.verbose = 3
-        
         if len(self.args) == 0:
             # Assume the .ini file is ./development.ini
             config_file = 'development.ini'
@@ -162,44 +161,31 @@ class ShellCommand(Command):
         
         # Load the wsgi app first so that everything is initialized right
         wsgiapp = loadapp(config_name, relative_to=here_dir)
+        test_app = app=paste.fixture.TestApp(wsgiapp)
         
         # Start the rest of our imports now that the app is loaded
-        routing_package = pkg_name + '.config.routing'
         models_package = pkg_name + '.models'
-        helpers_package = pkg_name + '.lib.helpers'
+        __import__(models_package)
         
-        # Import all the modules
-        for pack in [routing_package, models_package, helpers_package]:
-            __import__(pack)
-        
-        make_map = getattr(sys.modules[routing_package], 'make_map')
-        mapper = make_map()
-        test_app = app=paste.fixture.TestApp(wsgiapp)
-        global_obj = None
-        try:
-            global_obj = test_app.get('/').g
-        except:
-            pass
+        tresponse = test_app.get('/_test_vars')
         
         locs.update(
             dict(
                 model=sys.modules[models_package],
-                mapper=mapper,
+                mapper=tresponse.pylons_config.map,
                 wsgiapp=wsgiapp,
                 app=test_app,
-                h=sys.modules[helpers_package],
+                h=tresponse.h,
+                g=tresponse.g,
             )
         )
-        if global_obj:
-            locs['g'] = global_obj
-            pylons.g.push_object(global_obj)
+        pylons.g.push_object(tresponse.g)
         
         banner = "Pylons Interactive Shell\nPython %s\n\n" % sys.version
         banner += "Additional Objects:\n"
         banner += "  %-10s -  %s\n" % ('mapper', 'Routes mapper object')
         banner += "  %-10s -  %s\n" % ('h', 'Helper object')
-        if global_obj:
-            banner += "  %-10s -  %s\n" % ('g', 'Globals object')
+        banner += "  %-10s -  %s\n" % ('g', 'Globals object')
         banner += "  %-10s -  %s\n" % ('model', 'Models from models package')
         banner += "  %-10s -  %s\n" % ('wsgiapp', 
             'This projects WSGI App instance')

@@ -78,6 +78,9 @@ class PylonsBaseWSGIApp(object):
         self.setup_app_env(environ, start_response)
         if environ.get('paste.testing'):
             self.load_test_env(environ)
+            if environ['PATH_INFO'] == '/_test_vars':
+                start_response('200 OK', [('Content-type','text/plain')])
+                return ['Vars attached']
         
         # Change our HTTP_METHOD if _method is present, try GET first to avoid
         # parsing POST unless absolutely necessary.
@@ -249,6 +252,8 @@ class PylonsBaseWSGIApp(object):
         testenv['req'] = pylons.request._current_obj()
         testenv['c'] = pylons.c._current_obj()
         testenv['g'] = pylons.g._current_obj()
+        testenv['h'] = pylons.h._current_obj()
+        testenv['pylons_config'] = self.globals.pylons_config
         econf = environ['pylons.environ_config']
         if econf.get('session'):
             testenv['session'] = environ[econf['session']]

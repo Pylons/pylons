@@ -1,7 +1,11 @@
 Pylons Changelog
 =================
 
-0.9.3 (**svn**)
+0.9.4 (**svn**)
+* Fixed paster shell command to properly acquire globals obj and mapper
+  without relying on the template being configured in a specific manner.
+
+0.9.3 (Nov 1st, 2006)
 * Updated project template to support full_stack option to make it easier to
   use Pylons apps within larger WSGI stacks.
 * Added deprecation warnings to legacy objects and for 1.0 functionality that
