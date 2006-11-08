@@ -2,6 +2,7 @@ Pylons Changelog
 =================
 
 0.9.4 (**svn**)
+* Refactored routes dispatching to use new Routes middleware.
 * Fixed paster shell command to properly acquire globals obj and mapper
   without relying on the template being configured in a specific manner.
 

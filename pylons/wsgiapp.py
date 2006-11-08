@@ -7,7 +7,6 @@ and call the WSGI app as well.
 import sys
 import re
 import inspect
-import urllib
 import warnings
 
 import paste.wsgiwrappers
@@ -16,6 +15,7 @@ from paste.registry import RegistryManager
 from paste.wsgiwrappers import WSGIRequest
 
 from routes import request_config
+from routes.middleware import RoutesMiddleware
 
 import pylons
 from pylons.util import ContextObj, AttribSafeContextObj, _Translator, set_lang, class_name_from_module_name
@@ -67,34 +67,22 @@ class PylonsBaseWSGIApp(object):
         
         # Initialize Buffet and all our template engines, default engine is the
         # first in the template_engines list
-        def_eng = config.template_engines.pop(0)
+        def_eng = config.template_engines[0]
         self.buffet = pylons.templating.Buffet(def_eng['engine'], 
             template_root=def_eng['template_root'], **def_eng['template_options'])
-        for e in config.template_engines:
+        for e in config.template_engines[1:]:
             self.buffet.prepare(e['engine'], template_root=e['template_root'], 
                 alias=e['alias'], **e['template_options'])
     
     def __call__(self, environ, start_response):
-        self.setup_app_env(environ, start_response)
+        req = self.setup_app_env(environ, start_response)
         if environ.get('paste.testing'):
             self.load_test_env(environ)
             if environ['PATH_INFO'] == '/_test_vars':
                 start_response('200 OK', [('Content-type','text/plain')])
                 return ['Vars attached']
         
-        # Change our HTTP_METHOD if _method is present, try GET first to avoid
-        # parsing POST unless absolutely necessary.
-        req = pylons.request._current_obj()
-        old_method = None
-        if '_method' in environ.get('QUERY_STRING', '') and '_method' in req.GET:
-            old_method = environ['REQUEST_METHOD']
-            environ['REQUEST_METHOD'] = req.GET['_method']
-        elif environ['REQUEST_METHOD'] == 'POST' and '_method' in req.POST:
-            old_method = environ['REQUEST_METHOD']
-            environ['REQUEST_METHOD'] = req.POST['_method']
-        
         controller = self.resolve(environ, start_response)
-        if old_method: environ['REQUEST_METHOD'] = old_method            
         response = self.dispatch(controller, environ, start_response)
         
         if environ.get('paste.testing') and hasattr(response, 'wsgi_response'):
@@ -107,7 +95,7 @@ class PylonsBaseWSGIApp(object):
             return content
         elif response:
             return response
-            
+        
         # Apparently we returned absolutely nothing, use the response
         # object if in legacy mode, otherwise raise an exception
         if environ.get('pylons.legacy'):
@@ -168,24 +156,19 @@ class PylonsBaseWSGIApp(object):
             environ['paste.registry'].register(pylons.session, environ[econf['session']])
         if econf.get('cache'):
             environ['paste.registry'].register(pylons.cache, environ[econf['cache']])
+        return req
     
     def resolve(self, environ, start_response):
         """Implements Routes-based dispatching"""
         config = request_config()
-        config.mapper = self.mapper
-        config.environ = environ
         config.redirect = self.redirect_to
         match = config.mapper_dict
-        if not match:
-            return None
         environ['pylons.routes_dict'] = match
         controller = match.get('controller')
         if not controller:
             return None
         
         # Pull the controllers class name, import controller
-        # @@ TODO: Encapsulate in try/except to raise error if controller
-        #          doesn't exist, or class in controller file doesn't exist.
         full_module_name = self.package_name + '.controllers.' \
             + controller.replace('/', '.')
         
@@ -204,12 +187,6 @@ class PylonsBaseWSGIApp(object):
             raise httpexceptions.HTTPNotFound()
         match = environ['pylons.routes_dict']
         
-        # Sanitize keys
-        # @@ TODO: This should be done in a lazy fashion
-        for k,v in match.iteritems():
-            if v:
-                match[k] = urllib.unquote_plus(v)
-        
         # Older subclass of Controller
         if inspect.isclass(controller) and not issubclass(controller, WSGIController) and \
                 issubclass(controller, Controller):
@@ -221,12 +198,7 @@ class PylonsBaseWSGIApp(object):
                 controller.c = pylons.c
             
             return controller(**match)
-        
-        # If the route included a path_info attribute, we'll assume it
-        # should be pulled, otherwise we call the controller    
-        if match.get('path_info'):
-            self.fixup_environ(environ, match)
-        
+                
         # If it's a class, instantiate it
         if not hasattr(controller, '__class__') or \
             getattr(controller, '__class__') == type:
@@ -234,17 +206,6 @@ class PylonsBaseWSGIApp(object):
         
         # Controller is assumed to handle a WSGI call
         return controller(environ, start_response)
-    
-    def fixup_environ(self, environ, dispatch):
-        """Fixes the environ based on the Routes match"""
-        oldpath = environ['PATH_INFO']
-        newpath = dispatch.get('path_info') or ''
-        environ['PATH_INFO'] = newpath
-        if not environ['PATH_INFO'].startswith('/'):
-            environ['PATH_INFO'] = '/' + environ['PATH_INFO']
-        environ['SCRIPT_NAME'] += re.sub(r'^(.*?)/' + newpath + '$', r'\1', oldpath)
-        if environ['SCRIPT_NAME'].endswith('/'):
-            environ['SCRIPT_NAME'] = environ['SCRIPT_NAME'][:-1]
     
     def load_test_env(self, environ):
         """Sets up our Paste testing environment"""
@@ -309,6 +270,7 @@ class PylonsApp(object):
         
         # Create the base Pylons wsgi app
         app = PylonsBaseWSGIApp(config.map, config.package, g, helpers=helpers)
+        app = RoutesMiddleware(app, config.map)
         
         # Pull user-specified environ overrides, or just setup default
         # session and caching objects
