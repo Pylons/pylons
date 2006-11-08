@@ -68,7 +68,7 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
     zip_safe=False,
     include_package_data=True,
     install_requires=[
-        "Routes>=1.5.2", "WebHelpers>=0.2.2", "Beaker>=0.6.1",
+        "Routes==dev,>=1.6dev-r298", "WebHelpers>=0.2.2", "Beaker>=0.6.1",
         "Paste>=1.0", "PasteDeploy>=1.0", "PasteScript>=1.0",
         "Myghty>=1.1", "FormEncode>=0.6", "simplejson>=1.4", "nose>=0.9.0",
     ],
