@@ -85,8 +85,8 @@ class Buffet(object):
         return d
     
     def render(self, engine_name=None, template_name=None,
-        include_pylons_variables=True, namespace=None, 
-        cache_key=None, cache_expire=None, cache_type=None, **options):
+               include_pylons_variables=True, namespace=None, 
+               cache_key=None, cache_expire=None, cache_type=None, **options):
         """Render a template using a template engine plug-in
         
         To use templates it is expected that you will attach data to be used in
