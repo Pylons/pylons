@@ -152,19 +152,14 @@ class WSGIController(Controller):
                 self._inspect_call(self.__after__)
                 raise
             self._inspect_call(self.__after__)
-
-        if hasattr(response, 'wsgi_response'):
-            # Pull the content we need for a WSGI response
-            status, response_headers, content = response.wsgi_response()
-            start_response(status, response_headers)
         
+        if hasattr(response, 'wsgi_response'):
             # Copy the response object into the testing vars if we're testing
             if 'paste.testing' in environ:
                 environ['paste.testing_variables']['response'] = response
-            response = content
+            return response(environ, start_response)
         
         return response
-        
 
 class RPCController(Controller):
     resource = 'RPC2'
