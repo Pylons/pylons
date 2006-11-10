@@ -162,7 +162,8 @@ class PylonsBaseWSGIApp(object):
         """Implements Routes-based dispatching"""
         config = request_config()
         config.redirect = self.redirect_to
-        match = config.mapper_dict
+        match = environ['wsgiorg.routing_args'][1]
+        
         environ['pylons.routes_dict'] = match
         controller = match.get('controller')
         if not controller:
@@ -231,7 +232,7 @@ class PylonsApp(object):
     where objects for the session/cache will be. If they're set to none,
     then no session/cache objects will be available.
     """
-    def __init__(self, config, default_charset=None, helpers=None, g=None):
+    def __init__(self, config, default_charset=None, helpers=None, g=None, use_routes=True):
         self.config = config
         if default_charset:
             warnings.warn(
@@ -270,7 +271,8 @@ class PylonsApp(object):
         
         # Create the base Pylons wsgi app
         app = PylonsBaseWSGIApp(config.map, config.package, g, helpers=helpers)
-        app = RoutesMiddleware(app, config.map)
+        if use_routes:
+            app = RoutesMiddleware(app, config.map)
         
         # Pull user-specified environ overrides, or just setup default
         # session and caching objects

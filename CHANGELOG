@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.4 (**svn**)
+* PylonsApp now has option to not use Routes middleware, default resolving 
+  uses new wsgi.org routing_args spec.
 * Refactored routes dispatching to use new Routes middleware.
 * Fixed paster shell command to properly acquire globals obj and mapper
   without relying on the template being configured in a specific manner.
