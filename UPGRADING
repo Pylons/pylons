@@ -1,0 +1,4 @@
+Upgrade steps required between various versions of Pylons, ordered from oldest
+to most recent version. If you are skipping an upgrade step, ensure that you
+have updated your projects appropriately to avoid any problems.
+
