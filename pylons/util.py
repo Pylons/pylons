@@ -1,48 +1,35 @@
-"""Helpers object, Paste Template config and misc. functionality.
-
-The util module provides the main Helper object used by Pylons.
+"""Paste Template and Pylons utility functions
 
 PylonsTemplate is a Paste Template sub-class that configures the source
-directory and default plug-ins for a new Pylons project.
+directory and default plug-ins for a new Pylons project. The minimal template
+provides a more minimal template with less additional directories and layout.
 """
 import os.path
+import warnings
+
 from paste.deploy.config import CONFIG
 from paste.script.templates import Template
+
 import pylons
+import pylons.helpers
 
-def log(msg):
-    """Log a message to the output log."""
-    pylons.request.environ['wsgi.errors'].write('=> %s\n'%str(msg))
+def func_move(name):
+    return "The %s function has moved to pylons.helpers, please update your\
+              import statements to reflect the move." % name
 
-def _(value):
-    """Mark a string for translation
+def deprecated(func, message):
+    def deprecated_method(*args, **kargs):        
+        warnings.warn(message, DeprecationWarning, 2)
+        return func(*args, **kargs)
+    deprecated_method.__name__ = func.__name__
+    deprecated_method.__doc__ = message + "\n" + func.__doc__
+    return deprecated_method
+
+get_lang = deprecated(pylons.helpers.set_lang, func_move('get_lang'))
+set_lang = deprecated(pylons.helpers.set_lang, func_move('set_lang'))
+log = deprecated(pylons.helpers.log, func_move('log'))
+_ = deprecated(pylons.helpers._, func_move('_'))
     
-    Mark a string to be internationalized as follows:
-    
-    .. code-block:: Python
-    
-        h._('This should be in lots of languages')
-    """
-    return pylons.translator['translator'].gettext(value)
-
-def set_lang(lang):
-    """Set the language used"""
-    if lang is None:
-        pylons.translator['translator'] = _Translator()
-    else:
-        from pkg_resources import resource_exists
-        from pylons.i18n.translation import egg_translation
-        project_name = CONFIG['app_conf']['package']
-        catalog_path = os.path.join('i18n', lang, 'LC_MESSAGES')
-        if not resource_exists(project_name, catalog_path):
-            raise LanguageError('Language catalog %s not found' % \
-                                os.path.join(project_name, catalog_path))
-        pylons.translator['translator'] = \
-            egg_translation(project_name, lang=catalog_path)
-
-def get_lang():
-    return pylons.translator.get('lang')
-
 def get_prefix(environ):
     if 'paste.config' in environ:
         prefix = environ['paste.config']['app_conf'].get('prefix', '')
@@ -84,15 +71,6 @@ class AttribSafeContextObj(object):
             return object.__getattribute__(self, name)
         except AttributeError:
             return ''
-
-class LanguageError(Exception):
-    """Exception raised when a problem occurs with changing languages"""
-    pass
-
-class _Translator(object):
-    """An empty gettext translator which just returns the original string"""
-    def gettext(self, value):
-        return value
 
 class PylonsTemplate(Template):
     _template_dir = 'templates/default_project'

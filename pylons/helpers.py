@@ -7,6 +7,39 @@ import paste.httpexceptions as httpexceptions
 
 import pylons
 
+def _(value):
+    """Mark a string for translation
+    
+    Mark a string to be internationalized as follows:
+    
+    .. code-block:: Python
+    
+        h._('This should be in lots of languages')
+    """
+    return pylons.translator['translator'].gettext(value)
+
+def log(msg):
+    """Log a message to the output log."""
+    pylons.request.environ['wsgi.errors'].write('=> %s\n'%str(msg))
+
+def set_lang(lang):
+    """Set the language used"""
+    if lang is None:
+        pylons.translator['translator'] = _Translator()
+    else:
+        from pkg_resources import resource_exists
+        from pylons.i18n.translation import egg_translation
+        project_name = CONFIG['app_conf']['package']
+        catalog_path = os.path.join('i18n', lang, 'LC_MESSAGES')
+        if not resource_exists(project_name, catalog_path):
+            raise LanguageError('Language catalog %s not found' % \
+                                os.path.join(project_name, catalog_path))
+        pylons.translator['translator'] = \
+            egg_translation(project_name, lang=catalog_path)
+
+def get_lang():
+    return pylons.translator.get('lang')
+
 def etag_cache(key=None):
     """Use the HTTP Entity Tag cache for Browser side caching
     
@@ -51,4 +84,14 @@ def abort(status_code=None, detail="", headers=None, comment=None):
     exc = httpexceptions.get_exception(status_code)(detail, headers, comment)
     raise exc
 
-__all__ = ['etag_cache', 'redirect_to', 'abort']
+class LanguageError(Exception):
+    """Exception raised when a problem occurs with changing languages"""
+    pass
+
+class _Translator(object):
+    """An empty gettext translator which just returns the original string"""
+    def gettext(self, value):
+        return value
+
+__all__ = ['etag_cache', 'redirect_to', 'abort', '_', 'log', 'set_lang', 
+           'get_lang']
