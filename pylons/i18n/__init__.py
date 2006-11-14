@@ -54,7 +54,7 @@ msgstr ""
         # These could be filled in from setup.py
         pylons.i18n.pygettext.main()
         print "\nSucessfully created langauage template in %s\n" % pot_path
-        print """Now create your langauge files, save them in i18n/lang replacing 
+        print """Now create your language files, save them in i18n/lang replacing 
 lang with the language code and changing the file extension to .po then run 
 setup.py lang_compile mode to produce your .mo files"""
 
@@ -94,7 +94,7 @@ class LangCompile(setuptools.Command):
     def run(self):
         project = re.compile('[^a-zA-Z0-9_]').sub('', self.distribution.get_name().lower())
         if not self.lang:
-            print "No langauge specified, compiling all languages"
+            print "No language specified, compiling all languages"
             i18n_path = os.path.join(project, 'i18n')
             for lang in os.listdir(i18n_path):
                 if os.path.isdir(os.path.join(i18n_path, lang)) and \
