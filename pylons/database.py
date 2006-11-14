@@ -25,7 +25,7 @@ class AutoConnectHub(ConnectionHub):
         self.uri = uri
         ConnectionHub.__init__(self)
     
-    def get_connection(self):
+    def getConnection(self):
         try:
             conn = self.threadingLocal.connection
             return conn
@@ -48,7 +48,7 @@ class AutoConnectHub(ConnectionHub):
     
     def begin(self):
         """Starts a transaction."""
-        conn = self.get_connection()
+        conn = self.getConnection()
         if isinstance(conn, Transaction):
             if conn._obsolete:
                 conn.begin()
