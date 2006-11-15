@@ -12,6 +12,10 @@ Pylons Changelog
 * Refactored routes dispatching to use new Routes middleware.
 * Fixed paster shell command to properly acquire globals obj and mapper
   without relying on the template being configured in a specific manner.
+* Added keyword argument pool_connection to
+  pylons.database.PackageHub; if set to false then SQLObject connections
+  won't use pooled database connections (a new connection will be
+  opened for each request).
 
 0.9.3 (Nov 1st, 2006)
 * Updated project template to support full_stack option to make it easier to

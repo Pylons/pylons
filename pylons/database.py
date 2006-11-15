@@ -19,10 +19,11 @@ class AutoConnectHub(ConnectionHub):
     uri = None
     params = {}
     
-    def __init__(self, uri=None):
+    def __init__(self, uri=None, pool_connections=True):
         if not uri:
             uri = CONFIG['app_conf'].get('sqlobject.dburi')
         self.uri = uri
+        self.pool_connections = pool_connections
         ConnectionHub.__init__(self)
     
     def getConnection(self):
@@ -38,6 +39,9 @@ class AutoConnectHub(ConnectionHub):
                 if self.uri.startswith("sqlite"):
                     TheURIOpener.cachedURIs = {}
                 self.threadingLocal.connection = conn
+                if not self.pool_connections:
+                    # This disables pooling
+                    conn._pool = None
                 return conn
             try:
                 return self.processConnection
@@ -92,11 +96,16 @@ class PackageHub(object):
     
     The hub is not instantiated until an attempt is made to
     use the database.
+
+    If pool_connections=False, then a new database connection
+    will be opened for every request.  This will avoid
+    problems with database connections that periodically die.
     """
-    def __init__(self, packagename, dburi=None):
+    def __init__(self, packagename, dburi=None, pool_connections=True):
         self.packagename = packagename
         self.hub = None
         self.dburi = dburi
+        self.pool_connections = pool_connections
     
     def __get__(self, obj, type):
         if not self.hub:
@@ -124,7 +133,8 @@ class PackageHub(object):
             raise KeyError, "No database configuration found!"
         hub = _hubs.get(dburi)
         if not hub:
-            hub = AutoConnectHub(dburi)
+            hub = AutoConnectHub(
+                dburi, pool_connections=self.pool_connections)
             _hubs[dburi] = hub
         self.hub = hub
             
