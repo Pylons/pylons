@@ -50,7 +50,7 @@ All Pylons applications are installed in the same way, so you as the developer n
 Make Config
 -----------
 
-The ``paster make-config`` command looks for looks for the file ``paste_deploy_config.ini_tmpl`` and uses it as a basis for generating a new ``.ini`` file. 
+The ``paster make-config`` command looks for the file ``paste_deploy_config.ini_tmpl`` and uses it as a basis for generating a new ``.ini`` file. 
 
 Using our new wiki example again the ``wiki.egg-info/paste_deploy_config.ini_tmpl`` file in the route directory contains the text:
 
