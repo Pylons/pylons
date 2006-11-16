@@ -2,6 +2,10 @@ Pylons Changelog
 =================
 
 0.9.4 (**svn**)
+* Fixed problem with pylons.database.PackageHub.__get__ raising errors
+  other than AttributeError when the database isn't configured.  Added
+  new UnconfiguredConnectionError exception, instead of just KeyError
+  or TypeError (depending on what part of the configuration failed).
 * Fixed default g init, since bare object has no init method. Reported by Ian 
   Bicking.
 * Fixed issue with SQLObject method override having wrong name. Reported by

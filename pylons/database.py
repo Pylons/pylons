@@ -87,6 +87,11 @@ class AutoConnectHub(ConnectionHub):
 # connection URI
 _hubs = dict()
 
+class UnconfiguredConnectionError(KeyError):
+    """
+    Raised when no configuration is available to set up a connection.
+    """
+
 class PackageHub(object):
     """Transparently proxies to an AutoConnectHub for the URI
     that is appropriate for this package. A package URI is
@@ -109,7 +114,10 @@ class PackageHub(object):
     
     def __get__(self, obj, type):
         if not self.hub:
-            self.set_hub()
+            try:
+                self.set_hub()
+            except UnconfiguredConnectionError, e:
+                raise AttributeError(str(e))
         return self.hub.__get__(obj, type)
     
     def __set__(self, obj, type):
@@ -125,12 +133,17 @@ class PackageHub(object):
     def set_hub(self):
         dburi = self.dburi
         if not dburi:
-            appconf = CONFIG['app_conf']
+            try:
+                appconf = CONFIG['app_conf']
+            except TypeError, e:
+                # No configuration is registered
+                raise UnconfiguredConnectionError(str(e))
             dburi = appconf.get("%s.dburi" % self.packagename)
             if not dburi:
                 dburi = appconf.get("sqlobject.dburi")
         if not dburi:
-            raise KeyError, "No database configuration found!"
+            raise UnconfiguredConnectionError(
+                "No database configuration found!")
         hub = _hubs.get(dburi)
         if not hub:
             hub = AutoConnectHub(
