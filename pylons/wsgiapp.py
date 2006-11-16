@@ -197,10 +197,11 @@ class PylonsApp(object):
     def __init__(self, config, helpers=None, g=None, use_routes=True):
         self.config = config
         
-        # Assign a default globals object
+        # Assign a default globals object, and instantiate it
         if not g:
-            g = type("Globals", (), {})
-        g = g(config.global_conf, config.app_conf, config=config)
+            g = type("Globals", (), {})()
+        else:
+            g = g(config.global_conf, config.app_conf, config=config)
         g.pylons_config = config
         
         # Create the base Pylons wsgi app

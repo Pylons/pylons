@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.4 (**svn**)
+* Fixed default g init, since bare object has no init method. Reported by Ian 
+  Bicking.
 * Fixed issue with SQLObject method override having wrong name. Reported by
   climbus with patch. Fixes #133.
 * Moving controller helpers to pylons.helpers and using pylons.util purely for
