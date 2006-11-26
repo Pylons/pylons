@@ -2,6 +2,7 @@ Pylons Changelog
 =================
 
 0.9.4 (**svn**)
+* Added test configuration ini file to default template. Closes #114.
 * Fixed problem with pylons.database.PackageHub.__get__ raising errors
   other than AttributeError when the database isn't configured.  Added
   new UnconfiguredConnectionError exception, instead of just KeyError
