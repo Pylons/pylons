@@ -10,6 +10,7 @@ from paste.deploy.config import CONFIG
 from paste.deploy.converters import asbool
 
 import pylons
+from pylons.helpers import abort
 
 XMLRPC_MAPPING = {str:'string', list:'array', int:'int', bool:'boolean',
                   float:'double', dict:'struct', 
@@ -219,6 +220,7 @@ class XMLRPCController(WSGIController):
     """XML-RPC Controller"""
 
     max_body_length = 4194304
+    validate_params = True
 
     def _get_method_args(self):
         return self.rpc_args, {}
@@ -228,13 +230,14 @@ class XMLRPCController(WSGIController):
 
         # Pull out the length, return an error if there is no valid
         # length or if the length is larger than the max_body_length.
-        length = req.environ['CONTENT_LENGTH']
+        length = req.environ.get('CONTENT_LENGTH')
         if length:
             length = int(length)
         else:
-            return xmlrpc_fault(0, "No valid Content-Length header found.")
+            # No valid Content-Length header found
+            abort(411)
         if length > self.max_body_length or length == 0:
-            return xmlrpc_fault(1, "XML body too large.")
+            abort(413, "XML body too large")
 
         body = req.environ['wsgi.input'].read(int(req.environ['CONTENT_LENGTH']))
         self.rpc_args, orig_method = xmlrpclib.loads(body)
@@ -246,7 +249,7 @@ class XMLRPCController(WSGIController):
         func = getattr(self, method)
 
         # Signature checking for params
-        if hasattr(func, 'signature'):
+        if self.validate_params and hasattr(func, 'signature'):
             valid_args = False
             params = xmlrpc_sig(self.rpc_args)
             for sig in func.signature:
@@ -260,7 +263,9 @@ class XMLRPCController(WSGIController):
                     break
 
             if not valid_args:
-                return xmlrpc_fault(0, "Incorrect argument signature. %s recieved does not match %s signature for method %s" % (params, func.signature, orig_method))
+                return xmlrpc_fault(0, "Incorrect argument signature. %s recieved does "
+                                    "not match %s signature for method %s" % \
+                                    (params, func.signature, orig_method))
 
         # Don't wrap the response if its a fault
         raw_response = self._inspect_call(func)
@@ -273,13 +278,16 @@ class XMLRPCController(WSGIController):
     def _find_method_name(self, name):
         return name.replace('.', '_')
 
+    def _publish_method_name(self, name):
+        return name.replace('_', '.')
+
     def system_listMethods(self):
         """Returns a list of XML-RPC methods for this XML-RPC resource"""
         methods = []
         for method in dir(self):
             meth = getattr(self, method)
             if not method.startswith('_') and hasattr(meth, 'im_self'):
-                methods.append(method.replace('_','.'))
+                methods.append(self._publish_method_name(method))
         return methods
     system_listMethods.signature = [ ['array'] ]
 
@@ -295,10 +303,11 @@ class XMLRPCController(WSGIController):
             if hasattr(method, 'signature'):
                 return getattr(method, 'signature')
             else:
-                return []
+                return ''
         else:
             return xmlrpclib.Fault(0, 'No such method name')
-    system_methodSignature.signature = [ ['array', 'string'] ]
+    system_methodSignature.signature = [ ['array', 'string'],
+                                         ['string', 'string'] ]
 
     def system_methodHelp(self, name):
         """Returns the documentation for a method"""
@@ -309,7 +318,7 @@ class XMLRPCController(WSGIController):
                 sig = "\n\nMethod signature: " + sig
             return trim(method.__doc__) + sig
         return xmlrpclib.Fault(0, "No such method name")
-    system_methodHelp.signature = [ ['array', 'string'] ]
+    system_methodHelp.signature = [ ['string', 'string'] ]
 
     
 __all__ = ['Controller', 'WSGIController', 'XMLRPCController']
