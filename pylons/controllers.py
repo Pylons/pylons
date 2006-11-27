@@ -12,7 +12,9 @@ from paste.deploy.converters import asbool
 import pylons
 
 XMLRPC_MAPPING = {str:'string', list:'array', int:'int', bool:'boolean',
-                  float:'double', dict:'struct', datetime:'dateTime.iso8601'}
+                  float:'double', dict:'struct', 
+                  xmlrpclib.DateTime:'dateTime.iso8601',
+                  xmlrpclib.Binary:'base64'}
 
 def xmlrpc_sig(args):
     """Returns a list of the function signature in string format based on a 
@@ -26,7 +28,7 @@ def xmlrpc_sig(args):
     return signature
 
 def xmlrpc_fault(code, message):
-    """Conveinence method to return a Pylons response XMLRPC Fault"""
+    """Convienence method to return a Pylons response XMLRPC Fault"""
     fault = xmlrpclib.Fault(code, message)
     return pylons.Response(xmlrpclib.dumps(fault, methodresponse=True))
 
@@ -272,6 +274,7 @@ class XMLRPCController(WSGIController):
         return name.replace('.', '_')
 
     def system_listMethods(self):
+        """Returns a list of XML-RPC methods for this XML-RPC resource"""
         methods = []
         for method in dir(self):
             meth = getattr(self, method)
@@ -281,6 +284,12 @@ class XMLRPCController(WSGIController):
     system_listMethods.signature = [ ['array'] ]
 
     def system_methodSignature(self, name):
+        """Returns an array of array's for the valid signatures for a method.
+
+        The first value of each array is the return value of the method. The
+        result is an array to indicate multiple signatures a method may be
+        capable of.
+        """
         if hasattr(self, name):
             method = getattr(self, name)
             if hasattr(method, 'signature'):
@@ -292,11 +301,15 @@ class XMLRPCController(WSGIController):
     system_methodSignature.signature = [ ['array', 'string'] ]
 
     def system_methodHelp(self, name):
+        """Returns the documentation for a method"""
         if hasattr(self, name):
             method = getattr(self, name)
-            return trim(method.__doc__)
+            sig = str(getattr(method, 'signature', []))
+            if sig:
+                sig = "\n\nMethod signature: " + sig
+            return trim(method.__doc__) + sig
         return xmlrpclib.Fault(0, "No such method name")
     system_methodHelp.signature = [ ['array', 'string'] ]
 
     
-__all__ = ['Controller', 'WSGIController', 'RPCController']
+__all__ = ['Controller', 'WSGIController', 'XMLRPCController']
