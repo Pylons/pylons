@@ -3,7 +3,6 @@ import sys
 import types
 import inspect
 import xmlrpclib
-from datetime import datetime
 
 from paste.httpexceptions import HTTPException
 from paste.deploy.config import CONFIG
@@ -98,7 +97,7 @@ class Controller(object):
         self.buffet = pylons.buffet._current_obj()
         self.start_response = None
     
-    def _inspect_call(self, func, *args, **kargs):
+    def _inspect_call(self, func, **kargs):
         """Calls a function with as many arguments from args and kargs as
         possible
         
@@ -109,7 +108,7 @@ class Controller(object):
         preserved the function signature.
         """
         argspec = inspect.getargspec(func)
-        args, kargs = self._get_method_args()
+        kargs = self._get_method_args()
         
         # Hide the traceback for everything above this controller
         __traceback_hide__ = 'before_and_this'
@@ -120,6 +119,7 @@ class Controller(object):
                 setattr(c, k, val)
             return func(**kargs)
         else:
+            args = []
             argnames = argspec[0][1:]
             for name in argnames:
                 if name in kargs:
@@ -137,7 +137,7 @@ class Controller(object):
         kargs = req.environ['pylons.routes_dict'].copy()
         kargs.update(dict(environ=req.environ, 
                           start_response=self.start_response))
-        return [], kargs
+        return kargs
     
     def _dispatch_call(self):
         """Handles dispatching the request to the function using Routes"""
@@ -223,14 +223,12 @@ class XMLRPCController(WSGIController):
     validate_params = True
 
     def _get_method_args(self):
-        return self.rpc_args, {}
+        return self.rpc_kargs
 
-    def _dispatch_call(self):
-        req = pylons.request._current_obj()
-
+    def __call__(self, environ, start_response):
         # Pull out the length, return an error if there is no valid
         # length or if the length is larger than the max_body_length.
-        length = req.environ.get('CONTENT_LENGTH')
+        length = environ.get('CONTENT_LENGTH')
         if length:
             length = int(length)
         else:
@@ -239,8 +237,8 @@ class XMLRPCController(WSGIController):
         if length > self.max_body_length or length == 0:
             abort(413, "XML body too large")
 
-        body = req.environ['wsgi.input'].read(int(req.environ['CONTENT_LENGTH']))
-        self.rpc_args, orig_method = xmlrpclib.loads(body)
+        body = environ['wsgi.input'].read(int(environ['CONTENT_LENGTH']))
+        rpc_args, orig_method = xmlrpclib.loads(body)
         
         method = self._find_method_name(orig_method)
         if not hasattr(self, method):
@@ -251,10 +249,10 @@ class XMLRPCController(WSGIController):
         # Signature checking for params
         if self.validate_params and hasattr(func, 'signature'):
             valid_args = False
-            params = xmlrpc_sig(self.rpc_args)
+            params = xmlrpc_sig(rpc_args)
             for sig in func.signature:
                 # Next sig if we don't have the same amount of args
-                if len(sig)-1 != len(self.rpc_args):
+                if len(sig)-1 != len(rpc_args):
                     continue
 
                 # If the params match, we're valid
@@ -267,8 +265,23 @@ class XMLRPCController(WSGIController):
                                     "not match %s signature for method %s" % \
                                     (params, func.signature, orig_method))
 
-        # Don't wrap the response if its a fault
-        raw_response = self._inspect_call(func)
+        # Change the arg list into a keyword dict based off the arg
+        # names in the functions definition
+        kargs = dict(action=method)
+        arglist= inspect.getargspec(func)[0][1:]
+        kargs.update(dict(zip(arglist, rpc_args)))
+        kargs.update(dict(environ=environ, 
+                          start_response=start_response))
+        self.rpc_kargs = kargs
+        self._func = func
+
+        # Now that we know the method is valid, and the args are valid,
+        # we can dispatch control to the default WSGIController
+        return WSGIController.__call__(self, environ, start_response)
+
+    def _dispatch_call(self):
+        """Dispatch the call to the function chosen by __call__"""
+        raw_response = self._inspect_call(self._func)
         if not isinstance(raw_response, xmlrpclib.Fault):
             raw_response = (raw_response,)
 
@@ -286,6 +299,8 @@ class XMLRPCController(WSGIController):
         methods = []
         for method in dir(self):
             meth = getattr(self, method)
+
+            # Only methods have this attribute
             if not method.startswith('_') and hasattr(meth, 'im_self'):
                 methods.append(self._publish_method_name(method))
         return methods
