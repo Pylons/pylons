@@ -267,11 +267,10 @@ class XMLRPCController(WSGIController):
 
         # Change the arg list into a keyword dict based off the arg
         # names in the functions definition
-        kargs = dict(action=method)
         arglist= inspect.getargspec(func)[0][1:]
-        kargs.update(dict(zip(arglist, rpc_args)))
-        kargs.update(dict(environ=environ, 
-                          start_response=start_response))
+        kargs = dict(zip(arglist, rpc_args))
+        kargs['action'], kargs['environ'] = method, environ
+        kargs['start_response'] = start_response
         self.rpc_kargs = kargs
         self._func = func
 
