@@ -21,9 +21,10 @@ def xmlrpc_sig(args):
     tuple provided by xmlrpclib."""
     signature = []
     for param in args:
-        xml_name = XMLRPC_MAPPING.get(type(param))
-        if xml_name:
-            signature.append(xml_name)
+        for type, xml_name in XMLRPC_MAPPING.iteritems():
+            if isinstance(param, type):
+                signature.append(xml_name)
+                break
     return signature
 
 def xmlrpc_fault(code, message):
