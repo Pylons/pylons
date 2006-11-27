@@ -1,13 +1,60 @@
 """Standard Controllers intended for sub-classing by web developers"""
+import sys
 import types
 import inspect
 import xmlrpclib
+from datetime import datetime
 
 from paste.httpexceptions import HTTPException
 from paste.deploy.config import CONFIG
 from paste.deploy.converters import asbool
 
 import pylons
+
+XMLRPC_MAPPING = {str:'string', list:'array', int:'int', bool:'boolean',
+                  float:'double', dict:'struct', datetime:'dateTime.iso8601'}
+
+def xmlrpc_sig(args):
+    """Returns a list of the function signature in string format based on a 
+    tuple provided by xmlrpclib."""
+    signature = []
+    for param in args:
+        for type, xml_name in XMLRPC_MAPPING.iteritems():
+            if isinstance(param, type):
+                signature.append(xml_name)
+                break
+    return signature
+
+def xmlrpc_fault(code, message):
+    """Conveinence method to return a Pylons response XMLRPC Fault"""
+    fault = xmlrpclib.Fault(code, message)
+    return pylons.Response(xmlrpclib.dumps(fault, methodresponse=True))
+
+def trim(docstring):
+    """Yanked from PEP 237, strips the whitespace from Python doc strings"""
+    if not docstring:
+        return ''
+    # Convert tabs to spaces (following the normal Python rules)
+    # and split into a list of lines:
+    lines = docstring.expandtabs().splitlines()
+    # Determine minimum indentation (first line doesn't count):
+    indent = sys.maxint
+    for line in lines[1:]:
+        stripped = line.lstrip()
+        if stripped:
+            indent = min(indent, len(line) - len(stripped))
+    # Remove indentation (first line is special):
+    trimmed = [lines[0].strip()]
+    if indent < sys.maxint:
+        for line in lines[1:]:
+            trimmed.append(line[indent:].rstrip())
+    # Strip off trailing and leading blank lines:
+    while trimmed and not trimmed[-1]:
+        trimmed.pop()
+    while trimmed and not trimmed[0]:
+        trimmed.pop(0)
+    # Return a single string:
+    return '\n'.join(trimmed)
 
 class Controller(object):
     """Standard Pylons Controller for Web Requests
@@ -183,23 +230,73 @@ class XMLRPCController(WSGIController):
         if length:
             length = int(length)
         else:
-            return pylons.Response(code=404)
+            return xmlrpc_fault(0, "No valid Content-Length header found.")
         if length > self.max_body_length or length == 0:
-            return pylons.Response(xmlrpclib.Fault(1, "XML body too large."))
+            return xmlrpc_fault(1, "XML body too large.")
 
         body = req.environ['wsgi.input'].read(int(req.environ['CONTENT_LENGTH']))
-        self.rpc_args, method = xmlrpclib.loads(body)
+        self.rpc_args, orig_method = xmlrpclib.loads(body)
         
-        method = self._find_method_name(method)
-        if hasattr(self, method):
-            func = getattr(self, method)
-            response = xmlrpclib.dumps((self._inspect_call(func),), 
-                                       methodresponse=True)
-        else:
-            response = xmlrpclib.Fault(0, "No method by that name")
+        method = self._find_method_name(orig_method)
+        if not hasattr(self, method):
+            return xmlrpc_fault(0, "No method by that name")
+
+        func = getattr(self, method)
+
+        # Signature checking for params
+        if hasattr(func, 'signature'):
+            valid_args = False
+            params = xmlrpc_sig(self.rpc_args)
+            for sig in func.signature:
+                # Next sig if we don't have the same amount of args
+                if len(sig)-1 != len(self.rpc_args):
+                    continue
+
+                # If the params match, we're valid
+                if params == sig[1:]:
+                    valid_args = True
+                    break
+
+            if not valid_args:
+                return xmlrpc_fault(0, "Incorrect argument signature. %s recieved does not match %s signature for method %s" % (params, func.signature, orig_method))
+
+        # Don't wrap the response if its a fault
+        raw_response = self._inspect_call(func)
+        if not isinstance(raw_response, xmlrpclib.Fault):
+            raw_response = (raw_response,)
+
+        response = xmlrpclib.dumps(raw_response, methodresponse=True)
         return pylons.Response(response)
 
     def _find_method_name(self, name):
         return name.replace('.', '_')
+
+    def system_listMethods(self):
+        methods = []
+        for method in dir(self):
+            meth = getattr(self, method)
+            if not method.startswith('_') and hasattr(meth, 'im_self'):
+                methods.append(method.replace('_','.'))
+        return methods
+    system_listMethods.signature = [ ['array'] ]
+
+    def system_methodSignature(self, name):
+        if hasattr(self, name):
+            method = getattr(self, name)
+            if hasattr(method, 'signature'):
+                return getattr(method, 'signature')
+            else:
+                return []
+        else:
+            return xmlrpclib.Fault(0, 'No such method name')
+    system_methodSignature.signature = [ ['array', 'string'] ]
+
+    def system_methodHelp(self, name):
+        if hasattr(self, name):
+            method = getattr(self, name)
+            return trim(method.__doc__)
+        return xmlrpclib.Fault(0, "No such method name")
+    system_methodHelp.signature = [ ['array', 'string'] ]
+
     
 __all__ = ['Controller', 'WSGIController', 'RPCController']

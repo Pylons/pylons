@@ -2,6 +2,7 @@ Pylons Changelog
 =================
 
 0.9.4 (**svn**)
+* Added introspection capability to XMLRPCController and signature checking.
 * Updated Controller to use additional arg lookup scheme so that the source of
   the function args for _inspect_call can be easily overridden.
 * Updated RPCController, renamed to XMLRPCController. XMLRPCController now
