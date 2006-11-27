@@ -48,8 +48,9 @@ class Controller(object):
         self.buffet = pylons.buffet._current_obj()
         self.start_response = None
     
-    def _inspect_call(self, func, **kargs):
-        """Calls a function with the Routes dict
+    def _inspect_call(self, func, *args, **kargs):
+        """Calls a function with as many arguments from args and kargs as
+        possible
         
         Given a function, inspect_call will inspect the function args and call
         it with no further keyword args than it asked for.
@@ -58,14 +59,7 @@ class Controller(object):
         preserved the function signature.
         """
         argspec = inspect.getargspec(func)
-        req = pylons.request._current_obj()
-        kargs = req.environ['pylons.routes_dict'].copy()
-        kargs.update(dict(environ=req.environ, 
-            start_response=self.start_response))
-        
-        # @@ LEGACY: Add in ARGS alias to params
-        if 'pylons.legacy' in req.environ:
-            kargs['ARGS'] = req._legacy_params
+        args, kargs = self._get_method_args()
         
         # Hide the traceback for everything above this controller
         __traceback_hide__ = 'before_and_this'
@@ -77,15 +71,26 @@ class Controller(object):
             return func(**kargs)
         else:
             argnames = argspec[0][1:]
-            args = []
             for name in argnames:
                 if name in kargs:
                     setattr(c, name, kargs[name])
                     args.append(kargs[name])
             return func(*args)
+
+    def _get_method_args(self):
+        """Retrieve the method arguments to use with inspect call
+        
+        By default, this uses Routes to retrieve the arguments, override
+        this method to customize the arguments your controller actions are
+        called with."""
+        req = pylons.request._current_obj()
+        kargs = req.environ['pylons.routes_dict'].copy()
+        kargs.update(dict(environ=req.environ, 
+                          start_response=self.start_response))
+        return [], kargs
     
     def _dispatch_call(self):
-        """Handles dispatching the request to the function"""
+        """Handles dispatching the request to the function using Routes"""
         req = pylons.request._current_obj()
         action = req.environ['pylons.routes_dict'].get('action')
         action_method = action.replace('-', '_')
@@ -161,59 +166,40 @@ class WSGIController(Controller):
         
         return response
 
-class RPCController(Controller):
-    resource = 'RPC2'
+class XMLRPCController(WSGIController):
+    """XML-RPC Controller"""
 
-    def __call__(self, environ, start_response):
-        self.start_response = start_response
-        match = environ['pylons.routes_dict']
-        
-        # Keep private methods private
-        if match.get('action', '').startswith('_'):
-            return pylons.Response(code=404)
+    max_body_length = 4194304
 
-        if  match.get('action') != RPCController.resource:
-            if environ['paste.config']['global_conf']['debug'] == 'false':
-                return pylons.Response(code=404)
-            else:
-                raise NotImplementedError(
-                    'RPCController only supports %s action', 
-                    RPCController.resource)
-        
-        if hasattr(self, '__before__'):
-            self._inspect_call(self.__before__)
-        response = pylons.Response(
-            xmlrpclib.dumps(
-                (self._dispatch_call().wsgi_response()[2],)
-            )
-        )
-        if hasattr(self, '__after__'):
-            self._inspect_call(self.__after__)
-        return response
-    
-    def __call__2(self, action, **kargs):
+    def _get_method_args(self):
+        return self.rpc_args, {}
+
+    def _dispatch_call(self):
         req = pylons.request._current_obj()
-        action = req.environ['pylons.routes_dict'].get('action')
-        action_method = action.replace('-', '_')
-        if action_method != RPCController.resource:
-            if asbool(CONFIG['global_conf'].get('debug')):
-                raise NotImplementedError(
-                    'RPCController only supports %s action',
-                    RPCController.resource)
-            else:
-                return pylons.Response(code=404)
-        d = req.environ['wsgi.input'].read()
-        params, method = xmlrpclib.loads(d)
-        
-        if hasattr(self, '__before__'):
-            self.__before__(method, **params)
-        if isinstance(getattr(self, method, None), types.MethodType):
-            self.__getattribute__(method)(**params)
-        else:
-            res = 3#supposed to return xmlrpc fault thing
-        response = pylons.Response(xmlrpclib.dumps((res,)))
-        if hasattr(self, '__after__'):
-            self.__after__(pylons, method, **params)
-        return response
 
+        # Pull out the length, return an error if there is no valid
+        # length or if the length is larger than the max_body_length.
+        length = req.environ['CONTENT_LENGTH']
+        if length:
+            length = int(length)
+        else:
+            return pylons.Response(code=404)
+        if length > self.max_body_length or length == 0:
+            return pylons.Response(xmlrpclib.Fault(1, "XML body too large."))
+
+        body = req.environ['wsgi.input'].read(int(req.environ['CONTENT_LENGTH']))
+        self.rpc_args, method = xmlrpclib.loads(body)
+        
+        method = self._find_method_name(method)
+        if hasattr(self, method):
+            func = getattr(self, method)
+            response = xmlrpclib.dumps((self._inspect_call(func),), 
+                                       methodresponse=True)
+        else:
+            response = xmlrpclib.Fault(0, "No method by that name")
+        return pylons.Response(response)
+
+    def _find_method_name(self, name):
+        return name.replace('.', '_')
+    
 __all__ = ['Controller', 'WSGIController', 'RPCController']

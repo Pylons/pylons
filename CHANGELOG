@@ -2,6 +2,10 @@ Pylons Changelog
 =================
 
 0.9.4 (**svn**)
+* Updated Controller to use additional arg lookup scheme so that the source of
+  the function args for _inspect_call can be easily overridden.
+* Updated RPCController, renamed to XMLRPCController. XMLRPCController now
+  functions properly and will automatically return proper xmlrpc responses.
 * Added test configuration ini file to default template. Closes #114.
 * Fixed problem with pylons.database.PackageHub.__get__ raising errors
   other than AttributeError when the database isn't configured.  Added

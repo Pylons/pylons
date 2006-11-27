@@ -2,7 +2,7 @@
 from paste.registry import StackedObjectProxy
 from paste.wsgiwrappers import WSGIResponse as Response
 
-from pylons.controllers import Controller, RPCController
+from pylons.controllers import Controller, XMLRPCController
 from pylons.decorators import jsonify
 
 c = StackedObjectProxy(name="C")
