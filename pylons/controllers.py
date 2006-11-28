@@ -117,7 +117,7 @@ class Controller(object):
         if argspec[2]:
             for k, val in kargs.iteritems():
                 setattr(c, k, val)
-            return func(**kargs)
+            result = func(**kargs)
         else:
             args = []
             argnames = argspec[0][1:]
@@ -125,7 +125,11 @@ class Controller(object):
                 if name in kargs:
                     setattr(c, name, kargs[name])
                     args.append(kargs[name])
-            return func(*args)
+            result = func(*args)
+        if type(result).__name__ == 'generator':
+            return pylons.Response(result)
+        else:
+            return result
 
     def _get_method_args(self):
         """Retrieve the method arguments to use with inspect call
