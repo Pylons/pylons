@@ -68,7 +68,7 @@ class PylonsBaseWSGIApp(object):
     
     def __call__(self, environ, start_response):
         req = self.setup_app_env(environ, start_response)
-        if environ.get('paste.testing'):
+        if 'paste.testing_variables' in environ:
             self.load_test_env(environ)
             if environ['PATH_INFO'] == '/_test_vars':
                 start_response('200 OK', [('Content-type','text/plain')])
@@ -77,7 +77,7 @@ class PylonsBaseWSGIApp(object):
         controller = self.resolve(environ, start_response)
         response = self.dispatch(controller, environ, start_response)
         
-        if environ.get('paste.testing') and hasattr(response, 'wsgi_response'):
+        if 'paste.testing_variables' in environ and hasattr(response, 'wsgi_response'):
             environ['paste.testing_variables']['response'] = response
         
         # Transform HttpResponse objects into WSGI response

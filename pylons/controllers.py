@@ -214,7 +214,7 @@ class WSGIController(Controller):
         
         if hasattr(response, 'wsgi_response'):
             # Copy the response object into the testing vars if we're testing
-            if 'paste.testing' in environ:
+            if 'paste.testing_variables' in environ:
                 environ['paste.testing_variables']['response'] = response
             return response(environ, start_response)
         

@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.4 (**svn**)
+* Set environ['paste.testing_variables'] whenever that key is available, not
+  just in testing mode.
 * Added capability to have an action be a generator function.
 * Added introspection capability to XMLRPCController and signature checking.
 * Updated Controller to use additional arg lookup scheme so that the source of
