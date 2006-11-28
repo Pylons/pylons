@@ -2,6 +2,7 @@ Pylons Changelog
 =================
 
 0.9.4 (**svn**)
+* Improved the repr() of the c context object to show attributes.
 * Set environ['paste.testing_variables'] whenever that key is available, not
   just in testing mode.
 * Added capability to have an action be a generator function.

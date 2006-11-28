@@ -71,6 +71,22 @@ class AttribSafeContextObj(object):
             return object.__getattribute__(self, name)
         except AttributeError:
             return ''
+    def __repr__(self):
+        attrs = [(name, value)
+                 for name, value in self.__dict__.items()
+                 if not name.startswith('_')]
+        attrs.sort()
+        parts = []
+        for name, value in attrs:
+            value_repr = repr(value)
+            if len(value_repr) > 70:
+                value_repr = value_repr[:60] + '...' + value_repr[-5:]
+            parts.append('%s=%s' % (name, value_repr))
+        return '<%s.%s %s %s>' % (
+            self.__class__.__module__,
+            self.__class__.__name__,
+            hex(id(self)).split('x')[1],
+            ' '.join(parts))
 
 class PylonsTemplate(Template):
     _template_dir = 'templates/default_project'
