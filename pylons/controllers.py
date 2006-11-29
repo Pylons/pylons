@@ -2,6 +2,7 @@
 import sys
 import types
 import inspect
+import types
 import xmlrpclib
 
 from paste.httpexceptions import HTTPException
@@ -126,7 +127,7 @@ class Controller(object):
                     setattr(c, name, kargs[name])
                     args.append(kargs[name])
             result = func(*args)
-        if type(result).__name__ == 'generator':
+        if isinstance(result, types.GeneratorType):
             return pylons.Response(result)
         else:
             return result
