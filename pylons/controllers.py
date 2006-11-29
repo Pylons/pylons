@@ -271,7 +271,7 @@ class XMLRPCController(WSGIController):
 
         # Change the arg list into a keyword dict based off the arg
         # names in the functions definition
-        arglist= inspect.getargspec(func)[0][1:]
+        arglist = inspect.getargspec(func)[0][1:]
         kargs = dict(zip(arglist, rpc_args))
         kargs['action'], kargs['environ'] = method, environ
         kargs['start_response'] = start_response
@@ -331,10 +331,12 @@ class XMLRPCController(WSGIController):
         """Returns the documentation for a method"""
         if hasattr(self, name):
             method = getattr(self, name)
-            sig = str(getattr(method, 'signature', []))
+            help = getattr(method, 'help', None) or method.__doc__
+            help = trim(help)
+            sig = getattr(method, 'signature', None)
             if sig:
-                sig = "\n\nMethod signature: " + sig
-            return trim(method.__doc__) + sig
+                help += "\n\nMethod signature: %s" % sig
+            return help
         return xmlrpclib.Fault(0, "No such method name")
     system_methodHelp.signature = [ ['string', 'string'] ]
 
