@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.4 (**svn**)
+* Added security policy doc to index for use as Pylons security policy.
+  Closes #91.
 * Improved the repr() of the c context object to show attributes.
 * Set environ['paste.testing_variables'] whenever that key is available, not
   just in testing mode.

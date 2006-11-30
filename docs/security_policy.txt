@@ -1,8 +1,6 @@
 Pylons Security Policy
 ++++++++++++++++++++++
 
-.. warning:: This is a draft and this policy is not yet in force.
-
 Receiving Security Updates
 ==========================
 
@@ -30,7 +28,7 @@ In the event of a confirmed vulnerability in one of the components that Pylons u
 
 * Acknowledge to the reporter that we've received the report and ask the reporter to keep the issue confidential until we announce it.
 * Contact the developer or maintainer of the package containing the vulnerability.
-* If the developer or maintainer fails to release a new version in a reasonable timescale and the vulnerability is serious we will either create documentation explaining how to avoid the problem or as a last resort, create a patched version.
+* If the developer or maintainer fails to release a new version in a reasonable time-scale and the vulnerability is serious we will either create documentation explaining how to avoid the problem or as a last resort, create a patched version.
 * Publicly announce the vulnerability and the fix as soon as it is available to the WSGI security list at wsgi-security-announce@googlegroups.com. 
 
 Minimising Risk
