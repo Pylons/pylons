@@ -22,7 +22,7 @@ Pylons Changelog
   climbus with patch. Fixes #133.
 * Moving controller helpers to pylons.helpers and using pylons.util purely for
   Pylons internal util functions.
-* WARNING: Removed legacy code and pre-0.9.3 backwards compatibility functions.
+* WARNING: Removed 0.8.x legacy code and backwards compatibility functions.
 * PylonsApp now has option to not use Routes middleware, default resolving 
   uses new wsgi.org routing_args spec.
 * Refactored routes dispatching to use new Routes middleware.

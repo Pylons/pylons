@@ -17,6 +17,7 @@ from routes import request_config
 from routes.middleware import RoutesMiddleware
 
 import pylons
+import pylons.legacy
 import pylons.templating
 from pylons.helpers import _Translator, set_lang
 from pylons.util import ContextObj, AttribSafeContextObj, class_name_from_module_name
@@ -105,8 +106,9 @@ class PylonsBaseWSGIApp(object):
         registry.register(paste.wsgiwrappers.settings, self.settings)
         registry.register(pylons.request, req)
         registry.register(pylons.buffet, self.buffet)
-        registry.register(pylons.h, self.helpers)
         registry.register(pylons.g, self.globals)
+        registry.register(pylons.h, self.helpers or \
+                          pylons.legacy.load_h(self.package_name))
         
         if self.globals.pylons_config.strict_c:
             registry.register(pylons.c, ContextObj())
@@ -194,9 +196,38 @@ class PylonsApp(object):
     where objects for the session/cache will be. If they're set to none,
     then no session/cache objects will be available.
     """
-    def __init__(self, config, helpers=None, g=None, use_routes=True):
+    def __init__(self, config, default_charset=None, helpers=None, g=None,
+                 use_routes=True):
         self.config = config
+        if default_charset:
+            warnings.warn(
+                "The 'default_charset' keyword argument to the PylonsApp constructor is "
+                "deprecated. Please specify 'default_charset' to the Config object in your "
+                'config/environment.py file instead, e.g.:\n'
+                'return pylons.config.Config(myghty, map, paths, '
+                "default_charset='%s')" % default_charset, DeprecationWarning, 2)
+            self.config.default_charset = default_charset
         
+        if not g:
+            warnings.warn(
+                "Having the 'g' object load from a default app_globals module "
+                "is deprecated. Please update your middleware.py with:\n\n"
+                "    import MYPROJ.lib.app_globals as app_globals\n"
+                "    import MYPROJ.lib.helpers\n\n"
+                "where MYPROJ is the name of your project.\n"
+                "Then edit the PylonsApp instantiation with:\n\n"
+                "    app = pylons.wsgiapp.PylonsApp(\n"
+                "        config, \n"
+                "        helpers=MYPROJ.lib.helpers, \n"
+                "        g=app_globals.Globals\n"
+                "    )\n\n",
+                DeprecationWarning, 2)
+            try:
+                globals_package = __import__(config.package + '.lib.app_globals',
+                                             globals(), locals(), ['Globals'])
+                g = getattr(globals_package, 'Globals')
+            except ImportError:
+                pass
         # Assign a default globals object, and instantiate it
         if not g:
             g = type("Globals", (), {})()
