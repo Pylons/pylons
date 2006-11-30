@@ -34,13 +34,8 @@ def load_h(package_name):
     # Assume lib.base.h is a StackedObjectProxy -- lib.base is using pre 0.9.2
     # style helpers via:
     # from pylons import h
-    try:
-        helpers_name = package_name + '.lib.helpers'
-        __import__(helpers_name) 
-    except ImportError:
-        # pylons 0.8.x support
-        helpers_name = package_name + '.config.helpers'
-        __import__(helpers_name)
+    helpers_name = package_name + '.lib.helpers'
+    __import__(helpers_name) 
     helpers_module = sys.modules[helpers_name]
 
     # Pre 0.9.2 lib.helpers did not import the pylons helper functions, manually
