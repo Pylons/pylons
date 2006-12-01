@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.4 (**svn**)
+* Added setup-app run before unit tests run so that webapp has proper setup
+  tasks handled. Fixes #113.
 * Added paste.deploy.CONFIG setup to middleware.py, websetup.py and testing
   files in the Pylons project templates. Closes #112.
 * Added security policy doc to index for use as Pylons security policy.
