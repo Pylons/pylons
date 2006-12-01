@@ -26,11 +26,6 @@ class StaticJavascripts(object):
         else:
             return self.javascripts_app.not_found(environ, start_response)
 
-def run_wsgi(app, m, req):
-    """Legacy WSGI call"""
-    pylons.helpers.response.content = app(m.environ, m.start_response)
-    pylons.helpers.response.wsgicall = True
-    
 def ErrorHandler(app, global_conf, **errorware):
     """ErrorHandler Toggle
     
