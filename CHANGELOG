@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.4 (**svn**)
+* Added paste.deploy.CONFIG setup to middleware.py, websetup.py and testing
+  files in the Pylons project templates. Closes #112.
 * Added security policy doc to index for use as Pylons security policy.
   Closes #91.
 * Improved the repr() of the c context object to show attributes.

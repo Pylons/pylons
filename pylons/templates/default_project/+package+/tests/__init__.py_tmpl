@@ -1,7 +1,7 @@
 import os, sys
 from unittest import TestCase
 
-here_dir = os.path.dirname(__file__)
+here_dir = os.path.dirname(os.path.abspath(__file__))
 conf_dir = os.path.dirname(os.path.dirname(here_dir))
 
 sys.path.insert(0, conf_dir)
@@ -13,11 +13,16 @@ pkg_resources.working_set.add_entry(conf_dir)
 pkg_resources.require('Paste')
 pkg_resources.require('PasteScript')
 
-from paste.deploy import loadapp
+from paste.deploy import loadapp, CONFIG
+import paste.deploy
 import paste.fixture
 
 from ${package}.config.routing import *
 from routes import request_config, url_for
+
+conf = paste.deploy.appconfig('config:' + os.path.join(conf_dir, 'test.ini'))
+CONFIG.push_process_config({'app_conf': conf.local_conf,
+                            'global_conf': conf.global_conf}) 
 
 class TestController(TestCase):
     def __init__(self, *args):
