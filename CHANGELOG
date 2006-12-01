@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.4 (**svn**)
+* Pylons special objects are now available within the interactive debugger
+  (deprecating _attach_locals).
 * Added setup-app run before unit tests run so that webapp has proper setup
   tasks handled. Fixes #113.
 * Added paste.deploy.CONFIG setup to middleware.py, websetup.py and testing

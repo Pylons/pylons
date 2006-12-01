@@ -235,8 +235,12 @@ class PylonsEvalException(EvalException):
             for expected in environ.get('paste.expected_exceptions', []):
                 if isinstance(exc_info[1], expected):
                     raise
-                    
-            count = debug_counter.next()
+
+            # Tell the Registry to save its StackedObjectProxies current state
+            # for later restoration
+            registry.restorer.save_registry_state(environ)
+
+            count = get_debug_count(environ)
             view_uri = self.make_view_url(environ, base_path, count)
             if not started:
                 headers = [('content-type', 'text/html')]

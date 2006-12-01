@@ -3,6 +3,7 @@ import sys
 import types
 import inspect
 import types
+import warnings
 import xmlrpclib
 
 from paste.httpexceptions import HTTPException
@@ -89,15 +90,20 @@ class Controller(object):
         When debugging, the Pylons special objects are unavailable because they
         are thread locals. This function pulls the actual object and attaches it
         to the controller so that it can be examined for debugging purposes.
+
+        Deprecated (Nov 30 2006); Pylons special objects are now available
+        within the interactive debugger.
         """
+        warnings.warn('_attach_locals is deprecated: Pylons special objects are now '
+                      'available within the interactive debugger', DeprecationWarning,
+                      2)
         self.c = pylons.c._current_obj()
         self.g = pylons.g._current_obj()
         self.cache = pylons.cache._current_obj()
         self.session = pylons.session._current_obj()
         self.request = pylons.request._current_obj()
         self.buffet = pylons.buffet._current_obj()
-        self.start_response = None
-    
+
     def _inspect_call(self, func, **kargs):
         """Calls a function with as many arguments from args and kargs as
         possible
