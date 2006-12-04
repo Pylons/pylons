@@ -4,13 +4,10 @@ PylonsTemplate is a Paste Template sub-class that configures the source
 directory and default plug-ins for a new Pylons project. The minimal template
 provides a more minimal template with less additional directories and layout.
 """
-import os.path
 import warnings
 
-from paste.deploy.config import CONFIG
 from paste.script.templates import Template
 
-import pylons
 import pylons.helpers
 
 def func_move(name):

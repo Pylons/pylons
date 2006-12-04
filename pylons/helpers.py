@@ -2,8 +2,10 @@
 
 Additional helper object available for use in Controllers is the etag_cache.
 """
-from routes import redirect_to
+import os.path
 import paste.httpexceptions as httpexceptions
+from paste.deploy.config import CONFIG
+from routes import redirect_to
 
 import pylons
 
