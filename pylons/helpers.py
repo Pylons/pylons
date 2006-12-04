@@ -131,7 +131,10 @@ class _Translator(object):
         return unicode(value)
 
     def ungettext(self, singular, plural, n):
-        return unicode(plural) % n
+        if n > 1:
+            return unicode(plural)
+        else:
+            return unicode(singular)
 
 __all__ = ['etag_cache', 'redirect_to', 'abort', '_', 'ungettext', 
            'log', 'set_lang', 'get_lang']
