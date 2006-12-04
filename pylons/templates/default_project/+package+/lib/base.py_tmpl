@@ -12,3 +12,7 @@ class BaseController(WSGIController):
         # is under environ['pylons.routes_dict'] should you want to check
         # the action or route vars here
         return WSGIController.__call__(self, environ, start_response)
+
+# Include the '_' function in the public names
+__all__ = [name for name in locals().keys() if not name.startswith('_') or \
+           name == '_']
