@@ -10,15 +10,16 @@ from routes import redirect_to
 import pylons
 
 def _(value):
-    """Mark a string for translation
+    """Mark a string for translation. Returns the localized unicode string of
+    value.
     
-    Mark a string to be internationalized as follows:
+    Mark a string to be localized as follows:
     
     .. code-block:: Python
     
         h._('This should be in lots of languages')
     """
-    return pylons.translator['translator'].gettext(value)
+    return pylons.translator['translator'].ugettext(value)
 
 def log(msg):
     """Log a message to the output log."""
@@ -94,6 +95,9 @@ class _Translator(object):
     """An empty gettext translator which just returns the original string"""
     def gettext(self, value):
         return value
+
+    def ugettext(self, value):
+        return unicode(value)
 
 __all__ = ['etag_cache', 'redirect_to', 'abort', '_', 'log', 'set_lang', 
            'get_lang']

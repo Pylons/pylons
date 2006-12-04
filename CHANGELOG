@@ -2,6 +2,7 @@ Pylons Changelog
 =================
 
 0.9.4 (**svn**)
+* The localization function '_' now uses ugettext (returns unicode strings).
 * Pylons special objects are now available within the interactive debugger
   (deprecating _attach_locals).
 * Added setup-app run before unit tests run so that webapp has proper setup
