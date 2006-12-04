@@ -95,13 +95,6 @@ class PylonsBaseWSGIApp(object):
         
         registry = environ['paste.registry']
                 
-        # Setup the translator global object
-        trans = dict(translator=_Translator())
-        trans['CONFIG'] = dict(app_conf=self.globals.pylons_config.app_conf,
-            global_conf=self.globals.pylons_config.global_conf)
-        registry.register(pylons.translator, trans)
-        set_lang(self.globals.pylons_config.app_conf.get('lang'))
-        
         # Setup the basic pylons global objects
         registry.register(paste.wsgiwrappers.settings, self.settings)
         registry.register(pylons.request, req)
@@ -109,6 +102,12 @@ class PylonsBaseWSGIApp(object):
         registry.register(pylons.g, self.globals)
         registry.register(pylons.h, self.helpers or \
                           pylons.legacy.load_h(self.package_name))
+        
+        # Setup the translator global object
+        registry.register(pylons.translator, _Translator())
+        lang = self.globals.pylons_config.app_conf.get('lang')
+        if lang:
+            set_lang(lang)
         
         if self.globals.pylons_config.strict_c:
             registry.register(pylons.c, ContextObj())

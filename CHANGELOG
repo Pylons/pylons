@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.4 (**svn**)
+* Added ungettext to helpers for use with pluralized i18n, and added the
+  ungettext and translator objects to be globals for templates. Refs #126.
 * WARNING: The localization function '_' now uses ugettext (returns unicode
   strings) instead of gettext. To preserve the old behavior, append the
   following line to your project's lib.base and lib.helpers imports:
