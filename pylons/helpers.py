@@ -68,7 +68,6 @@ def set_lang(lang):
         if not resource_exists(project_name, catalog_path):
             raise LanguageError('Language catalog %s not found' % \
                                 os.path.join(project_name, catalog_path))
-        pylons.translator._pop_object()
         registry.replace(pylons.translator,
             egg_translation(project_name, lang=catalog_path))
 
