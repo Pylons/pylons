@@ -2,7 +2,10 @@ Pylons Changelog
 =================
 
 0.9.4 (**svn**)
-* The localization function '_' now uses ugettext (returns unicode strings).
+* WARNING: The localization function '_' now uses ugettext (returns unicode
+  strings) instead of gettext. To preserve the old behavior, append the
+  following line to your project's lib.base and lib.helpers imports:
+  from pylons.helpers import gettext as _
 * Pylons special objects are now available within the interactive debugger
   (deprecating _attach_locals).
 * Added setup-app run before unit tests run so that webapp has proper setup

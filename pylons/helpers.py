@@ -9,7 +9,18 @@ from routes import redirect_to
 
 import pylons
 
-def _(value):
+def gettext(value):
+    """Mark a string for translation. Returns the localized string of value.
+    
+    Mark a string to be localized as follows:
+    
+    .. code-block:: Python
+    
+        h.gettext('This should be in lots of languages')
+    """
+    return pylons.translator['translator'].gettext(value)
+
+def ugettext(value):
     """Mark a string for translation. Returns the localized unicode string of
     value.
     
@@ -20,6 +31,7 @@ def _(value):
         h._('This should be in lots of languages')
     """
     return pylons.translator['translator'].ugettext(value)
+_ = ugettext
 
 def log(msg):
     """Log a message to the output log."""
