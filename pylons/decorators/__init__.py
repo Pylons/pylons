@@ -51,21 +51,22 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
     """
     def wrapper(func, self, *args, **kwargs):
         """Decorator Wrapper function"""
-        defaults, errors = {}, {}
+        errors = {}
         if not pylons.request.method == 'POST':
             return func(self, *args, **kwargs)
         if post_only:
-            postvars = pylons.request.POST.copy()
+            params = pylons.request.POST.copy()
         else:
-            postvars = pylons.request.params.copy()
+            params = pylons.request.params.copy()
         if variable_decode:
-            postvars = variabledecode.variable_decode(postvars, dict_char,
-                                                      list_char)
-        
-        defaults.update(postvars)
+            decoded = variabledecode.variable_decode(params, dict_char,
+                                                     list_char)
+        else:
+            decoded = params
+
         if schema:
             try:
-                self.form_result = schema.to_python(defaults)
+                self.form_result = schema.to_python(decoded)
             except api.Invalid, e:
                 errors = e.unpack_errors(variable_decode, dict_char, list_char)
         if validators:
@@ -75,7 +76,7 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
                 for field, validator in validators.iteritems():
                     try:
                         self.form_result[field] = \
-                            validator.to_python(defaults[field] or None)
+                            validator.to_python(decoded[field] or None)
                     except api.Invalid, error:
                         errors[field] = error
         if errors:
@@ -83,7 +84,7 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
             pylons.request.environ['pylons.routes_dict']['action'] = form
             response = self._dispatch_call()
             form_content = "".join(response.content)
-            response.content = [htmlfill.render(form_content, defaults, errors)]
+            response.content = [htmlfill.render(form_content, params, errors)]
             return response
         return func(self, *args, **kwargs)
     return decorator(wrapper)

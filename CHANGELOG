@@ -2,6 +2,9 @@ Pylons Changelog
 =================
 
 0.9.4 (**svn**)
+* Fixed the validate decorator when there are validation errors and
+  variable_decode=True: now passing the original params to htmlfill.render
+  instead of the varable_decode'd version. Patch by FlimFlamMan.
 * Added ungettext to helpers for use with pluralized i18n, and added the
   ungettext and translator objects to be globals for templates. Refs #126.
 * WARNING: The localization function '_' now uses ugettext (returns unicode
