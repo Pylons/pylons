@@ -231,7 +231,6 @@ class XMLRPCController(WSGIController):
     """XML-RPC Controller"""
 
     max_body_length = 4194304
-    validate_params = True
 
     def _get_method_args(self):
         return self.rpc_kargs
@@ -258,7 +257,7 @@ class XMLRPCController(WSGIController):
         func = getattr(self, method)
 
         # Signature checking for params
-        if self.validate_params and hasattr(func, 'signature'):
+        if hasattr(func, 'signature'):
             valid_args = False
             params = xmlrpc_sig(rpc_args)
             for sig in func.signature:
