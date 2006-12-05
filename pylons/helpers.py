@@ -4,12 +4,17 @@ Additional helper object available for use in Controllers is the etag_cache.
 """
 import os.path
 import paste.httpexceptions as httpexceptions
+from gettext import NullTranslations
 from pkg_resources import resource_exists
 from paste.deploy.config import CONFIG
 from routes import redirect_to
 
 import pylons
 from pylons.i18n.translation import egg_translation
+
+class LanguageError(Exception):
+    """Exception raised when a problem occurs with changing languages"""
+    pass
 
 def gettext(value):
     """Mark a string for translation. Returns the localized string of value.
@@ -18,7 +23,7 @@ def gettext(value):
     
     .. code-block:: Python
     
-        h.gettext('This should be in lots of languages')
+        gettext('This should be in lots of languages')
     """
     return pylons.translator.gettext(value)
 
@@ -34,6 +39,23 @@ def ugettext(value):
     """
     return pylons.translator.ugettext(value)
 _ = ugettext
+
+def ngettext(singular, plural, n):
+    """Mark a string for translation. Returns the localized string of the
+    pluralized value.
+
+    This does a plural-forms lookup of a message id. ``singular`` is used as
+    the message id for purposes of lookup in the catalog, while ``n`` is used
+    to determine which plural form to use. The returned message is a string.
+    
+    Mark a string to be localized as follows:
+    
+    .. code-block:: Python
+    
+        ngettext('There is %(num)d files here', 'There are %(num)d files here',
+                 n) % {'num': n}
+    """
+    return pylons.translator.ngettext(singular, plural, n)
 
 def ungettext(singular, plural, n):
     """Mark a string for translation. Returns the localized unicode string of
@@ -55,13 +77,13 @@ def ungettext(singular, plural, n):
 
 def log(msg):
     """Log a message to the output log."""
-    pylons.request.environ['wsgi.errors'].write('=> %s\n'%str(msg))
+    pylons.request.environ['wsgi.errors'].write('=> %s\n' % str(msg))
 
 def set_lang(lang):
     """Set the language used"""
     registry = pylons.request.environ['paste.registry']
     if lang is None:
-        registry.replace(pylons.translator, _Translator())
+        registry.replace(pylons.translator, NullTranslations())
     else:
         project_name = CONFIG['app_conf']['package']
         catalog_path = os.path.join('i18n', lang, 'LC_MESSAGES')
@@ -118,23 +140,5 @@ def abort(status_code=None, detail="", headers=None, comment=None):
     exc = httpexceptions.get_exception(status_code)(detail, headers, comment)
     raise exc
 
-class LanguageError(Exception):
-    """Exception raised when a problem occurs with changing languages"""
-    pass
-
-class _Translator(object):
-    """An empty gettext translator which just returns the original string"""
-    def gettext(self, value):
-        return value
-
-    def ugettext(self, value):
-        return unicode(value)
-
-    def ungettext(self, singular, plural, n):
-        if n > 1:
-            return unicode(plural)
-        else:
-            return unicode(singular)
-
-__all__ = ['etag_cache', 'redirect_to', 'abort', '_', 'ungettext', 
-           'log', 'set_lang', 'get_lang']
+__all__ = ['etag_cache', 'redirect_to', 'abort', '_', 'ungettext', 'log',
+           'set_lang', 'get_lang']

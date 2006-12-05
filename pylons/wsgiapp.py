@@ -4,6 +4,7 @@ This module is responsible for creating the basic Pylons WSGI application.
 It's generally assumed that it will be called by Paste, though any WSGI 
 application server could create and call the WSGI app as well.
 """
+import gettext
 import sys
 import inspect
 import warnings
@@ -19,7 +20,7 @@ from routes.middleware import RoutesMiddleware
 import pylons
 import pylons.legacy
 import pylons.templating
-from pylons.helpers import _Translator, set_lang
+from pylons.helpers import set_lang
 from pylons.util import ContextObj, AttribSafeContextObj, class_name_from_module_name
 from pylons.controllers import Controller, WSGIController
 
@@ -104,7 +105,7 @@ class PylonsBaseWSGIApp(object):
                           pylons.legacy.load_h(self.package_name))
         
         # Setup the translator global object
-        registry.register(pylons.translator, _Translator())
+        registry.register(pylons.translator, gettext.NullTranslations())
         lang = self.globals.pylons_config.app_conf.get('lang')
         if lang:
             set_lang(lang)
