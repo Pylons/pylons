@@ -1,15 +1,15 @@
-"""EvalException, Error Documents, and Globals middleware"""
+"""Pylons' WSGI middlewares"""
 import os.path
-import pylons.helpers
-from paste.deploy.converters import asbool
+import urllib
+
+from paste.errordocument import StatusBasedForward
+from paste.recursive import RecursiveMiddleware
 from paste.urlparser import StaticURLParser
+from paste.deploy.converters import asbool
+
 from webhelpers.rails.asset_tag import javascript_path
 
 media_path = os.path.join(os.path.dirname(__file__), 'media')
-
-class Globals(object):
-    """Legacy Globals object"""
-    pass
 
 class StaticJavascripts(object):
     """Middleware for intercepting requests for WebHelpers' included 
@@ -46,14 +46,6 @@ def ErrorHandler(app, global_conf, **errorware):
         app = ErrorMiddleware(app, global_conf, **errorware)
     return app
 
-#
-# Error Document Handling
-#
-
-from paste.recursive import RecursiveMiddleware
-from paste.errordocument import StatusBasedForward
-from urllib import urlencode
-
 def error_mapper(code, message, environ, global_conf=None, **kw):
     if environ.get('pylons.error_call'):
         return None
@@ -67,20 +59,23 @@ def error_mapper(code, message, environ, global_conf=None, **kw):
         codes.append(500)
     if code in codes:
         # StatusBasedForward expects a relative URL (no SCRIPT_NAME)
-        url = '/error/document/?%s' % (urlencode({'message':message, 'code':code}))
+        url = '/error/document/?%s' % (urllib.urlencode({'message': message,
+                                                         'code': code}))
         return url
 
 def ErrorDocuments(app, global_conf=None, mapper=None, **kw):
-    """Wraps the app in error docs using Paste RecursiveMiddleware and ErrorDocumentsMiddleware
+    """Wraps the app in error docs using Paste RecursiveMiddleware and
+    ErrorDocumentsMiddleware
     
-    All the args are passed directly into the ErrorDocumentsMiddleware. If no mapper is given,
-    a default error_mapper is passed in.
+    All the args are passed directly into the ErrorDocumentsMiddleware. If no
+    mapper is given, a default error_mapper is passed in.
     """
     if global_conf is None:
         global_conf = {}
     if mapper is None:
         mapper = error_mapper
-    return RecursiveMiddleware(StatusBasedForward(app, global_conf=global_conf, mapper=mapper, **kw))
+    return RecursiveMiddleware(StatusBasedForward(app, global_conf=global_conf,
+                                                  mapper=mapper, **kw))
 
 error_document_template = """\
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -218,4 +213,4 @@ a.switch_source:hover {
 </html>
 """
 
-__pudge_all__ = ['ErrorHandler', 'ErrorDocuments', 'StaticJavascripts']
+__pudge_all__ = ['StaticJavascripts', 'ErrorHandler', 'ErrorDocuments']
