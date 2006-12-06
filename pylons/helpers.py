@@ -80,7 +80,7 @@ def log(msg):
     pylons.request.environ['wsgi.errors'].write('=> %s\n' % str(msg))
 
 def set_lang(lang):
-    """Set the language used"""
+    """Set the i18n language used"""
     registry = pylons.request.environ['paste.registry']
     if lang is None:
         registry.replace(pylons.translator, NullTranslations())
@@ -90,11 +90,13 @@ def set_lang(lang):
         if not resource_exists(project_name, catalog_path):
             raise LanguageError('Language catalog %s not found' % \
                                 os.path.join(project_name, catalog_path))
-        registry.replace(pylons.translator,
-            egg_translation(project_name, lang=catalog_path))
+        translator = egg_translation(project_name, lang=catalog_path)
+        translator.pylons_lang = lang
+        registry.replace(pylons.translator, translator)
 
 def get_lang():
-    return pylons.translator.get('lang')
+    """Return the current i18n language used"""
+    return getattr(pylons.translator, 'pylons_lang', None)
 
 def etag_cache(key=None):
     """Use the HTTP Entity Tag cache for Browser side caching
