@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.4 (**svn**)
+* Updated Myghty plugin to use extra_vars_func when passed in.
+* Fixed Buffet to use extra_vars_func properly.
 * Fixed the validate decorator when there are validation errors and
   variable_decode=True: now passing the original params to htmlfill.render
   instead of the varable_decode'd version. Patch by FlimFlamMan.

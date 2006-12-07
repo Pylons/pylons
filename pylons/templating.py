@@ -66,8 +66,11 @@ class Buffet(object):
                 '"%s" to use its functionality' % engine_name)
         engine_name = alias or engine_name
         defaults = config.pop('default_options', None)
+        extra_vars_func = config.get('extra_vars_func', None)
         self.engines[engine_name] = \
-            dict(engine=Engine(options=config), root=template_root)
+            dict(engine=Engine(extra_vars_func=extra_vars_func,
+                               options=config), 
+                 root=template_root)
     
     def _update_names(self, ns):
         """Given a dict, update the dict with the Pylons vars and their 
@@ -231,6 +234,7 @@ class MyghtyTemplatePlugin(object):
             if k.startswith('myghty.'):
                 myt_opts[k[7:]] = v
         import myghty.interp
+        self.extra_vars = extra_vars_func
         self.interpreter = myghty.interp.Interpreter(**myt_opts)
     
     def load_template(self, template_path):
@@ -244,6 +248,8 @@ class MyghtyTemplatePlugin(object):
         from the ``info['_global_args']`` key."""
         buf = StringIO()
         global_args = info.pop('_global_args')
+        if self.extra_vars:
+            global_args.update(self.extra_vars())
         optional_args = {}
         if fragment:
             optional_args['disable_wrapping'] = True
