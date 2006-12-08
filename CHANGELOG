@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.4 (**svn**)
+* Updated config object so that init_app can take an optional template engine
+  argument to declare the default template engine.
 * Updated Myghty plugin to use extra_vars_func when passed in.
 * Fixed Buffet to use extra_vars_func properly.
 * Fixed the validate decorator when there are validation errors and

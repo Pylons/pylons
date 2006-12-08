@@ -20,6 +20,10 @@ class Config(object):
     
     ``myghty``
         The myghty configuration dict that was used to initialize Myghty
+    ``template_options``
+        Full dict of template options that any TG compatible plugin should
+        be able to parse. Comes with basic config needed for Myghty, Kid,
+        and Mako.
     ``map``
         Mapper object used for Routing. Yes, it is possible to add routes
         after your application has started running.
@@ -54,6 +58,7 @@ class Config(object):
         if environ_config is None:
             environ_config = {}
         self.myghty = myghty
+        self.template_options = {}
         self.map = map
         self.paths = paths
         self.environ_config = environ_config
@@ -65,7 +70,7 @@ class Config(object):
         self.app_conf = {}
         self.template_engines = []
     
-    def add_template_engine(self, engine, root, options, alias=None):
+    def add_template_engine(self, engine, root, options=None, alias=None):
         """Add additional template engines for configuration on Pylons WSGI init
         
         ``engine``
@@ -75,7 +80,8 @@ class Config(object):
             Template root for the engine
         
         ``options``
-            Dict of additional options used during engine initialization
+            Dict of additional options used during engine initialization, if
+            not provided, default to using the template_options dict.
         
         ``alias``
             Name engine should respond to when actually used. This allows for
@@ -112,11 +118,13 @@ class Config(object):
             # Add old default as additional engine
             config.template_engines.append(old_default)
         """
+        if not options:
+            options = self.template_options
         config = dict(engine=engine, template_root=root, 
             template_options=options, alias=alias)
         self.template_engines.append(config)
     
-    def init_app(self, global_conf, app_conf, package):
+    def init_app(self, global_conf, app_conf, package, template_engine='pylonsmyghty'):
         """Initialize configuration for the application
         
         ``global_config``
@@ -140,6 +148,9 @@ class Config(object):
             that into account.
         ``package``
             The name of the application package, to be stored in the app_conf.
+        ``template_engine``
+            Declare the default template engine to setup. Choices are kid, genshi,
+            mako, and pylonsmyghty (the default custom Pylons plugin).
         """
         self.global_conf = global_conf
         self.app_conf = app_conf
@@ -214,9 +225,27 @@ class Config(object):
         if 'cache_data_dir' not in app_conf:
             app_conf['cache_data_dir'] = os.path.join(app_conf['cache_dir'], 
             'cache')
+
+        # Setup the main template options dict
+        self.template_options = opts = myghty_template_options
+
+        # Rearrange template options as default for Mako
+        opts['mako.directories'] = self.paths['templates']
+        opts['mako.filesystem_checks'] = True
+        opts['mako.module_directory'] = os.path.join(app_conf['cache_dir'], 
+                                                     'templates')
         
+        # Setup kid defaults
+        opts['kid.assume_encoding'] = 'utf-8'
+        opts['kid.encoding'] = 'utf-8'
+
         # Prepare our default template engine
-        self.add_template_engine('pylonsmyghty', None, myghty_template_options)
+        if template_engine == 'pylonsmyghty':
+            self.add_template_engine('pylonsmyghty', None, myghty_template_options)
+        elif template_engine == 'mako':
+            self.add_template_engine('mako', '')
+        elif template_engine in ['genshi', 'kid']:
+            self.add_template_engine(template_engine, package + '.templates')
         
         # Save our errorware values
         self.errorware = errorware
