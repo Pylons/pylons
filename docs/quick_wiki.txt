@@ -42,11 +42,15 @@ That's it! Now you can visit http://127.0.0.1:5000 and experiment with the finis
 
 When you've finished, stop the server with ``CTRL+C`` because we will start developing our own version.
 
+If you are interested in looking at the latest version of the QuickWiki source code it can be browsed online at http://pylonshq.com/project/pylonshq/browser/sandbox/examples/QuickWiki or can be checked out using subversion::
+
+    > svn co http://pylonshq.com/svn/sandbox/examples/QuickWiki/
+
 
 Developing QuickWiki
 ====================
 
-If you skipped the section above you will need to install Pylons 0.9::
+If you skipped the "Starting at the End" section you will need to install Pylons 0.9::
 
     > easy_install -U Pylons[full]>=0.9.2
 
