@@ -26,7 +26,18 @@ class LangExtract(setuptools.Command):
 
         oldsys = sys.argv
         sys.argv.pop(1)
-        sys.argv.extend(['-K', '-k', '_', '-o', pot_filename, '-p', i18n_path, '*'])
+        sys.argv.extend(
+            [
+                '-K', 
+                '-k', 'gettext', 
+                '-k', 'ngettext', 
+                '-k', 'ugettext', 
+                '-k', 'ungettext', 
+                '-k', '_', 
+                '-o', pot_filename, 
+                '-p', i18n_path, '*'
+            ]
+        )
         
         import pylons.i18n.pygettext
         pylons.i18n.pygettext.pot_header = '''\

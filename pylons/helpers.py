@@ -52,7 +52,7 @@ def ngettext(singular, plural, n):
     
     .. code-block:: Python
     
-        ngettext('There is %(num)d files here', 'There are %(num)d files here',
+        ngettext('There is %(num)d file here', 'There are %(num)d files here',
                  n) % {'num': n}
     """
     return pylons.translator.ngettext(singular, plural, n)
@@ -70,7 +70,7 @@ def ungettext(singular, plural, n):
     
     .. code-block:: Python
     
-        ungettext('There is %(num)d files here', 'There are %(num)d files here',
+        ungettext('There is %(num)d file here', 'There are %(num)d files here',
                   n) % {'num': n}
     """
     return pylons.translator.ungettext(singular, plural, n)
