@@ -76,7 +76,7 @@ class ControllerCommand(Command):
                       action='store_true',
                       dest='no_test',
                       help="Don't create the test; just the controller")
-            
+
     def command(self):
         """Main command to create controller"""
         try:
@@ -87,10 +87,18 @@ class ControllerCommand(Command):
             except:
                 raise BadCommand('No egg_info directory was found')
             
+            # Check the name isn't the same as the package
+            base_package, cdir = file_op.find_dir('controllers', True)
+            if base_package.lower() == name.lower():
+                raise BadCommand(
+                    'Your controller name should not be the same as '
+                    'the package name %r.'% base_package
+            )
             # Validate the name
             name = name.replace('-', '_')
             validate_name(name)
-            
+
+            # Setup the controller
             fullname = os.path.join(directory, name)
             controller_name = util.class_name_from_module_name(
                 name.split('/')[-1])
@@ -106,9 +114,11 @@ class ControllerCommand(Command):
                 file_op.copy_file(template='test_controller.py_tmpl',
                              dest=os.path.join('tests', 'functional'),
                              filename='test_'+testname)
+        except BadCommand, e:
+            raise BadCommand('An error ocurred. %s' % e)
         except:
             msg = str(sys.exc_info()[1])
-            raise BadCommand('An unknown error ocurred, %s' % msg)
+            raise BadCommand('An unknown error ocurred. %s' % msg)
 
 class ShellCommand(Command):
     """Open an interactive shell with the Pylons app loaded
