@@ -115,10 +115,10 @@ class ControllerCommand(Command):
                              dest=os.path.join('tests', 'functional'),
                              filename='test_'+testname)
         except BadCommand, e:
-            raise BadCommand('An error ocurred. %s' % e)
+            raise BadCommand('An error occurred. %s' % e)
         except:
             msg = str(sys.exc_info()[1])
-            raise BadCommand('An unknown error ocurred. %s' % msg)
+            raise BadCommand('An unknown error occurred. %s' % msg)
 
 class ShellCommand(Command):
     """Open an interactive shell with the Pylons app loaded
