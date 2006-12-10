@@ -6,10 +6,44 @@ file called ``sqlobject.dburi``.
 
 It is based heavily (if not 99%) on the TurboGears file of the same name.
 """
-
 import sqlobject
 from sqlobject.dbconnection import ConnectionHub, Transaction, TheURIOpener
 from paste.deploy.config import CONFIG
+from paste.deploy.converters import asbool
+
+import pylons
+
+# Provide support for sqlalchemy
+try:
+    import sqlalchemy
+    from sqlalchemy.ext import sessioncontext
+    from sqlalchemy.util import ScopedRegistry
+
+    def create_engine():
+        """Create a SQLAlchemy db engine"""
+        config = CONFIG['app_conf']
+        dburi = config.get("sqlalchemy.dburi")
+        if not dburi:
+            raise KeyError("No sqlalchemy database config found!")
+        echo = asbool(config.get("sqlalchemy.echo", False))
+        engine = sqlalchemy.create_engine(dburi, echo=echo)
+        return engine
+
+    def make_session():
+        """Creates a session using using the ``g._db_engine`` value
+        
+        If the ``g._db_engine`` variable does not exist, a new engine will be
+        created and attached there.
+        """
+        if not hasattr(pylons.g, '_db_engine'):
+            pylons.g._db_engine = create_engine()
+        return sqlalchemy.create_session(bind_to=pylons.g._db_engine)
+
+    session_context = sessioncontext.SessionContext(make_session)
+
+except:
+    pass
+    
 
 class AutoConnectHub(ConnectionHub):
     """Connects to the database once per thread.

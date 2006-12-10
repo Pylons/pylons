@@ -2,6 +2,9 @@ Pylons Changelog
 =================
 
 0.9.4 (**svn**)
+* Adding SQLAlchemy support to the database.py file. Saves the session engine
+  to g to maintain it during the apps lifetime. Uses SessionContext plugin for
+  management of the current session.
 * Updated config object so that init_app can take an optional template engine
   argument to declare the default template engine.
 * Updated Myghty plugin to use extra_vars_func when passed in.
