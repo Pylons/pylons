@@ -1,17 +1,60 @@
-Internationalization in Pylons
-++++++++++++++++++++++++++++++
+Internationalization, Localisation and Unicode
+++++++++++++++++++++++++++++++++++++++++++++++
+
+Internationalization and localization are means of adapting software for
+non-native environments, especially for other nations and cultures. 
+
+Parts of an application which might need to be localised might include:
+
+    * Language
+    * Date/time format
+    * Formatting of numbers e.g. decimal points, positioning of separators, 
+      character used as separator
+    * Time zones (UTC in internationalized environments)
+    * Currency
+    * Weights and measures
+
+The distinction between internationalization and localization is subtle but
+important. Internationalization is the adaptation of products for potential use
+virtually everywhere, while localization is the addition of special features
+for use in a specific locale.
+
+For example, in terms of language used in
+software, internationalization is the process of marking up all strings that
+might need to be translated whilst localization is the process of producing 
+translations for a particular locale.
+
+Pylons provides built-in support to enable you to internationalize language but
+leaves you to handle any other aspects of internalitionalization which might be
+appropriate to your application.
+
+.. note:: 
+
+    Internationalization is often abbreviated as I18N (or i18n or I18n) where the
+    number 18 refers to the number of letters omitted.
+    Localization is often abbreviated L10n or l10n in the same manner. These
+    abbreviations also avoid picking one spelling (internationalisation vs.
+    internationalization, etc.) over the other.
+
+Getting Started
+===============
 
 Everywhere in your code where you want strings to be available in different
-languages you wrap them in the  ``_()`` method. The method is called ``_()``
-rather than something like ``translate()`` because ``_()`` is a convention in
-Python for marking text to be translated and it also saves on typing when lots
-of strings need to appear in multiple languages.
+languages you wrap them in a special helper method named ``gettext()``. There is also 
+a unicode version called ``ugettext()`` for unicode which we will come to later.
+The internationalization helpers are documented in the API reference at
+http://pylonshq.com/docs/module-pylons.helpers.html
 
+.. note:: 
 
-In this example we want the string ``'Hello'`` to appear in three different
+    There is also a ``h._()`` method which does the same as ``h.gettext()``. ``_()`` is
+    a convention in Python for marking text to be translated and it also saves on
+    typing when lots of strings need to appear in multiple languages.
+
+In our example we want the string ``'Hello'`` to appear in three different
 languages: English, French and Spanish. We also want to display the word
-``'Hello'`` in the default language. This is handled by Pylons using a helper
-method named ``_()`` which in turn uses Python's ``gettext`` module.
+``'Hello'`` in the default language. We'll then go on to use some pural words
+too. 
 
 Lets call our project ``translate_demo``::
 
@@ -23,7 +66,7 @@ Now lets add a friendly controller that says hello::
     paster controller hello
     
 Edit ``controllers/hello.py`` controller to look like this making use of the
-``_()`` helper method everywhere where the string ``Hello`` appears:
+``gettext()`` helper method everywhere where the string ``Hello`` appears:
 
 .. code-block:: Python
 
@@ -33,20 +76,20 @@ Edit ``controllers/hello.py`` controller to look like this making use of the
     
         def index(self):
             resp = Response()
-            resp.write('Default: %s<br />' % _('Hello'))
+            resp.write('Default: %s<br />' % h.gettext('Hello'))
             for lang in ['fr','en','es']:
                 h.set_lang(lang)
-                resp.write("%s: %s<br />" % (h.get_lang(), _('Hello')))
+                resp.write("%s: %s<br />" % (h.get_lang(), h.gettext('Hello')))
             return resp
     
-The controller has now been internationalized but it won't function properly
+The controller has now been internationalized but it will raise a ``LanguageError``
 until we have specified the alternative languages.
 
 Pylons comes with a setuptools extension to scan all the Python code in your
-applications for any calls to ``_()`` and write them to a textual Uniform-style
-human readable message catalog ``.pot`` file, essentially a structured human
-readable file which contains every marked string in the source code, along with
-a placeholder for the translation strings.
+applications for any calls to the internationalization methods and write them
+to a textual Uniform-style human readable message catalog ``.pot`` file,
+essentially a structured human readable file which contains every marked string
+in the source code, along with a placeholder for the translation strings.
 
 You can invoke this command by running the following in your project's root
 directory::
@@ -128,7 +171,7 @@ This step converts all your ``.po`` files to ``.mo`` files ready to be run by
 your application. 
 
 Testing the Application
-=======================
+-----------------------
 
 Start the server with the following command::
 
@@ -160,7 +203,7 @@ remained in the same language that was previously set:
 
     def __before__(self, action):
         if session.has_key('lang'):
-            h.set_lang(s['lang'])
+            h.set_lang(session['lang'])
 
 One more useful thing to be able to do is to set the default language to be
 used in the configuration file. Just add a ``lang`` variable together with the
@@ -173,12 +216,11 @@ like this:
 
     [app:main]
     use = egg:translate_demo
-    cache_dir = %(here)s/data
     lang = es
 
 If you are running the server with the ``--reload`` option the server will
-automatically restart. Otherwise restart the server manually and the output
-would this time be as follows::
+automatically restart if you change the ``development.ini`` file. Otherwise
+restart the server manually and the output would this time be as follows::
 
     Default: Hola
     fr: Bonjour
@@ -186,16 +228,16 @@ would this time be as follows::
     es: Hola
 
 Missing Translations
-====================
+--------------------
 
-If your code calls ``_()`` with a string that doesn't exist in your language
-catalogue, the string passed to ``_()`` is returned instead.
+If your code calls ``h.gettext()`` with a string that doesn't exist in your language
+catalogue, the string passed to ``h.gettext()`` is returned instead.
 
 Modify the last line of the hello controller to look like this:
 
 .. code-block:: Python
 
-    resp.write("%s: %s %s<br />" % (h.get_lang(), _('Hello'), _('World!')))
+    resp.write("%s: %s %s<br />" % (h.get_lang(), h.gettext('Hello'), h.gettext('World!')))
     
 If you run the example again the output will be::
 
@@ -208,32 +250,32 @@ This is because we never provided a translation for the string ``'World!'`` so
 the string itself is used.
 
 Translations Within Templates
-=============================
+-----------------------------
 
-You can also use the ``_()`` command within templates in exactly the same way
+You can also use the ``h.gettext()`` helper within templates in exactly the same way
 you do in code. For example:
 
 .. code-block:: HyperText
 
-    <% _('Hello') %> 
+    <% h.gettext('Hello') %> 
     
 would produce the string ``'Hello'`` in the language you had set.
 
 There is one complication though. The ``lang_extract`` command can only extract
 strings that need translating from Python code in ``.py`` files. This means
-that if you write ``_('Hello')`` in a template such as a Myghty template,
+that if you write ``h.gettext('Hello')`` in a template such as a Myghty template,
 ``lang_extract`` will not find the string ``'Hello'`` as one which needs
 translating.
 
-As long as ``lang_extract`` can find a string marked for translation with
-``_()`` and defined in Python code in your project filesystem it will manage
-the translation when the same string is defined in a Myghty template and marked
-for translation. This means the best solution to ensure all strings are picked
-up for translation is to create a file in ``lib`` with an appropriate filename,
-``i18n.py`` for example, and then add a list of all the strings which appear in
-your templates so that the ``lang_extract`` command can then extract the
-strings in ``lib/i18n.py`` for translation and use the translated versions in
-your templates as well.
+As long as ``lang_extract`` can find a string marked for translation with one
+of the internaionalization methods and defined in Python code in your project
+filesystem it will manage the translation when the same string is defined in a
+Myghty template and marked for translation. This means the best solution to
+ensure all strings are picked up for translation is to create a file in ``lib``
+with an appropriate filename, ``i18n.py`` for example, and then add a list of
+all the strings which appear in your templates so that the ``lang_extract``
+command can then extract the strings in ``lib/i18n.py`` for translation and use
+the translated versions in your templates as well.
 
 For example if you wanted to ensure the translated string ``'Good Morning'``
 was available in all templates you could create a ``lib/i18n.py`` file that
@@ -242,7 +284,7 @@ looked something like this:
 .. code-block:: Python
 
     from base import h
-    _('Good Morning')
+    h.gettext('Good Morning')
 
 Of course, if you are using a templating system such as Myghty or Cheetah and
 your cache directory is in the default location or elsewhere within your
@@ -252,7 +294,7 @@ cached as Python files during the course of the development process and so the
 the cached files anyway.
 
 Producing a Python Egg
-======================
+----------------------
 
 Finally you can produce an egg of your project which includes the translation
 files like this::
@@ -268,3 +310,53 @@ is done with the following line in your ``setup.py`` file::
 Internationalization support is zip safe so your application can be run
 directly from the egg without the need for ``easy_install`` to extract it.
 
+Advanced Use
+============
+
+Unicode Helpers
+---------------
+
+In this document we have seen the basics of how to mark strings that might need
+translating, how to produce a language catalog and how to change which
+langauage is used on the fly in an application. Of course the above discussion
+hasn't mentioned much about how to use Unicode. It is quite possible to write your
+internationalization code using only ASCII characters but if you are expecting
+your website to be used in non-English speaking countries, before too long you will find
+that you will need to display characters that can't be represented by the ASCII
+charset (the default used in Python) so you will want to use Unicode.
+
+To use unicode strings for internationalization you should use the ``h.ugettext()`` 
+helper instead of ``h.gettext()``. The string returned from ``h.ugettext()`` will 
+be a unicode string instead of a standard 8-bit Python string and the ``h.ugettext()``
+helper 
+
+
+.. Warning ::
+
+    The ``python setup.py lang_compile`` tool doesn't support unicode
+    strings in the ``.po`` file so if you need to use unicode in your translations
+    you will need to a different tool.
+
+Using Plurals
+-------------
+
+Pylons also defines ``ngettext()`` and ``ungettext()`` methods which can be imported
+from ``pylons.helpers``. They are designed for internationalizing plural words and can be
+used as follows:
+
+.. code-block :: Python
+
+    from pylons.helpers import ngettext, ungettext
+
+    ngettext(
+        'There is %(num)d files here', 
+        'There are %(num)d files here',
+        n
+    ) % {'num': n}
+    
+.. Warning ::
+
+    The ``python setup.py lang_extract`` and ``python setup.py lang_compile`` tools
+    don't support the ``ngettext()`` and ``ungettext()`` methods so although they 
+    can be used in a Pylons application, you will need to generate your message 
+    catalogues with a different tool.

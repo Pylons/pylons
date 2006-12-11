@@ -30,9 +30,9 @@ class LangExtract(setuptools.Command):
             [
                 '-K', 
                 '-k', 'gettext', 
-                '-k', 'ngettext', 
+                #'-k', 'ngettext', 
                 '-k', 'ugettext', 
-                '-k', 'ungettext', 
+                #'-k', 'ungettext', 
                 '-k', '_', 
                 '-o', pot_filename, 
                 '-p', i18n_path, '*'
