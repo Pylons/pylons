@@ -4,7 +4,7 @@ Pylons Support for the Web Server Gateway Interface
 :author: James Gardner
 :date: 2006-07-23
 
-The Web Server Gateway Interface defined in <a href="http://www.python.org/dev/peps/pep-0333/">PEP 333</a> is a standard interface between web servers and Python web applications or frameworks, to promote web application portability across a variety of web servers.
+The Web Server Gateway Interface `defined in PEP 333 <http://www.python.org/dev/peps/pep-0333/>`_ is a standard interface between web servers and Python web applications or frameworks, to promote web application portability across a variety of web servers.
 
 Pylons supports the Web Server Gateway Interface (or WSGI for short, pronounced "wizgy") throughout its stack. This is important for developers because it means that as well coming with all the features you would expect of a modern web framework, Pylons is also extremely flexible. With the WSGI it is possible to change any part of the Pylons stack to add new functionality or modify a request or a response without having to take apart the whole framework.
 
