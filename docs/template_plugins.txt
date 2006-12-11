@@ -16,6 +16,12 @@ depending on which template language you're using.
 Example: Using Kid with Pylons
 ==============================
 
+If you didn't select the ``kid`` optional extra package when you installed Pylons (described on the 
+`install page <install.html>`_) you will need to install the appropriate Buffet plugin. In the case
+of Kid, this is called TurboKid and can be installed as follows::
+
+    easy_install TurboKid
+
 To use Kid with Pylons, first we must setup a new template directory for the Kid templates.
 
 First, create a directory in ``yourproject`` called ``kidtemplates`` and add a controller::
