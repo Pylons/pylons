@@ -189,7 +189,7 @@ class ShellCommand(Command):
                 g=tresponse.g,
             )
         )
-        pylons.g.push_object(tresponse.g)
+        pylons.g._push_object(tresponse.g)
         
         banner = "Pylons Interactive Shell\nPython %s\n\n" % sys.version
         banner += "Additional Objects:\n"
