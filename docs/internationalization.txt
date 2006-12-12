@@ -59,10 +59,10 @@ Understanding Unicode
 =====================
 
 If you've ever come across text in a foreign language that contains lots of
-``????`` characters or have written some Python code and received a
-``UnicodeDecodeError: 'ascii' codec can't decode byte 0xff in position 6:
-ordinal not in range(128)`` message you will have run into a problem with
-character sets, encodings, Unicode and the like.
+``????`` characters or have written some Python code and received a message
+such as ``UnicodeDecodeError: 'ascii' codec can't decode byte 0xff in position
+6: ordinal not in range(128)`` then you have run into a problem with character
+sets, encodings, Unicode and the like.
 
 The truth is that many developers are put off by Unicode because most of the
 time it is possible to muddle through rather than take the time to learn the
@@ -70,7 +70,7 @@ basics. To make the problem worse if you have a system that manages to fudge
 the issues and just about work and then start trying to do things properly with
 Unicode it often highlights problems in other parts of your code.
 
-The good news is that Python has great Unicode support though so the rest of
+The good news is that Python has great Unicode support, so the rest of
 this article will show you how to correctly use Unicode in Pylons to avoid
 unwanted ``?`` characters and ``UnicodeDecodeErrors``.
 
@@ -115,7 +115,8 @@ doesn't apply since none of the code points are encoded to 8 bits.
 
 The important things to note from the discussion so far are that:
 
-* Unicode can represent every possible character
+* Unicode can represent pretty much any character in any writing system in
+  widespread use today
 * Unicode uses code points to represent characters and the way these map to bits
   in memory depends on the encoding
 * The most popualar encoding is UTF-8 which has  several convenient properties:
@@ -277,7 +278,7 @@ When you run it with Python 2.4, it will output the following warning::
     2, but no encoding declared; see http://www.python.org/peps/pep-0263.html for de
     tails
 
-and then the following output:
+and then the following output::
 
     233
 
@@ -295,21 +296,21 @@ they will actually be stored as something else.
 .. note ::
 
     If you are working with Unicode in detail you might also be interested in
-    the ``unicodedata`` module can be used to find out Unicode properties such as a
-    character's name, category, numeric value and the like.
+    the ``unicodedata`` module which can be used to find out Unicode properties
+    such as a character's name, category, numeric value and the like.
 
 
 Input and Output
 ----------------
 
 We now know how to use Unicode in Python source code but input and output can
-also different using Unicode. Of course, some libraries natively support
+also be different using Unicode. Of course, some libraries natively support
 Uniocde and if these libraries return Unicode objects you will not have to do
-anything special to support them. XML parsers and SQL database frequently
+anything special to support them. XML parsers and SQL databases frequently
 support Unicode for example.
 
 If you remember from the discussion earlier, Unicode data consists of code
-points.  In order to send Unicode data via a socket or write it to a file you
+points. In order to send Unicode data via a socket or write it to a file you
 usually need to encode it to a series of bytes and then decode the data back to
 Unicode when reading it. You can of course perform the encoding manually
 reading a byte at the time but since encodings such as UTF-8 can have variable
@@ -334,7 +335,7 @@ of the usual values of ``'strict'``, ``'ignore'``, or ``'replace'`` which we
 saw right at the begining of this document when we were encoding strings in
 Python source files. 
 
-Here is an example of how to reading Unicode from a UTF-8 encoded file::
+Here is an example of how to read Unicode from a UTF-8 encoded file::
 
     import codecs
     f = codecs.open('unicode.txt', encoding='utf-8')
@@ -424,7 +425,7 @@ Applying this to Web Programming
 So far we've seen how to use encoding in source files and seen how to decode
 text to Unicode and encode it back to text. We've also seen that Unicode
 objects can be manipulated in similar ways to strings and we've seen how to
-preform input and output operations on files. Next we are going to look at how
+perform input and output operations on files. Next we are going to look at how
 best to use Unicode in a web app.
 
 The main rule is this::
@@ -559,21 +560,37 @@ section::
 
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
-You should also set the charset in the Content-Type header::
+You should also set the charset in the ``Content-Type`` header::
 
     respones = Response(...)
     response.headers['Content-type'] = 'text/html; charset=utf-8'
 
-Because the page is generated in UTF-8, the browser should also submit UTF-8 to
-back to your application so you should decode the request params from UTF-8 as
-described in the earlier section.
+If you specify that your output is UTF-8, generally the web browser will
+give you UTF-8. If you want the browser to submit data using a different 
+character set, you can set the encoding by adding the ``accept-encoding`` 
+tag to your form. Here is an example::
 
-.. note::
+	<form accept-encoding="US-ASCII" ...>
 
-    In reality browsers don't always return data in the same encoding you set
-    so your application should be able to handle exceptions to this rule. It is
-    sometimes possible to use an algorithm to analyse the input and guess the
-    encoding based on probabilities.
+However, be forewarned that if the user tries to give you non-ASCII
+text, then:
+
+ * Firefox will translate the non-ASCII text into HTML entities.
+
+ * IE will ignore your suggested encoding and give you UTF-8 anyway.
+
+The lesson to be learned is that if you output UTF-8, you had better be
+prepared to accept UTF-8 by decoding the data in ``request.params`` as 
+described in the section above entitled "Request Parameters".
+
+Another technique which is sometimes used to determine the character set is to
+use an algorithm to analyse the input and guess the encoding based on
+probabilities.
+
+For instance, if you get a file, and you don't know what encoding it is encoded
+in, you can often rename the file with a .txt extension and then try to open it
+in Firefox.  Then you can use the "View->Character Encoding" menu to try to
+auto-detect the encoding. 
 
 Databases
 ~~~~~~~~~
@@ -587,7 +604,14 @@ Unicode.
 
 For example MySQL's Unicode documentation is here
 http://dev.mysql.com/doc/refman/5.0/en/charset-unicode.html
- 
+
+Also note that you need to consider both the encoding of the database
+and the encoding used by the database driver.
+
+If you're using MySQL together with SQLAlchemy, see the following, as
+there are some bugs in MySQLdb that you'll need to work around:
+
+http://www.mail-archive.com/sqlalchemy@googlegroups.com/msg00366.html
 
 Internationalization and Localization
 =====================================
@@ -644,14 +668,25 @@ Edit ``controllers/hello.py`` controller to look like this making use of the
                 h.set_lang(lang)
                 resp.write("%s: %s<br />" % (h.get_lang(), h.gettext('Hello')))
             return resp
-    
+   
+When writing your controllers it is important not to piece sentences together manually because
+certain languages might need to invert the grammars. As an example this is bad:
+
+    # BAD!
+    msg = h.ugettext("He told her ")
+    msg += h.ugettext("not to go outside.")
+
+but this is perfectly acceptable::
+
+    # GOOD
+    msg = h.ugettext("He told her not to go outside")
+ 
 The controller has now been internationalized but it will raise a ``LanguageError``
 until we have specified the alternative languages.
 
 Pylons uses `GNU gettext <http://www.gnu.org/software/gettext/>`_ to handle
-language internationalization. GNU gettext use three types of files in the
-translation framework. Depending on the tool you use for translations, you will
-need to be familiar with some or all of these files.
+internationalization. GNU gettext use three types of files in the
+translation framework.
 
 POT (Portable Object Template) files 
 
@@ -678,9 +713,11 @@ Versions of Pylons prior to 0.9.4 came with a setuptools extension to help with
 the extraction of strings and production of a ``.mo`` file. The implementation
 did not support Unicode though and was therfore dropped in Python 0.9.4.
 
-You will therefor need to use an external program to perform these tasks.
-There are various tools available to aid in translating. You may use whichever
-you prefer.
+You will therefore need to use an external program to perform these tasks.  You
+may use whichever you prefer but ``xgettext`` is highly recommended. Python's
+gettext utility has some bugs, especially regarding plurals.
+
+Here are some compatible tools and projects:
 
 The Rosetta Project (https://launchpad.ubuntu.com/rosetta/) 
 
@@ -690,11 +727,11 @@ The Rosetta Project (https://launchpad.ubuntu.com/rosetta/)
 poEdit (http://www.poedit.org/) 
     
     An open source program for Windows and UNIX/Linux which provides an easy-to-use
-    GUI for editing PO files and generate MO files. 
+    GUI for editing PO files and generating MO files. 
 
 KBabel (http://i18n.kde.org/tools/kbabel/) 
     
-    Another open source PO editing program for the KDE window manager on Linux. 
+    Another open source PO editing program for KDE. 
 
 GNU Gettext (http://www.gnu.org/software/gettext/) 
     
@@ -702,6 +739,8 @@ GNU Gettext (http://www.gnu.org/software/gettext/)
     POTs, manipulating POs, and generating MOs. For those comfortable with a
     command shell. 
 
+As an example we will quickly discuss the use of poEdit which is cross platform 
+and has a GUI which makes it easier to get started with.
 
 To use poEdit with the ``translate_demo`` you would do the following:
 
@@ -716,7 +755,7 @@ on the ``keywords`` tab: ``ugettext``, ``gettext``, ``ngettext``,
 #. Click OK
 
 poEdit will search your source tree and find all the strings you have marked
-up. You can then enter your translations in whatever charset you chose at in
+up. You can then enter your translations in whatever charset you chose in
 the project info tab. UTF-8 is a good choice.
 
 Finally, after entering your translations you then save the catalog and rename
@@ -727,32 +766,32 @@ your translation.
 You will need to repeat the process of creating a ``.mo`` file for the ``fr``,
 ``es`` and ``en`` translations.
 
-The relevant lines from ``i18n/en/translate_demo.po`` look like this::
+The relevant lines from ``i18n/en/LC_MESSAGES/translate_demo.po`` look like this::
 
     #: translate_demo\controllers\hello.py:6 translate_demo\controllers\hello.py:9
     msgid "Hello"
     msgstr "Hello"
     
-The relevant lines from ``i18n/es/translate_demo.po`` look like this::
+The relevant lines from ``i18n/es/LC_MESSAGES/translate_demo.po`` look like this::
 
     #: translate_demo\controllers\hello.py:6 translate_demo\controllers\hello.py:9
     msgid "Hello"
     msgstr "¡Hola!"
     
-The relevant lines from ``i18n/fr/translate_demo.po`` look like this::
+The relevant lines from ``i18n/fr/LC_MESSAGES/translate_demo.po`` look like this::
 
     #: translate_demo\controllers\hello.py:6 translate_demo\controllers\hello.py:9
     msgid "Hello"
     msgstr "Bonjour"
-    
-Your ``i18n`` directory should look like this when you have finished::
 
-    i18n/translate_demo.pot
-    i18n/en/translate_demo.po
+Whichever tools you use you should end up with an ``i18n`` directory that looks
+like this when you have finished::
+
+    i18n/en/LC_MESSAGES/translate_demo.po
     i18n/en/LC_MESSAGES/translate_demo.mo
-    i18n/es/translate_demo.po
+    i18n/es/LC_MESSAGES/translate_demo.po
     i18n/es/LC_MESSAGES/translate_demo.mo
-    i18n/fr/translate_demo.po
+    i18n/fr/LC_MESSAGES/translate_demo.po
     i18n/fr/LC_MESSAGES/translate_demo.mo
 
 
@@ -781,7 +820,7 @@ object:
 
     session['lang'] = 'en'
     
-Then on each controller call the language to be used could be read from the
+then on each controller call the language to be used could be read from the
 session and set in your controller's ``__before__()`` method so that the pages
 remained in the same language that was previously set:
 
@@ -824,7 +863,12 @@ Modify the last line of the hello controller to look like this:
 .. code-block:: Python
 
     resp.write("%s: %s %s<br />" % (h.get_lang(), h.ugettext('Hello'), h.ugettext('World!')))
-    
+
+.. warning ::
+
+    Of course, in real life breaking up sentences in this way is very dangerous because some
+    grammars might require the order of the words to be different. 
+
 If you run the example again the output will be::
 
     Default: ¡Hola!
@@ -856,12 +900,13 @@ translating.
 As long as ``lang_extract`` can find a string marked for translation with one
 of the internaionalization methods and defined in Python code in your project
 filesystem it will manage the translation when the same string is defined in a
-Myghty template and marked for translation. This means the best solution to
-ensure all strings are picked up for translation is to create a file in ``lib``
-with an appropriate filename, ``i18n.py`` for example, and then add a list of
-all the strings which appear in your templates so that the ``lang_extract``
-command can then extract the strings in ``lib/i18n.py`` for translation and use
-the translated versions in your templates as well.
+Myghty template and marked for translation. 
+
+One solution to ensure all strings are picked up for translation is to create a
+file in ``lib`` with an appropriate filename, ``i18n.py`` for example, and then
+add a list of all the strings which appear in your templates so that your
+translation tool can then extract the strings in ``lib/i18n.py`` for
+translation and use the translated versions in your templates as well. 
 
 For example if you wanted to ensure the translated string ``'Good Morning'``
 was available in all templates you could create a ``lib/i18n.py`` file that
@@ -872,12 +917,21 @@ looked something like this:
     from base import h
     h.ugettext('Good Morning')
 
-Of course, if you are using a templating system such as Myghty or Cheetah and
-your cache directory is in the default location or elsewhere within your
-project's filesystem, you will probably find that all templates have been
-cached as Python files during the course of the development process and so the
-``lang_extract`` command will successfully pick up strings to translate from
-the cached files anyway.
+This approach requires quite a lot of work and is rather fragile. The best
+solution if you are using a templating system such as Myghty or Cheetah which
+uses compiled Python files is to use a Makefile to ensure that every template
+is compiled to Python before running the extraction tool to make sure that
+every template is scanned.
+
+Of course, if your cache directory is in the default location or elsewhere
+within your project's filesystem, you will probably find that all templates
+have been compiled as Python files during the course of the development process.
+This means that your tool's extraction command will successfully pick up
+strings to translate from the cached files anyway.
+
+You may also find that your extraction tool is capable of extracting the 
+strings correctly from the template anyway, particularly if the templating
+langauge is quite similar to Python. It is best not to rely on this though.
 
 Producing a Python Egg
 ----------------------
@@ -918,6 +972,18 @@ If you wish to use plural forms in your application you need to add the appropri
 headers to the ``.po`` files for the language you are using. You can read more about 
 this at http://www.gnu.org/software/gettext/manual/html_chapter/gettext_10.html#SEC150     
     
+One thing to keep in mind is that other languages don't have the same
+plural forms as English.  While English only has 2 pulral forms, singular and
+plural, Slovenian has 4!  That means that you must use gettext's
+support for pluralization if you hope to get pluralization right.
+Specifically, the following will not work:
+
+        # BAD!
+	if n == 1:
+	    msg = h.ugettext("There was no dog.")
+	else:
+	    msg = h.ugettext("There were no dogs.")
+
 Summary
 =======
 
