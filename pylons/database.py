@@ -6,8 +6,6 @@ file called ``sqlobject.dburi``.
 
 It is based heavily (if not 99%) on the TurboGears file of the same name.
 """
-import sqlobject
-from sqlobject.dbconnection import ConnectionHub, Transaction, TheURIOpener
 from paste.deploy.config import CONFIG
 from paste.deploy.converters import asbool
 
@@ -17,7 +15,6 @@ import pylons
 try:
     import sqlalchemy
     from sqlalchemy.ext import sessioncontext
-    from sqlalchemy.util import ScopedRegistry
 
     def create_engine():
         """Create a SQLAlchemy db engine"""
@@ -44,6 +41,12 @@ try:
 except:
     pass
     
+# Provide support for sqlobject
+try:
+    import sqlobject
+    from sqlobject.dbconnection import ConnectionHub, Transaction, TheURIOpener
+except:
+    ConnectionHub = object
 
 class AutoConnectHub(ConnectionHub):
     """Connects to the database once per thread.
