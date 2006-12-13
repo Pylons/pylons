@@ -2,24 +2,26 @@ class Globals(object):
 
     def __init__(self, global_conf, app_conf, **extra):
         """
-        You can put any objects which need to be initialised only once
-        here as class attributes and they will be available as globals
-        everywhere in your application and will be intialised only once,
-        not on every request.
+        Globals acts as a container for objects available throughout
+        the life of the application.
+
+        One instance of Globals is created by Pylons during
+        application initialization and is available during requests
+        via the 'g' variable.
         
         ``global_conf``
-            The same as variable used throughout ``config/middleware.py``
+            The same variable used throughout ``config/middleware.py``
             namely, the variables from the ``[DEFAULT]`` section of the
             configuration file.
             
         ``app_conf``
-            The same as the ``kw`` dictionary used throughout 
-            ``config/middleware.py`` namely, the variables the section 
-            in the config file for your application.
+            The same ``kw`` dictionary used throughout
+            ``config/middleware.py`` namely, the variables from the
+            section in the config file for your application.
             
         ``extra``
             The configuration returned from ``load_config`` in 
-            ``config/middleware.py`` which may be of use in the setup of 
+            ``config/middleware.py`` which may be of use in the setup of
             your global variables.
             
         """

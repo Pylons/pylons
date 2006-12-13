@@ -296,7 +296,7 @@ Application Globals and Persistent Objects
 
 There are occasions where you might want information to be available to all controllers and not reset on each request. For example you might want to initiate a TCP connection that is made when the application is loaded. You can do this through the ``g`` variable. 
 
-The ``g`` variable is an instance of your ``Globals`` class in your application's ``lib/app_globals.py`` file. Any class attributes you set in the ``__init__()`` method will be available as attributes of ``g`` throughout your Pylons application. Any attributes you set on ``g`` during one request will remain changed for all the other requests. You have to be very careful when setting global variables in requests.
+The ``g`` variable is an instance of your ``Globals`` class in your application's ``lib/app_globals.py`` file. Any attributes set in the ``__init__()`` method will be available as attributes of ``g`` throughout your Pylons application. Any attributes set on ``g`` during one request will remain changed for all the other requests. You have to be very careful when setting global variables in requests.
 
 Here is an example of using the ``g`` variable. First modify your ``lib/app_globals.py`` ``Globals`` class so that the ``__init__.py`` method looks like this:
 
