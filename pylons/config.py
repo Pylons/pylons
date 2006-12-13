@@ -232,7 +232,8 @@ class Config(object):
         # Rearrange template options as default for Mako
         opts['mako.directories'] = self.paths['templates']
         opts['mako.filesystem_checks'] = True
-        opts['mako.module_directory'] = os.path.join(app_conf['cache_dir'], 
+        if 'cache_dir' in app_conf:
+            opts['mako.module_directory'] = os.path.join(app_conf['cache_dir'], 
                                                      'templates')
         
         # Setup kid defaults
