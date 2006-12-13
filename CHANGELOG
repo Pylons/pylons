@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.4 (**svn**)
+* Removing __name__ mapping from deprecated functions for Python 2.3 compat.
+  Fixes #150.
 * Adding SQLAlchemy support to the database.py file. Saves the session engine
   to g to maintain it during the apps lifetime. Uses SessionContext plugin for
   management of the current session.
