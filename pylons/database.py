@@ -1,29 +1,34 @@
-"""Provides convenient access to an SQLObject-managed database.
+"""Provides convenient access to SQLObject-managed and/or SQLAlchemy-managed
+databases.
 
 This module enables easy use of an SQLObject database by providing an 
 auto-connect hub that will utilize the db uri string given in the Paste conf
 file called ``sqlobject.dburi``.
 
-It is based heavily (if not 99%) on the TurboGears file of the same name.
+It provides the SQLAlchemy db_session variable. This database session is bound
+to an automatically configured database engine, its source specified by the
+``sqlalchemy.dburi`` uri in the Paste conf file.
 """
 from paste.deploy.config import CONFIG
 from paste.deploy.converters import asbool
 
 import pylons
 
+__all__ = ["PackageHub", "AutoConnectHub"]
+
 # Provide support for sqlalchemy
 try:
     import sqlalchemy
     from sqlalchemy.ext import sessioncontext
 
-    def create_engine():
+    def create_engine(uri=None):
         """Create a SQLAlchemy db engine"""
         config = CONFIG['app_conf']
-        dburi = config.get("sqlalchemy.dburi")
-        if not dburi:
+        uri = config.get("sqlalchemy.dburi")
+        if not uri:
             raise KeyError("No sqlalchemy database config found!")
         echo = asbool(config.get("sqlalchemy.echo", False))
-        engine = sqlalchemy.create_engine(dburi, echo=echo)
+        engine = sqlalchemy.create_engine(uri, echo=echo)
         return engine
 
     def make_session():
@@ -36,11 +41,25 @@ try:
             pylons.g._db_engine = create_engine()
         return sqlalchemy.create_session(bind_to=pylons.g._db_engine)
 
-    session_context = sessioncontext.SessionContext(make_session)
+    def app_scope():
+        """Return the id keying the current database session's scope.
 
-except:
+        The session is particular to the current Pylons application -- this
+        returns an id generated from the current Pylons application's Globals
+        object
+        """
+        return id(pylons.g._current_obj())
+
+    session_context = sessioncontext.SessionContext(make_session,
+                                                    scopefunc=app_scope)
+    db_session = session_context.current
+
+    __all__.extend(['create_engine', 'make_session', 'app_scope',
+                    'session_context', 'db_session'])
+
+except ImportError:
     pass
-    
+
 # Provide support for sqlobject
 try:
     import sqlobject
@@ -187,5 +206,3 @@ class PackageHub(object):
                 dburi, pool_connections=self.pool_connections)
             _hubs[dburi] = hub
         self.hub = hub
-            
-__all__ = ["PackageHub", "AutoConnectHub"]
