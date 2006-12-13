@@ -254,7 +254,7 @@ You can then edit your ``development.ini`` to add your database URI so the start
 
 .. Note:: See the SQLAlchemy note in the `Starting at the End`_ section for information on supported database URIs and a link to the SQLAlchemy documentation about the various options that can be included in them.
 
-You can also have SQLAlchemy echo all SQL by adding this line::
+You can also have SQLAlchemy echo all SQL by adding this line:
 
 .. code-block:: PasteIni
 
