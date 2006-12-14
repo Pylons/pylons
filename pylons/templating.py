@@ -25,7 +25,7 @@ import paste.wsgiwrappers
 import pylons
 
 PYLONS_VARS = ['c', 'h', 'g', '_', 'ungettext', 'translator', 'request', 
-               'session', 'params']
+               'session']
 
 class BuffetError(Exception):
     """Buffet Exception"""
