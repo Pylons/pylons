@@ -9,6 +9,7 @@ It provides the SQLAlchemy db_session variable. This database session is bound
 to an automatically configured database engine, its source specified by the
 ``sqlalchemy.dburi`` uri in the Paste conf file.
 """
+import thread
 from paste.deploy.config import CONFIG
 from paste.deploy.converters import asbool
 
@@ -45,10 +46,10 @@ try:
         """Return the id keying the current database session's scope.
 
         The session is particular to the current Pylons application -- this
-        returns an id generated from the current Pylons application's Globals
-        object
+        returns an id generated from the current thread and the current Pylons
+        application's Globals object.
         """
-        return id(pylons.g._current_obj())
+        return '%i|%i' % (thread.get_ident(), id(pylons.g._current_obj()))
 
     session_context = sessioncontext.SessionContext(make_session,
                                                     scopefunc=app_scope)
