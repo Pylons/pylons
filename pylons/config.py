@@ -5,6 +5,7 @@ for Myghty, Paste errorware, and prefixing Routes if necessary.
 """
 import os
 from paste.deploy.converters import asbool
+import pylons.templating
 
 class Config(object):
     """Pylons configuration object
@@ -196,12 +197,8 @@ class Config(object):
         myghty_defaults.update(self.myghty)
         
         # Merge additional globals
-        myghty_defaults.setdefault('allow_globals', [])
-                
-        myghty_defaults['allow_globals'].extend(
-            ['c', 'h', 's', '_', 'translator', 'ungettext', 'session', 
-             'request', 'g', 'render', 'render_fragment']
-        )
+        myghty_defaults.setdefault('allow_globals',
+                                   []).extend(pylons.templating.PYLONS_VARS)
         
         self.myghty = myghty_defaults
         myghty_template_options = {}

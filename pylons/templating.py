@@ -24,8 +24,8 @@ except ImportError:
 import paste.wsgiwrappers
 import pylons
 
-PYLONS_VARS = ['c', 'h', 'g', '_', 'ungettext', 'translator', 'request', 
-               'session']
+PYLONS_VARS = ['c', 'g', 'h', 'render', 'request', 'session', 'translator',
+               'ungettext', '_']
 
 class BuffetError(Exception):
     """Buffet Exception"""
@@ -78,15 +78,14 @@ class Buffet(object):
         d = ns
         d.update(dict(
             c=pylons.c._current_obj(),
-            h=pylons.h._current_obj(),
-            request=pylons.request._current_obj(),
             g=pylons.g._current_obj(),
+            h=pylons.h._current_obj(),
+            render=render,
+            request=pylons.request._current_obj(),
             session=pylons.session._current_obj(),
-            s=pylons.session._current_obj(),
-            _=pylons.translator.ugettext,
             translator=pylons.translator._current_obj(),
             ungettext=pylons.translator.ungettext,
-            render=render,
+            _=pylons.translator.ugettext
         ))
         return d
     
