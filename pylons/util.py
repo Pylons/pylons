@@ -21,7 +21,7 @@ def deprecated(func, message):
     deprecated_method.__doc__ = message + "\n" + func.__doc__
     return deprecated_method
 
-get_lang = deprecated(pylons.helpers.set_lang, func_move('get_lang'))
+get_lang = deprecated(pylons.helpers.get_lang, func_move('get_lang'))
 set_lang = deprecated(pylons.helpers.set_lang, func_move('set_lang'))
 log = deprecated(pylons.helpers.log, func_move('log'))
 _ = deprecated(pylons.helpers._, func_move('_'))
