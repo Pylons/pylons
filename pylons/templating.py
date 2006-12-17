@@ -73,10 +73,9 @@ class Buffet(object):
                  root=template_root)
     
     def _update_names(self, ns):
-        """Given a dict, update the dict with the Pylons vars and their 
-        respective objects"""
-        d = ns
-        d.update(dict(
+        """Return a dict of Pylons vars and their respective objects updated
+        with the ``ns`` dict."""
+        d = dict(
             c=pylons.c._current_obj(),
             g=pylons.g._current_obj(),
             h=pylons.h._current_obj(),
@@ -86,7 +85,8 @@ class Buffet(object):
             translator=pylons.translator._current_obj(),
             ungettext=pylons.translator.ungettext,
             _=pylons.translator.ugettext
-        ))
+            )
+        d.update(ns)
         return d
     
     def render(self, engine_name=None, template_name=None,
@@ -112,9 +112,7 @@ class Buffet(object):
             ``True``.
         ``namespace``
             A custom dictionary of names and values to be substituted in the
-            template. If ``include_pylons_variables`` is ``True`` and any
-            keys in ``namespace`` conflict with names of Pylons variables, 
-            an error is raised.
+            template.
         
         Caching options (uses Beaker caching middleware)
         
@@ -146,13 +144,13 @@ class Buffet(object):
         if engine_name == 'pylonsmyghty':
             if namespace is None:
                 namespace = {}
-            namespace['_global_args'] = self._update_names({})
-
             # Reserved myghty keywords
             for key in ('output_encoding', 'encoding_errors', 
                         'disable_unicode'):
                 if key in namespace:
                     options[key] = namespace.pop(key)
+
+            namespace['_global_args'] = self._update_names({})
             
             # If they passed in a variable thats listed in the global_args,
             # update the global args one instead of duplicating it
@@ -164,23 +162,10 @@ class Buffet(object):
         else:
             if namespace is None:
                 if not include_pylons_variables:
-                    raise BuffetError('You must specify ``namespace`` if \
-                        ``include_pylons_variables`` is False')
+                    raise BuffetError('You must specify ``namespace`` when '
+                                      '``include_pylons_variables`` is False')
                 else:
                     namespace = self._update_names({})
-            elif isinstance(namespace, dict):
-                if include_pylons_variables:
-                    var_conflicts = list(
-                        [x for x in PYLONS_VARS if x in namespace]
-                    )
-                    if var_conflicts:
-                        raise Exception(
-                            'The variable(s) %s specified in the namespace '
-                            'conflicts with Pylons variable(s) of the same '
-                            'name. Set ``include_pylons_variables`` to '
-                            '``False`` if you do not want to use Pylons '
-                            'variables in your template' % var_conflicts)
-                    namespace = self._update_names(namespace)
             else:
                 namespace = self._update_names(namespace)
             

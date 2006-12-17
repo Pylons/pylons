@@ -2,7 +2,8 @@ Pylons Changelog
 =================
 
 0.9.4 (**svn**)
-* Fixed new mako init loading to deal with cache_dir not existing. Fixes #152.
+* Now allowing any template plugin to overwrite global PYLONS_VARS (such as c,
+  g), not just pylonsmyghty.
 * Removing __name__ mapping from deprecated functions for Python 2.3 compat.
   Fixes #151.
 * Adding SQLAlchemy support to the database.py file. Saves the session engine
