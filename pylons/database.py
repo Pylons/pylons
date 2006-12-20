@@ -53,7 +53,10 @@ try:
 
     session_context = sessioncontext.SessionContext(make_session,
                                                     scopefunc=app_scope)
-    db_session = session_context.current
+    try:
+        db_session = session_context.current
+    except:
+        db_session = None
 
     __all__.extend(['create_engine', 'make_session', 'app_scope',
                     'session_context', 'db_session'])
