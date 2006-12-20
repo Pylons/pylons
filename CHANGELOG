@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.4 (**svn**)
+* Changed i18n functions in templates to use proxy objects so that using
+  set_lang in a template works right. Fixes #153.
 * Now allowing any template plugin to overwrite global PYLONS_VARS (such as c,
   g), not just pylonsmyghty.
 * Removing __name__ mapping from deprecated functions for Python 2.3 compat.

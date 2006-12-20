@@ -82,9 +82,9 @@ class Buffet(object):
             render=render,
             request=pylons.request._current_obj(),
             session=pylons.session._current_obj(),
-            translator=pylons.translator._current_obj(),
-            ungettext=pylons.translator.ungettext,
-            _=pylons.translator.ugettext,
+            translator=pylons.translator,
+            ungettext=pylons.i18n.ungettext,
+            _=pylons.i18n.ugettext,
             N_=pylons.i18n.N_
             )
         d.update(ns)
