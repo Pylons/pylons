@@ -82,10 +82,10 @@ were unaccented English letters. Each of these letters could be represented by
 a number between 32 and 127 and thus was born ASCII, a character set where
 space was 32, the letter "A" was 65 and everything could be stored in 7 bits. 
 
-Most computers in those days were using 8-bit bytes so people quickly realised
+Most computers in those days were using 8-bit bytes so people quickly realized
 that they could use the codes 128-255 for their own purposes. Different people
 used the codes 128-255 to represent different characters and before long these
-different sets of characters were also stanardised into *code pages*. This
+different sets of characters were also standardized into *code pages*. This
 meant that if you needed some non-ASCII characters in a document you could also
 specify a codepage which would define which extra characters were available.
 For example Israel DOS used a code page called 862, while Greek users used 737.
@@ -119,17 +119,17 @@ The important things to note from the discussion so far are that:
   widespread use today
 * Unicode uses code points to represent characters and the way these map to bits
   in memory depends on the encoding
-* The most popualar encoding is UTF-8 which has  several convenient properties:
+* The most popular encoding is UTF-8 which has  several convenient properties:
     1. It can handle any Unicode code point
     2. A Unicode string is turned into a string of bytes containing no embedded
-    zero bytes. This avoids byte-ordering issues, and means UTF-8 strings can be
-    processed by C functions such as strcpy() and sent through protocols that can't
-    handle zero bytes
+       zero bytes. This avoids byte-ordering issues, and means UTF-8 strings can be
+       processed by C functions such as strcpy() and sent through protocols that can't
+       handle zero bytes
     3. A string of ASCII text is also valid UTF-8 text
     4. UTF-8 is fairly compact; the majority of code points are turned into two 
-    bytes, and values less than 128 occupy only a single byte.
+       bytes, and values less than 128 occupy only a single byte.
     5. If bytes are corrupted or lost, it's possible to determine the start of
-    the next UTF-8-encoded code point and resynchronize.
+       the next UTF-8-encoded code point and resynchronize.
 
 .. note:: 
 
@@ -305,7 +305,7 @@ Input and Output
 
 We now know how to use Unicode in Python source code but input and output can
 also be different using Unicode. Of course, some libraries natively support
-Uniocde and if these libraries return Unicode objects you will not have to do
+Unicode and if these libraries return Unicode objects you will not have to do
 anything special to support them. XML parsers and SQL databases frequently
 support Unicode for example.
 
@@ -357,7 +357,7 @@ which characters were present and the character set used by the console, an
 error might be raised. This is avoided if you use ``repr()``.
  
 The Unicode character ``U+FEFF`` is used as a byte-order mark or BOM, and is often
-written as the first character of a file in order to assist with autodetection
+written as the first character of a file in order to assist with auto-detection
 of the file's byte ordering. Some encodings, such as UTF-16, expect a BOM to be
 present at the start of a file, but with others such as UTF-8 it isn't necessary.
 
@@ -379,15 +379,15 @@ Most modern operating systems support the use of Unicode filenames. The
 filenames are transparently converted to the underlying filesystem encoding.
 The type of encoding depends on the operating system.
 
-On Windows 9x, the encoding is ``mbcs''.  
+On Windows 9x, the encoding is ``mbcs``.  
 
-On Mac OS X, the encoding is ``utf-8''. 
+On Mac OS X, the encoding is ``utf-8``. 
 
 On Unix, the encoding is the user's preference according to the
 result of nl_langinfo(CODESET), or None if the nl_langinfo(CODESET) failed.  
 
 On Windows NT+, file names are Unicode natively, so no conversion is performed.
-getfilesystemencoding still returns ``mbcs'', as this is the encoding that
+getfilesystemencoding still returns ``mbcs``, as this is the encoding that
 applications should use when they explicitly want to convert Unicode strings to
 byte strings that are equivalent when used as file names. 
 
@@ -434,7 +434,7 @@ The main rule is this::
     any input to Unicode as soon as it enters the application and encoding the
     Unicode to UTF-8 or another encoding on output.
 
-If you fail to do this you will find that ``UnicodeDecodeError``s will start
+If you fail to do this you will find that ``UnicodeDecodeError`` s will start
 popping up in unexpected places when Unicode strings are used with normal 8-bit
 strings because Python's default encoding is ASCII and it will try to decode
 the text to ASCII and fail. It is always better to do any encoding or decoding
@@ -481,7 +481,7 @@ Those are the three basic rules so now we will look at some of the places you
 might want to perform Unicode decoding in a Pylons application.
     
 Request Parameters
-~~~~~~~~~~~~~~~~~~
+------------------
 
 Currently the Pylons input values come from ``request.params`` but these are
 not decoded to Unicode by default because not all input should be assumed to be
@@ -524,7 +524,7 @@ This code is discussed in `ticket 135
 file uploads since these shouldn't ordinarily be decoded to Unicode.
 
 Templating
-~~~~~~~~~~
+----------
 
 Pylons uses Myghty as its default templating language and Myghty 1.1 and above
 fully support Unicode. The Myghty documentation explains how to use Unicode and
@@ -552,7 +552,7 @@ If you need to disable Unicode support altogether you can set this::
 but again, you would have to have a good reason to want to do this.   
 
 Output Encoding
-~~~~~~~~~~~~~~~
+---------------
 
 Web pages should be generated with a specific encoding, most likely UTF-8. At
 the very least, that means you should specify the following in the ``<head>``
@@ -593,7 +593,7 @@ in Firefox.  Then you can use the "View->Character Encoding" menu to try to
 auto-detect the encoding. 
 
 Databases
-~~~~~~~~~
+---------
 
 Your database driver should automatically convert from Unicode objects to a
 particular charset when writing and back again when reading. Again it is normal
@@ -978,7 +978,9 @@ plural, Slovenian has 4!  That means that you must use gettext's
 support for pluralization if you hope to get pluralization right.
 Specifically, the following will not work:
 
-        # BAD!
+.. code-block :: Python
+    
+    # BAD!
 	if n == 1:
 	    msg = h.ugettext("There was no dog.")
 	else:
