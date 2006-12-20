@@ -8,6 +8,28 @@ class LanguageError(Exception):
     """Exception raised when a problem occurs with changing languages"""
     pass
 
+def gettext_noop(value):
+    """Mark a string for translation without translating it. Returns value.
+
+    Used for global strings, e.g.:
+
+    .. code-block:: Python
+
+        foo = N_('Hello')
+
+        class Bar:
+            def __init__(self):
+                self.local_foo = _(foo)
+
+        h.set_lang('fr')
+        assert Bar().local_foo == 'Bonjour'
+        h.set_lang('es')
+        assert Bar().local_foo == 'Hola'
+        assert foo == 'Hello'
+    """
+    return value
+N_ = gettext_noop
+
 def gettext(value):
     """Mark a string for translation. Returns the localized string of value.
     
@@ -96,5 +118,5 @@ def egg_translation(domain, lang):
     class_ = GNUTranslations
     return class_(resource_stream(domain, os.path.join(lang, '%s.mo' % domain)))
 
-__all__ = ['gettext', 'ugettext', '_', 'ngettext', 'ungettext', 'set_lang',
-           'get_lang']
+__all__ = ['gettext_noop', 'N_', 'gettext', 'ugettext', '_', 'ngettext',
+           'ungettext', 'set_lang', 'get_lang']

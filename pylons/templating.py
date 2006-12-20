@@ -25,7 +25,7 @@ import paste.wsgiwrappers
 import pylons
 
 PYLONS_VARS = ['c', 'g', 'h', 'render', 'request', 'session', 'translator',
-               'ungettext', '_']
+               'ungettext', '_', 'N_']
 
 class BuffetError(Exception):
     """Buffet Exception"""
@@ -84,7 +84,8 @@ class Buffet(object):
             session=pylons.session._current_obj(),
             translator=pylons.translator._current_obj(),
             ungettext=pylons.translator.ungettext,
-            _=pylons.translator.ugettext
+            _=pylons.translator.ugettext,
+            N_=pylons.i18n.N_
             )
         d.update(ns)
         return d
