@@ -49,17 +49,13 @@ try:
         returns an id generated from the current thread and the current Pylons
         application's Globals object.
         """
-        return '%i|%i' % (thread.get_ident(), id(pylons.g._current_obj()))
+        return '%i|%i' % (id(pylons.g._current_obj()), thread.get_ident())
 
     session_context = sessioncontext.SessionContext(make_session,
                                                     scopefunc=app_scope)
-    try:
-        db_session = session_context.current
-    except:
-        db_session = None
 
     __all__.extend(['create_engine', 'make_session', 'app_scope',
-                    'session_context', 'db_session'])
+                    'session_context'])
 
 except ImportError:
     pass
