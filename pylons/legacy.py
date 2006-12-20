@@ -41,9 +41,11 @@ def load_h(package_name):
     # Pre 0.9.2 lib.helpers did not import the pylons helper functions, manually
     # add them. Don't overwrite user functions (allowing pylons helpers to be
     # overridden)
-    for func_name in ('_', 'log', 'set_lang', 'get_lang'):
+    for func_name, func in {'_': pylons.i18n._, 'log': pylons.helpers.log,
+                            'set_lang': pylons.i18n.set_lang,
+                            'get_lang': pylons.i18n.get_lang}.iteritems():
         if not hasattr(helpers_module, func_name):
-            setattr(helpers_module, func_name, getattr(pylons.util, func_name))
+            setattr(helpers_module, func_name, func)
 
     return sys.modules[helpers_name]
 

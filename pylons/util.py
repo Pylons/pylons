@@ -9,10 +9,11 @@ import warnings
 from paste.script.templates import Template
 
 import pylons.helpers
+import pylons.i18n
 
-def func_move(name):
-    return "The %s function has moved to pylons.helpers, please update your\
-              import statements to reflect the move." % name
+def func_move(name, moved_to='pylons.i18n'):
+    return ("The %s function has moved to %s, please update your import "
+            "statements to reflect the move." % (name, moved_to))
 
 def deprecated(func, message):
     def deprecated_method(*args, **kargs):        
@@ -21,10 +22,10 @@ def deprecated(func, message):
     deprecated_method.__doc__ = message + "\n" + func.__doc__
     return deprecated_method
 
-get_lang = deprecated(pylons.helpers.get_lang, func_move('get_lang'))
-set_lang = deprecated(pylons.helpers.set_lang, func_move('set_lang'))
-log = deprecated(pylons.helpers.log, func_move('log'))
-_ = deprecated(pylons.helpers._, func_move('_'))
+get_lang = deprecated(pylons.i18n.get_lang, func_move('get_lang'))
+set_lang = deprecated(pylons.i18n.set_lang, func_move('set_lang'))
+_ = deprecated(pylons.i18n._, func_move('_'))
+log = deprecated(pylons.helpers.log, func_move('log', moved_to='pylons.helpers'))
     
 def get_prefix(environ):
     if 'paste.config' in environ:

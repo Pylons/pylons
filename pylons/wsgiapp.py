@@ -20,7 +20,7 @@ from routes.middleware import RoutesMiddleware
 import pylons
 import pylons.legacy
 import pylons.templating
-from pylons.helpers import set_lang
+from pylons.i18n import set_lang
 from pylons.util import ContextObj, AttribSafeContextObj, class_name_from_module_name
 from pylons.controllers import Controller, WSGIController
 

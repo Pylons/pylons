@@ -48,8 +48,8 @@ Pylons Changelog
   Bicking.
 * Fixed issue with SQLObject method override having wrong name. Reported by
   climbus with patch. Fixes #133.
-* Moving controller helpers to pylons.helpers and using pylons.util purely for
-  Pylons internal util functions.
+* Moved log function to pylons.helpers and translation functions to
+  pylons.i18n. using pylons.util purely for Pylons internal util functions.
 * WARNING: Removed 0.8.x legacy code and backwards compatibility functions.
 * PylonsApp now has option to not use Routes middleware, default resolving 
   uses new wsgi.org routing_args spec.
