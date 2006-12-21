@@ -1,7 +1,8 @@
-import os, sys
+import os
+import sys
 from unittest import TestCase
 
-here_dir = os.path.dirname(__file__)
+here_dir = os.path.dirname(os.path.abspath(__file__))
 conf_dir = os.path.dirname(os.path.dirname(here_dir))
 
 sys.path.insert(0, conf_dir)
@@ -31,7 +32,7 @@ cmd.run([test_file])
 
 class TestController(TestCase):
     def __init__(self, *args):
-        wsgiapp = loadapp('config:development.ini', relative_to=conf_dir)
+        wsgiapp = loadapp('config:test.ini', relative_to=conf_dir)
         self.app = paste.fixture.TestApp(wsgiapp)
         TestCase.__init__(self, *args)
 
