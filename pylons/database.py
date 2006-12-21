@@ -5,9 +5,8 @@ This module enables easy use of an SQLObject database by providing an
 auto-connect hub that will utilize the db uri string given in the Paste conf
 file called ``sqlobject.dburi``.
 
-It provides the SQLAlchemy db_session variable. This database session is bound
-to an automatically configured database engine, its source specified by the
-``sqlalchemy.dburi`` uri in the Paste conf file.
+A SQLAlchemy ``SessionContext`` is also available: it provides both thread and
+process safe ``Session`` objects via the ``session_context.current`` property.
 """
 import thread
 from paste.deploy.config import CONFIG
@@ -22,25 +21,42 @@ try:
     import sqlalchemy
     from sqlalchemy.ext import sessioncontext
 
-    def create_engine(uri=None):
-        """Create a SQLAlchemy db engine"""
-        config = CONFIG['app_conf']
-        uri = config.get("sqlalchemy.dburi")
+    def get_engine_conf(uri=None, echo=None):
+        """Returns a tuple of SQLAlchemy engine configuration values (uri,
+        echo) from the Pylons config file values ``sqlalchemy.dburi`` and
+        ``sqlalchemy.echo`` when none are specified."""
+        if uri is None:
+            uri = CONFIG['app_conf'].get("sqlalchemy.dburi")
         if not uri:
-            raise KeyError("No sqlalchemy database config found!")
-        echo = asbool(config.get("sqlalchemy.echo", False))
+            raise KeyError("No SQLAlchemy database config found!")
+        if echo is None:
+            echo = asbool(CONFIG['app_conf'].get("sqlalchemy.echo", False))
+        return uri, echo
+        
+    def create_engine(uri=None, echo=None):
+        """Create a SQLAlchemy db engine. Uses the configuration values from
+        ``get_engine_conf`` if none are specified."""
+        uri, echo = get_engine_conf(uri, echo)
         engine = sqlalchemy.create_engine(uri, echo=echo)
         return engine
 
-    def make_session():
-        """Creates a session using using the ``g._db_engine`` value
+    def make_session(uri=None, echo=None):
+        """Creates a SQLAlchemy session for the specified database uri using
+        using the uri's engine in the ``g._db_engine`` dict. Uses the
+        configuration values from ``get_engine_conf`` if none are specified.
         
-        If the ``g._db_engine`` variable does not exist, a new engine will be
-        created and attached there.
+        If the uri's engine does not exist, it will be created and added to
+        the ``g._db_engine`` dict. 
         """
+        uri, echo = get_engine_conf(uri, echo)
         if not hasattr(pylons.g, '_db_engine'):
-            pylons.g._db_engine = create_engine()
-        return sqlalchemy.create_session(bind_to=pylons.g._db_engine)
+            pylons.g._db_engine = {}
+        if uri in pylons.g._db_engine:
+            engine = pylons.g._db_engine[uri]
+            engine.echo = echo
+        else:
+            engine = pylons.g._db_engine[uri] = create_engine(uri, echo=echo)
+        return sqlalchemy.create_session(bind_to=engine)
 
     def app_scope():
         """Return the id keying the current database session's scope.
@@ -54,8 +70,8 @@ try:
     session_context = sessioncontext.SessionContext(make_session,
                                                     scopefunc=app_scope)
 
-    __all__.extend(['create_engine', 'make_session', 'app_scope',
-                    'session_context'])
+    __all__.extend(['get_engine_conf', 'create_engine', 'make_session',
+                    'app_scope', 'session_context'])
 
 except ImportError:
     pass
