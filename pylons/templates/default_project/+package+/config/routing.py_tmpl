@@ -1,7 +1,7 @@
 """
 Setup your Routes options here
 """
-import sys, os
+import os
 from routes import Mapper
 
 def make_map(global_conf={}, app_conf={}):
