@@ -21,6 +21,22 @@ try:
     import sqlalchemy
     from sqlalchemy.ext import sessioncontext
 
+    def app_scope():
+        """Return the id keying the current database session's scope.
+
+        The session is particular to the current Pylons application -- this
+        returns an id generated from the current thread and the current Pylons
+        application's Globals object.
+        """
+        return '%i|%i' % (id(pylons.g._current_obj()), thread.get_ident())
+
+    def create_engine(uri=None, echo=None):
+        """Create a SQLAlchemy db engine. Uses the configuration values from
+        ``get_engine_conf`` if none are specified."""
+        uri, echo = get_engine_conf(uri, echo)
+        engine = sqlalchemy.create_engine(uri, echo=echo)
+        return engine
+
     def get_engine_conf(uri=None, echo=None):
         """Returns a tuple of SQLAlchemy engine configuration values (uri,
         echo) from the Pylons config file values ``sqlalchemy.dburi`` and
@@ -32,13 +48,6 @@ try:
         if echo is None:
             echo = asbool(CONFIG['app_conf'].get("sqlalchemy.echo", False))
         return uri, echo
-        
-    def create_engine(uri=None, echo=None):
-        """Create a SQLAlchemy db engine. Uses the configuration values from
-        ``get_engine_conf`` if none are specified."""
-        uri, echo = get_engine_conf(uri, echo)
-        engine = sqlalchemy.create_engine(uri, echo=echo)
-        return engine
 
     def make_session(uri=None, echo=None):
         """Creates a SQLAlchemy session for the specified database uri using
@@ -58,20 +67,11 @@ try:
             engine = pylons.g._db_engine[uri] = create_engine(uri, echo=echo)
         return sqlalchemy.create_session(bind_to=engine)
 
-    def app_scope():
-        """Return the id keying the current database session's scope.
-
-        The session is particular to the current Pylons application -- this
-        returns an id generated from the current thread and the current Pylons
-        application's Globals object.
-        """
-        return '%i|%i' % (id(pylons.g._current_obj()), thread.get_ident())
-
     session_context = sessioncontext.SessionContext(make_session,
                                                     scopefunc=app_scope)
 
-    __all__.extend(['get_engine_conf', 'create_engine', 'make_session',
-                    'app_scope', 'session_context'])
+    __all__.extend(['app_scope', 'create_engine', 'get_engine_conf',
+                    'make_session', 'session_context'])
 
 except ImportError:
     pass
