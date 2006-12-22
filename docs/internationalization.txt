@@ -105,8 +105,8 @@ There are lots of different ways of encoding Unicode code points into bits but
 the most popular encoding is UTF-8. Using UTF-8, every code point from 0-127 is
 stored in a single byte. Only code points 128 and above are stored using 2, 3,
 in fact, up to 6 bytes. This has the useful side effect that English text looks
-exactly the same in UTF-8 as it did in ISO-8859-1 and ASCII, because for every
-ISO-8859-1 character with hexadecimal value 0xXY, the corresponding Unicode
+exactly the same in UTF-8 as it did in ASCII, because for every
+ASCII character with hexadecimal value 0xXY, the corresponding Unicode
 code point is U+00XY. This backwards compatibility is why if you are developing
 an application that is only used by English speakers you can often get away
 without handling characters properly and still expect things to work most of
@@ -432,7 +432,7 @@ The main rule is this::
 
     Your application should use Unicode for all strings internally, decoding
     any input to Unicode as soon as it enters the application and encoding the
-    Unicode to UTF-8 or another encoding on output.
+    Unicode to UTF-8 or another encoding only on output.
 
 If you fail to do this you will find that ``UnicodeDecodeError`` s will start
 popping up in unexpected places when Unicode strings are used with normal 8-bit
