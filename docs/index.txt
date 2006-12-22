@@ -43,3 +43,5 @@ Useful Resources
 * `Paste Docs <http://www.pythonpaste.org>`_
 * `FormEncode Docs <http://formencode.org/>`_
 * `Frequently Asked Questions <faq.html>`_
+* `Windows Notes <windowsnotes.html>`_
+* `Development Version <pylonsdev.html>`_
