@@ -98,4 +98,4 @@ class MinimalPylonsTemplate(Template):
 
 __all__ = ['AttribSafeContextObj', 'ContextObj', 'Helpers', 'class_name_from_module_name',
     'log', '_', 'set_lang', 'get_lang']
-__pudge_all__ = __all__ + ['PylonsTemplate']
+__pudge_all__ = __all__ + ['MinimalPylonsTemplate', 'PylonsTemplate']
