@@ -1,5 +1,9 @@
+"""Translation/Localization functions.
+
+Provides ``gettext`` translation functions via an app's ``pylons.translator``
+object, and get/set_lang for changing the language translated to."""
 import os
-from gettext import *
+from gettext import NullTranslations, GNUTranslations
 from pkg_resources import resource_exists, resource_stream
 from paste.deploy.config import CONFIG
 import pylons
@@ -109,12 +113,11 @@ def get_lang():
     return getattr(pylons.translator, 'pylons_lang', None)
 
 def egg_translation(domain, lang):
-    """
-    This method doesn't do all the checking etc of the gettext.translation method
-    but it seems to work.
+    """Return a gettext Translations object for the specified domain and
+    language.
     
-    We can't just use gettext.translation because the .mo files might be in eggs
-    """
+    Like gettext.translation, but lacks its extensive checks and supports
+    loading .mo files from inside of eggs."""
     class_ = GNUTranslations
     return class_(resource_stream(domain, os.path.join(lang, '%s.mo' % domain)))
 
