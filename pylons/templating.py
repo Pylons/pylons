@@ -84,7 +84,7 @@ class Buffet(object):
             session=pylons.session._current_obj(),
             translator=pylons.translator,
             ungettext=pylons.i18n.ungettext,
-            _=pylons.i18n.ugettext,
+            _=pylons.i18n._,
             N_=pylons.i18n.N_
             )
         d.update(ns)
