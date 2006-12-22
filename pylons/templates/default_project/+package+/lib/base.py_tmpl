@@ -15,5 +15,5 @@ class BaseController(WSGIController):
         return WSGIController.__call__(self, environ, start_response)
 
 # Include the '_' function in the public names
-__all__ = [name for name in locals().keys() if not name.startswith('_') or \
-           name == '_']
+__all__ = [__name for __name in locals().keys() if not __name.startswith('_') \
+           or __name == '_']
