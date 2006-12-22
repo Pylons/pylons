@@ -2,6 +2,12 @@ Pylons Changelog
 =================
 
 0.9.4 (**svn**)
+* WARNING: Myghty's allow_globals config var has changed, causing the
+  following when running pre-compiled templates:
+      Error(TypeError): do_run_component() takes exactly 13 non-keyword
+      arguments (5 given)
+  Delete the compiled Myghty templates directory (specified by cache_dir or
+  myghty_data_dir in the config file) to resolve the error.
 * Changed i18n functions in templates to use proxy objects so that using
   set_lang in a template works right. Fixes #153.
 * Now allowing any template plugin to overwrite global PYLONS_VARS (such as c,
