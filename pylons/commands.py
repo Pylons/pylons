@@ -42,7 +42,7 @@ def validate_name(name):
     return True
 
 class ControllerCommand(Command):
-    """Create a Controller and functional test for it
+    """Create a Controller and accompanying functional test
     
     The Controller command will create the standard controller template
     file and associated functional test to speed creation of controllers.
@@ -62,7 +62,7 @@ class ControllerCommand(Command):
         Creating yourproj/yourproj/controllers/admin/trackback.py
         Creating yourproj/yourproj/tests/functional/test_admin_trackback.py
     """
-    summary = __doc__
+    summary = __doc__.splitlines()[0]
     usage = 'CONTROLLER_NAME'
     
     min_args = 1
@@ -133,7 +133,7 @@ class ShellCommand(Command):
         
         $ paster shell my-development.ini
     """
-    summary = __doc__
+    summary = __doc__.splitlines()[0]
     usage = '[CONFIG_FILE]'
     
     min_args = 0
