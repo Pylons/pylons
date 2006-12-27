@@ -11,7 +11,7 @@ import warnings
 
 import paste.wsgiwrappers
 import paste.httpexceptions as httpexceptions
-from paste.registry import RegistryManager
+from paste.registry import RegistryManager, restorer
 from paste.wsgiwrappers import WSGIRequest
 
 from routes import request_config
@@ -73,8 +73,9 @@ class PylonsBaseWSGIApp(object):
         if 'paste.testing_variables' in environ:
             self.load_test_env(environ)
             if environ['PATH_INFO'] == '/_test_vars':
+                restorer.save_registry_state(environ)
                 start_response('200 OK', [('Content-type','text/plain')])
-                return ['Vars attached']
+                return ['%s' % restorer.get_request_id(environ)]
         
         controller = self.resolve(environ, start_response)
         response = self.dispatch(controller, environ, start_response)
@@ -185,7 +186,6 @@ class PylonsBaseWSGIApp(object):
             testenv['session'] = environ[econf['session']]
         if econf.get('cache'):
             testenv['cache'] = environ[econf['cache']]
-        
     
 class PylonsApp(object):
     """Setup the Pylons default environment

@@ -17,6 +17,7 @@ from paste.script.filemaker import FileOp
 from paste.deploy import loadapp, appconfig
 import paste.deploy.config
 import paste.fixture
+import paste.registry
 
 def validate_name(name):
     """Validate that the name for the controller isn't present on the
@@ -160,7 +161,7 @@ class ShellCommand(Command):
         here_dir = os.getcwd()
         locs = dict(__name__="pylons-admin")
         pkg_name = here_dir.split(os.path.sep)[-1].lower()
-        
+
         # Load app config into paste.deploy to simulate request config
         app_conf = appconfig(config_name, relative_to=here_dir)
         conf = dict(app=app_conf, app_conf=app_conf)
@@ -176,31 +177,40 @@ class ShellCommand(Command):
         # Start the rest of our imports now that the app is loaded
         models_package = pkg_name + '.models'
         __import__(models_package)
-        
+
+        # Query the test app to setup the environment
         tresponse = test_app.get('/_test_vars')
-        
+        request_id = int(tresponse.body)
+
+        # Import all objects from lib.base
+        base_module = pkg_name + '.lib.base'
+        __import__(base_module)
+        base = sys.modules[base_module]
+        base_public = [__name for __name in dir(base) if not \
+                       __name.startswith('_') or __name == '_']
+        locs.update([(name, getattr(base, name)) for name in base_public])
         locs.update(
             dict(
                 model=sys.modules[models_package],
                 mapper=tresponse.pylons_config.map,
                 wsgiapp=wsgiapp,
                 app=test_app,
-                h=tresponse.h,
-                g=tresponse.g,
             )
         )
-        pylons.g._push_object(tresponse.g)
-        
+
         banner = "Pylons Interactive Shell\nPython %s\n\n" % sys.version
-        banner += "Additional Objects:\n"
+        banner += "  All objects from %s are available\n" % base_module
+        banner += "  Additional Objects:\n"
         banner += "  %-10s -  %s\n" % ('mapper', 'Routes mapper object')
-        banner += "  %-10s -  %s\n" % ('h', 'Helper object')
-        banner += "  %-10s -  %s\n" % ('g', 'Globals object')
         banner += "  %-10s -  %s\n" % ('model', 'Models from models package')
         banner += "  %-10s -  %s\n" % ('wsgiapp', 
             'This projects WSGI App instance')
         banner += "  %-10s -  %s\n" % ('app', 
             'paste.fixture wrapped around wsgiapp')
+
+        # Restore the state of the Pylons special objects
+        # (StackedObjectProxies)
+        paste.registry.restorer.restoration_begin(request_id)
         try:
             # try to use IPython if possible
             import IPython
@@ -219,7 +229,10 @@ class ShellCommand(Command):
 
             shell = IPython.Shell.IPShell(user_ns=locs, 
                 shell_class=CustomIPShell)
-            shell.mainloop()
+            try:
+                shell.mainloop()
+            finally:
+                paste.registry.restorer.restoration_end()
         except ImportError:
             import code
             
@@ -240,4 +253,8 @@ class ShellCommand(Command):
                 import readline
             except ImportError:
                 pass
-            shell.interact(banner)
+            try:
+                shell.interact(banner)
+            finally:
+                paste.registry.restorer.restoration_end()
+
