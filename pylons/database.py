@@ -9,7 +9,6 @@ A SQLAlchemy ``SessionContext`` is also available: it provides both thread and
 process safe ``Session`` objects via the ``session_context.current`` property.
 """
 import thread
-from paste.deploy.config import CONFIG
 from paste.deploy.converters import asbool
 
 import pylons
@@ -42,11 +41,13 @@ try:
         echo) from the Pylons config file values ``sqlalchemy.dburi`` and
         ``sqlalchemy.echo`` when none are specified."""
         if uri is None:
-            uri = CONFIG['app_conf'].get("sqlalchemy.dburi")
+            config = pylons.request.environ['paste.config']
+            uri = config['app_conf'].get("sqlalchemy.dburi")
         if not uri:
             raise KeyError("No SQLAlchemy database config found!")
         if echo is None:
-            echo = asbool(CONFIG['app_conf'].get("sqlalchemy.echo", False))
+            config = pylons.request.environ['paste.config']
+            echo = asbool(config['app_conf'].get("sqlalchemy.echo", False))
         return uri, echo
 
     def make_session(uri=None, echo=None):

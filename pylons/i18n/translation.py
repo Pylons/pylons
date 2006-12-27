@@ -5,7 +5,6 @@ object, and get/set_lang for changing the language translated to."""
 import os
 from gettext import NullTranslations, GNUTranslations
 from pkg_resources import resource_exists, resource_stream
-from paste.deploy.config import CONFIG
 import pylons
 
 class LanguageError(Exception):
@@ -99,7 +98,8 @@ def set_lang(lang):
     if lang is None:
         registry.replace(pylons.translator, NullTranslations())
     else:
-        project_name = CONFIG['app_conf']['package']
+        config = pylons.request.environ['paste.config']
+        project_name = config['app_conf']['package']
         catalog_path = os.path.join('i18n', lang, 'LC_MESSAGES')
         if not resource_exists(project_name, catalog_path):
             raise LanguageError('Language catalog %s not found' % \

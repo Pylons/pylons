@@ -7,7 +7,6 @@ import warnings
 import xmlrpclib
 
 from paste.httpexceptions import HTTPException
-from paste.deploy.config import CONFIG
 from paste.deploy.converters import asbool
 
 import pylons
@@ -159,7 +158,7 @@ class Controller(object):
         if isinstance(func, types.MethodType):
             response = self._inspect_call(func)
         else:
-            if asbool(CONFIG['global_conf'].get('debug')):
+            if asbool(req.environ['paste.config']['global_conf'].get('debug')):
                 raise NotImplementedError(
                     'Action %s is not implemented' % action)
             else:
