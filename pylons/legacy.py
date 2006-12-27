@@ -12,17 +12,6 @@ def load_h(package_name):
     style Helper imports. The proper style is to pass the helpers module ref
     to the PylonsApp during initialization.
     """
-    warnings.warn(
-        "Pylons 0.9.3 and above now passes the helpers module reference in "
-        "directly. It's highly recommended that you update your middleware.py "
-        "module so that the Pylons app load looks similar to:\n\n"
-        "app = pylons.wsgiapp.PylonsApp(config, helpers=MYPROJ.lib.helpers, "
-        "g=app_globals.Globals)\n\n"
-        "Where MYPROJ is the name of your project. Also make sure to add an "
-        "import line to the middleware.py to import the helpers modules:\n\n"
-        "import MYPROJ.lib.helpers\n\n"
-        "This will be required on all projects 1.0 and beyond.",
-        DeprecationWarning, 2)
     __import__(package_name + '.lib.base')
     their_h = getattr(sys.modules[package_name + '.lib.base'], 'h', None)
     if isinstance(their_h, types.ModuleType):

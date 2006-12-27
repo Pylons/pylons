@@ -207,21 +207,22 @@ class PylonsApp(object):
                 'return pylons.config.Config(myghty, map, paths, '
                 "default_charset='%s')" % default_charset, DeprecationWarning, 2)
             self.config.default_charset = default_charset
-        
-        if not g:
+
+        if helpers or g is None:
             warnings.warn(
-                "Having the 'g' object load from a default app_globals module "
-                "is deprecated. Please update your middleware.py with:\n\n"
-                "    import MYPROJ.lib.app_globals as app_globals\n"
-                "    import MYPROJ.lib.helpers\n\n"
-                "where MYPROJ is the name of your project.\n"
-                "Then edit the PylonsApp instantiation with:\n\n"
-                "    app = pylons.wsgiapp.PylonsApp(\n"
-                "        config, \n"
-                "        helpers=MYPROJ.lib.helpers, \n"
-                "        g=app_globals.Globals\n"
-                "    )\n\n",
+                'Pylons 0.9.3 and above now explicitly pass helpers and g '
+                'references to the PylonsApp constructor. Please update your '
+                'middleware.py with:\n\n'
+                '    import MYPROJ.lib.app_globals as app_globals\n'
+                '    import MYPROJ.lib.helpers\n\n'
+                'Then edit the PylonsApp instantiation with:\n\n'
+                '    app = pylons.wsgiapp.PylonsApp(config, '
+                'helpers=MYPROJ.lib.helpers,\n'
+                '                                   g=app_globals.Globals)\n\n'
+                'where MYPROJ is the name of your project.\n',
                 DeprecationWarning, 2)
+            
+        if not g:
             try:
                 globals_package = __import__(config.package + '.lib.app_globals',
                                              globals(), locals(), ['Globals'])
