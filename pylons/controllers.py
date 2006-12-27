@@ -94,9 +94,9 @@ class Controller(object):
         Deprecated (Nov 30 2006); Pylons special objects are now available
         within the interactive debugger.
         """
-        warnings.warn('_attach_locals is deprecated: Pylons special objects are now '
-                      'available within the interactive debugger', DeprecationWarning,
-                      2)
+        warnings.warn('_attach_locals is deprecated: Pylons special objects '
+                      'are now available within the interactive debugger',
+                      DeprecationWarning, 2)
         self.c = pylons.c._current_obj()
         self.g = pylons.g._current_obj()
         self.cache = pylons.cache._current_obj()
