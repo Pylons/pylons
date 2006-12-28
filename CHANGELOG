@@ -14,8 +14,6 @@ Pylons Changelog
   set_lang in a template works right. Fixes #153.
 * Now allowing any template plugin to overwrite global PYLONS_VARS (such as c,
   g), not just pylonsmyghty.
-* Removing __name__ mapping from deprecated functions for Python 2.3 compat.
-  Fixes #151.
 * Adding SQLAlchemy support to the database.py file. Saves the session engine
   to g to maintain it during the apps lifetime. Uses SessionContext plugin for
   management of the current session.
