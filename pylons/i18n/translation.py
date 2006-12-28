@@ -1,7 +1,7 @@
 """Translation/Localization functions.
 
 Provides ``gettext`` translation functions via an app's ``pylons.translator``
-object, and get/set_lang for changing the language translated to."""
+and get/set_lang for changing the language translated to."""
 import os
 from gettext import NullTranslations, GNUTranslations
 from pkg_resources import resource_exists, resource_stream
