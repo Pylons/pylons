@@ -2,6 +2,11 @@ Pylons Changelog
 =================
 
 0.9.4 (Dec. 29th, 2006)
+* WARNING: Removed the lang_extract and lang_compile commands. They used
+  pygettext.py and its associated msgfmt.py, which lacked the ability to
+  extract ngettext style function calls and had issues with unicode strings.
+  The new I18NToolBox project aims to provide this functionality (and more)
+  via the gettext command line utilities. http://i18ntoolbox.ufsoft.org
 * All Pylons special objects are now available within paster shell (not just
   h and g).
 * WARNING: Myghty's allow_globals config var has changed, causing the
