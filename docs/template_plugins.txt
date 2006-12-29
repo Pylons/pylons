@@ -31,7 +31,7 @@ First, create a directory in ``yourproject`` called ``kidtemplates`` and add a c
     
 You will now have a kid.py controller in your controllers directory. First, we will need to add Kid to the available template engines.
 
-Edit ``yourproject/config/middleware.py``, right after the 'config.init_app....':
+Edit ``yourproject/config/middleware.py``, and add to 'config.init_app....':
 
 .. code-block:: Python
     
@@ -85,12 +85,11 @@ Edit ``yourproject/config/middleware.py``, right after the 'config.init_app....'
 
 .. code-block:: Python
     
-    myghty = config.template_engines.pop()
-    kidopts = {'kid.assume_encoding':'utf-8', 'kid.encoding':'utf-8'}
-    config.add_template_engine('kid', 'proj.templates', kidopts)
-    config.template_engines.append(myghty)
+    config.init_app(global_conf, app_conf, package='yourproject', 
+                    template_engine='kid')
+    
 
-This swaps the order of the template engines so that Myghty is after Kid, making Kid the new default template engine. The above ``index`` method no longer needs to specify 'kid' now when rendering a template.
+This swaps Myghty out and uses Kid, making Kid the new default template engine. The above ``index`` method no longer needs to specify 'kid' now when rendering a template. The existing templates directory will be used, and you'll need to create the ``__init__.py`` file before adding Kid templates. Current template engine's that can be swapped in this manner are kid, mako, and genshi.
 
 .. Note::
     For more details on the config object, check out the `extensive Config docs <class-pylons.config.Config.html>`_ from the Pylons Module API.
