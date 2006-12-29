@@ -21,8 +21,6 @@ development in Python easy. Several key points:
 
 * Utilizes a minimalist, component-based philosophy that makes it easy to expand on
 
-* Built mainly as a customization of Myghty with Routes and Paste integration
-
 * Harness existing knowledge about Python
 
 Knowing Python makes Pylons easy
