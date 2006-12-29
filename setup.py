@@ -104,10 +104,6 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
     pylons=pylons.util:PylonsTemplate
     pylons_minimal=pylons.util:MinimalPylonsTemplate
     
-    [distutils.commands]
-    lang_extract = pylons.i18n:LangExtract
-    lang_compile = pylons.i18n:LangCompile
-    
     [python.templating.engines]
     pylonsmyghty = pylons.templating:MyghtyTemplatePlugin
     """,
