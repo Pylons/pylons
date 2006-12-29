@@ -1,7 +1,7 @@
 Pylons Changelog
 =================
 
-0.9.4 (**svn**)
+0.9.4 (Dec. 29th, 2006)
 * All Pylons special objects are now available within paster shell (not just
   h and g).
 * WARNING: Myghty's allow_globals config var has changed, causing the
