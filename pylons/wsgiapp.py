@@ -208,7 +208,7 @@ class PylonsApp(object):
                 "default_charset='%s')" % default_charset, DeprecationWarning, 2)
             self.config.default_charset = default_charset
 
-        if helpers or g is None:
+        if helpers is None or g is None:
             warnings.warn(
                 'Pylons 0.9.3 and above now explicitly pass helpers and g '
                 'references to the PylonsApp constructor. Please update your '
