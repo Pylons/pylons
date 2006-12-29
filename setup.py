@@ -87,6 +87,7 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
         'test': ["py>=0.8.0_alpha2"],
         'cheetah':["Cheetah>=1.0", "TurboCheetah>=0.9.5"],
         'kid':["kid>=0.9", "TurboKid==dev,>=0.9.1dev"],
+        'genshi':["Genshi>=0.3.6"],
         'full':[
             "docutils>=0.4", "elementtree>=1.2.6",
             "pudge>=0.1.2", "buildutils>=0.1.2",
