@@ -285,9 +285,7 @@ You should see ``2`` printed out on the page. If you ask for an attribute on ``c
     <p>Hi there <% c.name or c.full_name or "Joe Smith" %>
 
 .. Warning::
-    Attributes of ``c`` must not start with an ``_`` character. ``c.value = 1`` is fine but ``c._value = 1`` is not.
-    This is because ``c`` has some slightly complicated code which you could accidentally damage if you assigned
-    a variable starting with ``_``.
+    Be careful when setting ``c`` attributes that begin with an ``_`` character. ``c`` and other global variables are really a StackedObjectProxies, which reserve the attribute names ``_current_obj``, ``_push_object`` and ``_pop_object`` for their internal methods.
 
 The ``c`` global is also reset on each request so that you don't need to worry about a controller still having old values set from a previous request.
 

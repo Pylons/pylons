@@ -194,6 +194,8 @@ the character ``0x80`` is encoded with the ``'latin-1'``, ``'iso_8859_1'`` or
 ``'8859'`` character sets (which incidentally are different names for the same
 thing) we get the result we expected:
 
+.. code-block:: Python
+
     >>> unicode('\x80', encoding='latin-1')
     u'\x80'
 
@@ -204,14 +206,18 @@ thing) we get the result we expected:
 
 Unicode objects in Python have most of the same methods that normal Python
 strings provide. Python will try to use the ``'ascii'`` codec to convert
-strings to Unicode if you do an operation on both types::
+strings to Unicode if you do an operation on both types:
+
+.. code-block:: Python
 
     >>> a = 'hello'
     >>> b = unicode(' world!')
-    >>> print a+b
+    >>> print a + b
     u'hello world!'
 
-You can encode a Unicode string using a particular encoding like this::
+You can encode a Unicode string using a particular encoding like this:
+
+.. code-block:: Python
 
     >>> u'Hello World!'.encode('UTF-8')
     'Hello World!'
@@ -220,12 +226,16 @@ Unicode Literals in Python Source Code
 --------------------------------------
 
 In Python source code, Unicode literals are written as strings prefixed with
-the 'u' or 'U' character::
+the 'u' or 'U' character:
+
+.. code-block:: Python
 
     >>> u'abcdefghijk'
     >>> U'lmnopqrstuv'
 
-You can also use ``"``, ``"""``` or ``'''`` versions too. For example::
+You can also use ``"``, ``"""``` or ``'''`` versions too. For example:
+
+.. code-block:: Python
 
     >>> u"""This
     ... is a really long
@@ -239,9 +249,11 @@ hex digits so it can't express all the available code points. You can add
 characters to Unicode strings using the ``unichr()`` built-in function and find
 out what the ordinal is with ``ord()``. 
 
-Here is an example demonstrating the different alternatives::
+Here is an example demonstrating the different alternatives:
 
-    >>> s = u"\x66\u0072\u0061\U0000006e"+unichr(231)+u"ais"
+.. code-block:: Python
+
+    >>> s = u"\x66\u0072\u0061\U0000006e" + unichr(231) + u"ais"
     >>> #     ^^^^ two-digit hex escape
     >>> #         ^^^^^^ four-digit Unicode escape
     >>> #                     ^^^^^^^^^^ eight-digit Unicode escape
@@ -254,7 +266,9 @@ Here is an example demonstrating the different alternatives::
 Using escape sequences for code points greater than 127 is fine in small doses
 but Python 2.4 and above support writing Unicode literals in any encoding as
 long as you declare the encoding being used by including a special comment as
-either the first or second line of the source file::
+either the first or second line of the source file:
+
+.. code-block:: Python
 
     #!/usr/bin/env python
     # -*- coding: latin-1 -*-
@@ -266,7 +280,9 @@ If you don't include such a comment, the default encoding used will be ASCII.
 Versions of Python before 2.4 were Euro-centric and assumed Latin-1 as a
 default encoding for string literals; in Python 2.4, characters greater than
 127 still work but result in a warning. For example, the following program has
-no encoding declaration::
+no encoding declaration:
+
+.. code-block:: Python
 
     #!/usr/bin/env python
     u = u'abcdé'
@@ -335,7 +351,9 @@ of the usual values of ``'strict'``, ``'ignore'``, or ``'replace'`` which we
 saw right at the begining of this document when we were encoding strings in
 Python source files. 
 
-Here is an example of how to read Unicode from a UTF-8 encoded file::
+Here is an example of how to read Unicode from a UTF-8 encoded file:
+
+.. code-block:: Python
 
     import codecs
     f = codecs.open('unicode.txt', encoding='utf-8')
@@ -344,8 +362,10 @@ Here is an example of how to read Unicode from a UTF-8 encoded file::
 
 It's also possible to open files in update mode, allowing both reading and writing:
 
+.. code-block:: Python
+
     f = codecs.open('unicode.txt', encoding='utf-8', mode='w+')
-    f.write(u"\x66\u0072\u0061\U0000006e"+unichr(231)+u"ais")
+    f.write(u"\x66\u0072\u0061\U0000006e" + unichr(231) + u"ais")
     f.seek(0)
     print repr(f.readline()[:1])
     f.close()
@@ -395,18 +415,22 @@ byte strings that are equivalent when used as file names.
 whichever encoding is appropriate". In Python 2.3 and above you can find out
 the system encoding with ``sys.getfilesystemencoding()``.
 
-Most file and directory functions and methods support Unicode. For example::
+Most file and directory functions and methods support Unicode. For example:
 
-    filename = u"\x66\u0072\u0061\U0000006e"+unichr(231)+u"ais"
+.. code-block:: Python
+
+    filename = u"\x66\u0072\u0061\U0000006e" + unichr(231) + u"ais"
     f = open(filename, 'w')
     f.write('Some data\n')
     f.close()
 
 Other functions such as ``os.listdir()`` will return Unicode if you pass a
 Unicode argument and will try to return strings if you pass an ordinary 8 bit
-string. For example running this example as ``test.py``::
+string. For example running this example as ``test.py``:
 
-    filename = u"Sample "+unichar(5000)
+.. code-block:: Python
+
+    filename = u"Sample " + unichar(5000)
     f = open(filename, 'w')
     f.close()
 
@@ -462,7 +486,9 @@ The third rule is::
 
 For example, let's say you have a content management system that takes a
 Unicode filename, and you want to disallow paths with a '/' character. You
-might write this code::
+might write this code:
+
+.. code-block:: Python
 
     def read_file(filename, encoding):
         if '/' in filename:
@@ -487,8 +513,9 @@ Currently the Pylons input values come from ``request.params`` but these are
 not decoded to Unicode by default because not all input should be assumed to be
 Unicode data. 
 
-If you would like However you can use the two functions below::
+If you would like However you can use the two functions below:
 
+.. code-block:: Python
 
     def decode_multi_dict(md, encoding="UTF-8", errors="strict"):
         """Given a MultiDict, decode all its parts from the given encoding.
@@ -515,7 +542,9 @@ If you would like However you can use the two functions below::
         decode_multi_dict(request.GET, encoding, errors)
         decode_multi_dict(request.POST, encoding, errors)
 
-These can then be used as follows::
+These can then be used as follows:
+
+.. code-block:: Python
 
     unicode_params = decode_request(request.params)
     
@@ -536,7 +565,9 @@ Pylons' ``render_response()`` and ``Response()`` callables.
 Any Unicode data output by Myghty is automatically decoded to whichever
 encoding you have chosen. The default is UTF-8 but you can choose which
 encoding to use by editing your project's ``config/environment.py`` file and
-adding an option like this::
+adding an option like this:
+
+.. code-block:: Python
 
     # Add your own Myghty config options here, note that all config options will override
     # any Pylons config options
@@ -545,7 +576,9 @@ adding an option like this::
 
 replacing ``UTF-8`` with the encoding you wish to use.
 
-If you need to disable Unicode support altogether you can set this::
+If you need to disable Unicode support altogether you can set this:
+
+.. code-block:: Python
 
     myghty['disable_unicode'] = True
 
@@ -560,7 +593,9 @@ section::
 
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
-You should also set the charset in the ``Content-Type`` header::
+You should also set the charset in the ``Content-Type`` header:
+
+.. code-block:: Python
 
     respones = Response(...)
     response.headers['Content-type'] = 'text/html; charset=utf-8'
@@ -1002,10 +1037,12 @@ Further Reading
 ===============
 
 This information is based partly on the following articles which can be
-consulted for further information.
+consulted for further information.:
 
 http://www.joelonsoftware.com/articles/Unicode.html
+
 http://www.amk.ca/python/howto/unicode
+
 http://en.wikipedia.org/wiki/Internationalization
 
 Please feel free to report any mistakes to the Pylons mailing list or to the
