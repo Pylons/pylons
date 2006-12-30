@@ -174,6 +174,14 @@ class ShellCommand(Command):
         wsgiapp = loadapp(config_name, relative_to=here_dir)
         test_app = app=paste.fixture.TestApp(wsgiapp)
         
+        # Query the test app to setup the environment
+        tresponse = test_app.get('/_test_vars')
+        request_id = int(tresponse.body)
+
+        # Restore the state of the Pylons special objects
+        # (StackedObjectProxies)
+        paste.registry.restorer.restoration_begin(request_id)
+
         # Start the rest of our imports now that the app is loaded
         has_model = True
         try:
@@ -181,10 +189,6 @@ class ShellCommand(Command):
             __import__(models_package)
         except ImportError:
             has_model = False
-
-        # Query the test app to setup the environment
-        tresponse = test_app.get('/_test_vars')
-        request_id = int(tresponse.body)
 
         # Import all objects from the base module
         try:
@@ -221,9 +225,6 @@ class ShellCommand(Command):
         banner += "  %-10s -  %s\n" % ('app', 
             'paste.fixture wrapped around wsgiapp')
 
-        # Restore the state of the Pylons special objects
-        # (StackedObjectProxies)
-        paste.registry.restorer.restoration_begin(request_id)
         try:
             # try to use IPython if possible
             import IPython
