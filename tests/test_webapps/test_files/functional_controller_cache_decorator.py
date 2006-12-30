@@ -20,7 +20,7 @@ class TestCacheController(TestController):
         assert 'Counter=3' in response
         response = self.app.get(url_for(controller='/cache', action='test_expire_cache_decorator'))
         assert 'Counter=3' in response
-        time.sleep(6)
+        time.sleep(8)
         response = self.app.get(url_for(controller='/cache', action='test_expire_cache_decorator'))
         assert 'Counter=4' in response
         

@@ -16,7 +16,7 @@ class CacheController(BaseController):
     def test_expire_cache_decorator(self):
         g.counter += 1
         return Response('Counter=%s' % g.counter)
-    test_expire_cache_decorator = beaker_cache(expire=5)(test_expire_cache_decorator)
+    test_expire_cache_decorator = beaker_cache(expire=8)(test_expire_cache_decorator)
     
     def test_key_cache_decorator(self, id):
         g.counter += 1

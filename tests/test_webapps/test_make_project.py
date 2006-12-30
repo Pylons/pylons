@@ -98,7 +98,7 @@ def _do_proj_test(copydict, emptyfiles=None):
         projenv.writefile(newfile, frompath=original)
     for fi in emptyfiles:
         projenv.writefile(fi)
-    res = projenv.run(_get_script_name('nosetests'),
+    res = projenv.run(_get_script_name('nosetests -d'),
                       expect_stderr=True,
                       cwd=os.path.join(testenv.cwd, 'ProjectName').replace('\\','/'))
 
@@ -163,6 +163,14 @@ def do_cache_decorator():
      ]
     _do_proj_test(copydict, empty)
 
+def do_xmlrpc():
+    copydict = {
+        'base_with_xmlrpc.py':'projectname/lib/base.py',
+        'controller_xmlrpc.py':'projectname/controllers/xmlrpc.py',
+        'functional_controller_xmlrpc.py':'projectname/tests/functional/test_xmlrpc.py'
+    }
+    _do_proj_test(copydict)
+
 def do_legacy_app():
     legacyenv = TestFileEnvironment(
         os.path.join(testenv.base_path, 'legacyapp').replace('\\','/'),
@@ -172,7 +180,6 @@ def do_legacy_app():
     res = legacyenv.run(_get_script_name('nosetests')+' legacyapp/tests',
                       expect_stderr=True,
                       cwd=os.path.join(testenv.cwd, 'legacyapp').replace('\\','/'))
-    
 
 def make_tag():
     global tagenv
@@ -203,6 +210,7 @@ def test_project():
     yield do_cheetah
     yield do_crazy_decorators
     yield do_cache_decorator
+    #yield do_xmlrpc
     #yield do_legacy_app
     #yield make_tag
     
