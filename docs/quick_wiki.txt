@@ -2,7 +2,6 @@ QuickWiki Tutorial
 ++++++++++++++++++
 
 :author: James Gardner
-:date: 2006-07-21
 
 .. Note:: 
 
@@ -31,7 +30,7 @@ After you have installed `Easy Install <http://peak.telecommunity.com/DevCenter/
 
 Next edit the configuration file by specifying the ``sqlalchemy.dburi`` variable in ``[app:main]`` section so that the data source name points to the database you wish to use.
 
-.. Note:: The default ``postgres://username:password@localhost/quickwiki_test`` uses a PostgreSQL database named ``quickwiki_test`` running on the local machine. You can create this database with the PostgreSQL command ``createdb quickwiki_test`` but you could also use MySQL, Oracle or  SQLite. Firebird and MS-SQL may also work. See the `SQLAlchemy documentation <http://www.sqlalchemy.org/docs/dbengine.myt#dbengine_establishing>`_ for more information on how to connect to different databases. SQLite for example requires four forward slashes in its URI. You will also need to make sure you have the appropriate Python driver for the database you wish to use. For PostgreSQL this would be `psycopg <http://www.initd.org/projects/psycopg1>`_.
+.. Note:: The default ``postgres://username:password@localhost/quickwiki_test`` uses a PostgreSQL database named ``quickwiki_test`` running on the local machine. You can create this database with the PostgreSQL command ``createdb quickwiki_test`` but you could also use MySQL, Oracle or SQLite. Firebird and MS-SQL may also work. See the `SQLAlchemy documentation <http://www.sqlalchemy.org/docs/dbengine.myt#dbengine_establishing>`_ for more information on how to connect to different databases. SQLite for example requires four forward slashes in its URI. You will also need to make sure you have the appropriate Python driver for the database you wish to use. For PostgreSQL this would be `psycopg <http://www.initd.org/projects/psycopg1>`_.
 
 Finally create the database tables and serve the finished application::
 
@@ -50,9 +49,9 @@ If you are interested in looking at the latest version of the QuickWiki source c
 Developing QuickWiki
 ====================
 
-If you skipped the "Starting at the End" section you will need to install Pylons 0.9::
+If you skipped the "Starting at the End" section you will need to install Pylons 0.9.4::
 
-    > easy_install -U Pylons[full]>=0.9.2
+    > easy_install -U Pylons[full]>=0.9.4
 
 Then create your project::
 
@@ -76,51 +75,14 @@ Pylons uses a Model View Controller architecture; we'll start by creating the mo
 
    SQLAlchemy provides a full suite of well known enterprise-level persistence patterns, designed for efficient and high-performance database access, adapted into a simple and Pythonic domain language. There is full and detailed documentation available on the SQLAlchemy website at http://sqlalchemy.org/docs/ and you should really read this before you get heavily into SQLAlchemy.
 
-The most basic way of using SQLAlchemy is with explict sessions where on each request you create an ``session`` object. We are going to use a slighty more sophisticated setup using an SQLAlchemy ``SessionContext``.
-
-.. Note:: 
-
-    An earlier version of this tutorial used the ``sqlalchemy.threadlocal`` module to provide session support that was compatible with code written for SQLAlchemy 0.1. This was causing confusion because SQLAlchemy can be used in a threaded environment with or without the usage of the threadlocal module and importing the threadlocal module modifies the behavior of SQLAlchemy in such a way as to be incompatible with most of the basic SQLAlchemy examples on the SQLAlchemy site, including the tutorial.
-    
-Create a file ``lib/database.py`` and add the following code:
-
-.. code-block:: Python
-
-    engine = None
-
-    import sqlalchemy
-    from sqlalchemy.ext.sessioncontext import SessionContext
-    from quickwiki.models import meta
-    from paste.deploy.converters import asbool 
-
-    def get_engine():
-        "Retrieives the engine based on the current configuration"
-        global engine
-        if not engine:
-            from paste.deploy import CONFIG
-            config = CONFIG['app_conf']
-            dburi = config.get("sqlalchemy.dburi")
-            if not dburi:
-                raise KeyError("No sqlalchemy database config found!")
-            echo = asbool(config.get("sqlalchemy.echo", False))
-            engine = sqlalchemy.create_engine(dburi, echo=echo)
-            meta.connect(engine)
-        elif not meta.is_bound():
-            meta.connect(engine)
-        return engine
-
-    # a function to return a session bound to our engine
-    def make_session():
-        return sqlalchemy.create_session(bind_to=get_engine())
-
-    # create SessionContext with our make_session function
-    session_context = SessionContext(make_session)
+The most basic way of using SQLAlchemy is with explict sessions where on each request you create an ``session`` object. QuickWiki uses a slighty more sophisticated setup using an SQLAlchemy ``SessionContext``.
 
 Now replace the contents of your ``models/__init__.py`` file so that it looks like this:
 
 .. code-block:: Python
 
     from sqlalchemy import *
+
     meta = DynamicMetaData()
 
     pages_table = Table('pages', meta,
@@ -138,7 +100,16 @@ The first line imports some useful SQLAlchmey objects such as the ``Table`` and 
 
 .. Note::  There are other ways of setting up SQLAlchemy to work with Pylons, one alternative is described in the article `SqlAlchemyWithPylons <http://pylonshq.com/project/pylonshq/wiki/SqlAlchemyWithPylons>`_ on the publically editable Pylons wiki.   
     
-A core philosophy of SQLAlchemy is that tables and domain classes are different beasts. So next, we'll create the Python class that will represent the pages of our wiki and map these domain objects to rows in the ``pages`` table using a mapper. Add this to the bottom of ``models/__init__.py``:
+A core philosophy of SQLAlchemy is that tables and domain classes are different beasts. So next, we'll create the Python class that will represent the pages of our wiki and map these domain objects to rows in the ``pages`` table using a mapper. 
+
+Add the following import:
+
+.. code-block:: Python
+
+    from sqlalchemy.ext.assignmapper import assign_mapper
+    from pylons.database import session_context
+
+and this to the bottom of ``models/__init__.py``:
 
 .. code-block:: Python
 
@@ -146,7 +117,26 @@ A core philosophy of SQLAlchemy is that tables and domain classes are different 
         def __str__(self):
             return self.title
             
-    page_mapper = mapper(Page, pages_table)
+    page_mapper = assign_mapper(session_context, Page, pages_table)
+
+The ``session_context`` object is a SQLAlchemy ``SessionContext`` automatically created for you, bound to the database engine specified by the ``sqlalchemy.dburi`` variable in your config file. ``SessionContext`` is a wrapper object that provides a certain SQLAlchemy ``Session`` object at ``session_context.current``, depending on the current context (e.g.: the current thread and or WSGI application).
+
+The ``assignmapper`` extension provides a special kind of mapper (``assign_mapper``). It makes mapped objects  have direct knowledge about their contextual ``Session``. Classes and their objects decorated by ``assign_mapper`` can use ``Session`` and ``Query`` methods directly. Using the session object directly is a reasonable API:
+
+.. code-block:: Python
+
+    test_page = session.query(Page).select_by(title='TestPage')
+    test_page.content = 'Test Page Content'
+    session.save(test_page)
+
+but in comparison to the following ``assign_mapper`` equivalent, seems cumbersome:
+
+.. code-block:: Python
+
+    test_page = Page.select_by(title='TestPage')
+    test_page.content = 'Test Page Content'
+    test_page.save()
+
 
 Looking ahead, our wiki will need some formatting so we will need to turn the ``content`` field into HTML. Any WikiWords (which are words made by joining together two or more lowercase words with the first letter capitalized) will also need to be converted into hyperlinks. 
 
@@ -155,30 +145,32 @@ It would be nice if we could add a method to our ``Page`` object to retrieve the
 .. code-block:: Python
 
     import re
+    import sets
     import quickwiki.lib.helpers as h
-    wikiwords = re.compile(r"\b([A-Z]\w+[A-Z]+\w+)")
     from docutils.core import publish_parts
+
+    wikiwords = re.compile(r"\b([A-Z]\w+[A-Z]+\w+)")
     
 and then add a ``get_wiki_content()`` method to the ``Page`` object so it looks like this:
 
 .. code-block:: Python        
             
     class Page(object):
+        content = None
+
         def __str__(self):
             return self.title
-            
-        content = None
 
         def get_wiki_content(self):
             content = publish_parts(self.content, writer_name="html")["html_body"]
-            titles = wikiwords.findall(content)
+            titles = sets.Set(wikiwords.findall(content))
             for title in titles:
-                content = content.replace(title, h.link_to(title, 
-                        h.url_for(controller='page', action='index', 
-                            title=title)))
+                title_url = h.url_for(controller='page', action='index', 
+                                      title=title)
+                content = content.replace(title, h.link_to(title, title_url))
             return content
 
-This code deserves a bit of explaining. The ``content = None`` line is so that the ``content`` attribute is initialized to ``None`` when a new ``Page`` object is created. The ``Page`` object represents a row in the ``pages`` table so ``self.content`` will be the value of the ``content`` field. ``h.link_to()`` and ``h.url_for()`` are standard Pylons helpers which create links to specific controller actions. In this case we have decided that all WikiWords should link to the ``index`` action of the ``page`` controller which we will create later.
+This code deserves a bit of explaining. The ``content = None`` line is so that the ``content`` attribute is initialized to ``None`` when a new ``Page`` object is created. The ``Page`` object represents a row in the ``pages`` table so ``self.content`` will be the value of the ``content`` field.  The ``Set`` object provides us with only unique WikiWord names, so we don't try replacing them more than once. ``h.link_to()`` and ``h.url_for()`` are standard Pylons helpers which create links to specific controller actions. In this case we have decided that all WikiWords should link to the ``index`` action of the ``page`` controller which we will create later.
 
 .. Note::
 
@@ -186,7 +178,7 @@ This code deserves a bit of explaining. The ``content = None`` line is so that t
 
 One final change, since we have used docutils and SQLAlchemy, both third party packages, we need to edit our ``setup.py`` file so that anyone installing QuickWiki with `Easy Install <http://peak.telecommunity.com/DevCenter/EasyInstall>`_ will automatically also have these dependencies installed for them too. Edit your ``setup.py`` in your project root directory so that the ``install_requires`` line looks like this::
 
-    install_requires=["Pylons>=0.9.2", "docutils==0.4", "SQLAlchemy>=0.2.6"],
+    install_requires=["Pylons>=0.9.4", "docutils==0.4", "SQLAlchemy>=0.2.6"],
 
 While we are we are making changes to ``setup.py`` we might want to complete some of the other sections too. Set the version number to 0.1.2 and add a description and URL which will be used on the Python Cheeseshop when we release it::
 
@@ -213,32 +205,47 @@ Now lets make the changes necessary to enable QuickWiki to be set up by an end u
 
 .. code-block:: Python
 
-    from sqlalchemy import *
-    from quickwiki.models import *
-    from paste.deploy import appconfig
-    
-    def setup_config(command, filename, section, vars):
+    import paste.deploy
+    from sqlalchemy import clear_mapper, create_engine, create_session
+    from sqlalchemy.ext.assignmapper import assign_mapper
+    from sqlalchemy.ext.sessioncontext import SessionContext
+    import pylons.database
+    import quickwiki.models as model
 
-        app_conf = appconfig('config:'+filename)
-        if not app_conf.has_key('sqlalchemy.dburi'):
-            raise KeyError("No sqlalchemy database config found!")
-        print "Connecting to database %s..."%repr(app_conf['sqlalchemy.dburi'])
-        conn = meta.connect(app_conf['sqlalchemy.dburi'])
-        
+    def setup_config(command, filename, section, vars):
+        """
+        Place any commands to setup quickwiki here.
+        """
+        conf = paste.deploy.appconfig('config:' + filename)
+        paste.deploy.CONFIG.push_process_config({'app_conf':conf.local_conf,
+                                                 'global_conf':conf.global_conf})
+
+        uri = conf['sqlalchemy.dburi']
+        engine = create_engine(uri)
+        print "Connecting to database %s" % uri
+        model.meta.connect(engine)
         print "Creating tables"
-        meta.create_all()
-        session = create_session()
-        
+        model.meta.create_all()
+
+        # Pylons' session_context expects the g and request objects to be setup
+        # (within a request). This is a Pylons 0.9.4 bug. A workaround is to
+        # create a new assign_mapper with a SessionContext that works outside of
+        # requests.
+        clear_mapper(model.page_mapper)
+        assign_mapper(SessionContext(lambda: create_session(bind_to=engine)),
+                      model.Page, model.pages_table)
+
         print "Adding front page data"
-        page = Page()
+        page = model.Page()
         page.title = 'FrontPage'
         page.content = 'Welcome to the QuickWiki front page.'
-        session.save(page)
-        session.flush()
-        
-        print "Successfully setup"
+        page.flush()
+        print "Successfully setup."
 
-The line ``from quickwiki.models import *`` imports our ``page`` table and the ``meta`` object, the line ``meta.connect(app_conf['sqlalchemy.dburi'])`` connects to the database with the database URI the user specifies in the config file and finally ``meta.create_all()`` creates the table. After the tables are created the other lines add some data for the simple front page to out wiki.
+The line ``import quickwiki.models as model`` imports our ``page`` table and the ``meta`` object, the line ``model.meta.connect(engine)`` connects to the database engine with the database URI the user specifies in the config file and finally ``meta.create_all()`` creates the table. After the tables are created the other lines add some data for the simple front page to out wiki.
+
+.. Note:: ``pylons.database.session_context`` expects to be used within a request (having ``request`` and ``g`` objects setup) in 0.9.4 (this is a bug). Since websetup is ran outside of a web request, the current workaround is to create a safe ``assign_mapper`` before using decorated objects (model.Page).
+
 
 To test this functionality run you first need to install your QuickWiki if you haven't already done so in order for ``paster`` to find the version we are developing instead of the version we installed at the very start::
 
@@ -348,19 +355,12 @@ We are going to need the following actions:
     ``delete(self)``
         deletes a page based on an AJAX drag and drop call
 
-Let's get cracking! Add the following import statements to the top of the page controller ``controllers/page.py`` after the existing import statement:
-
-.. code-block:: Python
-
-    from quickwiki.lib.database import session_context
-
-Add the this method to the ``PageController`` class to create a query object for the ``Page`` on each request and set a class attribute containing the current session:
+Let's get cracking! Add the this method to the ``PageController`` class to clear the session. ``SessionContext`` will recycle sessions for us (and their associated database connections), we simply need to ensure that those sessions don't carry any old state from previous requests.
 
 .. code-block:: Python
 
         def __before__(self):
-            self.session = session_context.current
-            self.query = self.session.query(model.Page)
+            model.session_context.current.clear()
 
 .. Note:: ``__before__()`` is a special action which is always called on each request before the main action is called. Likewise there is also an ``__after__()`` action called after your main action is called.
 
@@ -372,7 +372,7 @@ Replace the existing ``index()`` action with this:
 .. code-block:: Python
 
         def index(self, title):
-            page = self.query.get_by(title=title)
+            page = model.Page.get_by(title=title)
             if page: 
                 c.content = page.get_wiki_content()
                 return render_response('/page.myt')
@@ -438,7 +438,7 @@ To edit the wiki page we need to get the content from the database without chang
 .. code-block:: Python
 
         def edit(self, title):
-            page = self.query.get_by(title=title)
+            page = model.Page.get_by(title=title)
             if page:
                 c.content = page.content
             return render_response('/edit.myt')
@@ -468,16 +468,15 @@ Add the ``save()`` action:
 .. code-block:: Python
 
         def save(self, title):
-            page = self.query.get_by(title=title)
+            page = model.Page.get_by(title=title)
             if not page:
                 page = model.Page()
-                self.session.save(page)
                 page.title = title
             page.content = request.params['content']
             c.title = page.title
             c.content = page.get_wiki_content()
             c.message = 'Successfully saved'
-            self.session.flush()
+            page.flush()
             return render_response('/page.myt')
             
 .. Note::  
@@ -488,8 +487,17 @@ In order for the ``page.myt`` template to display the ``Successfully saved`` mes
 .. code-block:: HyperText
 
     % if c.message:
-    <p><% c.message %> </p>
+    <p><div id="message"><% c.message %></div></p>
     % #end if
+
+And add the following to the ``public/quick.css`` file:
+
+.. code-block:: CSS
+
+    div#message{
+        color: orangered;
+    }
+
 
 At this point we have a fully functioning wiki that lets you create and edit pages and can be installed and deployed by an end user with just a few simple commands.
 
@@ -505,7 +513,7 @@ Add the ``list()`` action:
 .. code-block:: Python
 
         def list(self):
-            c.titles = [page.title for page in self.query.select()]
+            c.titles = [page.title for page in model.Page.select()]
             return render_response('/titles.myt')
 
 The ``list()`` action simply gets all the pages from the database. Create the ``templates/titles.myt`` file to display the list:
@@ -611,10 +619,10 @@ When a title is dropped on the ``trash`` box an AJAX request will be made to the
 
         def delete(self):
             title = request.params['id'][5:]
-            page = self.query.get_by(title=title)
-            self.session.delete(page)
-            self.session.flush()
-            c.titles = self.query.select()
+            page = model.Page.get_by(title=title)
+            page.delete()
+            page.flush()
+            c.titles = model.Page.select()
             return render_response('/list.myt', fragment=True)
             
 The title of the page is obtained from the ``id`` element and the object is loaded and then deleted. The change is saved ``objectstore.flush()`` before the list of remaining titles is rendered by the template ``templates/list.myt`` which you should create with the following content:
