@@ -464,7 +464,7 @@ For example, let's say you have a content management system that takes a
 Unicode filename, and you want to disallow paths with a '/' character. You
 might write this code::
 
-    def read_file (filename, encoding):
+    def read_file(filename, encoding):
         if '/' in filename:
             raise ValueError("'/' not allowed in filenames")
         unicode_name = filename.decode(encoding)
@@ -627,16 +627,15 @@ Getting Started
 ---------------
 
 Everywhere in your code where you want strings to be available in different
-languages you wrap them in a special helper method named ``ugettext()``. There
-are also a number of other internationalization helpers which are documented in the API reference at
-http://pylonshq.com/docs/module-pylons.helpers.html
+languages you wrap them in the ``_()`` function. There
+are also a number of other translation functions which are documented in the API reference at
+http://pylonshq.com/docs/module-pylons.i18n.translation.html
 
 .. note:: 
 
-    There is also a ``h._()`` method which does the same as ``h.gettext()``. ``_()`` is
-    a convention in Python for marking text to be translated and it also saves on
-    typing when lots of strings need to appear in multiple languages. The ``h.ugettext()``
-    helper is the Unicode version of the ``_()`` and should be used in its place.
+    The ``_()`` function is a reference to the ``ugettext()`` function.
+    ``_()`` is a convention for marking text to be translated and saves on keystrokes.
+    ``ugettext()`` is the Unicode version of ``gettext()``.
 
 In our example we want the string ``'Hello'`` to appear in three different
 languages: English, French and Spanish. We also want to display the word
@@ -653,7 +652,7 @@ Now lets add a friendly controller that says hello::
     paster controller hello
     
 Edit ``controllers/hello.py`` controller to look like this making use of the
-``gettext()`` helper method everywhere where the string ``Hello`` appears:
+``_()`` function everywhere where the string ``Hello`` appears:
 
 .. code-block:: Python
 
@@ -663,23 +662,27 @@ Edit ``controllers/hello.py`` controller to look like this making use of the
     
         def index(self):
             resp = Response()
-            resp.write('Default: %s<br />' % h.gettext('Hello'))
+            resp.write('Default: %s<br />' % _('Hello'))
             for lang in ['fr','en','es']:
                 h.set_lang(lang)
-                resp.write("%s: %s<br />" % (h.get_lang(), h.gettext('Hello')))
+                resp.write("%s: %s<br />" % (h.get_lang(), _('Hello')))
             return resp
    
 When writing your controllers it is important not to piece sentences together manually because
 certain languages might need to invert the grammars. As an example this is bad:
 
-    # BAD!
-    msg = h.ugettext("He told her ")
-    msg += h.ugettext("not to go outside.")
+.. code-block:: Python
 
-but this is perfectly acceptable::
+    # BAD!
+    msg = _("He told her ")
+    msg += _("not to go outside.")
+
+but this is perfectly acceptable:
+
+.. code-block:: Python
 
     # GOOD
-    msg = h.ugettext("He told her not to go outside")
+    msg = _("He told her not to go outside")
  
 The controller has now been internationalized but it will raise a ``LanguageError``
 until we have specified the alternative languages.
@@ -692,8 +695,8 @@ POT (Portable Object Template) files
 
     The first step in the localization process. A program is used to search through
     your project's source code and pick out every string passed to one of the
-    internationalization helpers such as ``h.ugettext()``. This list is put
-    together in a specially-formatted template file that will form the basis of all
+    translation functions, such as ``_()``. This list is put together in a
+    specially-formatted template file that will form the basis of all
     translations. This is the ``.pot`` file.
 
 PO (Portable Object) files 
@@ -711,7 +714,8 @@ MO (Machine Object) files
 
 Versions of Pylons prior to 0.9.4 came with a setuptools extension to help with
 the extraction of strings and production of a ``.mo`` file. The implementation
-did not support Unicode though and was therfore dropped in Python 0.9.4.
+did not support Unicode nor the ungettext function and was therfore dropped in
+Python 0.9.4.
 
 You will therefore need to use an external program to perform these tasks.  You
 may use whichever you prefer but ``xgettext`` is highly recommended. Python's
@@ -744,13 +748,9 @@ and has a GUI which makes it easier to get started with.
 
 To use poEdit with the ``translate_demo`` you would do the following:
 
-#. Download and install poEdit
+#. Download and install poEdit.
 
-#. A dialog pops up. Fill in *all* the fields you can on the ``Project Info``
-tab, enter the path to your project on the ``Paths`` tab (ie
-``/path/to/translate_demo``) and enter the following keywords on separate lines
-on the ``keywords`` tab: ``ugettext``, ``gettext``, ``ngettext``,
-``ungettext``.
+#. A dialog pops up. Fill in *all* the fields you can on the ``Project Info`` tab, enter the path to your project on the ``Paths`` tab (ie ``/path/to/translate_demo``) and enter the following keywords on separate lines on the ``keywords`` tab: ``_``, ``N_``, ``ugettext``, ``gettext``, ``ngettext``, ``ungettext``.
 
 #. Click OK
 
@@ -855,14 +855,14 @@ restart the server manually and the output would this time be as follows::
 Missing Translations
 --------------------
 
-If your code calls ``h.ugettext()`` with a string that doesn't exist in your language
-catalogue, the string passed to ``h.ugettext()`` is returned instead.
+If your code calls ``_()`` with a string that doesn't exist in your language
+catalogue, the string passed to ``_()`` is returned instead.
 
 Modify the last line of the hello controller to look like this:
 
 .. code-block:: Python
 
-    resp.write("%s: %s %s<br />" % (h.get_lang(), h.ugettext('Hello'), h.ugettext('World!')))
+    resp.write("%s: %s %s<br />" % (h.get_lang(), _('Hello'), _('World!')))
 
 .. warning ::
 
@@ -882,23 +882,23 @@ the string itself is used.
 Translations Within Templates
 -----------------------------
 
-You can also use the ``h.ugettext()`` helper within templates in exactly the same way
+You can also use the ``_()`` function within templates in exactly the same way
 you do in code. For example:
 
 .. code-block:: HyperText
 
-    <% h.ugettext('Hello') %> 
+    <% _('Hello') %> 
     
 would produce the string ``'Hello'`` in the language you had set.
 
-There is one complication though. The ``lang_extract`` command can only extract
+There is one complication though. gettext's ``xgettext`` command can only extract
 strings that need translating from Python code in ``.py`` files. This means
-that if you write ``h.ugettext('Hello')`` in a template such as a Myghty template,
-``lang_extract`` will not find the string ``'Hello'`` as one which needs
+that if you write ``_('Hello')`` in a template such as a Myghty template,
+``xgettext`` will not find the string ``'Hello'`` as one which needs
 translating.
 
-As long as ``lang_extract`` can find a string marked for translation with one
-of the internaionalization methods and defined in Python code in your project
+As long as ``xgettext`` can find a string marked for translation with one
+of the translation functions and defined in Python code in your project
 filesystem it will manage the translation when the same string is defined in a
 Myghty template and marked for translation. 
 
@@ -914,8 +914,8 @@ looked something like this:
 
 .. code-block:: Python
 
-    from base import h
-    h.ugettext('Good Morning')
+    from base import _
+    _('Good Morning')
 
 This approach requires quite a lot of work and is rather fragile. The best
 solution if you are using a templating system such as Myghty or Cheetah which
@@ -954,15 +954,15 @@ directly from the egg without the need for ``easy_install`` to extract it.
 Plural Forms
 ------------
 
-Pylons also defines ``ngettext()`` and ``ungettext()`` methods which can be imported
-from ``pylons.helpers``. They are designed for internationalizing plural words and can be
+Pylons also defines ``ungettext()`` and ``ngettext()`` functions which can be imported
+from ``pylons.i18n``. They are designed for internationalizing plural words and can be
 used as follows:
 
 .. code-block :: Python
 
-    from pylons.helpers import ngettext, ungettext
+    from pylons.i18n import ungettext
 
-    ngettext(
+    ungettext(
         'There is %(num)d file here', 
         'There are %(num)d files here',
         n
@@ -982,9 +982,9 @@ Specifically, the following will not work:
     
     # BAD!
 	if n == 1:
-	    msg = h.ugettext("There was no dog.")
+	    msg = _("There was no dog.")
 	else:
-	    msg = h.ugettext("There were no dogs.")
+	    msg = _("There were no dogs.")
 
 Summary
 =======
