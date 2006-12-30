@@ -37,6 +37,8 @@ Otherwise:
 
    ``pudge``:   Support for building documentation, see `Adding Documentation to your Application <adding_docs.html>`_. Be aware that some of the documentation tools are under development and may not be stable
 
+   ``genshi``: Support for rendering genshi templates, see `Using Other Template Languages <template_plugins.html>`_
+
    ``cheetah``: Support for rendering cheetah templates, see `Using Other Template Languages <template_plugins.html>`_
 
    ``kid``:     Support for rendering kid templates, see `Using Other Template Languages <template_plugins.html>`_
