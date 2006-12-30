@@ -88,6 +88,66 @@ Creating forms can also be done using Pylons' `built in helpers <http://pylonshq
 
 You can also make use of the built-in script.aculo.us functionality or override the default behavior of any of the helpers by defining a new function of the same name at the bottom of your project's ``lib/helpers.py`` file.
 
+File Uploads
+============
+File upload fields are created by using the 'file' input type. The ``file_field`` helper can create one for you:
+
+.. code-block:: Hypertext
+
+    <% h.file_field('myfile') %>
+
+The HTML form must have its ``enctype`` attribute set to ``multipart/form-data`` for the file upload to work. The ``form`` helper's ``multipart`` keyword argument can set this for you:
+
+.. code-block:: Hypertext
+
+    <% h.form(h.url(action='upload'), multipart=True) %>
+    Upload file:      <% h.file_field('myfile') %> <br />
+    File description: <% h.text_field('description') %> <br />
+                      <% h.submit('Submit') %>
+    <% h.end_form() %>
+
+When a file upload has succeeded, the ``request.POST`` (or ``request.params``) ``MultiDict`` will contain a ``cgi.FieldStorage`` object instead of a string for the value of the field.
+
+``FieldStorage`` objects have three important attributes for file uploads:
+
+    ``filename``
+        The name of file uploaded as it appeared on the uploader's filesystem.
+
+    ``file``
+        A file(-like) object from which the file's data can be read: A python ``tempfile`` object.
+
+    ``value``
+        The content of the uploaded file, eagerly read directly from the file object.
+
+The easiest way to gain access to the file's data is via the ``value`` attribute: it returns the entire contents of the file as a string:
+
+.. code-block:: Python
+
+    def upload(self):
+        myfile = request.POST['myfile']
+        return Response('Successfully uploaded: %s, size: %i, '
+                        'description: %s' % (myfile.filename, len(myfile.value),
+                                             request.POST['description']))
+
+However reading the entire contents of the file into memory is undesirable, especially for large file uploads. A common means of handling file uploads is to store the file somewhere on the disk. The ``FieldStorage`` instance already reads the file onto disk, however to a non permanent location, via a python ``tempfile`` object.
+
+Python ``tempfiles`` are secure file objects that are automatically destroyed when they are closed (including an implicit close when the object is garbage collected). One of their security features is that their path cannot be determined: meaning we can't do a simple ``shutil.move`` from the ``tempfile's`` path. Alternatively, ``shutil.copyfileobj`` can perform an efficient copy of the file's data to a permanent location:
+
+.. code-block:: Python
+
+    def upload(self):
+        permanent_store = '/tmp'
+        myfile = request.POST['myfile']
+        permanent_file = open(os.path.join(permanent_store,
+                                           myfile.filename), 'w')
+        shutil.copyfileobj(myfile.file, permanent_file)
+        myfile.file.close()
+        permanent_file.close()
+        return Response('Successfully uploaded: %s, description: %s' % \
+                            (myfile.filename, request.POST['description']))
+
+.. Warning::
+    The previous basic example allows any file uploader to overwrite any file in the ``permanent_store`` directory that your web application has permissions to.
 
 Validation the Quick Way
 ========================
