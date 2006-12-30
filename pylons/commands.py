@@ -183,12 +183,12 @@ class ShellCommand(Command):
         paste.registry.restorer.restoration_begin(request_id)
 
         # Start the rest of our imports now that the app is loaded
-        has_model = True
+        has_models = True
         try:
             models_package = pkg_name + '.models'
             __import__(models_package)
         except ImportError:
-            has_model = False
+            has_models = False
 
         # Import all objects from the base module
         try:
@@ -210,14 +210,14 @@ class ShellCommand(Command):
                 app=test_app,
             )
         )
-        if has_model:
+        if has_models:
             locs['model'] = sys.modules[models_package],
 
         banner = "Pylons Interactive Shell\nPython %s\n\n" % sys.version
         banner += "  All objects from %s are available\n" % base_module
         banner += "  Additional Objects:\n"
         banner += "  %-10s -  %s\n" % ('mapper', 'Routes mapper object')
-        if has_model:
+        if has_models:
             banner += "  %-10s -  %s\n" % ('model',
                                            'Models from models package')
         banner += "  %-10s -  %s\n" % ('wsgiapp', 
