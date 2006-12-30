@@ -175,34 +175,47 @@ class ShellCommand(Command):
         test_app = app=paste.fixture.TestApp(wsgiapp)
         
         # Start the rest of our imports now that the app is loaded
-        models_package = pkg_name + '.models'
-        __import__(models_package)
+        has_model = True
+        try:
+            models_package = pkg_name + '.models'
+            __import__(models_package)
+        except ImportError:
+            has_model = False
 
         # Query the test app to setup the environment
         tresponse = test_app.get('/_test_vars')
         request_id = int(tresponse.body)
 
-        # Import all objects from lib.base
-        base_module = pkg_name + '.lib.base'
-        __import__(base_module)
+        # Import all objects from the base module
+        try:
+            base_module = pkg_name + '.lib.base'
+            __import__(base_module)
+        except ImportError:
+            # Minimal template
+            base_module = pkg_name + '.controllers'
+            __import__(base_module)
+            
         base = sys.modules[base_module]
         base_public = [__name for __name in dir(base) if not \
                        __name.startswith('_') or __name == '_']
         locs.update([(name, getattr(base, name)) for name in base_public])
         locs.update(
             dict(
-                model=sys.modules[models_package],
                 mapper=tresponse.pylons_config.map,
                 wsgiapp=wsgiapp,
                 app=test_app,
             )
         )
+        if has_model:
+            locs['model'] = sys.modules[models_package],
 
         banner = "Pylons Interactive Shell\nPython %s\n\n" % sys.version
         banner += "  All objects from %s are available\n" % base_module
         banner += "  Additional Objects:\n"
         banner += "  %-10s -  %s\n" % ('mapper', 'Routes mapper object')
-        banner += "  %-10s -  %s\n" % ('model', 'Models from models package')
+        if has_model:
+            banner += "  %-10s -  %s\n" % ('model',
+                                           'Models from models package')
         banner += "  %-10s -  %s\n" % ('wsgiapp', 
             'This projects WSGI App instance')
         banner += "  %-10s -  %s\n" % ('app', 
