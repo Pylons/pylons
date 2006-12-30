@@ -71,7 +71,7 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
         "Myghty>=1.1", "FormEncode>=0.6", "simplejson>=1.4", "nose>=0.9.1",
     ],
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: BSD License",
         "Programming Language :: Python",
