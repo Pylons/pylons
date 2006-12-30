@@ -1,6 +1,10 @@
 Pylons Changelog
 =================
 
+0.9.5 (**svn**)
+* Fixed paster shell incorrectly importing the the tuple (model,) as the
+  model object.
+
 0.9.4 (Dec. 29th, 2006)
 * WARNING: Removed the lang_extract and lang_compile commands. They used
   pygettext.py and its associated msgfmt.py, which lacked the ability to

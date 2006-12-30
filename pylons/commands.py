@@ -211,7 +211,7 @@ class ShellCommand(Command):
             )
         )
         if has_models:
-            locs['model'] = sys.modules[models_package],
+            locs['model'] = sys.modules[models_package]
 
         banner = "Pylons Interactive Shell\nPython %s\n\n" % sys.version
         banner += "  All objects from %s are available\n" % base_module
