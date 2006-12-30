@@ -108,11 +108,15 @@ Interactive Debugger
 
 The interactive debugger is a powerful tool for use during application development. It is enabled by default in the development environment's ``development.ini``. When enabled, it allows debugging of the application through a web page after an exception is raised. On production environments the debugger poses a major security risk; so production ini files generated from the ``paster make-config`` command will have debugging disabled.
 
-To disable debugging, uncomment the following line in the ``[app:main]`` section of your ``development.ini``::
+To disable debugging, uncomment the following line in the ``[app:main]`` section of your ``development.ini``:
+
+.. code-block:: PasteIni
 
     #set debug = false
     
-to::
+to:
+
+.. code-block:: PasteIni
 
     set debug = false
 
@@ -280,7 +284,9 @@ and modify the ``serverinfo.myt`` file in the ``templates`` directory to look li
 .. Note::
     The ``c`` object is available in the other template languages.
 
-You should see ``2`` printed out on the page. If you ask for an attribute on ``c`` that does not exist, rather than throwing an Attribute error, an empty string will be returned. This makes it easy to toggle behavior depending on the response. For example::
+You should see ``2`` printed out on the page. If you ask for an attribute on ``c`` that does not exist, rather than throwing an Attribute error, an empty string will be returned. This makes it easy to toggle behavior depending on the response. For example:
+
+.. code-block:: HyperText
 
     <p>Hi there <% c.name or c.full_name or "Joe Smith" %>
 
