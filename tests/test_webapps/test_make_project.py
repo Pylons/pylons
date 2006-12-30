@@ -169,7 +169,10 @@ def do_xmlrpc():
         'controller_xmlrpc.py':'projectname/controllers/xmlrpc.py',
         'functional_controller_xmlrpc.py':'projectname/tests/functional/test_xmlrpc.py'
     }
-    _do_proj_test(copydict)
+    empty = [
+        'projectname/tests/functional/test_cache.py',
+    ]
+    _do_proj_test(copydict, empty)
 
 def do_legacy_app():
     legacyenv = TestFileEnvironment(
@@ -210,7 +213,7 @@ def test_project():
     yield do_cheetah
     yield do_crazy_decorators
     yield do_cache_decorator
-    #yield do_xmlrpc
+    yield do_xmlrpc
     #yield do_legacy_app
     #yield make_tag
     
