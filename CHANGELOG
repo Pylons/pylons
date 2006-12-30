@@ -68,8 +68,8 @@ Pylons Changelog
 * PylonsApp now has option to not use Routes middleware, default resolving 
   uses new wsgi.org routing_args spec.
 * Refactored routes dispatching to use new Routes middleware.
-* Fixed paster shell command to properly acquire globals obj and mapper
-  without relying on the template being configured in a specific manner.
+* Fixed paster shell command to properly acquire mapper object without
+  relying on the template being configured in a specific manner.
 * Added keyword argument pool_connection to
   pylons.database.PackageHub; if set to false then SQLObject connections
   won't use pooled database connections (a new connection will be
