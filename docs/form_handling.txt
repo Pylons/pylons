@@ -114,7 +114,7 @@ When a file upload has succeeded, the ``request.POST`` (or ``request.params``) `
         The name of file uploaded as it appeared on the uploader's filesystem.
 
     ``file``
-        A file(-like) object from which the file's data can be read: A python ``tempfile`` object.
+        A file(-like) object from which the file's data can be read: a python ``tempfile`` object.
 
     ``value``
         The content of the uploaded file, eagerly read directly from the file object.
