@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.5 (**svn**)
+* Updated template options config to take template options for multiple 
+  engines for less binding to Myghty.
 * Fixed paster shell incorrectly importing the the tuple (model,) as the
   model object.
 

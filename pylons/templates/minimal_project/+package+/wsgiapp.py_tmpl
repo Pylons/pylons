@@ -23,8 +23,9 @@ def load_environment(global_conf={}, app_conf={}):
              'templates': [os.path.join(root_path, 'templates')],
              'static_files': os.path.join(root_path, 'public')
              }
-    myghty = dict(log_errors=True)
-    return pylons.config.Config(myghty, map, paths)
+    tmpl_options = {}
+    tmpl_options['myghty.log_errors'] = True
+    return pylons.config.Config(tmpl_options, map, paths)
 
 class Globals(object):
     def __init__(self, global_conf, app_conf, **extra):

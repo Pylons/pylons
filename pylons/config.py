@@ -4,6 +4,7 @@ This module supplies pylons_config which handles setting up defaults
 for Myghty, Paste errorware, and prefixing Routes if necessary.
 """
 import os
+import re
 from paste.deploy.converters import asbool
 import pylons.templating
 
@@ -54,22 +55,38 @@ class Config(object):
         Whether or not the ``c`` object should throw an attribute error when
         access is attempted to an attribute that doesn't exist.
     """
-    def __init__(self, myghty, map, paths, environ_config=None, 
+    def __init__(self, tmpl_options, map, paths, environ_config=None, 
         default_charset='UTF-8', strict_c=False):
         if environ_config is None:
             environ_config = {}
-        self.myghty = myghty
-        self.template_options = {}
+        self.myghty = tmpl_options
+        self.template_options = tmpl_options
         self.map = map
         self.paths = paths
         self.environ_config = environ_config
         self.default_charset = default_charset
         self.strict_c = strict_c
-        if 'output_encoding' not in myghty:
-            myghty['output_encoding'] = default_charset
+        if 'output_encoding' not in tmpl_options:
+            tmpl_options['output_encoding'] = default_charset
         self.global_conf = {}
         self.app_conf = {}
         self.template_engines = []
+        self._clean_tmpl_options()
+    
+    def _clean_tmpl_options(self):
+        """Prase the template options, set self.myghty to have myghty options
+        with no prefix and template_options to be a proper set of options for 
+        any template engine"""
+        oldopts = self.myghty
+        self.template_options = {}
+        self.myghty = {}
+        for k, v in oldopts.iteritems():
+            if not re.match(r'\w+\.\w*', k):
+                self.myghty[k] = v
+            elif k.startswith('myghty.'):
+                self.myghty[k[7:]] = v
+            else:
+                self.template_options[k] = v
     
     def add_template_engine(self, engine, root, options=None, alias=None):
         """Add additional template engines for configuration on Pylons WSGI init
@@ -192,7 +209,7 @@ class Config(object):
         myghty_defaults['raise_error'] = True
         myghty_defaults['component_root'] = [{os.path.basename(path): path} \
             for path in self.paths['templates']]
-        
+                    
         # Merge in the user-supplied Myghty values
         myghty_defaults.update(self.myghty)
         
@@ -215,6 +232,7 @@ class Config(object):
             # Legacy copy of session and cache settings into app_conf
             if k.startswith('session_') or k.startswith('cache_'):
                 self.app_conf[k] = v
+            
         
         if 'session_data_dir' not in app_conf:
             app_conf['session_data_dir'] = os.path.join(app_conf['cache_dir'], 
@@ -224,18 +242,26 @@ class Config(object):
             'cache')
 
         # Setup the main template options dict
-        self.template_options = opts = myghty_template_options
-
+        self.template_options.update(myghty_template_options)
+        
+        # Setup several defaults for various template languages
+        defaults = {}
+        
         # Rearrange template options as default for Mako
-        opts['mako.directories'] = self.paths['templates']
-        opts['mako.filesystem_checks'] = True
+        defaults['mako.directories'] = self.paths['templates']
+        defaults['mako.filesystem_checks'] = True
+        defaults['mako.output_encoding'] = self.default_charset
         if 'cache_dir' in app_conf:
-            opts['mako.module_directory'] = os.path.join(app_conf['cache_dir'], 
+            defaults['mako.module_directory'] = os.path.join(app_conf['cache_dir'], 
                                                      'templates')
         
         # Setup kid defaults
-        opts['kid.assume_encoding'] = 'utf-8'
-        opts['kid.encoding'] = 'utf-8'
+        defaults['kid.assume_encoding'] = 'utf-8'
+        defaults['kid.encoding'] = self.default_charset
+        
+        # Merge template options into defaults
+        defaults.update(self.template_options)
+        self.template_options = defaults
 
         # Prepare our default template engine
         if template_engine == 'pylonsmyghty':
