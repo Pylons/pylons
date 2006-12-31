@@ -1,7 +1,6 @@
 """Standard Controllers intended for sub-classing by web developers"""
-import sys
-import types
 import inspect
+import sys
 import types
 import warnings
 import xmlrpclib

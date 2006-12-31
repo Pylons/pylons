@@ -9,7 +9,6 @@ Currently available commands are::
 """
 import os
 import sys
-import pylons
 import pylons.util as util
 
 from paste.script.command import Command, BadCommand
@@ -89,7 +88,7 @@ class ControllerCommand(Command):
                 raise BadCommand('No egg_info directory was found')
             
             # Check the name isn't the same as the package
-            base_package, cdir = file_op.find_dir('controllers', True)
+            base_package = file_op.find_dir('controllers', True)[0]
             if base_package.lower() == name.lower():
                 raise BadCommand(
                     'Your controller name should not be the same as '
@@ -172,7 +171,7 @@ class ShellCommand(Command):
         
         # Load the wsgi app first so that everything is initialized right
         wsgiapp = loadapp(config_name, relative_to=here_dir)
-        test_app = app=paste.fixture.TestApp(wsgiapp)
+        test_app = paste.fixture.TestApp(wsgiapp)
         
         # Query the test app to setup the environment
         tresponse = test_app.get('/_test_vars')
