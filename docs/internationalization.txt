@@ -522,7 +522,7 @@ If you would like However you can use the two functions below:
     
         This modifies the MultiDict in place.
     
-        encoding, strict
+        encoding, errors
           These are passed to the decode function.
     
         """
@@ -750,7 +750,7 @@ MO (Machine Object) files
 Versions of Pylons prior to 0.9.4 came with a setuptools extension to help with
 the extraction of strings and production of a ``.mo`` file. The implementation
 did not support Unicode nor the ungettext function and was therfore dropped in
-Python 0.9.4.
+Pylons 0.9.4.
 
 You will therefore need to use an external program to perform these tasks.  You
 may use whichever you prefer but ``xgettext`` is highly recommended. Python's
@@ -982,10 +982,6 @@ is done with the following line in your ``setup.py`` file::
 
     package_data={'translate_demo': ['i18n/*/LC_MESSAGES/*.mo']},
     
-Internationalization support is zip safe so your application can be run
-directly from the egg without the need for ``easy_install`` to extract it.
-
-
 Plural Forms
 ------------
 
