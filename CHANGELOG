@@ -2,6 +2,10 @@ Pylons Changelog
 =================
 
 0.9.5 (**svn**)
+* Fixed SQLObject pylons.database.PackageHub error:
+  exceptions.NameError: global name 'CONFIG' is not defined
+* Fixed pylons.database.session_context not working outside of requests
+  (such as in websetup.py).
 * Updated template options config to take template options for multiple 
   engines for less binding to Myghty.
 * Fixed paster shell incorrectly importing the the tuple (model,) as the
