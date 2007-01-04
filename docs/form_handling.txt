@@ -131,7 +131,7 @@ The easiest way to gain access to the file's data is via the ``value`` attribute
 
 However reading the entire contents of the file into memory is undesirable, especially for large file uploads. A common means of handling file uploads is to store the file somewhere on the disk. The ``FieldStorage`` instance already reads the file onto disk, however to a non permanent location, via a python ``tempfile`` object.
 
-Python ``tempfiles`` are secure file objects that are automatically destroyed when they are closed (including an implicit close when the object is garbage collected). One of their security features is that their path cannot be determined: meaning we can't do a simple ``shutil.move`` from the ``tempfile's`` path. Alternatively, ``shutil.copyfileobj`` can perform an efficient copy of the file's data to a permanent location:
+Python ``tempfiles`` are secure file objects that are automatically destroyed when they are closed (including an implicit close when the object is garbage collected). One of their security features is that their path cannot be determined: a simple ``os.rename`` from the ``tempfile's`` path isn't possible. Alternatively, ``shutil.copyfileobj`` can perform an efficient copy of the file's data to a permanent location:
 
 .. code-block:: Python
 
