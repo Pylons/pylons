@@ -17,7 +17,7 @@ import pylons.util
 __all__ = ["PackageHub", "AutoConnectHub"]
 
 # Provide support for sqlalchemy
-engines = {}
+_db_engines = {}
 try:
     import sqlalchemy
     from sqlalchemy.ext import sessioncontext
@@ -66,9 +66,9 @@ try:
                 db_engines = pylons.g._db_engines = {}
             else:
                 db_engines = pylons.g._db_engines
+            return db_engines
         except TypeError:
-            db_engines = engines
-        return db_engines
+            return _db_engines
 
     def make_session(uri=None, echo=None):
         """Returns a SQLAlchemy session for the specified database uri from
