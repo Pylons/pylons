@@ -8,6 +8,7 @@ import warnings
 
 from paste.script.templates import Template
 
+import pylons
 import pylons.helpers
 import pylons.i18n
 
@@ -54,6 +55,31 @@ def class_name_from_module_name(module_name):
     """
     words = module_name.replace('-', '_').split('_')
     return ''.join([w.title() for w in words])
+
+
+def config_get(key, default=None):
+    """Return a value from ``CONFIG``. Supports both ``paste.config.CONFIG``
+    and the older ``paste.deploy.CONFIG``.
+
+    This is for Pylons internal use only; to support both versions of the
+    ``CONFIG`` objects, depending on which is used by the current Pylons
+    web app."""
+    try:
+        # environ['paste.config'] is assured to be the correct CONFIG
+        # during requests
+        CONFIG = pylons.request.environ['paste.config']
+        value = CONFIG['app_conf'].get(key, default)
+    except TypeError:
+        # TypeError: pylons.request isn't registered (this function call was
+        # made outside of a web request). fall back to paste.config.CONFIG
+        # directly, and finally paste.deploy.CONFIG
+        try:
+            from paste.config import CONFIG
+            value = CONFIG['app_conf'].get(key, default)
+        except AttributeError:
+            from paste.deploy import CONFIG
+            value = CONFIG['app_conf'].get(key, default)
+    return value
 
 class ContextObj(object):
     """ The 'c' object, with strict attribute access (raises an Exception when
