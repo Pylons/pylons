@@ -197,23 +197,25 @@ class RestControllerCommand(Command):
             nameprefix = ''
             if pluraldirectory:
                 nameprefix = pluraldirectory.replace(os.path.sep, '_') + '_'
-                
+            
+            controller_c = ''
+            if nameprefix:
+                controller_c = ", controller='%s', \n\t" % '/'.join([pluraldirectory, pluralname])
+                controller_c += "path_prefix='/%s', name_prefix='%s_'" % (pluraldirectory, pluraldirectory)
+            command = "map.resource('%s', '%s'%s)\n" % (singularname, pluralname, controller_c)
+            
             file_op.template_vars.update(
                 {'classname': controller_name,
                  'pluralname': pluralname,
                  'singularname': singularname,
                  'name': controller_name,
                  'nameprefix': nameprefix,
+                 'resource_command': command.replace('\n\t', '\n    #         '),
                  'fname': os.path.join(pluraldirectory, pluralname)}
             )
             
             resource_command = "\nTo create the appropriate RESTful mapping, add a map statement to your\n"
             resource_command += "config/routing.py file near the top like this:\n\n"
-            controller_c = ''
-            if nameprefix:
-                controller_c = ", controller='%s', \n\t" % '/'.join([pluraldirectory, pluralname])
-                controller_c += "path_prefix='/%s', name_prefix='%s_'" % (pluraldirectory, pluraldirectory)
-            command = "map.resource('%s', '%s'%s)\n" % (singularname, pluralname, controller_c)
             resource_command += command
             file_op.copy_file(template='restcontroller.py_tmpl',
                          dest=os.path.join('controllers', pluraldirectory), 

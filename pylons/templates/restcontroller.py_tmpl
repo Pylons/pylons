@@ -2,6 +2,9 @@ from ${base_package}.lib.base import *
 
 class ${classname}Controller(BaseController):
     """REST Controller styled on the Atom Publishing Protocol"""
+    # To properly map this controller, ensure your config/routing.py file has
+    # a resource setup:
+    #     ${resource_command}
     def index(self, format='html'):
         """GET /: All items in the collection."""
         # url_for('${nameprefix}${pluralname}')
