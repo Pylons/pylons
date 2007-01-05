@@ -120,6 +120,111 @@ class ControllerCommand(Command):
             msg = str(sys.exc_info()[1])
             raise BadCommand('An unknown error occurred. %s' % msg)
 
+class RestControllerCommand(Command):
+    """Create a REST Controller and accompanying functional test
+    
+    The RestController command will create a REST-based Controller file for use
+    with the map.resource REST-based dispatching. This template includes the
+    methods that map.resource dispatches to in addition to doc strings for
+    clarification on when the methods will be called.
+    
+    Example usage::
+    
+        yourproj% paster restcontroller comment comments
+        Creating yourproj/yourproj/controllers/comments.py
+        Creating yourproj/yourproj/tests/functional/test_comments.py
+    
+    If you'd like to have controllers underneath a directory, just include
+    the path as the controller name and the necessary directories will be
+    created for you::
+    
+        yourproj% paster restcontroller admin/tracback admin/trackbacks
+        Creating yourproj/controllers/admin
+        Creating yourproj/yourproj/controllers/admin/trackbacks.py
+        Creating yourproj/yourproj/tests/functional/test_admin_trackbacks.py
+    """
+    summary = __doc__.splitlines()[0]
+    usage = 'CONTROLLER_NAME'
+    
+    min_args = 2
+    max_args = 2
+    group_name = 'pylons'
+    
+    default_verbosity = 3
+    
+    parser = Command.standard_parser(simulate=True)
+    parser.add_option('--no-test',
+                      action='store_true',
+                      dest='no_test',
+                      help="Don't create the test; just the controller")
+
+    def command(self):
+        """Main command to create controller"""
+        try:
+            file_op = FileOp(source_dir=os.path.join(
+                os.path.dirname(__file__), 'templates'))
+            try:
+                singularname, singulardirectory = file_op.parse_path_name_args(self.args[0])
+                pluralname, pluraldirectory = file_op.parse_path_name_args(self.args[1])
+            except:
+                raise BadCommand('No egg_info directory was found')
+            
+            # Check the name isn't the same as the package
+            base_package = file_op.find_dir('controllers', True)[0]
+            if base_package.lower() == pluralname.lower():
+                raise BadCommand(
+                    'Your controller name should not be the same as '
+                    'the package name %r.'% base_package
+            )
+            # Validate the name
+            for name in [singularname, pluralname]:
+                name = name.replace('-', '_')
+                validate_name(name)
+
+            # Setup the controller
+            fullname = os.path.join(pluraldirectory, pluralname)
+            controller_name = util.class_name_from_module_name(
+                pluralname.split('/')[-1])
+            if not fullname.startswith(os.sep):
+                fullname = os.sep + fullname
+            testname = fullname.replace(os.sep, '_')[1:]
+            
+            nameprefix = ''
+            if pluraldirectory:
+                nameprefix = pluraldirectory.replace(os.path.sep, '_') + '_'
+                
+            file_op.template_vars.update(
+                {'classname': controller_name,
+                 'pluralname': pluralname,
+                 'singularname': singularname,
+                 'name': controller_name,
+                 'nameprefix': nameprefix,
+                 'fname': os.path.join(pluraldirectory, pluralname)}
+            )
+            
+            resource_command = "\nTo create the appropriate RESTful mapping, add a map statement to your\n"
+            resource_command += "config/routing.py file near the top like this:\n\n"
+            controller_c = ''
+            if nameprefix:
+                controller_c = ", controller='%s', \n\t" % '/'.join([pluraldirectory, pluralname])
+                controller_c += "path_prefix='/%s', name_prefix='%s_'" % (pluraldirectory, pluraldirectory)
+            command = "map.resource('%s', '%s'%s)\n" % (singularname, pluralname, controller_c)
+            resource_command += command
+            file_op.copy_file(template='restcontroller.py_tmpl',
+                         dest=os.path.join('controllers', pluraldirectory), 
+                         filename=pluralname)
+            if not self.options.no_test:
+                file_op.copy_file(template='test_controller.py_tmpl',
+                             dest=os.path.join('tests', 'functional'),
+                             filename='test_'+testname)
+            print resource_command
+        except BadCommand, e:
+            raise BadCommand('An error occurred. %s' % e)
+        except:
+            msg = str(sys.exc_info()[1])
+            raise BadCommand('An unknown error occurred. %s' % msg)
+
+
 class ShellCommand(Command):
     """Open an interactive shell with the Pylons app loaded
     

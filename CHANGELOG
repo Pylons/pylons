@@ -2,6 +2,9 @@ Pylons Changelog
 =================
 
 0.9.5 (**svn**)
+* Added restcontroller command that generates a RESTful controller template
+  and provides the appropriate map.resource command to add. Suggested by 
+  Matthew Scott.
 * Fixed SQLObject pylons.database.PackageHub error:
   exceptions.NameError: global name 'CONFIG' is not defined
 * Fixed pylons.database.session_context not working outside of requests

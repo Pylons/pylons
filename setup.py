@@ -97,6 +97,7 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
     entry_points="""
     [paste.paster_command]
     controller=pylons.commands:ControllerCommand
+    restcontroller=pylons.commands:RestControllerCommand
     shell=pylons.commands:ShellCommand
 
     [paste.paster_create_template]
