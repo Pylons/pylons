@@ -128,6 +128,11 @@ class RestControllerCommand(Command):
     methods that map.resource dispatches to in addition to doc strings for
     clarification on when the methods will be called.
     
+    The first argument should be the singular form of the REST resource. The 
+    second argument is the plural form of the word. If its a nested controller,
+    put the directory information in front as shown in the second example
+    below.
+    
     Example usage::
     
         yourproj% paster restcontroller comment comments
@@ -144,7 +149,7 @@ class RestControllerCommand(Command):
         Creating yourproj/yourproj/tests/functional/test_admin_trackbacks.py
     """
     summary = __doc__.splitlines()[0]
-    usage = 'CONTROLLER_NAME'
+    usage = 'SINGULAR_CONTROLLER_NAME PLURAL_CONTROLLER_NAME'
     
     min_args = 2
     max_args = 2
