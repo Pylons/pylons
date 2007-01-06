@@ -6,7 +6,6 @@ import os
 from gettext import NullTranslations, GNUTranslations
 from pkg_resources import resource_exists, resource_stream
 import pylons
-import pylons.util
 
 class LanguageError(Exception):
     """Exception raised when a problem occurs with changing languages"""
@@ -99,7 +98,8 @@ def set_lang(lang):
     if lang is None:
         registry.replace(pylons.translator, NullTranslations())
     else:
-        project_name = pylons.util.config_get('package')
+        import pylons.util as util
+        project_name = util.config_get('package')
         catalog_path = os.path.join('i18n', lang, 'LC_MESSAGES')
         if not resource_exists(project_name, catalog_path):
             raise LanguageError('Language catalog %s not found' % \
