@@ -6,6 +6,7 @@ import os
 from gettext import NullTranslations, GNUTranslations
 from pkg_resources import resource_exists, resource_stream
 import pylons
+import pylons.util
 
 class LanguageError(Exception):
     """Exception raised when a problem occurs with changing languages"""
