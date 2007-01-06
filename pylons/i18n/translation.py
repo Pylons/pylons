@@ -98,8 +98,7 @@ def set_lang(lang):
     if lang is None:
         registry.replace(pylons.translator, NullTranslations())
     else:
-        config = pylons.request.environ['paste.config']
-        project_name = config['app_conf']['package']
+        project_name = pylons.util.config_get('package')
         catalog_path = os.path.join('i18n', lang, 'LC_MESSAGES')
         if not resource_exists(project_name, catalog_path):
             raise LanguageError('Language catalog %s not found' % \
