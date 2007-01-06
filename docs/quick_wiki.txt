@@ -25,7 +25,7 @@ Pylons is designed to be easy for everyone, not just developers, so lets start b
 
 After you have installed `Easy Install <http://peak.telecommunity.com/DevCenter/EasyInstall>`_ run these commands to install QuickWiki and create a config file::
     
-    > easy_install "QuickWiki==0.1.2"
+    > easy_install "QuickWiki==0.1.3"
     > paster make-config QuickWiki test.ini
 
 Next edit the configuration file by specifying the ``sqlalchemy.dburi`` variable in ``[app:main]`` section so that the data source name points to the database you wish to use.
@@ -180,9 +180,9 @@ One final change, since we have used docutils and SQLAlchemy, both third party p
 
     install_requires=["Pylons>=0.9.4", "docutils==0.4", "SQLAlchemy>=0.2.6"],
 
-While we are we are making changes to ``setup.py`` we might want to complete some of the other sections too. Set the version number to 0.1.2 and add a description and URL which will be used on the Python Cheeseshop when we release it::
+While we are we are making changes to ``setup.py`` we might want to complete some of the other sections too. Set the version number to 0.1.3 and add a description and URL which will be used on the Python Cheeseshop when we release it::
 
-    version="0.1.2",
+    version="0.1.3",
     description="Result of following the Pylons 0.9 QuickWiki Tutorial",
     url="http://www.pylonshq.com/docs/quick_wiki.html",
     
@@ -662,9 +662,9 @@ After all that hard work it would be good to distribute the finished package wou
     
 This will create an egg file in ``dist`` which contains everything anyone needs to run your program. They can install it with::
 
-    > easy_install QuickWiki-0.1.2-py2.4.egg
+    > easy_install QuickWiki-0.1.3-py2.4.egg
     
-You should probably make eggs for each version of Python your users might require by running the above command with both Python 2.3 and 2.4.
+You should probably make eggs for each version of Python your users might require by running the above commands with both Python 2.3, 2.4 and 2.5.
 
 If you want to register your project with the Cheeseshop at http://www.python.org/pypi you can run the command below. *Please only do this with your own projects though because QuickWiki has already been registered!*
 
