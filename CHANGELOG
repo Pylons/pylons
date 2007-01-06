@@ -1,7 +1,7 @@
 Pylons Changelog
 =================
 
-0.9.4.1 (**svn**)
+0.9.4.1 (Jan. 5th, 2007)
 * Added restcontroller command that generates a RESTful controller template
   and provides the appropriate map.resource command to add. Suggested by 
   Matthew Scott.
