@@ -206,10 +206,7 @@ Now lets make the changes necessary to enable QuickWiki to be set up by an end u
 .. code-block:: Python
 
     import paste.deploy
-    from sqlalchemy import clear_mapper, create_engine, create_session
-    from sqlalchemy.ext.assignmapper import assign_mapper
-    from sqlalchemy.ext.sessioncontext import SessionContext
-    import pylons.database
+    from pylons.database import create_engine
     import quickwiki.models as model
 
     def setup_config(command, filename, section, vars):
@@ -227,14 +224,6 @@ Now lets make the changes necessary to enable QuickWiki to be set up by an end u
         print "Creating tables"
         model.meta.create_all()
 
-        # Pylons' session_context expects the g and request objects to be setup
-        # (within a request). This is a Pylons 0.9.4 bug. A workaround is to
-        # create a new assign_mapper with a SessionContext that works outside of
-        # requests.
-        clear_mapper(model.page_mapper)
-        assign_mapper(SessionContext(lambda: create_session(bind_to=engine)),
-                      model.Page, model.pages_table)
-
         print "Adding front page data"
         page = model.Page()
         page.title = 'FrontPage'
@@ -243,9 +232,6 @@ Now lets make the changes necessary to enable QuickWiki to be set up by an end u
         print "Successfully setup."
 
 The line ``import quickwiki.models as model`` imports our ``page`` table and the ``meta`` object, the line ``model.meta.connect(engine)`` connects to the database engine with the database URI the user specifies in the config file and finally ``meta.create_all()`` creates the table. After the tables are created the other lines add some data for the simple front page to out wiki.
-
-.. Note:: ``pylons.database.session_context`` expects to be used within a request (having ``request`` and ``g`` objects setup) in 0.9.4 (this is a bug). Since websetup is ran outside of a web request, the current workaround is to create a safe ``assign_mapper`` before using decorated objects (model.Page).
-
 
 To test this functionality run you first need to install your QuickWiki if you haven't already done so in order for ``paster`` to find the version we are developing instead of the version we installed at the very start::
 
