@@ -11,8 +11,13 @@ Reporting Security Issues
 
 Please report security issues by email to both the lead developers of Pylons at the following addresses:
 
-    ben@groovie.org
-    james@3aims.com
+    ben\
+    |at|\
+    groovie.org
+    
+    security\
+    |at|\
+    3aims.com
 
 Please DO NOT announce the vulnerability to any mailing lists or on the ticket system because we would not want any malicious person to be aware of the problem before a solution is available.
 
@@ -39,4 +44,4 @@ Minimising Risk
 * Do not assume that related software is of the same quality as Pylons itself, even if Pylons users frequently make use of it.
 * Subscribe to the wsgi-security-announce@googlegroups.com mailing list to be informed of security issues and their solutions.
 
-
+.. |at| image:: at.png
