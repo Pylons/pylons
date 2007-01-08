@@ -5,7 +5,9 @@ for Myghty, Paste errorware, and prefixing Routes if necessary.
 """
 import os
 import re
+
 from paste.deploy.converters import asbool
+
 import pylons.templating
 
 class Config(object):
@@ -89,7 +91,8 @@ class Config(object):
                 self.template_options[k] = v
     
     def add_template_engine(self, engine, root, options=None, alias=None):
-        """Add additional template engines for configuration on Pylons WSGI init
+        """Add additional template engines for configuration on Pylons WSGI
+        init.
         
         ``engine``
             The name of the template engine
@@ -142,14 +145,15 @@ class Config(object):
             template_options=options, alias=alias)
         self.template_engines.append(config)
     
-    def init_app(self, global_conf, app_conf, package, template_engine='pylonsmyghty'):
+    def init_app(self, global_conf, app_conf, package,
+                 template_engine='pylonsmyghty'):
         """Initialize configuration for the application
         
         ``global_config``
-            Several options are expected to be set for a Pylons web application.
-            They will be loaded from the global_config which has the main Paste
-            options. If ``debug`` is not enabled as a global config option, the
-            following option *must* be set:
+            Several options are expected to be set for a Pylons web
+            application. They will be loaded from the global_config which has
+            the main Paste options. If ``debug`` is not enabled as a global
+            config option, the following option *must* be set:
             
             * error_to - The email address to send the debug error to
             
@@ -167,8 +171,8 @@ class Config(object):
         ``package``
             The name of the application package, to be stored in the app_conf.
         ``template_engine``
-            Declare the default template engine to setup. Choices are kid, genshi,
-            mako, and pylonsmyghty (the default custom Pylons plugin).
+            Declare the default template engine to setup. Choices are kid,
+            genshi, mako, and pylonsmyghty (the default custom Pylons plugin).
         """
         self.global_conf = global_conf
         self.app_conf = app_conf
@@ -252,8 +256,8 @@ class Config(object):
         defaults['mako.filesystem_checks'] = True
         defaults['mako.output_encoding'] = self.default_charset
         if 'cache_dir' in app_conf:
-            defaults['mako.module_directory'] = os.path.join(app_conf['cache_dir'], 
-                                                     'templates')
+            defaults['mako.module_directory'] = \
+                os.path.join(app_conf['cache_dir'], 'templates')
         
         # Setup kid defaults
         defaults['kid.assume_encoding'] = 'utf-8'
@@ -265,7 +269,8 @@ class Config(object):
 
         # Prepare our default template engine
         if template_engine == 'pylonsmyghty':
-            self.add_template_engine('pylonsmyghty', None, myghty_template_options)
+            self.add_template_engine('pylonsmyghty', None,
+                                     myghty_template_options)
         elif template_engine == 'mako':
             self.add_template_engine('mako', '')
         elif template_engine in ['genshi', 'kid']:

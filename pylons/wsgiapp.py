@@ -21,7 +21,8 @@ import pylons
 import pylons.legacy
 import pylons.templating
 from pylons.i18n import set_lang
-from pylons.util import ContextObj, AttribSafeContextObj, class_name_from_module_name
+from pylons.util import ContextObj, AttribSafeContextObj, \
+    class_name_from_module_name
 from pylons.controllers import Controller, WSGIController
 
 class PylonsBaseWSGIApp(object):
@@ -62,8 +63,11 @@ class PylonsBaseWSGIApp(object):
         # Initialize Buffet and all our template engines, default engine is the
         # first in the template_engines list
         def_eng = config.template_engines[0]
-        self.buffet = pylons.templating.Buffet(def_eng['engine'], 
-            template_root=def_eng['template_root'], **def_eng['template_options'])
+        self.buffet = pylons.templating.Buffet(
+            def_eng['engine'], 
+            template_root=def_eng['template_root'],
+            **def_eng['template_options']
+            )
         for e in config.template_engines[1:]:
             self.buffet.prepare(e['engine'], template_root=e['template_root'], 
                 alias=e['alias'], **e['template_options'])
@@ -80,7 +84,8 @@ class PylonsBaseWSGIApp(object):
         controller = self.resolve(environ, start_response)
         response = self.dispatch(controller, environ, start_response)
         
-        if 'paste.testing_variables' in environ and hasattr(response, 'wsgi_response'):
+        if 'paste.testing_variables' in environ and hasattr(response,
+                                                            'wsgi_response'):
             environ['paste.testing_variables']['response'] = response
         
         # Transform HttpResponse objects into WSGI response
@@ -89,7 +94,8 @@ class PylonsBaseWSGIApp(object):
         elif response:
             return response
         
-        raise Exception, "No content returned by controller: %s" % controller.__name__
+        raise Exception(), "No content returned by controller: %s" % \
+            controller.__name__
     
     def setup_app_env(self, environ, start_response):
         """Setup and register all the Pylons objects with the registry"""
@@ -158,7 +164,8 @@ class PylonsBaseWSGIApp(object):
         match = environ['pylons.routes_dict']
         
         # Older subclass of Controller
-        if inspect.isclass(controller) and not issubclass(controller, WSGIController) and \
+        if inspect.isclass(controller) and \
+                not issubclass(controller, WSGIController) and \
                 issubclass(controller, Controller):
             controller = controller()
             controller.start_response = start_response
@@ -201,11 +208,12 @@ class PylonsApp(object):
         self.config = config
         if default_charset:
             warnings.warn(
-                "The 'default_charset' keyword argument to the PylonsApp constructor is "
-                "deprecated. Please specify 'default_charset' to the Config object in your "
-                'config/environment.py file instead, e.g.:\n'
-                'return pylons.config.Config(myghty, map, paths, '
-                "default_charset='%s')" % default_charset, DeprecationWarning, 2)
+                "The 'default_charset' keyword argument to the PylonsApp "
+                "constructor is deprecated. Please specify 'default_charset' "
+                "to the Config object in your 'config/environment.py file "
+                "instead, e.g.:\nreturn pylons.config.Config(myghty, map, "
+                "paths, default_charset='%s')" % default_charset,
+                DeprecationWarning, 2)
             self.config.default_charset = default_charset
 
         if helpers is None or g is None:
@@ -224,8 +232,9 @@ class PylonsApp(object):
             
         if not g:
             try:
-                globals_package = __import__(config.package + '.lib.app_globals',
-                                             globals(), locals(), ['Globals'])
+                globals_package = \
+                    __import__(config.package + '.lib.app_globals', globals(),
+                               locals(), ['Globals'])
                 g = getattr(globals_package, 'Globals')
             except ImportError:
                 pass

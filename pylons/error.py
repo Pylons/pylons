@@ -7,8 +7,6 @@ be little more than a template, as Paste will get the skinning functionality.
 The only additional thing besides skinning supplied, is the Myghty traceback
 information.
 """
-__all__ = []
-
 import cgi
 import sys
 
@@ -44,7 +42,8 @@ class Supplement(errormiddleware.Supplement):
         wsgi_vars['wsgi process'] = self.process_combos[proc_desc]
         wsgi_vars['application'] = self.middleware.application
         if 'paste.config' in self.environ:
-            data[('extra', 'Configuration')] = dict(self.environ['paste.config'])
+            data[('extra', 'Configuration')] = \
+                dict(self.environ['paste.config'])
             
         # Add any extra sections here
        
@@ -342,6 +341,7 @@ class EvalHTMLFormatter(HTMLFormatter):
                 'height=9> &nbsp; &nbsp;</a>'
                 % (frame.tbid, self.base_path))
 
+
 def format_eval_html(exc_data, base_path, counter):
     short_formatter = EvalHTMLFormatter(
         base_path=base_path,
@@ -581,3 +581,5 @@ error_traceback_template = """
         <tr><td><img src="%(prefix)s/error/img/plus.jpg" /></td><td>Show a debug prompt to allow you to directly debug the code at the traceback</td></tr>
         </table>
         </div>%(repost_button)s"""
+
+__all__ = []

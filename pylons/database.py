@@ -9,6 +9,7 @@ A SQLAlchemy ``SessionContext`` is also available: it provides both thread and
 process safe ``Session`` objects via the ``session_context.current`` property.
 """
 import thread
+
 from paste.deploy.converters import asbool
 
 import pylons
@@ -106,7 +107,8 @@ except:
 class AutoConnectHub(ConnectionHub):
     """Connects to the database once per thread.
     
-    The AutoConnectHub also provides convenient methods for managing transactions.
+    The AutoConnectHub also provides convenient methods for managing
+    transactions.
     """
     uri = None
     params = {}

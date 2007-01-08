@@ -18,13 +18,15 @@ class StaticJavascripts(object):
     Triggered when PATH_INFO begins with '/javascripts/'.
     """
     def __init__(self):
-        self.javascripts_app = StaticURLParser(os.path.dirname(javascript_path))
+        self.javascripts_app = \
+            StaticURLParser(os.path.dirname(javascript_path))
         
     def __call__(self, environ, start_response):
         if environ.get('PATH_INFO', '').startswith('/javascripts/'):
             return self.javascripts_app(environ, start_response)
         else:
             return self.javascripts_app.not_found(environ, start_response)
+
 
 def ErrorHandler(app, global_conf, **errorware):
     """ErrorHandler Toggle

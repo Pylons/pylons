@@ -26,13 +26,15 @@ def deprecated(func, message):
 get_lang = deprecated(pylons.i18n.get_lang, func_move('get_lang'))
 set_lang = deprecated(pylons.i18n.set_lang, func_move('set_lang'))
 _ = deprecated(pylons.i18n._, func_move('_'))
-log = deprecated(pylons.helpers.log, func_move('log', moved_to='pylons.helpers'))
+log = deprecated(pylons.helpers.log, func_move('log',
+                                               moved_to='pylons.helpers'))
     
 def get_prefix(environ):
     if 'paste.config' in environ:
         prefix = environ['paste.config']['app_conf'].get('prefix', '')
     else:
-        # Not ideal but if the error occurs before the paste.config is available not a lot we can do
+        # Not ideal but if the error occurs before the paste.config is
+        # available not a lot we can do
         prefix = ''
     if not prefix:
         if environ.get('SCRIPT_NAME', '') != '':
@@ -81,14 +83,15 @@ def config_get(key, default=None):
             value = CONFIG['app_conf'].get(key, default)
     return value
 
+
 class ContextObj(object):
     """ The 'c' object, with strict attribute access (raises an Exception when
     the attribute does not exist) """
     pass
 
 class AttribSafeContextObj(object):
-    """ The 'c' object, with lax attribute access (returns '' when the attribute
-    does not exist) """
+    """ The 'c' object, with lax attribute access (returns '' when the
+    attribute does not exist) """
     def __getattr__(self, name):
         try:
             return object.__getattribute__(self, name)
@@ -122,6 +125,6 @@ class MinimalPylonsTemplate(Template):
     egg_plugins = ['Pylons', 'WebHelpers']
     
 
-__all__ = ['AttribSafeContextObj', 'ContextObj', 'Helpers', 'class_name_from_module_name',
-    'log', '_', 'set_lang', 'get_lang']
+__all__ = ['AttribSafeContextObj', 'ContextObj', 'Helpers',
+           'class_name_from_module_name', 'log', '_', 'set_lang', 'get_lang']
 __pudge_all__ = __all__ + ['MinimalPylonsTemplate', 'PylonsTemplate']

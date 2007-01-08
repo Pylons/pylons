@@ -9,7 +9,6 @@ Currently available commands are::
 """
 import os
 import sys
-import pylons.util as util
 
 from paste.script.command import Command, BadCommand
 from paste.script.filemaker import FileOp
@@ -17,6 +16,8 @@ from paste.deploy import loadapp, appconfig
 import paste.deploy.config
 import paste.fixture
 import paste.registry
+
+import pylons.util as util
 
 def validate_name(name):
     """Validate that the name for the controller isn't present on the
@@ -169,8 +170,10 @@ class RestControllerCommand(Command):
             file_op = FileOp(source_dir=os.path.join(
                 os.path.dirname(__file__), 'templates'))
             try:
-                singularname, singulardirectory = file_op.parse_path_name_args(self.args[0])
-                pluralname, pluraldirectory = file_op.parse_path_name_args(self.args[1])
+                singularname, singulardirectory = \
+                    file_op.parse_path_name_args(self.args[0])
+                pluralname, pluraldirectory = \
+                    file_op.parse_path_name_args(self.args[1])
             except:
                 raise BadCommand('No egg_info directory was found')
             
@@ -200,9 +203,12 @@ class RestControllerCommand(Command):
             
             controller_c = ''
             if nameprefix:
-                controller_c = ", controller='%s', \n\t" % '/'.join([pluraldirectory, pluralname])
-                controller_c += "path_prefix='/%s', name_prefix='%s_'" % (pluraldirectory, pluraldirectory)
-            command = "map.resource('%s', '%s'%s)\n" % (singularname, pluralname, controller_c)
+                controller_c = ", controller='%s', \n\t" % \
+                    '/'.join([pluraldirectory, pluralname])
+                controller_c += "path_prefix='/%s', name_prefix='%s_'" % \
+                    (pluraldirectory, pluraldirectory)
+            command = "map.resource('%s', '%s'%s)\n" % \
+                (singularname, pluralname, controller_c)
             
             file_op.template_vars.update(
                 {'classname': controller_name,
@@ -210,12 +216,15 @@ class RestControllerCommand(Command):
                  'singularname': singularname,
                  'name': controller_name,
                  'nameprefix': nameprefix,
-                 'resource_command': command.replace('\n\t', '\n    #         '),
+                 'resource_command': command.replace('\n\t', '\n%s#%s' % \
+                                                         (' '*4, ' '*9))
                  'fname': os.path.join(pluraldirectory, pluralname)}
             )
             
-            resource_command = "\nTo create the appropriate RESTful mapping, add a map statement to your\n"
-            resource_command += "config/routing.py file near the top like this:\n\n"
+            resource_command = ("\nTo create the appropriate RESTful mapping, "
+                                "add a map statement to your\n")
+            resource_command += ("config/routing.py file near the top like "
+                                 "this:\n\n")
             resource_command += command
             file_op.copy_file(template='restcontroller.py_tmpl',
                          dest=os.path.join('controllers', pluraldirectory), 

@@ -73,12 +73,13 @@ class Controller(object):
     set of actions, etc.
     
     Each action to be called is inspected with ``_inspect_call`` so that it is
-    only passed the arguments in the Routes match dict that it asks for. The only
-    exception to the dict is that the Myghty ``ARGS`` variable is included.
+    only passed the arguments in the Routes match dict that it asks for. The
+    only exception to the dict is that the Myghty ``ARGS`` variable is
+    included.
     
-    In the event that an action is not found to handle the request, the Controller
-    will raise an "Action Not Found" error if in debug mode, otherwise a ``404 Not Found``
-    error will be returned.
+    In the event that an action is not found to handle the request, the
+    Controller will raise an "Action Not Found" error if in debug mode,
+    otherwise a ``404 Not Found`` error will be returned.
     """
     __pudge_all__ = ['_inspect_call', '__call__', '_attach_locals']
     
@@ -86,8 +87,9 @@ class Controller(object):
         """Attach Pylons special objects to the controller
         
         When debugging, the Pylons special objects are unavailable because they
-        are thread locals. This function pulls the actual object and attaches it
-        to the controller so that it can be examined for debugging purposes.
+        are thread locals. This function pulls the actual object and attaches
+        it to the controller so that it can be examined for debugging
+        purposes.
 
         Deprecated (Nov 30 2006); Pylons special objects are now available
         within the interactive debugger.
@@ -193,9 +195,9 @@ class Controller(object):
 class WSGIController(Controller):
     """WSGI Controller that follows WSGI spec for calling and return values
     
-    This function works identically to the normal Controller, however it is called
-    with the WSGI interface, and behaves as a WSGI application calling start_response
-    and returning an iterable as content.
+    This function works identically to the normal Controller, however it is
+    called with the WSGI interface, and behaves as a WSGI application calling
+    start_response and returning an iterable as content.
     """
     def __call__(self, environ, start_response):
         self.start_response = start_response
@@ -269,9 +271,10 @@ class XMLRPCController(WSGIController):
                     break
 
             if not valid_args:
-                return xmlrpc_fault(0, "Incorrect argument signature. %s recieved does "
-                                    "not match %s signature for method %s" % \
-                                    (params, func.signature, orig_method))
+                msg = ("Incorrect argument signature. %s recieved does not "
+                       "match %s signature for method %s" % \
+                           (params, func.signature, orig_method))
+                return xmlrpc_fault(0, msg)
 
         # Change the arg list into a keyword dict based off the arg
         # names in the functions definition
@@ -311,7 +314,7 @@ class XMLRPCController(WSGIController):
             if not method.startswith('_') and hasattr(meth, 'im_self'):
                 methods.append(self._publish_method_name(method))
         return methods
-    system_listMethods.signature = [ ['array'] ]
+    system_listMethods.signature = [['array']]
 
     def system_methodSignature(self, name):
         """Returns an array of array's for the valid signatures for a method.
@@ -328,8 +331,8 @@ class XMLRPCController(WSGIController):
                 return ''
         else:
             return xmlrpclib.Fault(0, 'No such method name')
-    system_methodSignature.signature = [ ['array', 'string'],
-                                         ['string', 'string'] ]
+    system_methodSignature.signature = [['array', 'string'],
+                                        ['string', 'string']]
 
     def system_methodHelp(self, name):
         """Returns the documentation for a method"""
@@ -342,7 +345,7 @@ class XMLRPCController(WSGIController):
                 help += "\n\nMethod signature: %s" % sig
             return help
         return xmlrpclib.Fault(0, "No such method name")
-    system_methodHelp.signature = [ ['string', 'string'] ]
+    system_methodHelp.signature = [['string', 'string']]
 
     
 __all__ = ['Controller', 'WSGIController', 'XMLRPCController']

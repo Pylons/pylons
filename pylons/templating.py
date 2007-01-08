@@ -15,13 +15,15 @@ Myghty template names can be used with ``/`` and file extensions.
 The render functions are intended as the primary user-visible rendering 
 commands and hook into Buffet to make rendering content easy.
 """
-import pkg_resources
 import os
+import pkg_resources
 try:
     from cStringIO import StringIO
 except ImportError:
     from StringIO import StringIO
+
 import paste.wsgiwrappers
+
 import pylons
 
 PYLONS_VARS = ['c', 'g', 'h', 'render', 'request', 'session', 'translator',
@@ -38,7 +40,7 @@ class Buffet(object):
     `Buffet Project <http://projects.dowski.com/projects/buffet>`_ from which
     this class inherits its name.
     """
-    def __init__(self, default_engine=None, template_root=None, 
+    def __init__(self, default_engine=None, template_root=None,
         default_options=None, **config):
         """Initialize the Buffet renderer, and optionally set a default
         engine/options"""
@@ -57,8 +59,8 @@ class Buffet(object):
         This method must be run before the `render <#render>`_ method is called
         so that the ``template_root`` and options can be set. Template engines
         can also be aliased if you wish to use multiplate configurations of the
-        same template engines, or prefer a shorter name when rendering a template
-        with the engine of your choice.
+        same template engines, or prefer a shorter name when rendering a
+        template with the engine of your choice.
         """
         Engine = available_engines.get(engine_name, None)
         if not Engine:
@@ -137,7 +139,7 @@ class Buffet(object):
         engine_config = self.engines.get(engine_name)
         
         if not engine_config:
-            raise Exception, \
+            raise Exception(), \
                 "No engine with that name configured: %s" % engine_name
         
         full_path = template_name
@@ -250,9 +252,11 @@ class MyghtyTemplatePlugin(object):
                                  **optional_args)
         return buf.getvalue()
 
+
 available_engines = {}
 
-for entry_point in pkg_resources.iter_entry_points('python.templating.engines'):
+for entry_point in \
+        pkg_resources.iter_entry_points('python.templating.engines'):
     Engine = entry_point.load()
     available_engines[entry_point.name] = Engine
 

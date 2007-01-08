@@ -34,7 +34,8 @@ def beaker_cache(key="cache_default", expire="never", type="dbm",
         if not asbool(enabled):
             return func(*args, **kwargs)
         
-        my_cache = pylons.cache.get_cache(func.__module__ + "." + func.__name__)
+        my_cache = pylons.cache.get_cache('%s.%s' % (func.__module__,
+                                                     func.__name__))
         cache_key = _make_key(func, key, args, kwargs, query_args)
         
         if expire == "never":

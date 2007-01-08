@@ -4,12 +4,15 @@ Provides ``gettext`` translation functions via an app's ``pylons.translator``
 and get/set_lang for changing the language translated to."""
 import os
 from gettext import NullTranslations, GNUTranslations
+
 from pkg_resources import resource_exists, resource_stream
+
 import pylons
 
 class LanguageError(Exception):
     """Exception raised when a problem occurs with changing languages"""
     pass
+
 
 def gettext_noop(value):
     """Mark a string for translation without translating it. Returns value.
@@ -119,7 +122,8 @@ def egg_translation(domain, lang):
     Like gettext.translation, but lacks its extensive checks and supports
     loading .mo files from inside of eggs."""
     class_ = GNUTranslations
-    return class_(resource_stream(domain, os.path.join(lang, '%s.mo' % domain)))
+    return class_(resource_stream(domain, os.path.join(lang,
+                                                       '%s.mo' % domain)))
 
 __all__ = ['gettext_noop', 'N_', 'gettext', 'ugettext', '_', 'ngettext',
            'ungettext', 'set_lang', 'get_lang']
