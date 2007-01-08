@@ -10,12 +10,12 @@ Currently available commands are::
 import os
 import sys
 
-from paste.script.command import Command, BadCommand
-from paste.script.filemaker import FileOp
-from paste.deploy import loadapp, appconfig
-import paste.deploy.config
 import paste.fixture
 import paste.registry
+import paste.deploy.config
+from paste.deploy import loadapp, appconfig
+from paste.script.command import Command, BadCommand
+from paste.script.filemaker import FileOp
 
 import pylons.util as util
 

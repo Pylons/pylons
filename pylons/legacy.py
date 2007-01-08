@@ -1,7 +1,7 @@
 """Legacy functionality for pre Pylons 0.9.3 projects
 """
-import types
 import sys
+import types
 import warnings
 
 import pylons

@@ -1,5 +1,4 @@
 """REST decorators"""
-
 import pylons
 from pylons.decorator import decorator
 
