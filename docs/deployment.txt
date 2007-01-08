@@ -1,28 +1,36 @@
 Distributing your project
 =========================
 
-As mentioned earlier eggs are a convenient format for packaging applications. You can create an egg for your project like this::
+As mentioned earlier eggs are a convenient format for packaging applications. You can create an egg for your project like this:
 
-    cd helloworld
-    python setup.py bdist_egg
+.. code-block:: Bash
+
+    $ cd helloworld
+    $ python setup.py bdist_egg
     
 Your egg will be in the ``dist`` directory and will be called ``helloworld-0.0.0dev-py2.4.egg``.
 
 You can change options in ``setup.py`` to change information about your project. For example change version to ``version="0.1.0",`` and run ``python setup.py bdist_egg`` again to produce a new egg with an updated version number.
 
-You can then register your application with the python CheeseShop at http://cheeseshop.python.org/pypi with the following command::
+You can then register your application with the python CheeseShop at http://cheeseshop.python.org/pypi with the following command:
 
-    setup.py register
+.. code-block:: Bash
+
+    $ setup.py register
     
 Note: You should not do this unless you actually want to register a package.
 
-If users want to install your software and have installed easy install they can install your new egg as follows::
+If users want to install your software and have installed easy install they can install your new egg as follows:
 
-    easy_install helloworld==0.1.0
+.. code-block:: Bash
+
+    $ easy_install helloworld==0.1.0
     
-This will retrieve the package from the CheeseShop and install it. Alternatively you can install the egg locally::
+This will retrieve the package from the CheeseShop and install it. Alternatively you can install the egg locally:
 
-    easy_install -f C:\path\with\the\egg\files\in helloworld==0.1.0
+.. code-block:: Bash
+
+    $ easy_install -f C:\path\with\the\egg\files\in helloworld==0.1.0
     
 In order to use the egg in a website you need to use Paste. You have already used Paste to create your Pylons template and to run a test server to test the tutorial application.
 

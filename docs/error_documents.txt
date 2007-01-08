@@ -90,9 +90,11 @@ Testing Your Error Document
 
 You can test your error document implementation by aborting a request with ``abort()``. The method takes two parameters: the first is an integer representing the error code, the second is the response message to send as part of the status HTTP header.
 
-Add a controller to your project named ``error_doc_test``::
+Add a controller to your project named ``error_doc_test``:
     
-    paster controller error_doc_test
+.. code-block:: Bash
+
+    $ paster controller error_doc_test
     
 Modify your controller's ``index()`` action to look like this:
 

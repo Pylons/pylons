@@ -13,15 +13,19 @@ Default Configuration File Setup
 
 When you create a project using ``paster create --template=pylons`` a sample configuration file called ``development.ini`` is automatically produced as one of the project files. This is an example of a configuration file and contains sensible options for development use in your project. For example when you are developing a Pylons application it is very useful to be able to see a debug report every time an error occurs so the development.ini file includes options to enable debug mode so these errors are shown.
 
-You can serve your application using this development configuration like this::
+You can serve your application using this development configuration like this:
 
-    paster serve --reload development.ini
+.. code-block:: Bash
+
+    $ paster serve --reload development.ini
     
 The ``--reload`` option is useful during development as the server will automatically reload each time a file is changed so that you can test the changes without having to manually restart the server.
     
-Say your application is called wiki, when a user comes to want to setup an application they will run the command::
+Say your application is called wiki, when a user comes to want to setup an application they will run the command:
 
-    paster make-config wiki production.ini
+.. code-block:: Bash
+
+    $ paster make-config wiki production.ini
     
 This command produces a different configuration file with sensible options for production use. In particular, the debug display is disables as the report might contain your usernames, passwords or other information you wouldn't want end users to see.
 
@@ -29,9 +33,11 @@ You can find out how to control what is produced by the ``paster make-config`` b
 
 It is your responsibility as a developer to ensure that a sensible set of default configuration values exist when the webmaster uses the ``paster make-config`` command.
 
-You can create as many different configuration files as you like. Typically a developer might have a ``development.ini`` configuration file for testing, a ``production.ini`` file produced by the ``paster make-config`` command for testing the command produces sensible production output. You might also want a ``testing.ini`` configuration for doing some specific testing or any other number of configurations appropriate for your application. You can deploy your configuration in a variety of ways supported by paste deploy but typically you would serve your configuration like this::
+You can create as many different configuration files as you like. Typically a developer might have a ``development.ini`` configuration file for testing, a ``production.ini`` file produced by the ``paster make-config`` command for testing the command produces sensible production output. You might also want a ``testing.ini`` configuration for doing some specific testing or any other number of configurations appropriate for your application. You can deploy your configuration in a variety of ways supported by paste deploy but typically you would serve your configuration like this:
 
-    paster serve production.ini
+.. code-block:: Bash
+
+    $ paster serve production.ini
     
 Configuration File Format
 =========================

@@ -691,14 +691,18 @@ languages: English, French and Spanish. We also want to display the word
 ``'Hello'`` in the default language. We'll then go on to use some pural words
 too. 
 
-Lets call our project ``translate_demo``::
+Lets call our project ``translate_demo``:
 
-    paster create --template=pylons translate_demo
+.. code-block:: Bash
+
+    $ paster create --template=pylons translate_demo
     
-Now lets add a friendly controller that says hello::
+Now lets add a friendly controller that says hello:
 
-    cd translate_demo
-    paster controller hello
+.. code-block:: Bash
+
+    $ cd translate_demo
+    $ paster controller hello
     
 Edit ``controllers/hello.py`` controller to look like this making use of the
 ``_()`` function everywhere where the string ``Hello`` appears:
@@ -815,26 +819,34 @@ your translation.
 You will need to repeat the process of creating a ``.mo`` file for the ``fr``,
 ``es`` and ``en`` translations.
 
-The relevant lines from ``i18n/en/LC_MESSAGES/translate_demo.po`` look like this::
+The relevant lines from ``i18n/en/LC_MESSAGES/translate_demo.po`` look like this:
+
+.. code-block:: Text
 
     #: translate_demo\controllers\hello.py:6 translate_demo\controllers\hello.py:9
     msgid "Hello"
     msgstr "Hello"
     
-The relevant lines from ``i18n/es/LC_MESSAGES/translate_demo.po`` look like this::
+The relevant lines from ``i18n/es/LC_MESSAGES/translate_demo.po`` look like this:
+
+.. code-block:: Text
 
     #: translate_demo\controllers\hello.py:6 translate_demo\controllers\hello.py:9
     msgid "Hello"
     msgstr "¡Hola!"
     
-The relevant lines from ``i18n/fr/LC_MESSAGES/translate_demo.po`` look like this::
+The relevant lines from ``i18n/fr/LC_MESSAGES/translate_demo.po`` look like this:
+
+.. code-block:: Text
 
     #: translate_demo\controllers\hello.py:6 translate_demo\controllers\hello.py:9
     msgid "Hello"
     msgstr "Bonjour"
 
 Whichever tools you use you should end up with an ``i18n`` directory that looks
-like this when you have finished::
+like this when you have finished:
+
+.. code-block:: Text
 
     i18n/en/LC_MESSAGES/translate_demo.po
     i18n/en/LC_MESSAGES/translate_demo.mo
@@ -847,12 +859,16 @@ like this when you have finished::
 Testing the Application
 -----------------------
 
-Start the server with the following command::
+Start the server with the following command:
 
-    paster serve --reload development.ini
+.. code-block:: Bash
+
+    $ paster serve --reload development.ini
     
 Test your controller by visiting http://localhost:5000/hello. You should see
-the following output::
+the following output:
+
+.. code-block:: Text
 
     Default: Hello
     fr: Bonjour
@@ -894,7 +910,9 @@ like this:
 
 If you are running the server with the ``--reload`` option the server will
 automatically restart if you change the ``development.ini`` file. Otherwise
-restart the server manually and the output would this time be as follows::
+restart the server manually and the output would this time be as follows:
+
+.. code-block:: Text
 
     Default: ¡Hola!
     fr: Bonjour
@@ -918,7 +936,9 @@ Modify the last line of the hello controller to look like this:
     Of course, in real life breaking up sentences in this way is very dangerous because some
     grammars might require the order of the words to be different. 
 
-If you run the example again the output will be::
+If you run the example again the output will be:
+
+.. code-block:: Text
 
     Default: ¡Hola!
     fr: Bonjour World!

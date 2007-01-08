@@ -29,9 +29,11 @@ so:
     port = 6500
     
 Note that you will need to install the `flup <http://www.saddi.com/software/flup/dist/>`_ package, which can be
-installed via easy_install::
+installed via easy_install:
 
-    easy_install -U flup
+.. code-block:: Bash
+
+    $ easy_install -U flup
 
 The options in the config file are passed onto flup. The two common ways to run Fast CGI is either using a socket
 to listen for requests, or listening on a port/host which allows a webserver to send your requests to web applications

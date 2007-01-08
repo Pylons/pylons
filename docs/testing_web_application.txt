@@ -11,9 +11,11 @@ To run the test suite for your web application, Pylons utilizes the `nose
 <http://somethingaboutorange.com/mrl/projects/nose/>`_ test runner/discovery 
 package. Running ``nosetests`` in your project directory will run all the 
 tests you create in the tests directory. If you don't have nose installed on
-your system, it can be installed via setuptools with::
+your system, it can be installed via setuptools with:
 
-    easy_install -U nose
+.. code-block:: Bash
+
+    $ easy_install -U nose
 
 .. note::
     ``paste.fixture`` is currently incompatible with Windows, we are working 
@@ -22,11 +24,13 @@ your system, it can be installed via setuptools with::
 Example: Testing a Controller
 =============================
 
-First let's create a new project and controller for this example::
+First let's create a new project and controller for this example:
 
-    paster create --template=pylons TestExample
-    cd TestExample
-    paster controller comments
+.. code-block:: Bash
+
+    $ paster create --template=pylons TestExample
+    $ cd TestExample
+    $ paster controller comments
 
 You'll see that it creates two files when you create a controller. The stub controller, and a test for it under ``testexample/tests/functional/``. 
 
@@ -61,7 +65,9 @@ Then write a basic set of tests to ensure that the controller actions are functi
             assert response.session['name'] == 'Joe Smith'
             assert 'Saved a session' in response
 
-Run ``nosetests`` in your main project directory and you should see them all pass::
+Run ``nosetests`` in your main project directory and you should see them all pass:
+
+.. code-block:: PyCon
 
     ..
     ----------------------------------------------------------------------
@@ -75,7 +81,9 @@ Unfortunately, nosetests (as of 0.8.6 at least) cannot provide detailed informat
 
     assert response.session.has_key('address') == True
 
-When you run ``nosetests`` you will get the following, not-very-helpful response::
+When you run ``nosetests`` you will get the following, not-very-helpful response:
+
+.. code-block:: PyCon
 
     .F
     ======================================================================
@@ -98,7 +106,9 @@ Since our TestController we inherited from is a standard Python unit testing con
 
     self.assertEqual(response.session.has_key('address'), True)
 
-Which provides the more useful failure message::
+Which provides the more useful failure message:
+
+.. code-block:: PyCon
 
     .F
     ======================================================================

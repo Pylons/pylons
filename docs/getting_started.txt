@@ -17,13 +17,17 @@ Creating a Pylons Project
 
 Pylons uses Paste to create and deploy projects as well as create new controllers and their tests.
 
-Create a new project named ``helloworld`` with this command::
+Create a new project named ``helloworld`` with this command:
 
-    paster create --template=pylons helloworld
-    
+.. code-block:: Bash
+
+    $ paster create --template=pylons helloworld
+
 Note: Windows users must configure their ``PATH`` as described in `Windows Notes <windowsnotes.html>`_, otherwise they must specify the full path name to the ``paster`` command.
 
-This creates a new Pylons project which you can use as a basis for your own project. The directory structure is as follows::
+This creates a new Pylons project which you can use as a basis for your own project. The directory structure is as follows:
+
+.. code-block:: Text
 
     - helloworld
         - data
@@ -38,7 +42,9 @@ The ``setup.py`` file is used to create a re-distributable Python package of you
 
 You may also notice a ``data`` directory which is created the first time you run the code. You can configure the location of the ``data`` directory by editing your ``development.ini`` file. This directory will hold cached data and sessions used by your app while its running.
 
-The ``helloworld`` directory within the ``helloworld`` directory is where all your application specific code and files are placed. The directory looks like this::
+The ``helloworld`` directory within the ``helloworld`` directory is where all your application specific code and files are placed. The directory looks like this:
+
+.. code-block:: Text
 
     - helloworld
         - helloworld
@@ -80,10 +86,12 @@ The ``websetup.py`` should contain any code that should be executed when an end 
 Testing the template project
 ============================
 
-We can test the template project like this::
+We can test the template project like this:
     
-    cd helloworld
-    paster serve --reload development.ini
+.. code-block:: Bash
+
+    $ cd helloworld
+    $ paster serve --reload development.ini
     
 The command loads our project server configuration file in ``development.ini`` and serves the Pylons application.
 
@@ -127,9 +135,11 @@ More information is available in the `Interactive Debugger <interactive_debugger
 Creating a Controller and modifying the Routes
 ==============================================
 
-You're now ready to start creating your own web application. First, lets create a basic hello World controller::
+You're now ready to start creating your own web application. First, lets create a basic hello World controller:
 
-    paster controller hello
+.. code-block:: Bash
+
+    $ paster controller hello
 
 This ``paster`` command will create the ``controllers/hello.py`` file for you with a basic layout as well as a ``helloworld/tests/functional/test_hello.py`` that is used for running functional tests of the controller.
 

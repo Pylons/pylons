@@ -12,9 +12,11 @@ Egg Files
 
 Before you can understand how a user configures an application you have to understand how Pylons applications are distributed. All Pylons applications are distributed in ``.egg`` format. An egg is simply a Python executable package that has been put together into a single file.
 
-You create an egg from your project by going into the project root directory and running the command::
+You create an egg from your project by going into the project root directory and running the command:
 
-    python setup.py bdist_egg
+.. code-block:: Bash
+
+    $ python setup.py bdist_egg
     
 If everything goes smoothly a ``.egg`` file with the correct name and version number appears in a newly created ``dist`` directory.
 
@@ -31,17 +33,23 @@ you can install all the packages you want to use without super-user access.
 Understanding the Setup Process
 =================================
 
-Say you have written a Pylons wiki application called ``wiki``. When a webmaster wants to install your wiki application he will run the following command to generate a config file::
+Say you have written a Pylons wiki application called ``wiki``. When a webmaster wants to install your wiki application he will run the following command to generate a config file:
 
-    paster make-config wiki wiki_production.ini
+.. code-block:: Bash
+
+    $ paster make-config wiki wiki_production.ini
     
-He will then edit the config file for his production environment with the settings he wants and then run this command to setup the application::
+He will then edit the config file for his production environment with the settings he wants and then run this command to setup the application:
 
-    paster setup-app wiki_production.ini
+.. code-block:: Bash
 
-Finally he might choose to deploy the wiki application through the paste server like this (although he could have chosen CGI/FastCGI/SCGI etc)::
+    $ paster setup-app wiki_production.ini
 
-    paster serve wiki_production.ini
+Finally he might choose to deploy the wiki application through the paste server like this (although he could have chosen CGI/FastCGI/SCGI etc):
+
+.. code-block:: Bash
+
+    $ paster serve wiki_production.ini
 
 The idea is that an application only needs to be installed once but if necessary can be setup multiple times, each with a different configuration. 
 
@@ -106,9 +114,11 @@ Note: At the moment on windows this only works if you specify the full URL to th
 Deploying the Application
 -------------------------
 
-Once the application is setup it is ready to be deployed. There are lots of ways of deploying an application, one of which is to use the ``paster serve`` command which takes the configuration file that has already been used to setup the application and serves it on a local server for production use::
+Once the application is setup it is ready to be deployed. There are lots of ways of deploying an application, one of which is to use the ``paster serve`` command which takes the configuration file that has already been used to setup the application and serves it on a local server for production use:
 
-    paster serve wiki_production.ini
+.. code-block:: Bash
+
+    $ paster serve wiki_production.ini
 
 More information on deployment options is available on the Paste website at http://www.pythonpaste.org.
 

@@ -10,25 +10,33 @@ Even if Windows users have Tortoise SVN installed they will still need the comma
 
 Read the `Easy Install documentation <http://peak.telecommunity.com/DevCenter/EasyInstall>`_, to decide whether to install Pylons as a root user so it can be used by everyone or whether to use a `custom installation location <http://peak.telecommunity.com/DevCenter/EasyInstall#custom-installation-locations>`_.
 
-If you have easy install run::
+If you have easy install run:
 
-    easy_install -U http://pylonshq.com/svn/Pylons/trunk
+.. code-block:: Bash
 
-Otherwise download `ez_setup.py <http://peak.telecommunity.com/dist/ez_setup.py>`_ and run::
+    $ easy_install -U http://pylonshq.com/svn/Pylons/trunk
+
+Otherwise download `ez_setup.py <http://peak.telecommunity.com/dist/ez_setup.py>`_ and run:
     
-    python ez_setup.py -U http://pylonshq.com/svn/Pylons/trunk
+.. code-block:: Bash
+
+    $ python ez_setup.py -U http://pylonshq.com/svn/Pylons/trunk
 
 
 Working Directly From the Source Code
 =====================================
 
-Check out the latest code::
+Check out the latest code:
 	
-	svn co http://pylonshq.com/svn/Pylons/trunk Pylons
+.. code-block:: Bash
 
-To tell setuptools to use the version you are editing in the ``Pylons`` directory::
+	$ svn co http://pylonshq.com/svn/Pylons/trunk Pylons
 
-	cd Pylons
-	python setup.py develop
+To tell setuptools to use the version you are editing in the ``Pylons`` directory:
+
+.. code-block:: Bash
+
+	$ cd Pylons
+	$ python setup.py develop
 	
 Now you can make changes to the files in the Pylons directory and the code will run exactly as if you had installed a version of the egg with the changes you have made.

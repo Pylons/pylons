@@ -14,15 +14,21 @@ First create a project as described in the `Getting Started Guide <getting_start
 
 You will notice a docs directory within your main project directory. This is where you should write your main documentation.
 
-There is already an ``index.txt`` file in ``docs`` so you can already generate documentation. First install Pudge and buildutils like this::
+There is already an ``index.txt`` file in ``docs`` so you can already generate documentation. First install Pudge and buildutils like this:
 
-    easy_install pudge buildutils
-    
-then run the following command from your project's main directory where the ``setup.py`` file is::
+.. code-block:: Bash
 
-    setup.py pudge
+    $ easy_install pudge buildutils
     
-Pudge will produce output similar to the following to tell you what it is doing and show you any problems::
+then run the following command from your project's main directory where the ``setup.py`` file is:
+
+.. code-block:: Bash
+
+    $ setup.py pudge
+    
+Pudge will produce output similar to the following to tell you what it is doing and show you any problems:
+
+.. code-block:: Text
 
     running pudge
     generating documentation

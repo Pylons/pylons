@@ -11,28 +11,38 @@ By now you probably have already seen the `amazing screencast <http://media.ruby
 Getting Started
 ===============
 
-First install Pylons 0.9::
+First install Pylons 0.9:
 
-	> easy_install -U pylons==0.9
+.. code-block:: Bash
 
-Then create your project::
+    $ easy_install -U pylons==0.9
 
-    > paster create --template=pylons FlickrSearch
+Then create your project:
 
-add a controller called ``flickr``::
+.. code-block:: Bash
 
-    > cd FlickrSearch
-    > paster controller flickr
+    $ paster create --template=pylons FlickrSearch
 
-Our project is going to use a third party library for Flickr web services. We've picked flickr.py from the `Flickr! API list <http://www.flickr.com/services/api/>`_. All third party libraries you add to a Pylons project can go in the ``lib`` directory so download http://jamesclarke.info/projects/flickr/flickr.py and put it in ``lib``::
+add a controller called ``flickr``:
+
+.. code-block:: Bash
+
+    $ cd FlickrSearch
+    $ paster controller flickr
+
+Our project is going to use a third party library for Flickr web services. We've picked flickr.py from the `Flickr! API list <http://www.flickr.com/services/api/>`_. All third party libraries you add to a Pylons project can go in the ``lib`` directory so download http://jamesclarke.info/projects/flickr/flickr.py and put it in ``lib``:
     
-    > cd flickrsearch/lib
-    > wget http://jamesclarke.info/projects/flickr/flickr.py
+.. code-block:: Bash
 
-Now lets start the server and see what we have::
+    $ cd flickrsearch/lib
+    $ wget http://jamesclarke.info/projects/flickr/flickr.py
 
-    > cd ../../
-    > paster serve --reload development.ini
+Now lets start the server and see what we have:
+
+.. code-block:: Bash
+
+    $ cd ../../
+    $ paster serve --reload development.ini
 
 Note that we have started the server with the ``--reload`` switch. This means any changes we make to code will cause the server to restart if necessary so that you can always test your latest code.
     
