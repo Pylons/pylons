@@ -11,7 +11,7 @@ from paste.deploy.converters import asbool
 import pylons
 from pylons.helpers import abort
 
-XMLRPC_MAPPING = {str:'string', list:'array', int:'int', bool:'boolean',
+XMLRPC_MAPPING = {basestring:'string', list:'array', int:'int', bool:'boolean',
                   float:'double', dict:'struct', 
                   xmlrpclib.DateTime:'dateTime.iso8601',
                   xmlrpclib.Binary:'base64'}
