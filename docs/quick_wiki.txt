@@ -176,17 +176,23 @@ This code deserves a bit of explaining. The ``content = None`` line is so that t
 
     Pylons uses a Model View Controller architecture and so the formatting of objects into HTML should usually be handled in the view, ie in a template. In this example converting reStructuredText into HTML in a template is not appropriate so we are treating the HTML representation of the content as part of the model. It also gives us the chance to demonstrate that SQLAlchemy domain classes are real Python classes that can have their own methods.
 
-One final change, since we have used docutils and SQLAlchemy, both third party packages, we need to edit our ``setup.py`` file so that anyone installing QuickWiki with `Easy Install <http://peak.telecommunity.com/DevCenter/EasyInstall>`_ will automatically also have these dependencies installed for them too. Edit your ``setup.py`` in your project root directory so that the ``install_requires`` line looks like this::
+One final change, since we have used docutils and SQLAlchemy, both third party packages, we need to edit our ``setup.py`` file so that anyone installing QuickWiki with `Easy Install <http://peak.telecommunity.com/DevCenter/EasyInstall>`_ will automatically also have these dependencies installed for them too. Edit your ``setup.py`` in your project root directory so that the ``install_requires`` line looks like this:
+
+.. code-block:: Python
 
     install_requires=["Pylons>=0.9.4.1", "docutils==0.4", "SQLAlchemy>=0.2.6"],
 
-While we are we are making changes to ``setup.py`` we might want to complete some of the other sections too. Set the version number to 0.1.3 and add a description and URL which will be used on the Python Cheeseshop when we release it::
+While we are we are making changes to ``setup.py`` we might want to complete some of the other sections too. Set the version number to 0.1.3 and add a description and URL which will be used on the Python Cheeseshop when we release it:
+
+.. code-block:: Python
 
     version="0.1.3",
     description="Result of following the Pylons 0.9.4.1 QuickWiki Tutorial",
     url="http://www.pylonshq.com/docs/quick_wiki.html",
     
-We might also want to make a full release rather than a development release in which case we would remove the following lines from ``setup.cfg``::
+We might also want to make a full release rather than a development release in which case we would remove the following lines from ``setup.cfg``:
+
+.. code-block:: Ini
 
     [egg_info]
     tag_build = dev
@@ -685,8 +691,8 @@ Finally you can sign in to the CheeseShop with the account details you used when
 Before this will work you will need to create a ``.pypirc`` file in your home directory containing your username and password so that the ``upload`` command knows who to sign in as. It should look similar to this::
 
     [server-login]
-    username:james
-    password:password
+    username: james
+    password: password
 
 .. Tip:: This works on windows too but you will need to set your ``HOME`` environment variable first. If your home directory is ``C:\Documents and Settings\James`` you would put your ``.pypirc`` file in that directory and set your ``HOME`` environment variable with this command::
 

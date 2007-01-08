@@ -53,7 +53,9 @@ Using Docstrings
 
 Docstrings are one of Python's most useful features if used properly. They are described in detail in the Python documentation but basically allow you to document any module, class, method or function, in fact just about anything. Users can then access this documentation interactively.
 
-Try this::
+Try this:
+
+.. code-block:: PyCon
 
     >>> import pylons
     >>> help(pylons)
@@ -68,7 +70,9 @@ Try clicking the ``Modules`` link in the HTML documentation you generated earlie
 Using doctest
 =============
 
-The final useful thing about docstrings is that you can use the ``doctest`` module with them. ``doctest`` again is described in the Python documentation but it looks through your docstrings for things that look like Python code written at a Python prompt. Consider this example::
+The final useful thing about docstrings is that you can use the ``doctest`` module with them. ``doctest`` again is described in the Python documentation but it looks through your docstrings for things that look like Python code written at a Python prompt. Consider this example:
+
+.. code-block:: PyCon
 
     >>> a = 2
     >>> b = 3

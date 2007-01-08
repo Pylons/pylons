@@ -152,7 +152,9 @@ The ``unicode()`` constructor has the signature ``unicode(string[, encoding,
 errors])``. All of its arguments should be 8-bit strings. The first argument is
 converted to Unicode using the specified encoding; if you leave off the
 encoding argument, the ASCII encoding is used for the conversion, so characters
-greater than 127 will be treated as errors::
+greater than 127 will be treated as errors:
+
+.. code-block:: PyCon
 
     >>> unicode('hello')
     u'hello'
@@ -170,6 +172,8 @@ ascii. Legal values for this argument are ``'strict'`` (raise a
 ``UnicodeDecodeError`` exception), ``'replace'`` (replace the character that
 can't be decoded with another one), or ``'ignore'`` (just leave the character
 out of the Unicode result). 
+
+.. code-block:: PyCon
 
     >>> unicode('\x80abc', errors='strict')
     Traceback (most recent call last):
@@ -194,7 +198,7 @@ the character ``0x80`` is encoded with the ``'latin-1'``, ``'iso_8859_1'`` or
 ``'8859'`` character sets (which incidentally are different names for the same
 thing) we get the result we expected:
 
-.. code-block:: Python
+.. code-block:: PyCon
 
     >>> unicode('\x80', encoding='latin-1')
     u'\x80'
@@ -208,7 +212,7 @@ Unicode objects in Python have most of the same methods that normal Python
 strings provide. Python will try to use the ``'ascii'`` codec to convert
 strings to Unicode if you do an operation on both types:
 
-.. code-block:: Python
+.. code-block:: PyCon
 
     >>> a = 'hello'
     >>> b = unicode(' world!')
@@ -217,7 +221,7 @@ strings to Unicode if you do an operation on both types:
 
 You can encode a Unicode string using a particular encoding like this:
 
-.. code-block:: Python
+.. code-block:: PyCon
 
     >>> u'Hello World!'.encode('UTF-8')
     'Hello World!'
@@ -228,14 +232,14 @@ Unicode Literals in Python Source Code
 In Python source code, Unicode literals are written as strings prefixed with
 the 'u' or 'U' character:
 
-.. code-block:: Python
+.. code-block:: PyCon
 
     >>> u'abcdefghijk'
     >>> U'lmnopqrstuv'
 
 You can also use ``"``, ``"""``` or ``'''`` versions too. For example:
 
-.. code-block:: Python
+.. code-block:: PyCon
 
     >>> u"""This
     ... is a really long
@@ -251,7 +255,7 @@ out what the ordinal is with ``ord()``.
 
 Here is an example demonstrating the different alternatives:
 
-.. code-block:: Python
+.. code-block:: PyCon
 
     >>> s = u"\x66\u0072\u0061\U0000006e" + unichr(231) + u"ais"
     >>> #     ^^^^ two-digit hex escape
@@ -288,13 +292,17 @@ no encoding declaration:
     u = u'abcdé'
     print ord(u[-1])
 
-When you run it with Python 2.4, it will output the following warning::
+When you run it with Python 2.4, it will output the following warning:
+
+.. code-block:: PyCon
 
     sys:1: DeprecationWarning: Non-ASCII character '\xe9' in file testas.py on line
     2, but no encoding declared; see http://www.python.org/peps/pep-0263.html for de
     tails
 
-and then the following output::
+and then the following output:
+
+.. code-block:: PyCon
 
     233
 
@@ -439,6 +447,8 @@ string. For example running this example as ``test.py``:
     print os.listdir(u'.')
 
 will produce the following output:
+
+.. code-block:: Python
 
     ['Sample?', 'test.py']
     [u'Sample\u1388', u'test.py']
@@ -589,7 +599,9 @@ Output Encoding
 
 Web pages should be generated with a specific encoding, most likely UTF-8. At
 the very least, that means you should specify the following in the ``<head>``
-section::
+section:
+
+.. code-block:: HyperText
 
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
@@ -603,7 +615,9 @@ You should also set the charset in the ``Content-Type`` header:
 If you specify that your output is UTF-8, generally the web browser will
 give you UTF-8. If you want the browser to submit data using a different 
 character set, you can set the encoding by adding the ``accept-encoding`` 
-tag to your form. Here is an example::
+tag to your form. Here is an example:
+
+.. code-block:: HyperText
 
 	<form accept-encoding="US-ASCII" ...>
 
@@ -978,7 +992,9 @@ files like this::
 
 The ``setup.py`` automatically includes the ``.mo`` language catalogs your
 application needs so that your application can be distributed as an egg. This
-is done with the following line in your ``setup.py`` file::
+is done with the following line in your ``setup.py`` file:
+
+.. code-block:: Python
 
     package_data={'translate_demo': ['i18n/*/LC_MESSAGES/*.mo']},
     

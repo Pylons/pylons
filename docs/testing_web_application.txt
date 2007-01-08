@@ -125,7 +125,9 @@ Pylons will provide several additional attributes for the ``paste.fixture`` resp
     Globals object
 
 To use them, merely access the attributes of the response *after* you've used
-a get/post command::
+a get/post command:
+
+.. code-block:: Python
 
     response = app.get('/some/url')
     assert response.session['var'] == 4
