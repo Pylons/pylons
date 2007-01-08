@@ -582,7 +582,7 @@ adding an option like this:
     # Add your own Myghty config options here, note that all config options will override
     # any Pylons config options
     
-    myghty['output_encoding'] = 'UTF-8'
+    tmpl_options['myghty.output_encoding'] = 'UTF-8'
 
 replacing ``UTF-8`` with the encoding you wish to use.
 
@@ -590,7 +590,7 @@ If you need to disable Unicode support altogether you can set this:
 
 .. code-block:: Python
 
-    myghty['disable_unicode'] = True
+    tmpl_options['myghty.disable_unicode'] = True
 
 but again, you would have to have a good reason to want to do this.   
 
