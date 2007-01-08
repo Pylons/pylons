@@ -56,7 +56,7 @@ your Apache.
 
 There will most likely be a section where you declare your FastCGI servers, and whether they're external:
 
-.. code-block:: HyperText
+.. code-block:: ApacheConf
 
     <IfModule mod_fastcgi.c>
         FastCgiIpcDir /tmp
@@ -72,13 +72,13 @@ to this filename will be handled by the FastCGI application.
 The other important line to ensure that your Apache webserver has is to indicate that fcgi scripts should be handled
 with Fast-CGI:
 
-.. code-block:: HyperText
+.. code-block:: ApacheConf
 
     AddHandler fastcgi-script .fcgi
 
 Finally, to configure your website to use the Fast CGI application you will need to indicate the script to be used:
 
-.. code-block:: HyperText
+.. code-block:: ApacheConf
 
     <VirtualHost *:80>
         ServerAdmin george@monkey.com

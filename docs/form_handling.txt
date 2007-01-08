@@ -79,7 +79,7 @@ Using the Helpers
 
 Creating forms can also be done using Pylons' `built in helpers <http://pylonshq.com/WebHelpers/module-index.html>`_. Here is the same form created in the previous section but this time using the helpers:
 
-.. code-block:: Hypertext
+.. code-block:: Html+Myghty
 
     <% h.form(h.url(action='email'), method='get') %>
     Email Address: <% h.text_field('email') %>
@@ -92,13 +92,13 @@ File Uploads
 ============
 File upload fields are created by using the 'file' input type. The ``file_field`` helper can create one for you:
 
-.. code-block:: Hypertext
+.. code-block:: Myghty
 
     <% h.file_field('myfile') %>
 
 The HTML form must have its ``enctype`` attribute set to ``multipart/form-data`` for the file upload to work. The ``form`` helper's ``multipart`` keyword argument can set this for you:
 
-.. code-block:: Hypertext
+.. code-block:: Html+Myghty
 
     <% h.form(h.url(action='upload'), multipart=True) %>
     Upload file:      <% h.file_field('myfile') %> <br />
@@ -188,7 +188,7 @@ Pylons comes with an easy to use ``validate`` decorator, imported by default in 
 
 Validation only occurs on POST requests so we need to alter our form definition so that the method is a POST:
 
-.. code-block:: Hypertext
+.. code-block:: Myghty
 
     <% h.form(h.url(action='email'), method='post') %>
 
@@ -258,7 +258,7 @@ with the lines:
 
 Now we will need to make some tweaks to ``form.myt``. Make it look like this:
 
-.. code-block:: Hypertext
+.. code-block:: Html+Myghty
 
     <% h.form(h.url(action='email'), method='get') %>
     

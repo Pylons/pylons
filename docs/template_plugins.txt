@@ -54,7 +54,7 @@ first argument to ``render`` or ``render_response`` can be the template engine t
 Now let's add the Kid template to render, create the file ``yourproject/kidtemplates/test.kid`` with
 the following content:
 
-.. code-block:: XML
+.. code-block:: Html+Genshi
     
     <html xmlns="http://www.w3.org/1999/xhtml" xmlns:py="http://purl.org/kid/ns#">
         <head>

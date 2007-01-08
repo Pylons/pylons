@@ -920,7 +920,7 @@ Translations Within Templates
 You can also use the ``_()`` function within templates in exactly the same way
 you do in code. For example:
 
-.. code-block:: HyperText
+.. code-block:: Myghty
 
     <% _('Hello') %> 
     

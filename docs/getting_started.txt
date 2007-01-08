@@ -176,7 +176,7 @@ Here's an example template, using Myghty, that prints some request information.
 
 Create a template file ``helloworld/templates/serverinfo.myt`` containing the following:
 
-.. code-block:: HyperText
+.. code-block:: Html+Myghty
 
     <p>Hi, here's the server environment: <br />
     <% str(request.environ) %></p>
@@ -276,7 +276,7 @@ To make it easier to set up your data for use by the template, the variable ``c`
 
 and modify the ``serverinfo.myt`` file in the ``templates`` directory to look like this:
 
-.. code-block:: HyperText
+.. code-block:: Html+Myghty
 
     <p>The value of <tt>c.value</tt> is: 
     <% c.value %>
@@ -286,7 +286,7 @@ and modify the ``serverinfo.myt`` file in the ``templates`` directory to look li
 
 You should see ``2`` printed out on the page. If you ask for an attribute on ``c`` that does not exist, rather than throwing an Attribute error, an empty string will be returned. This makes it easy to toggle behavior depending on the response. For example:
 
-.. code-block:: HyperText
+.. code-block:: Html+Myghty
 
     <p>Hi there <% c.name or c.full_name or "Joe Smith" %>
 

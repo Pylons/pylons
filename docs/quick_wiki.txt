@@ -275,7 +275,7 @@ Templates
 
 We will make use of a feature of the Myghty templating language called inheritance for our project. Add the main page template in ``templates/autohandler``:
 
-.. code-block:: HyperText
+.. code-block:: Html+Myghty
 
     <html>
         <head>
@@ -368,7 +368,7 @@ Replace the existing ``index()`` action with this:
             
 Add a template called ``templates/page.myt`` that looks like this:
 
-.. code-block:: HyperText
+.. code-block:: Html+Myghty
 
     <h1 class="main"><% c.title %></h1>
     <% c.content %>
@@ -379,7 +379,7 @@ This template simply displays the page title and content.
 
 We also need a template for pages that don't already exist. They need to display a message and link to the edit action so that they can be created. Add a template called ``templates/new_page.myt`` that looks like this:
 
-.. code-block:: HyperText
+.. code-block:: Html+Myghty
 
     <h1 class="main"><% c.title %></h1>
     <p>This page doesn't exist yet. 
@@ -431,7 +431,7 @@ To edit the wiki page we need to get the content from the database without chang
 
 and the create the ``templates/edit.myt`` file:
 
-.. code-block:: HyperText
+.. code-block:: Html+Myghty
 
     <h1 class="main">Editing <% c.title %></h1>
 
@@ -470,7 +470,7 @@ Add the ``save()`` action:
 
 In order for the ``page.myt`` template to display the ``Successfully saved`` message after the page is saved we need to update the ``templates/page.myt`` file. After ``<h1 class="main"><% c.title %></h1>`` add these lines making sure there is no whitespace before the lines that start with a ``%`` character:
 
-.. code-block:: HyperText
+.. code-block:: Html+Myghty
 
     % if c.message:
     <p><div id="message"><% c.message %></div></p>
@@ -504,7 +504,7 @@ Add the ``list()`` action:
 
 The ``list()`` action simply gets all the pages from the database. Create the ``templates/titles.myt`` file to display the list:
 
-.. code-block:: HyperText
+.. code-block:: Html+Myghty
 
     <h1 class="main">Title List</h1>
 
@@ -518,7 +518,7 @@ The ``list()`` action simply gets all the pages from the database. Create the ``
 
 Finally edit ``templates/autohandler`` to add a link to the title list so that the footer looks like this:
 
-.. code-block:: HyperText
+.. code-block:: Html+Myghty
 
     <p class="footer">
         Return to the
@@ -538,7 +538,7 @@ Since this tutorial is designed to get you familiar with as much of Pylons core 
 
 Add this line to ``templates/autohandler`` before ``</head>``:
 
-.. code-block:: HyperText
+.. code-block:: Myghty
 
     <% h.javascript_include_tag('/javascripts/effects.js', builtins=True)  %>
 
@@ -562,13 +562,13 @@ The ``javascripts_app`` WSGI application maps any requests to ``/javascripts/`` 
 
 Now for the AJAX! We want all the titles in the titles list to be draggable so we enclose each of them with a ``<span>`` element with a unique ID. Edit ``templates/titles.myt`` to replace this line:
 
-.. code-block:: HyperText
+.. code-block:: Html+Myghty
 
     <% title %>&nbsp;[<% h.link_to('visit', h.url_for(title=title, action="index")) %>]
     
 with this:
 
-.. code-block:: HyperText
+.. code-block:: Html+Myghty
 
     <span id="page-<% title %>"><% title %></span>
     &nbsp;[<% h.link_to('visit', h.url_for(title=title, action="index")) %>]
@@ -578,7 +578,7 @@ This marks each of the titles as a draggable element that reverts to its origina
 
 We better have somewhere to drop the titles to delete them so add this before the ``<ul id="titles">`` line in ``templates/titles.myt`` :
 
-.. code-block:: HyperText
+.. code-block:: Html+Myghty
 
     <div id="trash">
         Delete a page by dragging its title here
@@ -613,7 +613,7 @@ When a title is dropped on the ``trash`` box an AJAX request will be made to the
             
 The title of the page is obtained from the ``id`` element and the object is loaded and then deleted. The change is saved ``objectstore.flush()`` before the list of remaining titles is rendered by the template ``templates/list.myt`` which you should create with the following content:
 
-.. code-block:: HyperText
+.. code-block:: Html+Myghty
 
     % for title in c.titles:
     <li>
@@ -629,7 +629,7 @@ Visit http://127.0.0.1:5000/page/list and have a go at deleting some pages. You 
 
 One last tidy up we can make before we finish. You might have noticed that the ``list.myt`` and ``titles.myt`` use the same code to produce the lists. In the interests of keeping code duplication to a minimum edit ``templates/titles.myt`` to replace this code:
 
-.. code-block:: HyperText
+.. code-block:: Html+Myghty
 
     % for title in c.titles:
     <li>
@@ -641,7 +641,7 @@ One last tidy up we can make before we finish. You might have noticed that the `
     
 With this code:
 
-.. code-block:: HyperText
+.. code-block:: Myghty
 
     <% render('/list.myt', fragment=True) %>
 
