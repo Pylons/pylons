@@ -121,7 +121,7 @@ As an example, if you wanted to add middleware that added a new key to the envir
             self.value = value
             
         def __call__(self, environ, start_response):
-            environ[key] = value
+            environ[self.key] = self.value
             return self.app(environ, start_response)
             
     app = KeyAdder(app, 'test.hello', 'Hello World')
