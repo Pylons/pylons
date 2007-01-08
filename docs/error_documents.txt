@@ -24,8 +24,9 @@ To disable error documents, just remove the following lines from your ``config/m
 
 .. code-block:: Python
 
-    # @@@ Display error documents for 401, 403, 404 status codes (if debug is False also intercepts 500)  @@@
-     app = ErrorDocuments(app, global_conf, mapper=error_mapper, **app_conf)
+    # Display error documents for 401, 403, 404 status codes (if debug is disabled also
+    # intercepts 500)
+    app = ErrorDocuments(app, global_conf, mapper=error_mapper, **app_conf)
 
 Any status codes will no longer be intercepted. 
 
@@ -58,8 +59,9 @@ By default the status codes 404, 500, 401 and 403 are intercepted and redirected
 
 .. code-block:: Python
 
-    # @@@ Display error documents for 401, 403, 404 status codes (if debug is False also intercepts 500)  @@@
-    app = ErrorDocuments(app, global_conf, mapper=error_mapper, **kw)
+    # Display error documents for 401, 403, 404 status codes (if debug is disabled also
+    # intercepts 500)
+    app = ErrorDocuments(app, global_conf, mapper=error_mapper, **app_conf)
     
 By default the ``pylons.middleware.error_mapper`` is used. It looks like this:
 

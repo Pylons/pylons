@@ -107,7 +107,7 @@ These .ini settings are equivalent to adding the following to the end of your ap
 
 .. code-block:: Python
 
-    # @@@ This app is served behind a proxy via the following prefix (SCRIPT_NAME) @@@
+    # This app is served behind a proxy via the following prefix (SCRIPT_NAME)
     app = PrefixMiddleware(app, global_conf, prefix='/james')
 
 Whereas the modification to ``config/middleware.py`` will setup an instance of ``PrefixMiddleware`` under every environment (.ini).

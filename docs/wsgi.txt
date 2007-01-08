@@ -150,7 +150,6 @@ Towards the end of the middleware stack in your project's ``config/middleware.py
 
 .. code-block:: Python
 
-    # @@@ Cascade @@@ 
     app = Cascade([static_app, javascripts_app, app])
     
 Passed a list of applications, ``Cascade`` will try each of them in turn. If one returns a 404 status code then the next application is tried until one of the applications returns a code other than ``200`` in which case its response is returned. If all applications fail, then the last application's failure response is used.

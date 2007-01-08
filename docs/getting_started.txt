@@ -306,7 +306,7 @@ Here is an example of using the ``g`` variable. First modify your ``lib/app_glob
 
 .. code-block:: Python
 
-    def __init__(self, defaults, app, **extra):
+    def __init__(self, global_conf, app_conf, **extra):
         self.message = 'Hello'
         
 Then add this new method to the end of the ``helloworld/controllers/hello.py``:
