@@ -2,7 +2,6 @@ Porting Rails Flickr Example to Pylons 0.9
 ++++++++++++++++++++++++++++++++++++++++++
 
 :author: James Gardner
-:date: 2006-07-22
 
 Based on `original tutorial for Pylons 0.8 by Nicholas Piel <http://pylonshq.com/project/pylonshq/wiki/RailsFlickrExample>`_
 

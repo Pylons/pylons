@@ -2,7 +2,6 @@ Pylons Support for the Web Server Gateway Interface
 +++++++++++++++++++++++++++++++++++++++++++++++++++
 
 :author: James Gardner
-:date: 2006-07-23
 
 The Web Server Gateway Interface `defined in PEP 333 <http://www.python.org/dev/peps/pep-0333/>`_ is a standard interface between web servers and Python web applications or frameworks, to promote web application portability across a variety of web servers.
 
