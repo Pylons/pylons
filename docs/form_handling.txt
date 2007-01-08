@@ -26,7 +26,7 @@ Add two actions that looks like this:
 
 Add a new template called ``form.myt`` in the ``templates`` directory that contains the following:
 
-.. code-block:: Hypertext
+.. code-block:: HyperText
 
     <form name="test" method="GET" action="/hello/email">
     Email Address: <input type="text" name="email" />
