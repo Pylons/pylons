@@ -44,4 +44,4 @@ Minimising Risk
 * Do not assume that related software is of the same quality as Pylons itself, even if Pylons users frequently make use of it.
 * Subscribe to the wsgi-security-announce@googlegroups.com mailing list to be informed of security issues and their solutions.
 
-.. |at| image:: at.png
+.. |at| image:: /img/green/at.png
