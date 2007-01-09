@@ -33,5 +33,8 @@ class TestXmlrpcController(TestController):
     
     def test_listmethods(self):
         response = self.xmlreq('system.listMethods')
-        assert response == ['docs', 'system.listMethods', 'system.methodHelp', 'system.methodSignature', 'userstatus']
-        
+        assert response == ['docs', 'system.listMethods', 'system.methodHelp', 'system.methodSignature', 'uni', 'userstatus']
+    
+    def test_unicode(self):
+        response = self.xmlreq('uni')
+        assert 'A unicode string' in response['mess']

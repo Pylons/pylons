@@ -11,17 +11,17 @@ from paste.deploy.converters import asbool
 import pylons
 from pylons.helpers import abort
 
-XMLRPC_MAPPING = {basestring:'string', list:'array', int:'int', bool:'boolean',
-                  float:'double', dict:'struct', 
-                  xmlrpclib.DateTime:'dateTime.iso8601',
-                  xmlrpclib.Binary:'base64'}
+XMLRPC_MAPPING = ((basestring, 'string'), (list, 'array'), (bool, 'boolean'),
+                  (int, 'int'), (float, 'double'), (dict, 'struct'), 
+                  (xmlrpclib.DateTime, 'dateTime.iso8601'),
+                  (xmlrpclib.Binary, 'base64'))
 
 def xmlrpc_sig(args):
     """Returns a list of the function signature in string format based on a 
     tuple provided by xmlrpclib."""
     signature = []
     for param in args:
-        for type, xml_name in XMLRPC_MAPPING.iteritems():
+        for type, xml_name in XMLRPC_MAPPING:
             if isinstance(param, type):
                 signature.append(xml_name)
                 break
