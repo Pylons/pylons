@@ -1,6 +1,10 @@
 Pylons Changelog
 =================
 
+0.9.5 (**svn**)
+* Fixed the config directive 'sqlalchemy.echo' set to False being interpreted
+  as True. Patch by Alex Conrad.
+
 0.9.4.1 (Jan. 5th, 2007)
 * Added restcontroller command that generates a RESTful controller template
   and provides the appropriate map.resource command to add. Suggested by 
