@@ -268,6 +268,27 @@ class PylonsEvalException(EvalException):
             # @@: it would be nice to deal with bad content types here
             return debug_info.content()
 
+
+
+def myghty_html_data(exc_value):
+    if hasattr(exc_value, 'htmlformat'):
+        return exc_value.htmlformat()[333:-14]
+    if hasattr(exc_value, 'mtrace'):
+        return exc_value.mtrace.htmlformat()[333:-14]
+
+template_error_formatters = [myghty_html_data]
+
+try:
+    import mako.exceptions
+except ImportError:
+    pass
+else:
+    def mako_html_data(exc_value):
+        if isinstance(exc_value, (mako.exceptions.CompileException, mako.exceptions.SyntaxException)):
+            return mako.exceptions.html_error_template().render()[610:-16]
+    
+    template_error_formatters.insert(0,mako_html_data)
+    
 class PylonsDebugInfo(DebugInfo):
     def __init__(self, counter, exc_info, exc_data, base_path,
                  environ, view_uri, error_template):
@@ -282,12 +303,13 @@ class PylonsDebugInfo(DebugInfo):
         repost_button = make_repost_button(self.environ)
         myghty_data = '<p>No Myghty information available.</p>'
         tab = 'traceback_data'
-        if hasattr(self.exc_value, 'htmlformat'):
-            myghty_data = self.exc_value.htmlformat()[333:-14]
-            tab = 'myghty_data'
-        if hasattr(self.exc_value, 'mtrace'):
-            myghty_data = self.exc_value.mtrace.htmlformat()[333:-14]
-            tab = 'myghty_data'
+        
+        for formatter_ in template_error_formatters:
+            result = formatter_(self.exc_value)
+            if result:
+                tab = 'myghty_data'
+                myghty_data = result
+                break
 
         head_html = (error_head_template % {'prefix':self.base_path}) + head_html
 
@@ -461,6 +483,16 @@ error_template = '''\
 <!-- Favorite Icons -->
 <link rel="icon" href="%(prefix)s/error/img/icon-16.png" type="image/png" />
 
+<!-- Mako Styles -->
+<style type="text/css">
+    .stacktrace { margin:5px 5px 5px 5px; }
+    .highlight { padding:0px 10px 0px 10px; background-color:#9F9FDF; }
+    .nonhighlight { padding:0px; background-color:#DFDFDF; }
+    .sample { padding:10px; margin:10px 10px 10px 10px; font-family:monospace; font-size: 110%%; }
+    .sampleline { padding:0px 10px 0px 10px; }
+    .sourceline { margin:5px 5px 10px 5px; font-family:monospace; font-size: 110%%;}
+</style>
+
 </head>
 
 <body id="documentation" onload="switch_display('%(set_tab)s')">
@@ -491,7 +523,7 @@ error_template = '''\
                <!--  %%(links)s -->
                 <li id='traceback_data_tab' class="active"><a href="javascript:switch_display('traceback_data')" id='traceback_data_link' class="active"  accesskey="1">Traceback</a></li>
                 <li id='extra_data_tab' class="" ><a href="javascript:switch_display('extra_data')" id='extra_data_link' accesskey="2" >Extra Data</a></li>
-                <li id='myghty_data_tab'><a href="javascript:switch_display('myghty_data')" accesskey="3" id='myghty_data_link'>Myghty</a></li>
+                <li id='myghty_data_tab'><a href="javascript:switch_display('myghty_data')" accesskey="3" id='myghty_data_link'>Template</a></li>
             </ul>
     </div>
     <div id="main-content">
