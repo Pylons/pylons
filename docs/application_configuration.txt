@@ -29,7 +29,7 @@ Say your application is called wiki, when a user comes to want to setup an appli
     
 This command produces a different configuration file with sensible options for production use. In particular, the debug display is disables as the report might contain your usernames, passwords or other information you wouldn't want end users to see.
 
-You can find out how to control what is produced by the ``paster make-config`` by reading `Application Setup <application_setup>`_.
+You can find out how to control what is produced by the ``paster make-config`` by reading `Application Setup <application_setup.html>`_.
 
 It is your responsibility as a developer to ensure that a sensible set of default configuration values exist when the webmaster uses the ``paster make-config`` command.
 
