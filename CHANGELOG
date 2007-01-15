@@ -4,6 +4,7 @@ Pylons Changelog
 0.9.5 (**svn**)
 * Fixed the config directive 'sqlalchemy.echo' set to False being interpreted
   as True. Patch by Alex Conrad.
+* Fixed paster shell not restoring CONFIG['global_conf'].
 
 0.9.4.1 (Jan. 5th, 2007)
 * Added restcontroller command that generates a RESTful controller template

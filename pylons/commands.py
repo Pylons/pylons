@@ -283,8 +283,9 @@ class ShellCommand(Command):
         pkg_name = here_dir.split(os.path.sep)[-1].lower()
 
         # Load app config into paste.deploy to simulate request config
-        app_conf = appconfig(config_name, relative_to=here_dir)
-        conf = dict(app=app_conf, app_conf=app_conf)
+        conf = appconfig(config_name, relative_to=here_dir)
+        conf = dict(app_conf=conf.local_conf,
+                    global_conf=conf.global_conf)
         paste.deploy.config.CONFIG.push_thread_config(conf)
         
         # Load locals and populate with objects for use in shell
