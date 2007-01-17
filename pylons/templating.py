@@ -68,7 +68,7 @@ class Buffet(object):
                 '"%s" to use its functionality' % engine_name)
         engine_name = alias or engine_name
         defaults = config.pop('default_options', None)
-        extra_vars_func = config.get('extra_vars_func', None)
+        extra_vars_func = config.pop('extra_vars_func', None)
         self.engines[engine_name] = \
             dict(engine=Engine(extra_vars_func=extra_vars_func,
                                options=config), 
