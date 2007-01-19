@@ -16,6 +16,7 @@ import paste.deploy.config
 from paste.deploy import loadapp, appconfig
 from paste.script.command import Command, BadCommand
 from paste.script.filemaker import FileOp
+from paste.script.pluginlib import find_egg_info_dir
 
 import pylons.util as util
 
@@ -280,7 +281,15 @@ class ShellCommand(Command):
         config_name = 'config:%s' % config_file
         here_dir = os.getcwd()
         locs = dict(__name__="pylons-admin")
-        pkg_name = here_dir.split(os.path.sep)[-1].lower()
+
+        # Determine the package name from the .egg-info top_level.txt. Assume
+        # it's the first package listed
+        egg_info = find_egg_info_dir(here_dir)
+        f = open(os.path.join(egg_info, 'top_level.txt'))
+        packages = [l.strip() for l in f.readlines()
+                    if l.strip() and not l.strip().startswith('#')]
+        f.close()
+        pkg_name = packages[0]
 
         # Load app config into paste.deploy to simulate request config
         conf = appconfig(config_name, relative_to=here_dir)
