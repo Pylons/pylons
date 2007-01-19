@@ -133,10 +133,11 @@ and this to the bottom of ``models/__init__.py``:
 
 The ``session_context`` object is a SQLAlchemy ``SessionContext`` automatically created for you, bound to the database engine specified by the ``sqlalchemy.dburi`` variable in your config file. ``SessionContext`` is a wrapper object that provides a certain SQLAlchemy ``Session`` object at ``session_context.current``, depending on the current context (e.g.: the current thread and or WSGI application).
 
-The ``assignmapper`` extension provides a special kind of mapper (``assign_mapper``). It makes mapped objects  have direct knowledge about their contextual ``Session``. Classes and their objects decorated by ``assign_mapper`` can use ``Session`` and ``Query`` methods directly. Using the session object directly is a reasonable API:
+The ``assignmapper`` extension provides a special kind of mapper (``assign_mapper``). It makes mapped objects  have direct knowledge about their contextual ``Session``. Classes and their objects decorated by ``assign_mapper`` can use ``Session`` and ``Query`` methods directly. Using the session object directly is a reasonable API, for example:
 
 .. code-block:: Python
 
+    # EXAMPLE:
     test_page = session.query(Page).select_by(title='TestPage')
     test_page.content = 'Test Page Content'
     session.save(test_page)
@@ -145,6 +146,7 @@ but in comparison to the following ``assign_mapper`` equivalent, seems cumbersom
 
 .. code-block:: Python
 
+    # EXAMPLE:
     test_page = Page.select_by(title='TestPage')
     test_page.content = 'Test Page Content'
     test_page.save()
