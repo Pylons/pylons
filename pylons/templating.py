@@ -139,8 +139,8 @@ class Buffet(object):
         engine_config = self.engines.get(engine_name)
         
         if not engine_config:
-            raise Exception(), \
-                "No engine with that name configured: %s" % engine_name
+            raise Exception("No engine with that name configured: %s" % \
+                                engine_name)
         
         full_path = template_name
                 
