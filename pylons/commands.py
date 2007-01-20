@@ -99,7 +99,15 @@ class ControllerCommand(Command):
             # Validate the name
             name = name.replace('-', '_')
             validate_name(name)
-
+            
+            # Check to see if PROJ.lib.base exists
+            try:
+                __import__(base_package + '.lib.base')
+                importstatement = "from %s.lib.base import *" % base_package
+            except:
+                # Assume its the minimal template
+                importstatement = "from %s.controllers import *" % base_package
+            
             # Setup the controller
             fullname = os.path.join(directory, name)
             controller_name = util.class_name_from_module_name(
@@ -108,7 +116,8 @@ class ControllerCommand(Command):
                 fullname = os.sep + fullname
             testname = fullname.replace(os.sep, '_')[1:]
             file_op.template_vars.update({'name': controller_name,
-                                  'fname': os.path.join(directory, name)})
+                                          'fname': os.path.join(directory, name),
+                                          'importstatement': importstatement})
             file_op.copy_file(template='controller.py_tmpl',
                          dest=os.path.join('controllers', directory), 
                          filename=name)

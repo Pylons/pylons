@@ -2,6 +2,9 @@ Pylons Changelog
 =================
 
 0.9.5 (**svn**)
+* Fixed paster controller to test for lib.base and only add that import 
+  statement when its present. This fixes the controller template when used with
+  minimal Pylons project templates. Fixes #140 and fixes #139.
 * Fixed the paster shell error: KeyError: 'pylons.routes_dict' when calling
   app.get and app.post.
 * Fixed paster shell not working on projects with names containing hyphens.
