@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.5 (**svn**)
+* Fixed the paster shell error: KeyError: 'pylons.routes_dict' when calling
+  app.get and app.post.
 * Fixed paster shell not working on projects with names containing hyphens.
 * Fixed the config directive 'sqlalchemy.echo' set to False being interpreted
   as True. Patch by Alex Conrad.
