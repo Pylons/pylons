@@ -65,7 +65,7 @@ class ControllerCommand(Command):
         Creating yourproj/yourproj/tests/functional/test_admin_trackback.py
     """
     summary = __doc__.splitlines()[0]
-    usage = 'CONTROLLER_NAME'
+    usage = '\n' + __doc__
     
     min_args = 1
     max_args = 1
@@ -151,7 +151,7 @@ class RestControllerCommand(Command):
         Creating yourproj/yourproj/tests/functional/test_admin_trackbacks.py
     """
     summary = __doc__.splitlines()[0]
-    usage = 'SINGULAR_CONTROLLER_NAME PLURAL_CONTROLLER_NAME'
+    usage = '\n' + __doc__
     
     min_args = 2
     max_args = 2
