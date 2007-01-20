@@ -256,7 +256,7 @@ class ShellCommand(Command):
         $ paster shell my-development.ini
     """
     summary = __doc__.splitlines()[0]
-    usage = '[CONFIG_FILE]'
+    usage = '\n' + __doc__
     
     min_args = 0
     max_args = 1
