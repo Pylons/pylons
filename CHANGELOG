@@ -2,6 +2,12 @@ Pylons Changelog
 =================
 
 0.9.5 (**svn**)
+* The request object can now automatically decode GET/POST/params vars to
+  unicode, when its charset attribute is set.
+* Added a new request_settings keyword arg to Config's constructor. Allows
+  setting the default charset and errors values of of the request object.
+* Deprecated Config constructor's default_charset keyword arg. Use Config's
+  response_settings keyword arg instead.
 * Fixed paster controller to test for lib.base and only add that import 
   statement when its present. This fixes the controller template when used with
   minimal Pylons project templates. Fixes #140 and fixes #139.
