@@ -519,48 +519,46 @@ might want to perform Unicode decoding in a Pylons application.
 Request Parameters
 ------------------
 
-Currently the Pylons input values come from ``request.params`` but these are
-not decoded to Unicode by default because not all input should be assumed to be
-Unicode data. 
+Pylons can automatically coerce incoming params (from ``request.POST``, ``GET``
+and ``params``) into unicode objects for you.
 
-If you would like However you can use the two functions below:
-
-.. code-block:: Python
-
-    def decode_multi_dict(md, encoding="UTF-8", errors="strict"):
-        """Given a MultiDict, decode all its parts from the given encoding.
-    
-        This modifies the MultiDict in place.
-    
-        encoding, errors
-          These are passed to the decode function.
-    
-        """
-        items = md.items()
-        md.clear()
-        for (k, v) in items:
-            md.add(k.decode(encoding, errors),
-                   v.decode(encoding, errors))
-    
-    
-    def decode_request(request, encoding="UTF-8", errors="strict"):
-        """Given a request object, decode GET and POST in place.
-    
-        This implicitly takes care of params as well.
-    
-        """
-        decode_multi_dict(request.GET, encoding, errors)
-        decode_multi_dict(request.POST, encoding, errors)
-
-These can then be used as follows:
+To enable unicode params for the current request, simply tell the request
+object what charset (encoding) the parameters should be decoded to, and
+optionally the decoding errors handler:
 
 .. code-block:: Python
 
-    unicode_params = decode_request(request.params)
-    
-This code is discussed in `ticket 135
-<http://pylonshq.com/project/pylonshq/ticket/135>`_ but shouldn't be used with
-file uploads since these shouldn't ordinarily be decoded to Unicode.
+    def index(self):
+        # a MultiDict of strings (and maybe FieldStorages)
+        raw_post = request.POST
+
+        request.charset = 'UTF-8'
+        #request.errors = 'strict # strict is the default
+        # a MultiDict-like object of unicode strings (and maybe FieldStorages)
+        decoded_post = request.POST
+
+To specify that your incoming params should always be coerced to unicode
+objects, pass the following as the request_settings keyword argument to your
+Pylons Config object (in ``config/environment.py``):
+
+.. code-block:: Python
+
+    # Return our loaded config object
+    request_settings = dict(charset='UTF-8', errors='replace')
+    return pylons.config.Config(tmpl_options, map, paths,
+                                request_settings=request_settings)
+
+When the ``request`` object is instructed to always automatically decode to
+unicode, the ``charset`` value acts as a fallback charset. If a ``charset`` was
+sent by the browser (via the ``Content-Type`` header), the browser's value will
+take precedent: this takes place when the ``request`` object is constructed.
+
+``FieldStorage`` (file upload) objects will be handled specially when coercing
+to unicode: what will be provided is a copy of the original ``FieldStorage``
+object with unicode versions of their  ``name`` and ``filename`` values.
+
+See `File Uploads <form_handling.html#file-uploads>`_ for more information on
+working with file uploads/``FieldStorage`` objects.
 
 Templating
 ----------

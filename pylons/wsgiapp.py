@@ -9,10 +9,9 @@ import sys
 import inspect
 import warnings
 
-import paste.wsgiwrappers
 import paste.httpexceptions as httpexceptions
 import paste.registry
-from paste.wsgiwrappers import WSGIRequest
+from paste.wsgiwrappers import WSGIRequest, WSGIResponse
 
 from routes import request_config
 from routes.middleware import RoutesMiddleware
@@ -52,8 +51,8 @@ class PylonsBaseWSGIApp(object):
         self.globals = globals
         self.package_name = package_name
         config = globals.pylons_config
-        self.settings = dict(content_type='text/html', 
-                             charset=config.default_charset)
+        self.request_settings = config.request_settings
+        self.response_settings = config.response_settings
         
         # Create the redirect function we'll use and save it
         def redirect_to(url):
@@ -99,12 +98,14 @@ class PylonsBaseWSGIApp(object):
     
     def setup_app_env(self, environ, start_response):
         """Setup and register all the Pylons objects with the registry"""
-        req = WSGIRequest(environ)
-        
         registry = environ['paste.registry']
+
+        registry.register(WSGIRequest.defaults, self.request_settings)
+        registry.register(WSGIResponse.defaults, self.response_settings)
+
+        req = WSGIRequest(environ)
                 
         # Setup the basic pylons global objects
-        registry.register(paste.wsgiwrappers.settings, self.settings)
         registry.register(pylons.request, req)
         registry.register(pylons.buffet, self.buffet)
         registry.register(pylons.g, self.globals)
@@ -207,14 +208,10 @@ class PylonsApp(object):
                  use_routes=True):
         self.config = config
         if default_charset:
-            warnings.warn(
-                "The 'default_charset' keyword argument to the PylonsApp "
-                "constructor is deprecated. Please specify 'default_charset' "
-                "to the Config object in your 'config/environment.py file "
-                "instead, e.g.:\nreturn pylons.config.Config(myghty, map, "
-                "paths, default_charset='%s')" % default_charset,
-                DeprecationWarning, 2)
-            self.config.default_charset = default_charset
+            warnings.warn(pylons.legacy.default_charset_warning % \
+                              ('PylonsApp', default_charset),
+                          DeprecationWarning, 2)
+            self.config.request_settings['charset'] = default_charset
 
         if helpers is None or g is None:
             warnings.warn(

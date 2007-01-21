@@ -308,7 +308,8 @@ def render_response(*args, **kargs):
     encoding_errors = kargs.get('encoding_errors')
     if output_encoding:
         response.headers['Content-Type'] = '%s; charset=%s' % \
-            (paste.wsgiwrappers.settings['content_type'], output_encoding)
+            (pylons.Response.defaults.get('content_type',
+                                          'text/html'), output_encoding)
     if encoding_errors:
         response.encoding_errors = encoding_errors
     return response

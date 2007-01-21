@@ -8,7 +8,12 @@ import re
 
 from paste.deploy.converters import asbool
 
+import pylons.legacy
 import pylons.templating
+
+request_defaults = dict(charset=None, errors='strict')
+response_defaults = dict(content_type='text/html',
+                         charset='UTF-8', errors='strict')
 
 class Config(object):
     """Pylons configuration object
@@ -51,14 +56,26 @@ class Config(object):
         a dict indicating how to configure the template engine with keys:
         ``engine``, ``template_root``, ``template_options``, and ``alias``
     ``default_charset``
-        The default character encoding specified to the browser via the
+        Deprecated: Use the response_settings dict instead.
+        Default character encoding specified to the browser via the
         'charset' parameter of the HTTP response's Content-Type header.
     ``strict_c``
         Whether or not the ``c`` object should throw an attribute error when
         access is attempted to an attribute that doesn't exist.
+    ``request_settings``
+        A dict of Content-Type related default settings for new instances of
+        ``paste.wsgiwrappers.WSGIRequest``. May contain the values ``charset``
+        and ``errors``. Overrides the Pylons default values specified by the
+        ``request_defaults`` dict.
+    ``response_settings``
+        A dict of Content-Type related default settings for new instances of
+        ``pylons.Response``. May contain the values ``content_type``,
+        ``charset`` and ``errors``. Overrides the Pylons default values
+        specified by the ``response_defaults`` dict.
     """
     def __init__(self, tmpl_options, map, paths, environ_config=None, 
-        default_charset='UTF-8', strict_c=False):
+                 default_charset=None, strict_c=False,
+                 request_settings=None, response_settings=None):
         if environ_config is None:
             environ_config = {}
         self.myghty = tmpl_options
@@ -66,14 +83,25 @@ class Config(object):
         self.map = map
         self.paths = paths
         self.environ_config = environ_config
-        self.default_charset = default_charset
         self.strict_c = strict_c
-        if 'output_encoding' not in tmpl_options:
-            tmpl_options['output_encoding'] = default_charset
+
+        self.request_settings = request_defaults.copy()
+        if request_settings:
+            self.request_settings.update(request_settings)
+        self.response_settings = response_defaults.copy()
+        if response_settings:
+            self.response_settings.update(response_settings)
+
         self.global_conf = {}
         self.app_conf = {}
         self.template_engines = []
         self._clean_tmpl_options()
+
+        if default_charset is not None:
+            warnings.warn(pylons.legacy.default_charset_warning % \
+                              ('Config', default_charset),
+                          DeprecationWarning, 2)
+            self.response_settings['charset'] = default_charset
     
     def _clean_tmpl_options(self):
         """Prase the template options, set self.myghty to have myghty options
@@ -211,6 +239,7 @@ class Config(object):
         
         # Raise a complete error for the error middleware to catch
         myghty_defaults['raise_error'] = True
+        myghty_defaults['output_encoding'] = self.response_settings['charset']
         myghty_defaults['component_root'] = [{os.path.basename(path): path} \
             for path in self.paths['templates']]
                     
@@ -254,14 +283,15 @@ class Config(object):
         # Rearrange template options as default for Mako
         defaults['mako.directories'] = self.paths['templates']
         defaults['mako.filesystem_checks'] = True
-        defaults['mako.output_encoding'] = self.default_charset
+        defaults['mako.output_encoding'] = \
+            self.response_settings['charset']
         if 'cache_dir' in app_conf:
             defaults['mako.module_directory'] = \
                 os.path.join(app_conf['cache_dir'], 'templates')
         
         # Setup kid defaults
         defaults['kid.assume_encoding'] = 'utf-8'
-        defaults['kid.encoding'] = self.default_charset
+        defaults['kid.encoding'] = self.response_settings['charset']
         
         # Merge template options into defaults
         defaults.update(self.template_options)
