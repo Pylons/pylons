@@ -537,7 +537,7 @@ optionally the decoding errors handler:
         # a MultiDict-like object of unicode strings (and maybe FieldStorages)
         decoded_post = request.POST
 
-        # The raw data is always still available: when charset is None
+        # The raw data is always still available when charset is None
         request.charset = None
         raw_post = request.POST
         raw_params = request.params
