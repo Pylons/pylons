@@ -537,6 +537,11 @@ optionally the decoding errors handler:
         # a MultiDict-like object of unicode strings (and maybe FieldStorages)
         decoded_post = request.POST
 
+        # The raw data is always still available: when charset is None
+        request.charset = None
+        raw_post = request.POST
+        raw_params = request.params
+
 To specify that your incoming params should always be coerced to unicode
 objects, pass the following as the request_settings keyword argument to your
 Pylons Config object (in ``config/environment.py``):
