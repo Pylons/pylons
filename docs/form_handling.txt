@@ -90,13 +90,13 @@ You can also make use of the built-in script.aculo.us functionality or override 
 
 File Uploads
 ============
-File upload fields are created by using the 'file' input type. The ``file_field`` helper can create one for you:
+File upload fields are created by using the ``file`` input field type. The ``file_field`` helper provides a shortcut for creating these form fields:
 
 .. code-block:: Myghty
 
     <% h.file_field('myfile') %>
 
-The HTML form must have its ``enctype`` attribute set to ``multipart/form-data`` for the file upload to work. The ``form`` helper's ``multipart`` keyword argument can set this for you:
+The HTML form must have its ``enctype`` attribute set to ``multipart/form-data`` to enable the browser to upload the file. The ``form`` helper's ``multipart`` keyword argument provides a shortcut for setting the appropriate ``enctype`` value:
 
 .. code-block:: Html+Myghty
 
@@ -106,7 +106,7 @@ The HTML form must have its ``enctype`` attribute set to ``multipart/form-data``
                       <% h.submit('Submit') %>
     <% h.end_form() %>
 
-When a file upload has succeeded, the ``request.POST`` (or ``request.params``) ``MultiDict`` will contain a ``cgi.FieldStorage`` object instead of a string for the value of the field.
+When a file upload has succeeded, the ``request.POST`` (or ``request.params``) ``MultiDict`` will contain a ``cgi.FieldStorage`` object as the value of the field.
 
 ``FieldStorage`` objects have three important attributes for file uploads:
 
@@ -129,22 +129,26 @@ The easiest way to gain access to the file's data is via the ``value`` attribute
                         'description: %s' % (myfile.filename, len(myfile.value),
                                              request.POST['description']))
 
-However reading the entire contents of the file into memory is undesirable, especially for large file uploads. A common means of handling file uploads is to store the file somewhere on the disk. The ``FieldStorage`` instance already reads the file onto disk, however to a non permanent location, via a python ``tempfile`` object.
+However reading the entire contents of the file into memory is undesirable, especially for large file uploads. A common means of handling file uploads is to store the file somewhere on the filesystem. The ``FieldStorage`` instance already reads the file onto filesystem, however to a non permanent location, via a python ``tempfile`` object.
 
 Python ``tempfiles`` are secure file objects that are automatically destroyed when they are closed (including an implicit close when the object is garbage collected). One of their security features is that their path cannot be determined: a simple ``os.rename`` from the ``tempfile's`` path isn't possible. Alternatively, ``shutil.copyfileobj`` can perform an efficient copy of the file's data to a permanent location:
 
 .. code-block:: Python
 
-    def upload(self):
-        permanent_store = '/tmp'
-        myfile = request.POST['myfile']
-        permanent_file = open(os.path.join(permanent_store,
-                                           myfile.filename), 'w')
-        shutil.copyfileobj(myfile.file, permanent_file)
-        myfile.file.close()
-        permanent_file.close()
-        return Response('Successfully uploaded: %s, description: %s' % \
-                            (myfile.filename, request.POST['description']))
+    permanent_store = '/tmp/'
+
+    class Uploader(BaseController):
+        def upload(self):
+            myfile = request.POST['myfile']
+            permanent_file = open(os.path.join(permanent_store,
+                                               myfile.filename), 'w')
+
+            shutil.copyfileobj(myfile.file, permanent_file)
+            myfile.file.close()
+            permanent_file.close()
+
+            return Response('Successfully uploaded: %s, description: %s' % \
+                                (myfile.filename, request.POST['description']))
 
 .. Warning::
     The previous basic example allows any file uploader to overwrite any file in the ``permanent_store`` directory that your web application has permissions to.
