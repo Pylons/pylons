@@ -560,10 +560,22 @@ take precedent: this takes place when the ``request`` object is constructed.
 
 ``FieldStorage`` (file upload) objects will be handled specially when coercing
 to unicode: what will be provided is a copy of the original ``FieldStorage``
-object with unicode versions of their  ``name`` and ``filename`` values.
+object with a unicode version of its ``filename`` value.
 
 See `File Uploads <form_handling.html#file-uploads>`_ for more information on
 working with file uploads/``FieldStorage`` objects.
+
+.. note::
+
+    Only parameter values (not their associated names) are decoded to unicode
+    by default. Since parameter names commonly map directly to Python variable
+    names (which are restricted to the ASCII character set), it's usually
+    preferable to handle them as strings. For example, passing form parameters
+    to a function as keyword arguments (e.g.  \*\*request.params.mixed())
+    doesn't work with unicode keys. To make ``WSGIRequest`` decode parameter
+    names, enable the ``decode_param_names`` option on either the WSGIRequest
+    object or the ``request_settings`` dictionary. ``FieldStorage's`` ``name``
+    attributes are also decoded to unicode when this option is enabled.
 
 Templating
 ----------

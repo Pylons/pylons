@@ -11,7 +11,8 @@ from paste.deploy.converters import asbool
 import pylons.legacy
 import pylons.templating
 
-request_defaults = dict(charset=None, errors='strict')
+request_defaults = dict(charset=None, errors='strict',
+                        decode_param_names=False)
 response_defaults = dict(content_type='text/html',
                          charset='UTF-8', errors='strict')
 
@@ -65,8 +66,8 @@ class Config(object):
     ``request_settings``
         A dict of Content-Type related default settings for new instances of
         ``paste.wsgiwrappers.WSGIRequest``. May contain the values ``charset``
-        and ``errors``. Overrides the Pylons default values specified by the
-        ``request_defaults`` dict.
+        and ``errors`` and ``decode_param_names``. Overrides the Pylons default
+        values specified by the ``request_defaults`` dict.
     ``response_settings``
         A dict of Content-Type related default settings for new instances of
         ``pylons.Response``. May contain the values ``content_type``,
