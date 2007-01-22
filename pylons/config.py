@@ -73,9 +73,13 @@ class Config(object):
         ``charset`` and ``errors``. Overrides the Pylons default values
         specified by the ``response_defaults`` dict.
     """
-    def __init__(self, tmpl_options, map, paths, environ_config=None, 
-                 default_charset=None, strict_c=False,
+    def __init__(self, tmpl_options=None, map=None, paths=None, 
+                 environ_config=None, default_charset=None, strict_c=False,
                  request_settings=None, response_settings=None):
+        if paths is None:
+            paths = []
+        if tmpl_options is None:
+            tmpl_options = {}
         if environ_config is None:
             environ_config = {}
         self.myghty = tmpl_options
