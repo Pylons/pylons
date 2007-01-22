@@ -519,32 +519,32 @@ might want to perform Unicode decoding in a Pylons application.
 Request Parameters
 ------------------
 
-Pylons can automatically coerce incoming params (from ``request.POST``, ``GET``
-and ``params``) into unicode objects for you.
+Pylons can automatically coerce incoming form parameters (``request.POST``,
+``GET`` and ``params``) into unicode objects.
 
-To enable unicode params for the current request, simply tell the request
-object what charset (encoding) the parameters should be decoded to, and
-optionally the decoding errors handler:
+To get unicode parameters for the current request, simply tell the request
+object what ``charset`` (encoding) the parameters should be decoded to, and
+optionally the decoding ``errors`` handler:
 
 .. code-block:: Python
 
     def index(self):
-        # a MultiDict of strings (and maybe FieldStorages)
-        raw_post = request.POST
+        # a MultiDict of string name/values
+        raw_get = request.GET
 
         request.charset = 'UTF-8'
-        #request.errors = 'strict # strict is the default
-        # a MultiDict-like object of unicode strings (and maybe FieldStorages)
-        decoded_post = request.POST
+        #request.errors = 'strict' # strict is the default error handler
+        # a MultiDict-like object of string names and unicode values
+        decoded_get = request.GET
 
         # The raw data is always still available when charset is None
         request.charset = None
-        raw_post = request.POST
+        raw_get = request.GET
         raw_params = request.params
 
-To specify that your incoming params should always be coerced to unicode
-objects, pass the following as the request_settings keyword argument to your
-Pylons Config object (in ``config/environment.py``):
+To specify that your incoming form parameters should always be coerced to
+unicode objects, pass the following as the request_settings keyword argument to
+your Pylons Config object (in ``config/environment.py``):
 
 .. code-block:: Python
 
@@ -554,13 +554,14 @@ Pylons Config object (in ``config/environment.py``):
                                 request_settings=request_settings)
 
 When the ``request`` object is instructed to always automatically decode to
-unicode, the ``charset`` value acts as a fallback charset. If a ``charset`` was
-sent by the browser (via the ``Content-Type`` header), the browser's value will
-take precedent: this takes place when the ``request`` object is constructed.
+unicode via the ``request_settings`` dictionary, the dictionary's ``charset``
+value acts as a fallback charset. If a ``charset`` was sent by the browser (via
+the ``Content-Type`` header), the browser's value will take precedent: this
+takes place when the ``request`` object is constructed.
 
-``FieldStorage`` (file upload) objects will be handled specially when coercing
-to unicode: what will be provided is a copy of the original ``FieldStorage``
-object with a unicode version of its ``filename`` value.
+``FieldStorage`` (file upload) objects will be handled specially for unicode
+parameters: what's provided is a copy of the original ``FieldStorage`` object
+with a unicode version of its ``filename`` attribute.
 
 See `File Uploads <form_handling.html#file-uploads>`_ for more information on
 working with file uploads/``FieldStorage`` objects.
@@ -572,10 +573,12 @@ working with file uploads/``FieldStorage`` objects.
     names (which are restricted to the ASCII character set), it's usually
     preferable to handle them as strings. For example, passing form parameters
     to a function as keyword arguments (e.g.  \*\*request.params.mixed())
-    doesn't work with unicode keys. To make ``WSGIRequest`` decode parameter
-    names, enable the ``decode_param_names`` option on either the WSGIRequest
-    object or the ``request_settings`` dictionary. ``FieldStorage's`` ``name``
-    attributes are also decoded to unicode when this option is enabled.
+    doesn't work with unicode keys.
+
+    To make ``WSGIRequest`` decode parameter names anyway, enable the
+    ``decode_param_names`` option on either the WSGIRequest object or the
+    ``request_settings`` dictionary. ``FieldStorage's`` ``name`` attributes are
+    also decoded to unicode when this option is enabled.
 
 Templating
 ----------
