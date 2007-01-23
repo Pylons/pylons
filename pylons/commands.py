@@ -317,19 +317,11 @@ class ShellCommand(Command):
         tresponse = test_app.get('/_test_vars')
         request_id = int(tresponse.body)
 
-        # Disable restoration during test_app requests.
-        # FIXME: make a hook for pre/post request in TestApp
-        do_request_orig = test_app.do_request
-        def do_request(self, req, status):
+        # Disable restoration during test_app requests
+        test_app.pre_request_hook = lambda self: \
             paste.registry.restorer.restoration_end()
-            request = do_request_orig(req, status)
-            # FIXME: If there was an error, get the request_id of the new
-            # error. then begin restoration for that error!
+        test_app.post_request_hook = lambda self: \
             paste.registry.restorer.restoration_begin(request_id)
-            return request
-        import new
-        wrapper = new.instancemethod(do_request, test_app, test_app.__class__)
-        test_app.do_request = wrapper
 
         # Restore the state of the Pylons special objects
         # (StackedObjectProxies)
