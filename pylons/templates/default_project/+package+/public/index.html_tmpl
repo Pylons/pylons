@@ -29,55 +29,74 @@
 
 <h2>Weren't expecting to see this page?</h2>
 
-<p>The ${package}/public/ directory is searched for static files
- <i>before</i> your controllers are run. Remove this file (${package}/public/index.html) and edit
-  the routes in <tt>${package}/config/routing.py</tt> like so:
+<p>The <tt>${package}/public/</tt> directory is searched for static files
+ <i>before</i> your controllers are run. Remove this file (<tt>${package}/public/index.html</tt>)
+  and edit the routes in <tt>${package}/config/routing.py</tt> to point the
+  <a href="/">root path</a> to a 'hello' controller we'll create below:
   <pre> map.connect('', controller='hello', action='index')</pre>
 </p>
 
 <h2>Getting Started</h2>
-<p>You're now ready to start creating your own web application. Here's what a basic controller looks
-like to print out 'Hello World' and respond to http://127.0.0.1:5000/hello:
+<p>You're now ready to start creating your own web application. To create a 'hello' controller,
+  run the following command in your project's root directory: 
 <pre>
-# ${package}/controllers/hello.py
-# Note that the line above is the file you should create and put the following into...
+${project}$$ paster controller hello
+</pre>
 
+  This generates the following the following code in <tt>${package}/controllers/hello.py</tt>:
+<pre>
 from ${package}.lib.base import *
 
 class HelloController(BaseController):
     def index(self):
+        # Return a rendered template
+        #   return render_response('/some/template.html')
+        # or, Return a response object
         return Response('Hello World')
-        
 </pre>
+</p>
+<p>This controller simply prints out 'Hello World' to the browser. Pylons' default routes
+  automatically set up this controller to respond at the <a href="/hello">/hello</a> URL.
+  With the additional route described above, this controller will also respond at the
+  <a href="/">root path</a>.
 </p>
 
 <h3>Using a template</h3>
-<p>If you want to call a template and do something a little more complex, here's an example printing out some
-request information from a Myghty template.
+<p>To call a template and do something a little more complex, this following example
+   shows how to print out some request information from a Myghty template.
+</p>
+<p>Create a <tt>serverinfo.myt</tt> file in your project's <tt>${package}/templates/</tt>
+  directory with the following contents:
+</p>  
 <pre>
-# ${package}/templates/serverinfo.myt
+&lt;h2&gt;
+Server info for &lt;% request.host %&gt;
+&lt;/h2&gt;
 
-&lt;p>Hi, here's the server environment: &lt;br />
-&lt;% str(request.environ) %>&lt;/p>
+&lt;p&gt;
+The URL you called: &lt;% h.url_for() %&gt;
+&lt;/p&gt;
 
-&lt;p>
-here's the URL you called: &lt;% h.url_for() %>
-&lt;/p>
+&lt;p&gt;
+The name you set: &lt;% c.name %&gt;
+&lt;/p&gt;
 
-&lt;p>
-and here's the name you set: &lt;% c.name %>
-&lt;/p>
-
+&lt;p&gt;The server environment:&lt;br /&gt;
+&lt;pre&gt;&lt;% c.pretty_environ %&gt;&lt;/pre&gt;
+&lt;/p&gt;
 </pre>
 
-Then add this to your hello controller class:
+Then add the following to your 'hello' controller class:
 <pre>
     def serverinfo(self):
+        import cgi
+        import pprint
+        c.pretty_environ = cgi.escape(pprint.pformat(request.environ))
         c.name = 'The Black Knight'
         return render_response('/serverinfo.myt')
 </pre>
 
-You can now view the page at: <tt>http://127.0.0.1:5000/hello/serverinfo</tt>
+You can now view the page at: <tt><a href="/hello/serverinfo">/hello/serverinfo</a></tt>
 </p>
 </body>
 </html>
