@@ -4,7 +4,7 @@ Additional helper object available for use in Controllers is the etag_cache.
 """
 import paste.httpexceptions as httpexceptions
 
-from routes import redirect_to
+from routes import url_for
 
 import pylons
 
@@ -55,5 +55,20 @@ def abort(status_code=None, detail="", headers=None, comment=None):
     """
     exc = httpexceptions.get_exception(status_code)(detail, headers, comment)
     raise exc
+
+def redirect_to(*args, **kargs):
+    """Raises a redirect exception
+    
+    A Response object can be passed in as _response which will have the headers
+    and cookies extracted from it and added into the redirect issued."""
+    response = kargs.pop('_response', None)
+    found = httpexceptions.HTTPFound(url_for(*args, **kargs))
+    if response:
+        if str(response.status_code).startswith('3'):
+            found.code = response.status_code
+        found.headers.extend(response.headers.headeritems())
+        for c in response.cookies.values():
+            found.headers.append(('Set-Cookie', c.output(header='')))
+    raise found
 
 __all__ = ['etag_cache', 'redirect_to', 'abort', 'log']

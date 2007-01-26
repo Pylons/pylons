@@ -2,6 +2,9 @@ Pylons Changelog
 =================
 
 0.9.5 (**svn**)
+* Added custom redirect_to function in pylons.helpers that will take an
+  optional _response arg to pull headers and cookies out for preservation
+  during a redirect. Fixes #136.
 * Changed config.Config.__init__ to take all options as keyword args so
   unused args can be skipped. Fixes #162.
 * The request object can now automatically decode GET/POST/params vars to
