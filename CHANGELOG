@@ -2,6 +2,9 @@ Pylons Changelog
 =================
 
 0.9.5 (**svn**)
+* PylonsInstaller is now the default paste.app_install entry point for new
+  projects: this makes Cheetah no longer required for the paster make-config
+  command. (Thanks Alexander Schremmer, Ian Bicking)
 * Added custom redirect_to function in pylons.helpers that will take an
   optional _response arg to pull headers and cookies out for preservation
   during a redirect. Fixes #136.

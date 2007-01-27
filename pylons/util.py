@@ -6,6 +6,7 @@ provides a more minimal template with less additional directories and layout.
 """
 import warnings
 
+from paste.script.appinstall import Installer
 from paste.script.templates import Template
 
 import pylons
@@ -123,7 +124,9 @@ class MinimalPylonsTemplate(Template):
     _template_dir = 'templates/minimal_project'
     summary = 'Pylons minimal application template'
     egg_plugins = ['Pylons', 'WebHelpers']
-    
+
+class PylonsInstaller(Installer):
+    use_cheetah = False
 
 __all__ = ['AttribSafeContextObj', 'ContextObj', 'Helpers',
            'class_name_from_module_name', 'log', '_', 'set_lang', 'get_lang']
