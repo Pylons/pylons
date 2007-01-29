@@ -50,6 +50,12 @@ Otherwise:
    ``kid``:     Support for rendering kid templates, see `Using Other Template Languages <template_plugins.html>`_
 
    ``full``:    All of the above
+   
+.. Note::
+
+    If you have problems compiling Cheetah's ``_namemapper.c`` file on your platform you may need to install a precompiled copy using the appropriate tools for your platform. On Ubuntu for example the correct command for Python 2.4 cheetah support is::
+    
+        apt-get install python2.4-cheetah
 
 Custom Install Location
 =======================
