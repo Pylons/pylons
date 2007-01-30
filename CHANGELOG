@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.5 (**svn**)
+* Switching config setup to load keys into main config dict with app_conf and
+  global_conf keys set for any code looking for those keys. Fixes #116.
 * PylonsInstaller is now the default paste.app_install entry point for new
   projects: this makes Cheetah no longer required for the paster make-config
   command. (Thanks Alexander Schremmer, Ian Bicking)

@@ -21,9 +21,11 @@ def make_app(global_conf, full_stack=True, **app_conf):
     to ensure they're treated properly.
     
     """
-    # Setup the Paste CONFIG object
-    CONFIG.push_process_config({'app_conf': app_conf,
-                                'global_conf': global_conf})
+    # Setup the Paste CONFIG object, adding app_conf/global_conf for legacy code
+    conf = global_conf.copy()
+    conf.update(app_conf)
+    conf.update(dict(app_conf=app_conf, global_conf=global_conf))
+    CONFIG.push_process_config(conf)
 
     # Load our Pylons configuration defaults
     config = load_environment(global_conf, app_conf)
@@ -33,8 +35,7 @@ def make_app(global_conf, full_stack=True, **app_conf):
     app = pylons.wsgiapp.PylonsApp(config, helpers=${package}.lib.helpers,
                                    g=app_globals.Globals)
     g = app.globals
-    app = ConfigMiddleware(app, {'app_conf':app_conf,
-        'global_conf':global_conf})
+    app = ConfigMiddleware(app, conf)
     
     # YOUR MIDDLEWARE
     # Put your own middleware here, so that any problems are caught by the error
