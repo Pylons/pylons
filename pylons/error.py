@@ -4,7 +4,7 @@ These error middleware sub-classes are used mainly to provide skinning
 for the Paste middleware. In the future this entire module will likely
 be little more than a template, as Paste will get the skinning functionality.
 
-The only additional thing besides skinning supplied, is the Myghty traceback
+The only additional thing besides skinning supplied, is the Template traceback
 information.
 """
 import cgi
@@ -192,14 +192,14 @@ class PylonsEvalException(EvalException):
         self.errorparams['debug_mode'] = self.errorparams['debug']
         del self.errorparams['debug']
         
-        for s in ['head','traceback_data','extra_data','myghty_data']:
+        for s in ['head','traceback_data','extra_data','template_data']:
             if "%("+s+")s" not in self.error_template:
                 raise InvalidTemplate("Could not find %s in template"%("%("+s+")s"))
         try:
             error_template%{'head': '',
                 'traceback_data': '',
                 'extra_data':'',
-                'myghty_data':'',
+                'template_data':'',
                 'set_tab':'',
                 'prefix':''}
         except:
@@ -301,14 +301,14 @@ class PylonsDebugInfo(DebugInfo):
         head_html = (formatter.error_css + formatter.hide_display_js)
         head_html += self.eval_javascript(self.counter)
         repost_button = make_repost_button(self.environ)
-        myghty_data = '<p>No Myghty information available.</p>'
+        template_data = '<p>No Template information available.</p>'
         tab = 'traceback_data'
         
         for formatter_ in template_error_formatters:
             result = formatter_(self.exc_value)
             if result:
-                tab = 'myghty_data'
-                myghty_data = result
+                tab = 'template_data'
+                template_data = result
                 break
 
         head_html = (error_head_template % {'prefix':self.base_path}) + head_html
@@ -325,7 +325,7 @@ class PylonsDebugInfo(DebugInfo):
             'head': head_html,
             'traceback_data': traceback_data,
             'extra_data':extra_data,
-            'myghty_data':myghty_data.replace('<h2>',
+            'template_data':template_data.replace('<h2>',
                                               '<h1 class="first">').replace('</h2>',
                                                                             '</h1>'),
             'set_tab':tab,
@@ -523,7 +523,7 @@ error_template = '''\
                <!--  %%(links)s -->
                 <li id='traceback_data_tab' class="active"><a href="javascript:switch_display('traceback_data')" id='traceback_data_link' class="active"  accesskey="1">Traceback</a></li>
                 <li id='extra_data_tab' class="" ><a href="javascript:switch_display('extra_data')" id='extra_data_link' accesskey="2" >Extra Data</a></li>
-                <li id='myghty_data_tab'><a href="javascript:switch_display('myghty_data')" accesskey="3" id='myghty_data_link'>Template</a></li>
+                <li id='template_data_tab'><a href="javascript:switch_display('template_data')" accesskey="3" id='template_data_link'>Template</a></li>
             </ul>
     </div>
     <div id="main-content">
@@ -532,8 +532,8 @@ error_template = '''\
             <div id="extra_data" class="hidden-data">
                 %(extra_data)s
             </div>
-            <div id="myghty_data" class="hidden-data">
-                %(myghty_data)s
+            <div id="template_data" class="hidden-data">
+                %(template_data)s
             </div>
             <div id="traceback_data">
                 %(traceback_data)s
@@ -576,7 +576,7 @@ if (document.images)
 }
 
 function switch_display(id) {
-    ids = ['extra_data', 'myghty_data', 'traceback_data']
+    ids = ['extra_data', 'template_data', 'traceback_data']
     for (i in ids){
         part = ids[i] 
         var el = document.getElementById(part);
