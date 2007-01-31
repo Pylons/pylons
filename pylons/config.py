@@ -12,7 +12,8 @@ import pylons.legacy
 import pylons.templating
 
 request_defaults = dict(charset=None, errors='strict',
-                        decode_param_names=False)
+                        decode_param_names=False,
+                        language='en-us')
 response_defaults = dict(content_type='text/html',
                          charset='UTF-8', errors='strict')
 
