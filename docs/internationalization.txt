@@ -824,7 +824,11 @@ To use poEdit with the ``translate_demo`` you would do the following:
 
 #. Download and install poEdit.
 
-#. A dialog pops up. Fill in *all* the fields you can on the ``Project Info`` tab, enter the path to your project on the ``Paths`` tab (ie ``/path/to/translate_demo``) and enter the following keywords on separate lines on the ``keywords`` tab: ``_``, ``N_``, ``ugettext``, ``gettext``, ``ngettext``, ``ungettext``.
+#. A dialog pops up. Fill in *all* the fields you can on the ``Project Info``
+   tab, enter the path to your project on the ``Paths`` tab (ie
+   ``/path/to/translate_demo``) and enter the following keywords on separate lines
+   on the ``keywords`` tab: ``_``, ``N_``, ``ugettext``, ``gettext``,
+   ``ngettext``, ``ungettext``.
 
 #. Click OK
 
@@ -840,7 +844,9 @@ your translation.
 Using GNU Gettext
 -----------------
 
-If you wish to use GNU Gettext you should install it in whichever way is appropriate for your platform. For example on Debian the command is ``sudo apt-get install gettext``.
+If you wish to use GNU Gettext you should install it in whichever way is
+appropriate for your platform. For example on Debian the command is ``sudo
+apt-get install gettext``.
 
 You can then run a series of commands similar to this to create the ``.pot`` file:
 
@@ -849,7 +855,7 @@ You can then run a series of commands similar to this to create the ``.pot`` fil
     find translate_demo -type f -name '*myt' > translate_demo/i18n/filelist
     find translate_demo -type f -name '*py' >> translate_demo/i18n/filelist
 
-    cat translate_demo/i18n/filelist |xargs xgettext -o translate_demo/i18n/messages.pot \
+    cat translate_demo/i18n/filelist | xargs xgettext -o translate_demo/i18n/messages.pot \
             --language=Python --from-code=utf-8 \
             --keyword=_ --keyword=N_ --keyword=ugettext \
             --keyword=gettext --keyword=ngettext --keyword=ungettext
@@ -875,7 +881,12 @@ This will create a ``.pot`` file that looks something like this::
     msgid "Hello"
     msgstr ""
 
-You should edit the last line so that it reads ``msgstr "Hola"`` and save it as ``translate_demo/i18n/es/LC_MESSAGES/translate_demo.po``.
+You should update all the details which appear in uppercase at the top of the
+file with your own information, remembering to replace ``CHARSET`` with
+``utf-8`` so that the correct character set is used. 
+
+You should then edit the last line so that it reads ``msgstr "Hola"`` and save
+the new file as ``translate_demo/i18n/es/LC_MESSAGES/translate_demo.po``.
 
 Next you need to create a message catolg:
 
@@ -1003,8 +1014,8 @@ Modify the last line of the hello controller to look like this:
 
 .. warning ::
 
-    Of course, in real life breaking up sentences in this way is very dangerous because some
-    grammars might require the order of the words to be different. 
+    Of course, in real life breaking up sentences in this way is very dangerous
+    because some grammars might require the order of the words to be different. 
 
 If you run the example again the output will be:
 
