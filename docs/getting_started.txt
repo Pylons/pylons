@@ -95,9 +95,15 @@ We can test the template project like this:
     
 The command loads our project server configuration file in ``development.ini`` and serves the Pylons application.
 
-The ``--reload`` option ensures that the server is automatically reloaded if you make any changes to Python files or the ``development.ini`` config file. This is very useful during development.
+The ``--reload`` option ensures that the server is automatically reloaded if
+you make any changes to Python files or the ``development.ini`` config file.
+This is very useful during development. To stop the server you can press
+``Ctrl+c`` or your platform's equivalent.
 
-If you visit http://127.0.0.1:5000/ you will see the welcome page (``127.0.0.1`` is a special IP address that references your own computer but you can change the hostname by editing the ``development.ini`` file).
+If you visit http://127.0.0.1:5000/ when the server is running you will see the
+welcome page (``127.0.0.1`` is a special IP address that references your own
+computer but you can change the hostname by editing the ``development.ini``
+file).
 
 Try creating a new file named ``test.html`` in the ``helloworld/public`` directory with the following content:
 
