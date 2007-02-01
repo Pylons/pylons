@@ -814,6 +814,9 @@ GNU Gettext (http://www.gnu.org/software/gettext/)
     POTs, manipulating POs, and generating MOs. For those comfortable with a
     command shell. 
 
+Using poEdit
+------------
+
 As an example we will quickly discuss the use of poEdit which is cross platform 
 and has a GUI which makes it easier to get started with.
 
@@ -833,6 +836,56 @@ Finally, after entering your translations you then save the catalog and rename
 the ``.mo`` file produced to ``translate_demo.mo`` and put it in the
 ``translate_demo/i18n/es/LC_MESSAGES`` directory or whatever is appropriate for
 your translation.
+
+Using GNU Gettext
+-----------------
+
+If you wish to use GNU Gettext you should install it in whichever way is appropriate for your platform. For example on Debian the command is ``sudo apt-get install gettext``.
+
+You can then run a series of commands similar to this to create the ``.pot`` file:
+
+.. code-block :: Bash
+
+    find translate_demo -type f -name '*myt' > translate_demo/i18n/filelist
+    find translate_demo -type f -name '*py' >> translate_demo/i18n/filelist
+
+    cat translate_demo/i18n/filelist |xargs xgettext -o translate_demo/i18n/messages.pot \
+            --language=Python --from-code=utf-8 \
+            --keyword=_ --keyword=N_ --keyword=ugettext \
+            --keyword=gettext --keyword=ngettext --keyword=ungettext
+
+This will create a ``.pot`` file that looks something like this::
+
+    # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+    #
+    #, fuzzy
+    msgid ""
+    msgstr ""
+    "Project-Id-Version: PACKAGE VERSION\n"
+    "Report-Msgid-Bugs-To: \n"
+    "POT-Creation-Date: 2007-02-01 15:44+0000\n"
+    "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+    "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+    "Language-Team: LANGUAGE <LL@li.org>\n"
+    "MIME-Version: 1.0\n"
+    "Content-Type: text/plain; charset=CHARSET\n"
+    "Content-Transfer-Encoding: 8bit\n"
+
+    #: translate_demo/controllers/hello.py:9 translate_demo/controllers/hello.py:9
+    msgid "Hello"
+    msgstr ""
+
+You should edit the last line so that it reads ``msgstr "Hola"`` and save it as ``translate_demo/i18n/es/LC_MESSAGES/translate_demo.po``.
+
+Next you need to create a message catolg:
+
+.. code-block :: Bash
+
+    cd translate_demo/i18n
+    msgfmt -o es/LC_MESSAGES/translate_demo.mo es/LC_MESSAGES/translate_demo.po
+
+Back To Work
+------------
 
 You will need to repeat the process of creating a ``.mo`` file for the ``fr``,
 ``es`` and ``en`` translations.
@@ -872,7 +925,6 @@ like this when you have finished:
     i18n/es/LC_MESSAGES/translate_demo.mo
     i18n/fr/LC_MESSAGES/translate_demo.po
     i18n/fr/LC_MESSAGES/translate_demo.mo
-
 
 Testing the Application
 -----------------------
