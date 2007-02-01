@@ -79,7 +79,7 @@ class Config(object):
                  environ_config=None, default_charset=None, strict_c=False,
                  request_settings=None, response_settings=None):
         if paths is None:
-            paths = []
+            paths = {}
         if tmpl_options is None:
             tmpl_options = {}
         if environ_config is None:
