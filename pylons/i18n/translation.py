@@ -3,7 +3,7 @@
 Provides ``gettext`` translation functions via an app's ``pylons.translator``
 and get/set_lang for changing the language translated to."""
 import os
-from gettext import NullTranslations, GNUTranslations
+from gettext import NullTranslations, translation
 
 from pkg_resources import resource_exists, resource_stream
 
@@ -102,28 +102,17 @@ def set_lang(lang):
         registry.replace(pylons.translator, NullTranslations())
     else:
         import pylons.util as util
-        project_name = util.config_get('package')
-        catalog_path = os.path.join('i18n', lang, 'LC_MESSAGES')
-        if not resource_exists(project_name, catalog_path):
-            raise LanguageError('Language catalog %s not found' % \
-                                os.path.join(project_name, catalog_path))
-        translator = egg_translation(project_name, lang=catalog_path)
+        rootdir = pylons.g.pylons_config.paths.get('root_path')
+        localedir = os.path.join(rootdir, 'i18n')
+        if not isinstance(lang, list):
+            lang = [lang]
+        translator = translation(None, localedir, languages=lang)
         translator.pylons_lang = lang
         registry.replace(pylons.translator, translator)
 
 def get_lang():
     """Return the current i18n language used"""
     return getattr(pylons.translator, 'pylons_lang', None)
-
-def egg_translation(domain, lang):
-    """Return a gettext Translations object for the specified domain and
-    language.
-    
-    Like gettext.translation, but lacks its extensive checks and supports
-    loading .mo files from inside of eggs."""
-    class_ = GNUTranslations
-    return class_(resource_stream(domain, os.path.join(lang,
-                                                       '%s.mo' % domain)))
 
 __all__ = ['gettext_noop', 'N_', 'gettext', 'ugettext', '_', 'ngettext',
            'ungettext', 'set_lang', 'get_lang']
