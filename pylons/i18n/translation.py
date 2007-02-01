@@ -106,7 +106,7 @@ def set_lang(lang):
         localedir = os.path.join(rootdir, 'i18n')
         if not isinstance(lang, list):
             lang = [lang]
-        translator = translation(None, localedir, languages=lang)
+        translator = translation(util.config_get('package'), localedir, languages=lang)
         translator.pylons_lang = lang
         registry.replace(pylons.translator, translator)
 
