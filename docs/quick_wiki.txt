@@ -138,7 +138,7 @@ The ``assignmapper`` extension provides a special kind of mapper (``assign_mappe
 .. code-block:: Python
 
     # EXAMPLE:
-    test_page = session.query(Page).select_by(title='TestPage')
+    test_page = session.query(Page).get_by(title='TestPage')
     test_page.content = 'Test Page Content'
     session.save(test_page)
 
@@ -147,7 +147,7 @@ but in comparison to the following ``assign_mapper`` equivalent, seems cumbersom
 .. code-block:: Python
 
     # EXAMPLE:
-    test_page = Page.select_by(title='TestPage')
+    test_page = Page.get_by(title='TestPage')
     test_page.content = 'Test Page Content'
     test_page.save()
 
