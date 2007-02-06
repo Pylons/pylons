@@ -2,6 +2,7 @@ Pylons Changelog
 =================
 
 0.9.5 (**svn**)
+* Updated tests so that they now work with nose, removing py.test requirement.
 * Switching config setup to load keys into main config dict with app_conf and
   global_conf keys set for any code looking for those keys. Fixes #116.
 * PylonsInstaller is now the default paste.app_install entry point for new

@@ -36,12 +36,6 @@ def svn_repos_setup():
 
 def paster_create():
     global projenv
-    sys.stderr.write(' '.join(['paster', 'create', '--verbose', '--no-interactive',
-                      #'--svn-repository=' + testenv.svn_url,
-                      '--template=pylons',
-                      'ProjectName',
-                      'version=0.1',
-                      ]))
     res = testenv.run(_get_script_name('paster'), 'create', '--verbose', '--no-interactive',
                       #'--svn-repository=' + testenv.svn_url,
                       '--template=pylons',
@@ -105,7 +99,7 @@ def _do_proj_test(copydict, emptyfiles=None):
 def do_pytest():
     _do_proj_test({'development.ini':'development.ini'})
 
-def do_test_known():
+def do_knowntest():
     copydict = {
         'controller_sample.py':'projectname/controllers/sample.py',
         'app_globals.py':'projectname/lib/app_globals.py',
@@ -204,16 +198,16 @@ def make_tag():
 
 def test_project():
     #yield svn_repos_setup
-    yield paster_create
-    yield make_controller
-    yield do_pytest
-    yield do_test_known
-    yield do_kid_default
-    yield do_two_engines
-    yield do_cheetah
-    yield do_crazy_decorators
-    yield do_cache_decorator
-    yield do_xmlrpc
+    yield (paster_create,)
+    yield (make_controller,)
+    yield (do_pytest,)
+    yield (do_knowntest,)
+    yield (do_kid_default,)
+    yield (do_two_engines,)
+    yield (do_cheetah,)
+    yield (do_crazy_decorators,)
+    yield (do_cache_decorator,)
+    yield (do_xmlrpc,)
     #yield do_legacy_app
     #yield make_tag
     

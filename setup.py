@@ -68,7 +68,7 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
     install_requires=[
         "Routes>=1.6.2", "WebHelpers>=0.2.2", "Beaker==dev,>=0.6.3dev-r58",
         "Paste>=1.2", "PasteDeploy>=1.0", "PasteScript==dev,>=1.1.1dev-r6149",
-        "Myghty>=1.1", "FormEncode>=0.6", "simplejson>=1.4", "nose>=0.9.1",
+        "Myghty>=1.1", "FormEncode>=0.6", "simplejson>=1.4", "nose>=0.9.2",
     ],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
@@ -90,9 +90,8 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
         'full':[
             "docutils>=0.4", "elementtree>=1.2.6", 
             "Pygments==dev,>=0.7dev-r2661", "pudge==dev,>=0.1.3dev-r134", 
-            "buildutils==dev,>=0.1.2dev-r109", "py>=0.8.0_alpha2",
-            "Cheetah>=1.0", "TurboCheetah>=0.9.5",
-            "kid>=0.9", "TurboKid==dev,>=0.9.1dev",
+            "buildutils==dev,>=0.1.2dev-r109", "Cheetah>=1.0", 
+            "TurboCheetah>=0.9.5", "kid>=0.9", "TurboKid==dev,>=0.9.1dev",
         ],
     },
     entry_points="""
