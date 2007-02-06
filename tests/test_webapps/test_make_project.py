@@ -107,6 +107,14 @@ def do_knowntest():
     }
     _do_proj_test(copydict)
 
+def do_i18ntest():
+    copydict = {
+        'functional_sample_controller_i18n.py':'projectname/tests/functional/test_i18n.py',
+        'messages.ja.po':'projectname/i18n/ja/LC_MESSAGES/projectname.po',
+        'messages.ja.mo':'projectname/i18n/ja/LC_MESSAGES/projectname.mo',
+    }
+    _do_proj_test(copydict)
+
 def do_kid_default():
     copydict = {
         'testkid.kid':'projectname/kidtemplates/testkid.kid',
@@ -202,6 +210,7 @@ def test_project():
     yield (make_controller,)
     yield (do_pytest,)
     yield (do_knowntest,)
+    #yield (do_i18ntest,)
     yield (do_kid_default,)
     yield (do_two_engines,)
     yield (do_cheetah,)

@@ -1,5 +1,6 @@
 from projectname.lib.base import *
 from pylons.decorators import rest
+from pylons.i18n import get_lang, set_lang
 
 class SampleController(BaseController):
     def index(self):
@@ -49,3 +50,20 @@ class SampleController(BaseController):
     def testcheetah(self):
         c.test = "This is in c var"
         return render_response('testcheetah')
+
+    def set_lang(self):
+        lang = request.GET['lang']
+        try:
+            set_lang(lang)
+        except (LanguageError, IOError), e:
+            resp_unicode = _('Could not set language to "%(lang)s"') % {'lang': lang}
+        else:
+            session['lang'] = lang
+            session.save()
+            resp_unicode = _('Set language to "%(lang)s"') % {'lang': lang}
+        return Response(resp_unicode.encode('utf-8'))
+
+    def i18n_index(self):
+        locale_list = request.languages
+        set_lang(request.languages)
+        return Response(unicode(_('basic index page')).encode('utf-8'))

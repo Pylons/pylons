@@ -1,0 +1,14 @@
+from projectname.tests import *
+
+class TestSampleController(TestController):
+    def test_set_lang(self):
+        response = self.app.get(url_for(controller='/sample', action='set_lang', lang='ja'))
+        assert u'\u8a00\u8a9e\u8a2d\u5b9a\u3092\u300cja\u300d\u306b\u5909\u66f4\u3057\u307e\u3057\u305f'.encode('utf-8') in response
+        response = self.app.get(url_for(controller='/sample', action='set_lang', lang='fr'))
+        assert 'Could not set language to "fr"' in response
+
+    def test_detect_lang(self):
+        response = self.app.get(url_for(controller='/sample', action='i18n_index'), headers={
+                'Accept-Language':'fr;q=0.6, en;q=0.1, ja;q=0.3'})
+        # expect japanese fallback for nonexistent french.
+        assert u'\u6839\u672c\u30a4\u30f3\u30c7\u30af\u30b9\u30da\u30fc\u30b8'.encode('utf-8') in response

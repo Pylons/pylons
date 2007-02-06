@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.5 (**svn**)
+* Adding i18n tests, not active yet as they're waiting on a binary file from a
+  patch. Refs #193.
 * Updated tests so that they now work with nose, removing py.test requirement.
 * Switching config setup to load keys into main config dict with app_conf and
   global_conf keys set for any code looking for those keys. Fixes #116.
