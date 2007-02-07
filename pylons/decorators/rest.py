@@ -9,9 +9,11 @@ def restrict(*methods):
     
     .. code-block:: Python
         
+        from pylons.decorators import rest
+        
         class SomeController(BaseController):
             
-            @pylons.rest.restrict('GET')
+            @rest.restrict('GET')
             def comment(self, id):
     """
     def check_methods(func, *args, **kwargs):
@@ -35,10 +37,12 @@ def dispatch_on(**method_map):
     Example:
     
     .. code-block:: Python
-    
+        
+        from pylons.decorators import rest
+        
         class SomeController(BaseController):
             
-            @pylons.rest.dispatch_on(POST='create_comment')
+            @rest.dispatch_on(POST='create_comment')
             def comment(self):
                 # Do something with the comment
             
