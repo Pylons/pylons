@@ -210,7 +210,7 @@ def test_project():
     yield (make_controller,)
     yield (do_pytest,)
     yield (do_knowntest,)
-    #yield (do_i18ntest,)
+    yield (do_i18ntest,)
     yield (do_kid_default,)
     yield (do_two_engines,)
     yield (do_cheetah,)

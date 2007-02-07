@@ -1,6 +1,6 @@
 from projectname.lib.base import *
 from pylons.decorators import rest
-from pylons.i18n import get_lang, set_lang
+from pylons.i18n import get_lang, set_lang, LanguageError
 
 class SampleController(BaseController):
     def index(self):
