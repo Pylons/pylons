@@ -94,24 +94,28 @@ def ungettext(singular, plural, n):
     """
     return pylons.translator.ungettext(singular, plural, n)
 
-def _get_translator(lang):
-    """Utility method to get a valid translator object from a language name"""  
+def _get_translator(lang, **kwargs):
+    """Utility method to get a valid translator object from a language name"""
     import pylons.util as util
     rootdir = pylons.g.pylons_config.paths.get('root_path')
     localedir = os.path.join(rootdir, 'i18n')
     if not isinstance(lang, list):
         lang = [lang]
-    translator = translation(util.config_get('package'), localedir, languages=lang)
+    try:
+        translator = translation(util.config_get('package'), localedir,
+                                 languages=lang, **kwargs)
+    except IOError, ioe:
+        raise LanguageError('IOError: %s' % ioe)
     translator.pylons_lang = lang
     return translator
 
-def set_lang(lang):
+def set_lang(lang, **kwargs):
     """Set the i18n language used"""
     registry = pylons.request.environ['paste.registry']
-    if lang is None:
+    if not lang:
         registry.replace(pylons.translator, NullTranslations())
     else:
-        translator = _get_translator(lang)
+        translator = _get_translator(lang, **kwargs)
         registry.replace(pylons.translator, translator)
 
 def get_lang():

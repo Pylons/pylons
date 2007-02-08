@@ -61,9 +61,18 @@ class SampleController(BaseController):
             session['lang'] = lang
             session.save()
             resp_unicode = _('Set language to "%(lang)s"') % {'lang': lang}
-        return Response(resp_unicode.encode('utf-8'))
+        return Response(resp_unicode)
 
     def i18n_index(self):
         locale_list = request.languages
         set_lang(request.languages)
-        return Response(unicode(_('basic index page')).encode('utf-8'))
+        return Response(unicode(_('basic index page')))
+
+    def no_lang(self):
+        resp = Response()
+        set_lang(None)
+        resp.write(_('No language'))
+        set_lang([])
+        resp.write(_('No languages'))
+        return resp
+        

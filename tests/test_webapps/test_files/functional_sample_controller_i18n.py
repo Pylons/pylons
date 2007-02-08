@@ -12,3 +12,8 @@ class TestSampleController(TestController):
                 'Accept-Language':'fr;q=0.6, en;q=0.1, ja;q=0.3'})
         # expect japanese fallback for nonexistent french.
         assert u'\u6839\u672c\u30a4\u30f3\u30c7\u30af\u30b9\u30da\u30fc\u30b8'.encode('utf-8') in response
+
+    def test_no_lang(self):
+        response = self.app.get(url_for(controller='/sample', action='no_lang'))
+        assert 'No language' in response
+        assert 'No languages' in response
