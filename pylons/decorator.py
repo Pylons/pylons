@@ -130,12 +130,6 @@ def newfunc(func, model=None): # not used internally
 
     >>> def double(x):
     ...     pass
-
-    >>> help(change_signature(f, double))
-    Help on function double in module __main__:
-    <BLANKLINE>
-    double(x)
-    <BLANKLINE>    
     """
     if model is None:
         return new.function(func.func_code, func.func_globals, func.func_name,

@@ -265,11 +265,11 @@ def render(*args, **kargs):
     
     Optionally takes 3 keyword arguments to use caching supplied by Buffet.
     
-    Example::
+    Examples::
         
-        >>> content = render('/my/template.myt')
-        >>> print content
-        >>> content = render('/my/template.myt', fragment=True)
+        content = render('/my/template.myt')
+        print content
+        content = render('/my/template.myt', fragment=True)
     
     .. admonition:: Note
         
