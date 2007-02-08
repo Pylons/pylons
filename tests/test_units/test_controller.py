@@ -1,3 +1,5 @@
+from unittest import TestCase
+
 from paste.wsgiwrappers import WSGIRequest
 from paste.fixture import TestApp
 
@@ -19,9 +21,10 @@ class SampleWSGIController(WSGIController):
     def index(self):
         return pylons.Response('hello world')
 
-class TestController(object):
+class TestController(TestCase):
     def setUp(self):
-        self.environ = {'pylons.routes_dict':dict(action='index')}
+        self.environ = {'pylons.routes_dict':dict(action='index'),
+                        'paste.config':dict(global_conf=dict(debug=True))}
         pylons.request._push_object(WSGIRequest(self.environ))
         pylons.c._push_object(ContextObj())
         self.controller = SampleController()
@@ -37,8 +40,7 @@ class TestController(object):
     def test_inspect_call(self):
         self.environ['pylons.routes_dict'].update(dict(action='view', id=4, name='fred'))
         assert "Hi 4, fred" == self.controller()
-        
-    
+
     def test_private_action(self):
         self.environ['pylons.routes_dict']['action'] = '_private'
         response = self.controller()
@@ -72,9 +74,13 @@ class TestController(object):
         assert id == 4
         assert kargs == {'action': 'kargs', 'start_response': None, 
                          'environ': self.environ, 'name': 'fred'}
+
+    def test_method_missing(self):
+        self.environ['pylons.routes_dict']['action'] = 'notthere'
+        self.assertRaises(NotImplementedError, self.controller)
         
 
-class TestWSGIController(object):
+class TestWSGIController(TestCase):
     def setUp(self):
         self.environ = {'pylons.routes_dict':dict(action='index')}
         pylons.request._push_object(WSGIRequest(self.environ))
