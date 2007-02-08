@@ -6,7 +6,7 @@ for spec in ['PasteScript', 'Paste', 'PasteDeploy', 'pylons']:
     pkg_resources.require(spec)
 
 template_path = os.path.join(
-    os.path.dirname(__file__), 'test_files').replace('\\','/')
+    os.path.dirname(__file__), 'filestotest').replace('\\','/')
 
 test_environ = os.environ.copy()
 test_environ['PASTE_TESTING'] = 'true'
@@ -83,7 +83,7 @@ def make_controller():
     assert '?' not in res.stdout
 
 def _do_proj_test(copydict, emptyfiles=None):
-    """Given a dict of files, where the key is a filename in test_files, the value is
+    """Given a dict of files, where the key is a filename in filestotest, the value is
     the destination in the new projects dir. emptyfiles is a list of files that should
     be created and empty."""
     if not emptyfiles:
