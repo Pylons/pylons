@@ -48,7 +48,10 @@ class CacheController(WSGIController):
 
 cachedir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'cache')
 
-shutil.rmtree(cachedir)
+try:
+    shutil.rmtree(cachedir)
+except:
+    pass
 
 environ = {}
 app = ControllerWrap(CacheController)
