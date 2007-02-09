@@ -11,7 +11,6 @@ class TestWSGIController(TestCase):
         pylons.c._push_object(ContextObj())
 
     def tearDown(self):
-        pylons.request._pop_object()
         pylons.c._pop_object()
     
     def get_response(self, **kargs):

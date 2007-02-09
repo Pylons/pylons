@@ -25,6 +25,11 @@ class CacheController(WSGIController):
         pylons.g.counter += 1
         return Response('Counter=%s' % pylons.g.counter)
     test_get_cache_decorator = beaker_cache(key="param", query_args=True)(test_get_cache_decorator)
+
+    def test_get_cache_default(self):
+        pylons.g.counter += 1
+        return Response('Counter=%s' % pylons.g.counter)
+    test_get_cache_default = beaker_cache(query_args=True)(test_get_cache_default)
     
     def test_expire_cache_decorator(self):
         pylons.g.counter += 1
@@ -90,3 +95,20 @@ class TestCacheDecorator(TestWSGIController):
         assert 'Counter=7' in response
         response = self.get_response(action='test_keyslist_cache_decorator', id=1, id2=2)
         assert 'Counter=7' in response
+        
+        response = self.get_response(action='test_get_cache_default', _url='/?param=1243')
+        assert 'Counter=8' in response
+        response = self.get_response(action='test_get_cache_default', _url="/?param=123")
+        assert 'Counter=9' in response
+        response = self.get_response(action='test_get_cache_default', _url="/?param=1243")
+        assert 'Counter=8' in response
+        
+
+    def test_nocache(self):
+        sap.g.counter = 0
+        sap.g.pylons_config.app_conf['cache_enabled'] = 'False'
+        response = self.get_response(action='test_default_cache_decorator')
+        assert 'Counter=1' in response
+        response = self.get_response(action='test_default_cache_decorator')
+        assert 'Counter=2' in response
+        sap.g.pylons_config.app_conf['cache_enabled'] = 'True'
