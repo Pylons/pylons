@@ -204,7 +204,7 @@ class WSGIController(Controller):
         
         # Keep private methods private
         if environ['pylons.routes_dict'].get('action', '').startswith('_'):
-            return pylons.Response(code=404)
+            return pylons.Response(code=404)(environ, start_response)
         
         if hasattr(self, '__before__'):
             self._inspect_call(self.__before__)

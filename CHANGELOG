@@ -2,6 +2,9 @@ Pylons Changelog
 =================
 
 0.9.5 (**svn**)
+* Fixed bug in WSGIController with private function attempts not returning a
+  valid WSGI response.
+* Added full unit test coverage of cache decorator.
 * Adding messages binary file, enabling i18n unit tests. Updating pylons.i18n
   to import LanguageError. Fixes #193.
 * Adding i18n tests, not active yet as they're waiting on a binary file from a
