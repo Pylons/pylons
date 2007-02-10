@@ -2,6 +2,10 @@ Pylons Changelog
 =================
 
 0.9.5 (**svn**)
+* Interactive debugger now supports Mako. After r1780 if you are using a 
+  custom theme you will need to change '%(myghty_data)s' to 
+  '%(template_data)s' in your template. If you are using JavaScript the tab 
+  id is now "template_data".
 * Fixed bug in WSGIController with private function attempts not returning a
   valid WSGI response.
 * Added full unit test coverage of cache decorator.
