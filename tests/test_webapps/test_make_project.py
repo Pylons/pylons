@@ -92,7 +92,7 @@ def _do_proj_test(copydict, emptyfiles=None):
         projenv.writefile(newfile, frompath=original)
     for fi in emptyfiles:
         projenv.writefile(fi)
-    res = projenv.run(_get_script_name('nosetests -d'),
+    res = projenv.run(_get_script_name('nosetests')+' -d',
                       expect_stderr=True,
                       cwd=os.path.join(testenv.cwd, 'ProjectName').replace('\\','/'))
 
