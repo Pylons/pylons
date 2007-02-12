@@ -4,10 +4,11 @@ Provides ``gettext`` translation functions via an app's ``pylons.translator``
 and get/set_lang for changing the language translated to."""
 
 import os
-import pylons
-
 from gettext import NullTranslations, translation
+
 from pkg_resources import resource_exists, resource_stream
+
+import pylons
 
 class LanguageError(Exception):
     """Exception raised when a problem occurs with changing languages"""

@@ -5,8 +5,8 @@ It's generally assumed that it will be called by Paste, though any WSGI
 application server could create and call the WSGI app as well.
 """
 import gettext
-import sys
 import inspect
+import sys
 import warnings
 
 import paste.httpexceptions as httpexceptions
@@ -19,10 +19,10 @@ from routes.middleware import RoutesMiddleware
 import pylons
 import pylons.legacy
 import pylons.templating
+from pylons.controllers import Controller, WSGIController
 from pylons.i18n import set_lang
 from pylons.util import ContextObj, AttribSafeContextObj, \
     class_name_from_module_name
-from pylons.controllers import Controller, WSGIController
 
 class PylonsBaseWSGIApp(object):
     """Basic Pylons WSGI Application

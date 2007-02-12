@@ -2,8 +2,8 @@
 import simplejson as json
 
 import formencode.api as api
-from formencode import htmlfill
 import formencode.variabledecode as variabledecode
+from formencode import htmlfill
 
 import pylons
 from pylons.decorator import decorator
