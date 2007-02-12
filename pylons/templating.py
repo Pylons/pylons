@@ -16,13 +16,12 @@ The render functions are intended as the primary user-visible rendering
 commands and hook into Buffet to make rendering content easy.
 """
 import os
-import pkg_resources
 try:
     from cStringIO import StringIO
 except ImportError:
     from StringIO import StringIO
 
-import paste.wsgiwrappers
+import pkg_resources
 
 import pylons
 
@@ -67,7 +66,6 @@ class Buffet(object):
             raise TemplateEngineMissing('Please install a plugin for '
                 '"%s" to use its functionality' % engine_name)
         engine_name = alias or engine_name
-        defaults = config.pop(engine_name + '.default_options', None)
         extra_vars_func = config.pop(engine_name + '.extra_vars_func', None)
         self.engines[engine_name] = \
             dict(engine=Engine(extra_vars_func=extra_vars_func,
