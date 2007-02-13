@@ -175,6 +175,10 @@ class Buffet(object):
                 full_path = os.path.join(engine_config['root'], template_name)
                 full_path = full_path.replace(os.path.sep, '.').lstrip('.')
         
+        # Don't pass format into the template engine if it's None
+        if options['format'] is None:
+            del options['format']
+        
         # If one of them is not None then the user did set something
         if cache_key is not None or cache_expire is not None or cache_type \
             is not None:
@@ -190,6 +194,8 @@ class Buffet(object):
             tfile = full_path
             if options.get('fragment', False):
                 tfile += '_frag'
+            if options.get('format', False):
+                tfile += options['format']
             mycache = pylons.cache.get_cache(tfile)
             content = mycache.get_value(cache_key, createfunc=content, 
                 type=cache_type, expiretime=cache_expire)
@@ -277,6 +283,7 @@ def render(*args, **kargs):
         inheriting any site skin.
     """
     fragment = kargs.pop('fragment', False)
+    format = kargs.pop('format', None)
     args = list(args)
     template = args.pop()
     cache_args = dict(cache_expire=kargs.pop('cache_expire', None), 
@@ -285,9 +292,10 @@ def render(*args, **kargs):
     if args: 
         engine = args.pop()
         return pylons.buffet.render(engine, template, fragment=fragment,
-                                    namespace=kargs, **cache_args)
+                                    format=format, namespace=kargs, 
+                                    **cache_args)
     return pylons.buffet.render(template_name=template, fragment=fragment,
-                                namespace=kargs, **cache_args)
+                                format=format, namespace=kargs, **cache_args)
 
 def render_response(*args, **kargs):
     """Returns the rendered response within a Response object

@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.5 (**svn**)
+* Updated templating Buffet to recognize format parameter and properly pass it
+  to the template engine.
 * Updated LICENSE for new year and to indicate license covering templates
   generated. Fixes #188.
 * Interactive debugger now supports Mako. After r1780 if you are using a 
