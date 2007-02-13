@@ -11,7 +11,8 @@ is occurring:
 * Templates - If you're using Myghty templates, they all have built-in
   `Myghty caching options <http://www.myghty.org/docs/cache.myt>`_ available.
 * Non-Myghty Templates - You can cache the results of the entire template
-  using the `3 cache keyword arguments to the render calls <docs/class-pylons.templating.Buffet.html#render>`_.
+  using the `3 cache keyword arguments to the render calls 
+  <class-pylons.templating.Buffet.html#render>`_.
   These render commands can also be used inside templates.
 * Controllers - The ``cache`` object is available in controllers and templates
   for use in caching anything that can be pickled.
