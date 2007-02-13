@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.5 (**svn**)
+* Updated LICENSE for new year and to indicate license covering templates
+  generated. Fixes #188.
 * Interactive debugger now supports Mako. After r1780 if you are using a 
   custom theme you will need to change '%(myghty_data)s' to 
   '%(template_data)s' in your template. If you are using JavaScript the tab 
