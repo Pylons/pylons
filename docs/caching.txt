@@ -102,6 +102,39 @@ add the appropriate cache keyword to your ``render`` call.
 While these example show the ``render_response`` command, they also apply to the
 ``render`` command.
 
+Using the Cache Decorator
+=========================
+
+Pylons also provides the `beaker_cache
+<docs/module-pylons.decorators.cache.html#beaker_cache>`_
+decorator for caching the results of an entire function call (memoizing) to
+``pylons.cache``.
+
+It takes the same cache arguments (minus their ``cache_`` prefix) as the
+``render`` function.
+
+.. code-block:: Python
+
+    from pylons.decorators.cache import beaker_cache
+    
+    class SampleController(BaseController):
+
+        # Cache this controller action forever (until the cache dir is cleaned)
+        @beaker_cache()
+        def home(self):
+            c.data = expensive_call()
+            return render_response('/home.myt')
+
+        # Cache this controller action by its GET args for 10 mins to memory
+        @beaker_cache(expire=600, type='memory', query_args=True)
+        def show(self, id):
+            c.data = expensive_call(id)
+            return render_response('/show.myt')
+
+By default it uses all of the decorated function's arguments as the cache
+key. It can alternatively use the ``request.GET`` query args as the cache key
+when the ``query_args`` option is enabled. The cache key can be further
+customized via the ``key`` argument.
 
 ETag Caching
 ============
