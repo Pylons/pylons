@@ -34,8 +34,12 @@ Copyright (c) 2005, 2006, 2007 Ben Bangert, James Gardner, Philip Jenvey
                          and contributors.
 All rights reserved.
 
-Redistribution and use in source and binary forms, with or without 
-modification, are permitted.
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+1. The name of the author or contributors may not be used to endorse or
+   promote products derived from this software without specific prior
+   written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
 ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
