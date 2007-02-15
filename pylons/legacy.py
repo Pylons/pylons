@@ -14,6 +14,33 @@ default_charset_warning = (
                                 response_settings=dict(charset='%(charset)s'))"
 """)
 
+helpers_and_g_warning = (
+"Pylons 0.9.3 and above now explicitly pass helpers and g "
+"references to the PylonsApp constructor. Please update your "
+"""middleware.py with:
+
+    import %(package)s.lib.app_globals as app_globals
+    import %(package)s.lib.helpers
+
+Then edit the PylonsApp instantiation with:
+
+    app = pylons.wsgiapp.PylonsApp(config, helpers=%(package)s.lib.helpers,
+                                   g=app_globals.Globals)
+""")
+
+prefix_warning = (
+"The [app:main] 'prefix' configuration option has been deprecated, please use "
+"paste.deploy.config.PrefixMiddleware instead. To enable PrefixMiddleware in "
+"""the config file, add the following line to the [app:main] section:
+
+    filter-with = app-prefix
+
+and the following lines to the end of the config file:
+
+    [filter:app-prefix]
+    use = egg:PasteDeploy#prefix
+    prefix = %s
+""")
 
 def load_h(package_name):
     """

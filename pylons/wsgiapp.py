@@ -214,18 +214,9 @@ class PylonsApp(object):
             self.config.response_settings['charset'] = default_charset
 
         if helpers is None or g is None:
-            warnings.warn(
-                'Pylons 0.9.3 and above now explicitly pass helpers and g '
-                'references to the PylonsApp constructor. Please update your '
-                'middleware.py with:\n\n'
-                '    import MYPROJ.lib.app_globals as app_globals\n'
-                '    import MYPROJ.lib.helpers\n\n'
-                'Then edit the PylonsApp instantiation with:\n\n'
-                '    app = pylons.wsgiapp.PylonsApp(config, '
-                'helpers=MYPROJ.lib.helpers,\n'
-                '                                   g=app_globals.Globals)\n\n'
-                'where MYPROJ is the name of your project.\n',
-                DeprecationWarning, 2)
+            warnings.warn(pylons.legacy.helpers_and_g_warning % \
+                              dict(package=config.package),
+                          DeprecationWarning, 2)
             
         if not g:
             try:

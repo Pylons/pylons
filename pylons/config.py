@@ -220,6 +220,8 @@ class Config(object):
         if not prefix:
             prefix = global_conf.get('prefix')
         if prefix:
+            warnings.warn(pylons.legacy.prefix_warning % prefix,
+                          DeprecationWarning, 2)
             self.map.prefix = app_conf['prefix']
             self.map._created_regs = False
         
