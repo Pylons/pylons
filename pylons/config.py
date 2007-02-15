@@ -5,6 +5,7 @@ for Myghty, Paste errorware, and prefixing Routes if necessary.
 """
 import os
 import re
+import warnings
 
 from paste.deploy.converters import asbool
 
@@ -105,7 +106,7 @@ class Config(object):
 
         if default_charset is not None:
             warnings.warn(pylons.legacy.default_charset_warning % \
-                              ('Config', default_charset),
+                              dict(klass='Config', charset=default_charset),
                           DeprecationWarning, 2)
             self.response_settings['charset'] = default_charset
     

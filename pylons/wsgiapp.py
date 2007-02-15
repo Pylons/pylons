@@ -209,9 +209,9 @@ class PylonsApp(object):
         self.config = config
         if default_charset:
             warnings.warn(pylons.legacy.default_charset_warning % \
-                              ('PylonsApp', default_charset),
+                              dict(klass='PylonsApp', charset=default_charset),
                           DeprecationWarning, 2)
-            self.config.request_settings['charset'] = default_charset
+            self.config.response_settings['charset'] = default_charset
 
         if helpers is None or g is None:
             warnings.warn(

@@ -6,12 +6,13 @@ import warnings
 
 import pylons
 
-default_charset_warning = \
-"The 'default_charset' keyword argument to the %s constructor is deprecated. "
-"Please specify response_settings=dict(charset='%s') to the Config object in "
-"your 'config/environment.py file instead, e.g.:\n"
-"return pylons.config.Config(myghty, map, paths,"
-"                            response_settings=dict(charset='%s'))"
+default_charset_warning = (
+"The 'default_charset' keyword argument to the %(klass)s constructor is "
+"deprecated. Please specify response_settings=dict(charset='%(charset)s') to "
+"""the Config constructor in your 'config/environment.py file instead, e.g.:\n
+    return pylons.config.Config(tmpl_options, map, paths,
+                                response_settings=dict(charset='%(charset)s'))"
+""")
 
 
 def load_h(package_name):
