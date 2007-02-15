@@ -542,7 +542,7 @@ optionally the decoding ``errors`` handler:
         raw_get = request.GET
         raw_params = request.params
 
-To specify that your incoming form parameters should always be coerced to
+To specify that the incoming form parameters should always be coerced to
 unicode objects, pass the following as the request_settings keyword argument to
 your Pylons Config object (in ``config/environment.py``):
 
