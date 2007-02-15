@@ -15,4 +15,4 @@ h = StackedObjectProxy(name="h")
 
 translator = StackedObjectProxy(name="Translator")
 
-__all__ = ['Controller', 'RPCController', 'Response', 'jsonify']
+__all__ = ['Controller', 'Response', 'jsonify']
