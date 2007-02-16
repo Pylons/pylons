@@ -1,7 +1,9 @@
-"""Configuration setup for Myghty, and Paste error middleware
+"""Configuration setup for templating systems and Paste error
+middleware
 
 This module supplies pylons_config which handles setting up defaults
-for Myghty, Paste errorware, and prefixing Routes if necessary.
+for templating systems, Paste errorware, and prefixing Routes if
+necessary.
 """
 import os
 import re
@@ -30,9 +32,7 @@ class Config(object):
     ``pylons_config`` under the ``g`` object. There's several useful
     attributes of the config object most people will be interested in:
     
-    ``myghty``
-        The myghty configuration dict that was used to initialize Myghty
-    ``template_options``
+    ``tmpl_options``
         Full dict of template options that any TG compatible plugin should
         be able to parse. Comes with basic config needed for Myghty, Kid,
         and Mako.
@@ -42,12 +42,6 @@ class Config(object):
     ``paths``
         A dict of absolute paths that were defined in the applications
         ``config/environment.py`` module.
-    ``global_conf``
-        Global configuration passed in from Paste, this corresponds to the
-        DEFAULTS section in the config file.
-    ``app_conf``
-        Application specific configuration directives, passed in via Paste
-        from the app section of the config file.
     ``environ_config``
         Dict of environ keys for where in the environ to pickup various
         objects for registering with Pylons. If these are present then
@@ -75,6 +69,12 @@ class Config(object):
         ``pylons.Response``. May contain the values ``content_type``,
         ``charset`` and ``errors``. Overrides the Pylons default values
         specified by the ``response_defaults`` dict.
+    ``global_conf``
+        Global configuration passed in from Paste, this corresponds to the
+        DEFAULTS section in the config file.
+    ``app_conf``
+        Application specific configuration directives, passed in via Paste
+        from the app section of the config file.
     """
     def __init__(self, tmpl_options=None, map=None, paths=None, 
                  environ_config=None, default_charset=None, strict_c=False,
