@@ -1,12 +1,13 @@
 """Pylons Decorators: ``jsonify``, ``validate``, REST, and Cache decorators"""
 import simplejson as json
 
+from decorator import decorator
+
 import formencode.api as api
 import formencode.variabledecode as variabledecode
 from formencode import htmlfill
 
 import pylons
-from pylons.decorator import decorator
 
 def jsonify(func, *args, **kwargs):
     """Action decorator that formats output for JSON

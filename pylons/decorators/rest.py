@@ -1,6 +1,7 @@
 """REST decorators"""
+from decorator import decorator
+
 import pylons
-from pylons.decorator import decorator
 
 def restrict(*methods):
     """Restricts access to the function depending on HTTP method

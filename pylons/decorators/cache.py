@@ -1,10 +1,11 @@
 """Caching decorators"""
 import inspect
 
+from decorator import decorator
+
 from paste.deploy.converters import asbool
 
 import pylons
-from pylons.decorator import decorator
 
 def beaker_cache(key="cache_default", expire="never", type="dbm", 
     query_args=False):
