@@ -91,6 +91,7 @@ class Config(object):
         self.paths = paths
         self.environ_config = environ_config
         self.strict_c = strict_c
+        self.helpers = None
 
         self.request_settings = request_defaults.copy()
         if request_settings:

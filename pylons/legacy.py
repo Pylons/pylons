@@ -4,7 +4,11 @@ import sys
 import types
 import warnings
 
+from paste.registry import StackedObjectProxy
+
 import pylons
+from pylons.controllers import Controller as OrigController
+from pylons.decorators import jsonify as orig_jsonify
 
 default_charset_warning = (
 "The 'default_charset' keyword argument to the %(klass)s constructor is "
@@ -42,6 +46,24 @@ and the following lines to the end of the config file:
     prefix = %s
 """)
 
+pylons_h_warning = (
+"pylons.h is deprecated: use your project's lib.helpers module directly "
+"""instead. Your lib/helpers.py may require the following additional imports:
+
+    from pylons.helpers import log
+    from pylons.i18n import get_lang, set_lang
+
+Use the following in your project's lib/base.py file (and any other module that
+uses h):
+
+    import MYPROJ.lib.helpers as h
+
+(where MYPROJ is the name of your project) instead of:
+
+    from pylons import h
+""")
+
+
 def load_h(package_name):
     """
     This is a legacy test for pre-0.9.3 projects to continue using the old
@@ -74,5 +96,27 @@ def load_h(package_name):
 
     return sys.modules[helpers_name]
 
-__all__ = ['load_h']
+jsonify_warning = 'pylons.jsonify has been moved to pylons.decorators.jsonify.'
+def jsonify(*args, **kwargs):
+    warnings.warn(jsonify_warning, DeprecationWarning, 2)
+    return orig_jsonify(*args, **kwargs)
+jsonify.__doc__ = orig_jsonify.__doc__ + '\nDeprecated: %s' % jsonify_warning
 
+controller_warning = ('pylons.Controller has been moved to '
+                      'pylons.controllers.Controller.')
+class Controller(OrigController):
+    def __init__(self, *args, **kwargs):
+        warnings.warn(controller_warning, DeprecationWarning, 2)
+        OrigController.__init__(self, *args, **kwargs)
+
+    def __call__(self, *args, **kwargs):
+        warnings.warn(controller_warning, DeprecationWarning, 2)
+        return OrigController.__call__(self, *args, **kwargs)
+
+class DeprecatedStackedObjectProxy(StackedObjectProxy):
+    def _current_obj(*args, **kwargs):
+        warnings.warn(pylons_h_warning, DeprecationWarning, 3)
+        return StackedObjectProxy._current_obj(*args, **kwargs)
+h = DeprecatedStackedObjectProxy(name="h")
+
+__all__ = ['load_h']

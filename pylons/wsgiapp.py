@@ -186,8 +186,9 @@ class PylonsBaseWSGIApp(object):
         testenv = environ['paste.testing_variables']
         testenv['req'] = pylons.request._current_obj()
         testenv['c'] = pylons.c._current_obj()
-        testenv['g'] = pylons.g._current_obj()
-        testenv['h'] = pylons.h._current_obj()
+        g = pylons.g._current_obj()
+        testenv['g'] = g
+        testenv['h'] = g.pylons_config.helpers or pylons.h._current_obj()
         testenv['pylons_config'] = self.globals.pylons_config
         econf = environ['pylons.environ_config']
         if econf.get('session'):
@@ -232,6 +233,7 @@ class PylonsApp(object):
         else:
             g = g(config.global_conf, config.app_conf, config=config)
         g.pylons_config = config
+        config.helpers = helpers
         
         # Create the base Pylons wsgi app
         app = PylonsBaseWSGIApp(config.package, g, helpers=helpers)

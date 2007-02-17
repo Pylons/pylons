@@ -2,17 +2,17 @@
 from paste.registry import StackedObjectProxy
 from paste.wsgiwrappers import WSGIResponse as Response
 
-from pylons.controllers import Controller, XMLRPCController
-from pylons.decorators import jsonify
+from pylons.legacy import Controller, h, jsonify
 
 c = StackedObjectProxy(name="C")
 g = StackedObjectProxy(name="G")
-cache = StackedObjectProxy(name="Cache")
-session = StackedObjectProxy(name="Session")
-request = StackedObjectProxy(name="Request")
-buffet = StackedObjectProxy(name="Buffet")
-h = StackedObjectProxy(name="h")
 
+cache = StackedObjectProxy(name="Cache")
+request = StackedObjectProxy(name="Request")
+session = StackedObjectProxy(name="Session")
+
+buffet = StackedObjectProxy(name="Buffet")
 translator = StackedObjectProxy(name="Translator")
 
-__all__ = ['Controller', 'Response', 'jsonify']
+__all__ = ['c', 'g', 'cache', 'request', 'session', 'jsonify', 'Controller',
+           'Response']

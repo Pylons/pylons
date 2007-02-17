@@ -2,6 +2,17 @@ Pylons Changelog
 =================
 
 0.9.5 (**svn**)
+* WARNING: pylons.h was deprecated for using projects' lib.helpers module
+  directly in 0.9.3. pylons.h is now formally deprecated (emits
+  DeprecationWarnings). Projects still accessing pylons.h must change the
+  following import:
+      from pylons import h
+  to:
+      import MYPROJ.lib.helpers as h
+* pylons.jsonify and pylons.Controller references have been deprecated
+  (they are misplaced references). They continue to be available at
+  pylons.decorators.jsonify and pylons.controllers.Controller, as they always
+  have been.
 * Updated templating Buffet to recognize format parameter and properly pass it
   to the template engine.
 * Updated LICENSE for new year and to indicate license covering templates
