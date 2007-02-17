@@ -1,6 +1,7 @@
 from projectname.lib.base import *
 from pylons.decorators import rest
 from pylons.i18n import get_lang, set_lang, LanguageError
+from pylons import h as deprecated_h
 
 class SampleController(BaseController):
     def index(self):
@@ -76,3 +77,6 @@ class SampleController(BaseController):
         resp.write(_('No languages'))
         return resp
         
+    def deprecated_h(self):
+        return Response('%s is %s' % \
+                            (h.url_for(), deprecated_h.url_for()))
