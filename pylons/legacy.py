@@ -7,8 +7,9 @@ import warnings
 from paste.registry import StackedObjectProxy
 
 import pylons
+import pylons.decorators
 from pylons.controllers import Controller as OrigController
-from pylons.decorators import jsonify as orig_jsonify
+from pylons.util import deprecated, func_move
 
 default_charset_warning = (
 "The 'default_charset' keyword argument to the %(klass)s constructor is "
@@ -96,11 +97,9 @@ def load_h(package_name):
 
     return sys.modules[helpers_name]
 
-jsonify_warning = 'pylons.jsonify has been moved to pylons.decorators.jsonify.'
-def jsonify(*args, **kwargs):
-    warnings.warn(jsonify_warning, DeprecationWarning, 2)
-    return orig_jsonify(*args, **kwargs)
-jsonify.__doc__ = orig_jsonify.__doc__ + '\nDeprecated: %s' % jsonify_warning
+jsonify = deprecated(pylons.decorators.jsonify,
+                     func_move('pylons.jsonify',
+                               moved_to='pylons.decorators.jsonify'))
 
 controller_warning = ('pylons.Controller has been moved to '
                       'pylons.controllers.Controller.')
