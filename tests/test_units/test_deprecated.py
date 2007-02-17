@@ -1,10 +1,16 @@
 from unittest import TestCase
 
+from paste.fixture import TestApp
+from paste.registry import RegistryManager
 from paste.wsgiwrappers import WSGIRequest
 
 import pylons
-from pylons import Controller
+from pylons import jsonify, Controller
+from pylons.controllers import WSGIController
+from pylons.decorators import jsonify as orig_jsonify
 from pylons.util import ContextObj
+
+from __init__ import ControllerWrap, SetupCacheGlobal, TestWSGIController
 
 class OldController(Controller):
     def index(self):
@@ -21,15 +27,6 @@ class TestDeprecatedControllerImport(TestCase):
 
     def test_index(self):
         assert 'old' == self.controller()
-
-from paste.fixture import TestApp
-from paste.registry import RegistryManager
-
-from pylons import jsonify
-from pylons.decorators import jsonify as orig_jsonify
-from pylons.controllers import WSGIController
-
-from __init__ import ControllerWrap, SetupCacheGlobal, TestWSGIController
 
 class SimpleTestWSGIController(TestWSGIController):
     wsgi_app = None
