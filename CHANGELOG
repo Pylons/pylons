@@ -2,6 +2,10 @@ Pylons Changelog
 =================
 
 0.9.5 (**svn**)
+* WARNING: Pylons now requires the decorator module: it no longer packages
+  it as pylons.decorator. Code relying on the pylons.decorator.decorator
+  function will trigger a deprecation warning and should be changed to use
+  decorator.decorator.
 * WARNING: pylons.h was deprecated for using projects' lib.helpers module
   directly in 0.9.3. pylons.h is now formally deprecated (emits
   DeprecationWarnings). Projects still accessing pylons.h must change the
