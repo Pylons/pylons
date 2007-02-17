@@ -21,6 +21,10 @@ def deprecated(func, message):
     def deprecated_method(*args, **kargs):        
         warnings.warn(message, DeprecationWarning, 2)
         return func(*args, **kargs)
+    try:
+        deprecated_method.__name__ = func.__name__
+    except TypeError: # Python < 2.4
+        pass
     deprecated_method.__doc__ = message + "\n\n" + func.__doc__
     return deprecated_method
 
