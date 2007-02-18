@@ -92,16 +92,6 @@ def config_get(key, default=None):
 class ContextObj(object):
     """ The 'c' object, with strict attribute access (raises an Exception when
     the attribute does not exist) """
-    pass
-
-class AttribSafeContextObj(object):
-    """ The 'c' object, with lax attribute access (returns '' when the
-    attribute does not exist) """
-    def __getattr__(self, name):
-        try:
-            return object.__getattribute__(self, name)
-        except AttributeError:
-            return ''
     def __repr__(self):
         attrs = [(name, value)
                  for name, value in self.__dict__.items()
@@ -118,6 +108,15 @@ class AttribSafeContextObj(object):
             self.__class__.__name__,
             hex(id(self)),
             ','.join(parts))
+
+class AttribSafeContextObj(ContextObj):
+    """ The 'c' object, with lax attribute access (returns '' when the
+    attribute does not exist) """
+    def __getattr__(self, name):
+        try:
+            return object.__getattribute__(self, name)
+        except AttributeError:
+            return ''
 
 class PylonsTemplate(Template):
     _template_dir = 'templates/default_project'
