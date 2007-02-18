@@ -112,12 +112,12 @@ class AttribSafeContextObj(object):
             value_repr = repr(value)
             if len(value_repr) > 70:
                 value_repr = value_repr[:60] + '...' + value_repr[-5:]
-            parts.append('%s=%s' % (name, value_repr))
-        return '<%s.%s %s %s>' % (
+            parts.append(' %s=%s' % (name, value_repr))
+        return '<%s.%s at %s%s>' % (
             self.__class__.__module__,
             self.__class__.__name__,
-            hex(id(self)).split('x')[1],
-            ' '.join(parts))
+            hex(id(self)),
+            ','.join(parts))
 
 class PylonsTemplate(Template):
     _template_dir = 'templates/default_project'
