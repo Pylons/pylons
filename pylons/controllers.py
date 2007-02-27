@@ -143,7 +143,8 @@ class Controller(object):
         
         By default, this uses Routes to retrieve the arguments, override
         this method to customize the arguments your controller actions are
-        called with."""
+        called with.
+        """
         req = pylons.request._current_obj()
         kargs = req.environ['pylons.routes_dict'].copy()
         kargs.update(dict(environ=req.environ, 
@@ -252,7 +253,7 @@ class XMLRPCController(WSGIController):
         
         method = self._find_method_name(orig_method)
         if not hasattr(self, method):
-            return xmlrpc_fault(0, "No method by that name")
+            return xmlrpc_fault(0, "No method by that name")(environ, start_response)
 
         func = getattr(self, method)
 
@@ -274,7 +275,7 @@ class XMLRPCController(WSGIController):
                 msg = ("Incorrect argument signature. %s recieved does not "
                        "match %s signature for method %s" % \
                            (params, func.signature, orig_method))
-                return xmlrpc_fault(0, msg)
+                return xmlrpc_fault(0, msg)(environ, start_response)
 
         # Change the arg list into a keyword dict based off the arg
         # names in the functions definition

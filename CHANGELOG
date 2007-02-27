@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.5 (**svn**)
+* Fixed bug in XMLRPC Controller with xmlrpclib Faults not being properly
+  transformed into a WSGI response within the controller.
 * WARNING: Pylons now requires the decorator module: it no longer packages
   it as pylons.decorator. Code relying on the pylons.decorator.decorator
   function will trigger a deprecation warning and should be changed to use

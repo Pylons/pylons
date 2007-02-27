@@ -1,4 +1,6 @@
 from unittest import TestCase
+from xmlrpclib import loads, dumps
+
 from paste.wsgiwrappers import WSGIRequest
 
 import pylons
@@ -17,6 +19,15 @@ class TestWSGIController(TestCase):
         url = kargs.pop('_url', '/')
         self.environ['pylons.routes_dict'].update(kargs)
         return self.app.get(url)
+    
+    def xmlreq(self, method, args=None):
+        if args is None:
+            args = ()
+        ee = dict(CONTENT_TYPE='text/xml')
+        data = dumps(args, methodname=method)
+        response = self.app.post('/', params = data, extra_environ=ee)
+        return loads(response.body)[0][0]
+    
 
 class ControllerWrap(object):
     def __init__(self, controller):
