@@ -1,5 +1,6 @@
 """Pylons Decorators: ``jsonify``, ``validate``, REST, and Cache decorators"""
 import simplejson as json
+from paste.util.multidict import UnicodeMultiDict
 
 from decorator import decorator
 
@@ -86,7 +87,22 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
             pylons.request.environ['REQUEST_METHOD'] = 'GET'
             pylons.request.environ['pylons.routes_dict']['action'] = form
             response = self._dispatch_call()
-            form_content = "".join(response.content)
+            if isinstance(params, UnicodeMultiDict):
+
+                # Don't decode back to unicode if its already unicode
+                if len(response.content) > 0 and isinstance(response.content[0], unicode):
+                    form_content = u''.join(response.content)
+
+                # Content has been encoded to str, decode back to unicode
+                elif len(response.content) > 0:
+                    encoding = pylons.request.defaults['charset']
+                    encode_errors = pylons.request.defaults['errors']
+                    form_content = u''.join(
+                        [x.decode(encoding, encode_errors) for x in response.content])
+                else:
+                    form_content = u''
+            else:
+                form_content = "".join(response.content)
             response.content = [htmlfill.render(form_content, params, errors)]
             return response
         return func(self, *args, **kwargs)

@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.5 (**svn**)
+* Fixed bug in validate decorator with new UnicodeMultiDict response content
+  not properly retaining form content as unicode for formencode's htmlfill.
 * Fixed bug in XMLRPC Controller with xmlrpclib Faults not being properly
   transformed into a WSGI response within the controller.
 * WARNING: Pylons now requires the decorator module: it no longer packages
