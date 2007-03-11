@@ -229,8 +229,17 @@ class WSGIController(Controller):
         return response
 
 class XMLRPCController(WSGIController):
-    """XML-RPC Controller"""
-
+    """XML-RPC Controller that speaks WSGI
+    
+    This controller handles XML-RPC responses and complies with the 
+    `XML-RPC Specification <http://www.xmlrpc.com/spec>`_ as well as the
+    `XML-RPC Introspection <http://scripts.incutio.com/xmlrpc/introspection.html>`_
+    specification.
+    
+    By default, methods with names containing a dot are translated to use an
+    underscore. Thus `system.methodHelp` is handled by the method 
+    `system_methodHelp`.
+    """
     max_body_length = 4194304
 
     def _get_method_args(self):
@@ -300,9 +309,19 @@ class XMLRPCController(WSGIController):
         return pylons.Response(response)
 
     def _find_method_name(self, name):
+        """Locate a method in the controller by the appropriate name
+        
+        By default, this translates method names like 'system.methodHelp' into
+        'system_methodHelp'.
+        """
         return name.replace('.', '_')
 
     def _publish_method_name(self, name):
+        """Translate an internal method name to a publicly viewable one
+        
+        By default, this translates internal method names like 'blog_view' into
+        'blog.view'.
+        """
         return name.replace('_', '.')
 
     def system_listMethods(self):
@@ -337,6 +356,7 @@ class XMLRPCController(WSGIController):
 
     def system_methodHelp(self, name):
         """Returns the documentation for a method"""
+        name = self._find_method_name(name)
         if hasattr(self, name):
             method = getattr(self, name)
             help = getattr(method, 'help', None) or method.__doc__

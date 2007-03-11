@@ -54,7 +54,11 @@ class TestXMLRPCController(TestWSGIController):
     def test_methodhelp(self):
         response = self.xmlreq('system.methodHelp', ('docs',))
         assert "This method has a docstring" in response
-    
+
+    def test_methodhelp_with_structured_methodname(self):
+        response = self.xmlreq('system.methodHelp', ('system.methodSignature',))
+        assert "Returns an array of array's" in response
+
     def test_methodsignature(self):
         response = self.xmlreq('system.methodSignature', ('docs',))
         assert [['struct']] == response

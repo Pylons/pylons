@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.5 (**svn**)
+* Added fix for XMLRPCController system.methodHelp function and unit test.
+  Patch and unit test submitted by Graham Higgins.
 * Fixed bug in validate decorator with new UnicodeMultiDict response content
   not properly retaining form content as unicode for formencode's htmlfill.
 * Fixed bug in XMLRPC Controller with xmlrpclib Faults not being properly
