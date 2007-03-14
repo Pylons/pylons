@@ -237,8 +237,50 @@ class XMLRPCController(WSGIController):
     specification.
     
     By default, methods with names containing a dot are translated to use an
-    underscore. Thus `system.methodHelp` is handled by the method 
+    underscore. For example, the `system.methodHelp` is handled by the method 
     `system_methodHelp`.
+    
+    Methods in the XML-RPC controller will be called with the method given in 
+    the XMLRPC body. Methods may be annotated with a signature attribute to 
+    declare the valid arguments and return types.
+    
+    For example::
+        
+        class MyXML(XMLRPCController):
+            def userstatus(self):
+                return 'basic string'
+            userstatus.signature = [ ['string'] ]
+            
+            def userinfo(self, username, age=None):
+                user = LookUpUser(username)
+                response = {'username':user.name}
+                if age and age > 10:
+                    response['age'] = age
+                return response
+            userinfo.signature = [ ['struct', 'string'], ['struct', 'string', 'int'] ]
+    
+    Since XML-RPC methods can take different sets of data, each set of valid
+    arguments is its own list. The first value in the list is the type of the
+    return argument. The rest of the arguments are the types of the data that
+    must be passed in.
+    
+    In the last method in the example above, since the method can optionally 
+    take an integer value both sets of valid parameter lists should be
+    provided.
+    
+    Valid types that can be checked in the signature and their corresponding
+    Python types::
+        'string' - str
+        'array' - list
+        'boolean' - bool
+        'int' - int
+        'double' - float
+        'struct' - dict
+        'dateTime.iso8601' - xmlrpclib.DateTime
+        'base64' - xmlrpclib.Binary
+    
+    Note::
+        Requiring a signature is optional.
     """
     max_body_length = 4194304
 
@@ -246,6 +288,8 @@ class XMLRPCController(WSGIController):
         return self.rpc_kargs
 
     def __call__(self, environ, start_response):
+        """Parse an XMLRPC body for the method, and call it with the 
+        appropriate arguments"""
         # Pull out the length, return an error if there is no valid
         # length or if the length is larger than the max_body_length.
         length = environ.get('CONTENT_LENGTH')
