@@ -163,4 +163,5 @@ def add_fallback(lang):
     return pylons.translator.add_fallback(_get_translator(lang))
 
 __all__ = ['gettext_noop', 'N_', 'gettext', 'ugettext', '_', 'ngettext',
-           'ungettext', 'set_lang', 'get_lang', 'LanguageError']
+           'ungettext', 'lazy_gettext', 'lazy_ugettext', 'lazy_ngettext',
+           'lazy_ungettext', 'set_lang', 'get_lang', 'LanguageError']
