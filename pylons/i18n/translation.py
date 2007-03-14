@@ -14,6 +14,36 @@ class LanguageError(Exception):
     """Exception raised when a problem occurs with changing languages"""
     pass
 
+class LazyString(object): 
+    """Has a number of lazily evaluated functions replicating a string. Just 
+    override the eval() method to produce the actual value.
+    
+    This method copied from TurboGears.
+    """
+    def __init__(self, func, *args, **kw):
+        self.func = func
+        self.args = args
+        self.kw = kw
+
+    def eval(self): 
+        return self.func(*self.args, **self.kw)
+
+    def __unicode__(self):
+        return unicode(self.eval())
+
+    def __str__(self):
+        return str(self.eval())
+
+    def __mod__(self, other):
+        return self.eval() % other
+
+def lazify(func): 
+    """Decorator to return a lazy-evaluated version of the original"""
+    def newfunc(*args, **kw):
+        return LazyString(func, *args, **kw)
+    newfunc.__doc__ = func.__doc__
+    return newfunc
+
 def gettext_noop(value):
     """Mark a string for translation without translating it. Returns value.
 
@@ -46,6 +76,7 @@ def gettext(value):
         gettext('This should be in lots of languages')
     """
     return pylons.translator.gettext(value)
+lazy_gettext = lazify(gettext)
 
 def ugettext(value):
     """Mark a string for translation. Returns the localized unicode string of
@@ -59,6 +90,7 @@ def ugettext(value):
     """
     return pylons.translator.ugettext(value)
 _ = ugettext
+lazy_ugettext = lazify(ugettext)
 
 def ngettext(singular, plural, n):
     """Mark a string for translation. Returns the localized string of the
@@ -76,6 +108,7 @@ def ngettext(singular, plural, n):
                  n) % {'num': n}
     """
     return pylons.translator.ngettext(singular, plural, n)
+lazy_ngettext = lazify(ngettext)
 
 def ungettext(singular, plural, n):
     """Mark a string for translation. Returns the localized unicode string of
@@ -94,6 +127,7 @@ def ungettext(singular, plural, n):
                   n) % {'num': n}
     """
     return pylons.translator.ungettext(singular, plural, n)
+lazy_ungettext = lazify(ungettext)
 
 def _get_translator(lang, **kwargs):
     """Utility method to get a valid translator object from a language name"""

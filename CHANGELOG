@@ -2,6 +2,7 @@ Pylons Changelog
 =================
 
 0.9.5 (**svn**)
+* Added lazy i18n translation functions. Patch from David Smith. Fixes #181.
 * Added fix for XMLRPCController system.methodHelp function and unit test.
   Patch and unit test submitted by Graham Higgins.
 * Fixed bug in validate decorator with new UnicodeMultiDict response content
