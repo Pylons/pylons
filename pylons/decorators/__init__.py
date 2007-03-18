@@ -1,5 +1,6 @@
 """Pylons Decorators: ``jsonify``, ``validate``, REST, and Cache decorators"""
 import simplejson as json
+import sys
 from paste.util.multidict import UnicodeMultiDict
 
 from decorator import decorator
@@ -87,22 +88,15 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
             pylons.request.environ['REQUEST_METHOD'] = 'GET'
             pylons.request.environ['pylons.routes_dict']['action'] = form
             response = self._dispatch_call()
-            if isinstance(params, UnicodeMultiDict):
-
-                # Don't decode back to unicode if its already unicode
-                if len(response.content) > 0 and isinstance(response.content[0], unicode):
-                    form_content = u''.join(response.content)
-
-                # Content has been encoded to str, decode back to unicode
-                elif len(response.content) > 0:
-                    encoding = pylons.request.defaults['charset']
-                    encode_errors = pylons.request.defaults['errors']
-                    form_content = u''.join(
-                        [x.decode(encoding, encode_errors) for x in response.content])
-                else:
-                    form_content = u''
-            else:
-                form_content = "".join(response.content)
+            form_content = ''.join(response.content)
+            if isinstance(params, UnicodeMultiDict) and \
+                    not isinstance(form_content, unicode):
+                # Passing unicode form values to htmlfill: decode the response
+                # to unicode so htmlfill can safely combine the two
+                encoding = response.determine_charset()
+                if encoding is None:
+                    encoding = sys.getdefaultencoding()
+                form_content = form_content.decode(encoding, response.errors)
             response.content = [htmlfill.render(form_content, params, errors)]
             return response
         return func(self, *args, **kwargs)
