@@ -11,9 +11,6 @@ Internationalization, Localization and Unicode
     appreciate hearing about any issues we have. Just drop a line to the
     pylons-discuss mailing list on Google Groups.
 
-    This is the first draft of the full document including Unicode. Expect
-    some typos and spelling mistakes!
-   
 .. contents:: Table of Contents
 .. sectnum::
  
@@ -1000,8 +997,8 @@ restart the server manually and the output would this time be as follows:
     en: Hello
     es: ¡Hola!
 
-Missing Translations
---------------------
+Fallback Languages
+------------------
 
 If your code calls ``_()`` with a string that doesn't exist in your language
 catalogue, the string passed to ``_()`` is returned instead.
@@ -1028,6 +1025,41 @@ If you run the example again the output will be:
     
 This is because we never provided a translation for the string ``'World!'`` so
 the string itself is used.
+
+Pylons also provides a mechanism for fallback languages so that you can specify
+other languages to be used if a word cannot be found in the main language.
+
+In this example we choose ``en`` as the main language but ``es`` as a fallback::
+
+    from helloworld.lib.base import *
+    from pylons.i18n.translation import add_fallback
+    
+    class HelloController(BaseController):
+         def index(self):
+             h.set_lang('en')
+             add_fallback('es')
+             return Response(_('Hello')+' '+_('World')+_('!'))
+
+If ``Hello`` is in the "en" ``.mo`` file as ``Hi``, ``World`` is only in "es"
+as ``Mundo`` and none of the catalogues defined ``!`` you will get the English,
+Spanish then the source words. So the message would the somewhat strange
+expression ``Hi Mundo!``.
+
+You can add as many fallback languages with the ``add_fallback()`` function as
+you like and they will be tested in the order you add them.
+
+One case where using fallbacks in this way is particularly useful is when you
+wish to display content based on the languages requested by the browser in the
+``HTTP_ACCEPT_LANGUAGE`` header. Typically the browser may submit a number of
+languages so it is useful to be add fallbacks in the order specified by the
+browser so that you always try to display words in the language of preference
+and search the other languages in order if a translation cannot be found. The
+languages defined in the ``HTTP_ACCEPT_LANGAUGE`` header are available in
+Pylons as ``request.languages`` and can be used like this::
+
+    for lang in request.languages:
+        add_fallback(lang)
+
 
 Translations Within Templates
 -----------------------------
@@ -1082,6 +1114,76 @@ strings to translate from the cached files anyway.
 You may also find that your extraction tool is capable of extracting the 
 strings correctly from the template anyway, particularly if the templating
 langauge is quite similar to Python. It is best not to rely on this though.
+
+Lazy Translations
+-----------------
+
+Occasionally you might come across a situation when you need to translate a
+string when it is accessed, not when the ``_()`` or other functions are called. 
+
+Consider this example::
+
+    from helloworld.lib.base import *
+    text = _('Hello')
+    
+    class HelloController(BaseController):
+    
+        def index(self):
+            resp = Response()
+            resp.write('Default: %s<br />' % _('Hello'))
+            for lang in ['fr','en','es']:
+                h.set_lang(lang)
+                resp.write("%s: %s<br />" % (h.get_lang(), _('Hello')))
+            resp.write('Text: %s<br />'%text)
+            return resp
+
+If we run this we get the following output::
+
+    Default: Hello
+    ['fr']: Bonjour
+    ['en']: Good morning
+    ['es']: Hola
+    Text: Hello
+
+This is because the function ``_('Hello')`` just after the imports is called
+when the default language is ``en`` so the variable ``text`` gets the value of
+the English translation even though when the string was used the default
+language was Spanish.
+
+The rule of thumb in these situations is to try to avoid using the translation
+functions in situations where they are not executed on each request. For
+situations where this isn't possible, perhaps because you are working with
+legacy code or with a library which doesn't support internationalization, you
+need to use lazy translations.
+
+If we modify the above example so that the import statements and assignment to
+``text`` look like this::
+
+    from helloworld.lib.base import * from
+    pylons.i18n.translation import lazy_gettext 
+    text = lazy_gettext('Hello')
+  
+then we get the output we expected::
+
+    Default: Hello
+    ['fr']: Bonjour
+    ['en']: Good morning
+    ['es']: Hola
+    Text: Hola
+
+There are lazy versions of all the standard Pylons `translation functions
+<http://pylonshq.com/docs/module-pylons.i18n.translation.html>`_.
+
+There is one drawback to be aware of when using the lazy translation functions:
+they are not actually strings. This means that if our example had used the
+following code it would have failed with an error ``cannot concatenate 'str'
+and 'LazyString' objects``::
+
+    resp.write('Text: '+text+'<br />')
+
+For this reason you should only use the lazy translations where absolutely
+necessary and should always ensure they are converted to strings by calling
+``str()`` or ``repr()`` before they are used in operations with real strings.
 
 Producing a Python Egg
 ----------------------
