@@ -172,7 +172,8 @@ class Buffet(object):
                 namespace = self._update_names(namespace)
             
             if not engine_name.startswith('pylons') and not \
-                    engine_name.startswith('mako'):
+                    engine_name.startswith('mako') and \
+                    engine_config['root'] is not None:
                 full_path = os.path.join(engine_config['root'], template_name)
                 full_path = full_path.replace(os.path.sep, '.').lstrip('.')
         
