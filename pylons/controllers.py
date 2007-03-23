@@ -390,6 +390,7 @@ class XMLRPCController(WSGIController):
         result is an array to indicate multiple signatures a method may be
         capable of.
         """
+        name = self._find_method_name(name)
         if hasattr(self, name):
             method = getattr(self, name)
             if hasattr(method, 'signature'):

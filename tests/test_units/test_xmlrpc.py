@@ -24,8 +24,20 @@ class BaseXMLRPCController(XMLRPCController):
         return dict(mess=u'A unicode string, oh boy')
     uni.signature = [ ['struct'] ]
     
+    def intargcheck(self, arg):
+        if not isinstance(arg, int):
+            return xmlrpclib.Fault(0, 'Integer required')
+        else:
+            return "received int"
+    intargcheck.signature = [ ['string', 'int'] ]
+    
     def nosig(self):
         return 'not much'
+    
+    def structured_methodname(self, arg):
+        "This method has a docstring"
+        return 'Transform okay'
+    structured_methodname.signature = [ ['string', 'string'] ]
     
     def longdoc(self):
         """This function
@@ -56,23 +68,34 @@ class TestXMLRPCController(TestWSGIController):
         assert "This method has a docstring" in response
 
     def test_methodhelp_with_structured_methodname(self):
-        response = self.xmlreq('system.methodHelp', ('system.methodSignature',))
-        assert "Returns an array of array's" in response
+        response = self.xmlreq('system.methodHelp', ('structured.methodname',))
+        assert "This method has a docstring" in response
 
     def test_methodsignature(self):
         response = self.xmlreq('system.methodSignature', ('docs',))
         assert [['struct']] == response
-    
+
+    def test_methodsignature_with_structured_methodname(self):
+        response = self.xmlreq('system.methodSignature', ('structured.methodname',))
+        assert [['string', 'string']] == response
+
     def test_listmethods(self):
         response = self.xmlreq('system.listMethods')
-        assert response == ['docs', 'longdoc', 'nosig', 'system.listMethods', 'system.methodHelp', 'system.methodSignature', 'uni', 'userstatus']
-    
+        assert response == ['docs', 'intargcheck', 'longdoc', 'nosig', 'structured.methodname', 'system.listMethods', 'system.methodHelp', 'system.methodSignature', 'uni', 'userstatus']    
+
     def test_unicode(self):
         response = self.xmlreq('uni')
         assert 'A unicode string' in response['mess']
 
     def test_badargs(self):
         self.assertRaises(xmlrpclib.Fault, self.xmlreq, 'system.methodHelp')
+
+    def test_badarity(self):
+        self.assertRaises(xmlrpclib.Fault, self.xmlreq, 'system.methodHelp')
+
+    # Unsure whether this is actually picked up by xmlrpclib, but what the hey
+    def test_bad_paramval(self):
+        self.assertRaises(xmlrpclib.Fault, self.xmlreq, 'intargcheck', (12.5,))
 
     def test_missingmethod(self):
         self.assertRaises(xmlrpclib.Fault, self.xmlreq, 'doesntexist')

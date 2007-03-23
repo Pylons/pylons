@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.5 (**svn**)
+* Updated XMLRPC Controller with patch for name lookup and additional unit
+  tests for the patch. Fixes #216.
 * Updated docs for validate decorator to more clearly illustrate what the
   post_only args apply to. Fixes #221.
 * Added ability to return strings in the WSGIController. Fixes #218.
