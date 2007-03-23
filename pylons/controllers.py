@@ -225,6 +225,9 @@ class WSGIController(Controller):
             if 'paste.testing_variables' in environ:
                 environ['paste.testing_variables']['response'] = response
             return response(environ, start_response)
+        elif isinstance(response, basestring):
+            resp = pylons.Response(response)
+            return resp(environ, start_response)
         
         return response
 

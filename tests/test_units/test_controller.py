@@ -45,6 +45,9 @@ class BasicWSGIController(WSGIController):
                 yield 'hi'
                 x += 1
         return its()
+    
+    def strme(self):
+        return "hi there"
 
 class FilteredWSGIController(WSGIController):
     def __init__(self):
@@ -168,6 +171,11 @@ class TestBasicWSGI(TestWSGIController):
         self.baseenviron['pylons.routes_dict']['action'] = '_private'
         resp = self.app.get('/', status=404)
         assert resp.status == 404
+    
+    def test_strme_func(self):
+        self.baseenviron['pylons.routes_dict']['action'] = 'strme'
+        resp = self.app.get('/')
+        assert "hi there" in resp
 
 
 class TestFilteredWSGI(TestWSGIController):
