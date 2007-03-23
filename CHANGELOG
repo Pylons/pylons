@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.5 (**svn**)
+* Updated docs for validate decorator to more clearly illustrate what the
+  post_only args apply to. Fixes #221.
 * Added ability to return strings in the WSGIController. Fixes #218.
 * Added lazy i18n translation functions. Patch from David Smith. Fixes #181.
 * Added fix for XMLRPCController system.methodHelp function and unit test.

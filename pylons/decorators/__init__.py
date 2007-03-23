@@ -37,8 +37,14 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
     a GET, and the output will be filled by FormEncode's htmlfill to fill in
     the form field errors.
     
-    If you'd like validate to also check GET (query) variables during its 
-    validation, set the ``post_only`` keyword argument to False.
+    If you'd like validate to also check GET (query) variables (**not** GET
+    requests!) during its validation, set the ``post_only`` keyword argument 
+    to False.
+    
+    .. warning::
+        ``post_only`` applies to *where* the arguments to be validated come 
+        from. The validate decorator *only* validates during a POST, it does
+        *not* validate during a GET request. 
     
     Example:
     
