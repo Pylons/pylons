@@ -31,7 +31,7 @@
 
 <p>The <tt>${package}/public/</tt> directory is searched for static files
  <i>before</i> your controllers are run. Remove this file (<tt>${package}/public/index.html</tt>)
-  and edit the routes in <tt>${package}/config/routing.py</tt> to point the
+  and edit the routes in <tt>${package}/routing.py</tt> to point the
   <a href="/">root path</a> to a 'hello' controller we'll create below:
   <pre> map.connect('', controller='hello', action='index')</pre>
 </p>
@@ -45,7 +45,7 @@ ${project}$$ paster controller hello
 
   This generates the following the following code in <tt>${package}/controllers/hello.py</tt>:
 <pre>
-from ${package}.lib.base import *
+from ${package}.controllers import *
 
 class HelloController(BaseController):
     def index(self):

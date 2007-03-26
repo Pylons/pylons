@@ -19,7 +19,7 @@ import paste.deploy
 import paste.fixture
 import paste.script.appinstall
 
-from ${package}.config.routing import *
+from ${package}.routing import *
 from routes import request_config, url_for
 
 test_file = os.path.join(conf_dir, 'test.ini')
