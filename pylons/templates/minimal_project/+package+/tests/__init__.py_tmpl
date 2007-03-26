@@ -24,8 +24,8 @@ from routes import request_config, url_for
 
 test_file = os.path.join(conf_dir, 'test.ini')
 conf = paste.deploy.appconfig('config:' + test_file)
-CONFIG.push_process_config({'app_conf': conf.local_conf,
-                            'global_conf': conf.global_conf}) 
+conf.update(dict(app_conf=conf.local_conf, global_conf=conf.global_conf))
+CONFIG.push_process_config(conf)
 
 cmd = paste.script.appinstall.SetupCommand('setup-app')
 cmd.run([test_file])
