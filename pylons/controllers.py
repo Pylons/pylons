@@ -282,9 +282,14 @@ class XMLRPCController(WSGIController):
         'dateTime.iso8601' - xmlrpclib.DateTime
         'base64' - xmlrpclib.Binary
     
+    The class variable ``allow_none`` is passed to xmlrpclib.dumps; enabling it
+    allows translating ``None`` to XML (an extension to the XML-RPC
+    specification)
+
     Note::
         Requiring a signature is optional.
     """
+    allow_none = False
     max_body_length = 4194304
 
     def _get_method_args(self):
@@ -352,7 +357,8 @@ class XMLRPCController(WSGIController):
         if not isinstance(raw_response, xmlrpclib.Fault):
             raw_response = (raw_response,)
 
-        response = xmlrpclib.dumps(raw_response, methodresponse=True)
+        response = xmlrpclib.dumps(raw_response, methodresponse=True,
+                                   allow_none=self.allow_none)
         return pylons.Response(response)
 
     def _find_method_name(self, name):

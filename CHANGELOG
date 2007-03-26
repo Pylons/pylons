@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.5 (**svn**)
+* Added the allow_none option (passed to xmlrpc.dumps) to XMLRPCController.
+  Suggested by Jaroslaw Zabiello.
 * Updated XMLRPC Controller with patch for name lookup and additional unit
   tests for the patch. Fixes #216.
 * Updated docs for validate decorator to more clearly illustrate what the
