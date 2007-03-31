@@ -126,13 +126,13 @@ class Controller(object):
                 setattr(c, k, val)
             result = func(**kargs)
         else:
-            args = []
+            args = {}
             argnames = argspec[0][1:]
             for name in argnames:
                 if name in kargs:
                     setattr(c, name, kargs[name])
-                    args.append(kargs[name])
-            result = func(*args)
+                    args[name] = kargs[name]
+            result = func(**args)
         if isinstance(result, types.GeneratorType):
             return pylons.Response(result)
         else:

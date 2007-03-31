@@ -2,6 +2,9 @@ Pylons Changelog
 =================
 
 0.9.5 (**svn**)
+* Fixed _inspect_call to call function with keyword arguments instead of list
+  args. Corrects issue with action defaults that caused the value for the 
+  latter args to be in the wrong spots. Spotted by Topher. Fixes #223.
 * Added the allow_none option (passed to xmlrpc.dumps) to XMLRPCController.
   Suggested by Jaroslaw Zabiello.
 * Updated XMLRPC Controller with patch for name lookup and additional unit
