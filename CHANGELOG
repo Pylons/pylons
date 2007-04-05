@@ -2,6 +2,10 @@ Pylons Changelog
 =================
 
 0.9.5 (**svn**)
+* make_session and create_engine now accept keyword arguments to pass to
+  SQLAlchemy's create_engine.
+* make_session now accepts the keyword argument 'session_kwargs' to pass
+  to SQLAlchemy's create_session.
 * Fixed _inspect_call to call function with keyword arguments instead of list
   args. Corrects issue with action defaults that caused the value for the 
   latter args to be in the wrong spots. Spotted by Topher. Fixes #223.

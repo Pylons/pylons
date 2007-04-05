@@ -36,11 +36,21 @@ try:
             app_scope_id = ''
         return '%s|%i' % (app_scope_id, thread.get_ident())
 
-    def create_engine(uri=None, echo=None):
-        """Create a SQLAlchemy db engine. Uses the configuration values from
-        ``get_engine_conf`` if none are specified."""
+    def create_engine(uri=None, echo=None, **kwargs):
+        """Return a SQLAlchemy db engine. Uses the configuration values from
+        ``get_engine_conf`` for uri and echo if none are specified.
+
+        Engines are cached in the ``get_engines`` dict.
+        """
         uri, echo = get_engine_conf(uri, echo)
-        engine = sqlalchemy.create_engine(uri, echo=echo)
+        kwargs['echo'] = echo
+        engine_key = '%s|%s' % (uri, str(kwargs))
+        db_engines = get_engines()
+        if engine_key in db_engines:
+            engine = db_engines[engine_key]
+        else:
+            engine = db_engines[engine_key] = \
+                sqlalchemy.create_engine(uri, **kwargs)
         return engine
 
     def get_engine_conf(uri=None, echo=None):
@@ -71,22 +81,22 @@ try:
         except TypeError:
             return _db_engines
 
-    def make_session(uri=None, echo=None):
+    def make_session(uri=None, echo=None, session_kwargs=None, **kwargs):
         """Returns a SQLAlchemy session for the specified database uri from
         the the engine cache (returned from ``get_engines``)``. Uses the
-        configuration values from ``get_engine_conf`` when None is specified.
+        configuration values from ``get_engine_conf`` for uri and echo when
+        None are specified.
+
+        ``session_kwargs`` are passed to SQLAlchemy's ``create_session``
+        function as keyword arguments.
         
         If the uri's engine does not exist, it will be created and added to
         the engine cache.
         """
-        uri, echo = get_engine_conf(uri, echo)
-        db_engines = get_engines()
-        if uri in db_engines:
-            engine = db_engines[uri]
-            engine.echo = echo
-        else:
-            engine = db_engines[uri] = create_engine(uri, echo=echo)
-        return sqlalchemy.create_session(bind_to=engine)
+        if session_kwargs is None:
+            session_kwargs = {}
+        engine = create_engine(uri, echo=echo, **kwargs)
+        return sqlalchemy.create_session(bind_to=engine, **session_kwargs)
 
     session_context = sessioncontext.SessionContext(make_session,
                                                     scopefunc=app_scope)
