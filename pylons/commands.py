@@ -372,24 +372,11 @@ class ShellCommand(Command):
 
         try:
             # try to use IPython if possible
-            import IPython
-        
-            class CustomIPShell(IPython.iplib.InteractiveShell):
-                """Custom shell class to handle raw input"""
-                def raw_input(self, *args, **kw):
-                    """Capture raw input in exception wrapping"""
-                    try:
-                        return IPython.iplib.InteractiveShell.raw_input(
-                            self, *args, **kw)
-                    except EOFError:
-                        # In the future, we'll put our own override as needed 
-                        # to save models, TG style
-                        raise EOFError
-
-            shell = IPython.Shell.IPShell(user_ns=locs, 
-                shell_class=CustomIPShell)
+            from IPython.Shell import IPShellEmbed
+            
+            shell = IPShellEmbed(banner=banner, user_ns=locs)
             try:
-                shell.mainloop()
+                shell()
             finally:
                 paste.registry.restorer.restoration_end()
         except ImportError:
