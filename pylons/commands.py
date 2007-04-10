@@ -358,8 +358,7 @@ class ShellCommand(Command):
         if has_models:
             locs['model'] = sys.modules[models_package]
 
-        banner = "Pylons Interactive Shell\nPython %s\n\n" % sys.version
-        banner += "  All objects from %s are available\n" % base_module
+        banner = "  All objects from %s are available\n" % base_module
         banner += "  Additional Objects:\n"
         banner += "  %-10s -  %s\n" % ('mapper', 'Routes mapper object')
         if has_models:
@@ -374,7 +373,8 @@ class ShellCommand(Command):
             # try to use IPython if possible
             from IPython.Shell import IPShellEmbed
             
-            shell = IPShellEmbed(banner=banner, user_ns=locs)
+            shell = IPShellEmbed(user_ns=locs)
+            shell.set_banner(shell.IP.BANNER + '\n\n' + banner)
             try:
                 shell()
             finally:
@@ -394,6 +394,8 @@ class ShellCommand(Command):
                         # to save models, TG style
                         raise EOFError
             
+            newbanner = "Pylons Interactive Shell\nPython %s\n\n" % sys.version
+            banner = newbanner + banner
             shell = CustomShell(locals=locs)
             try:
                 import readline
