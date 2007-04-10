@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.5 (**svn**)
+* Changed `get_engine_conf` to properly evaluate sqlalchemy echo statement
+  when its 'debug'. Fixes #226.
 * make_session and create_engine now accept keyword arguments to pass to
   SQLAlchemy's create_engine.
 * make_session now accepts the keyword argument 'session_kwargs' to pass

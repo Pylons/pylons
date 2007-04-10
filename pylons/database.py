@@ -62,7 +62,9 @@ try:
         if not uri:
             raise KeyError('No SQLAlchemy database config found!')
         if echo is None:
-            echo = asbool(pylons.util.config_get('sqlalchemy.echo', False))
+            echo = pylons.util.config_get('sqlalchemy.echo', False)
+            if echo != 'debug':
+                echo = asbool(echo)
         return uri, echo
 
     def get_engines():
