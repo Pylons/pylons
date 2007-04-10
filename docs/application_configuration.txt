@@ -71,20 +71,20 @@ For example you can obtain the location of the cache directory like this:
 
 .. code-block:: Python
 
-    cache_dir = config['app_conf'].get('cache_data_dir')
+    cache_dir = config.get('cache_data_dir')
     
 Or the name of the package like this:
 
 .. code-block:: Python
 
-    package = config['app_conf'].get('package')
+    package = config.get('package')
     
 Or the debug status like this:
 
 .. code-block:: Python
     
     from paste.deploy.converters import asbool
-    debug = asbool(config['app_conf'].get('debug'))
+    debug = asbool(config.get('debug'))
 
 PrefixMiddleware
 ================
