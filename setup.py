@@ -67,7 +67,7 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
     include_package_data=True,
     install_requires=[
         "Routes>=1.6.3", "WebHelpers>=0.3", "Beaker>=0.6.3",
-        "Paste>=1.3", "PasteDeploy==dev,>=1.1.1dev-r6282", "PasteScript>=1.3.2",
+        "Paste>=1.3", "PasteDeploy>=1.3", "PasteScript>=1.3.2",
         "Myghty>=1.1", "FormEncode>=0.7", "simplejson>=1.7.1", "decorator>=2.0.1",
         "nose>=0.9.2", "Mako>=0.1.5"
     ],
@@ -82,16 +82,16 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
     ],
     extras_require = {
         'pudge': ["docutils>=0.4", "elementtree>=1.2.6", "kid>=0.9", 
-            "Pygments==dev,>=0.7dev-r2661", "pudge==dev,>=0.1.3dev-r134", 
-            "buildutils==dev,>=0.1.2dev-r109",],
+            "Pygments>=0.7", "pudge>=0.1.3", 
+            "buildutils>=0.1.2",],
         'test': ["py>=0.8.0_alpha2"],
         'cheetah':["Cheetah>=1.0", "TurboCheetah>=0.9.5"],
         'kid':["kid>=0.9", "TurboKid==dev,>=0.9.1dev"],
         'genshi':["Genshi>=0.3.6"],
         'full':[
             "docutils>=0.4", "elementtree>=1.2.6", 
-            "Pygments==dev,>=0.7dev-r2661", "pudge==dev,>=0.1.3dev-r134", 
-            "buildutils==dev,>=0.1.2dev-r109", "Cheetah>=1.0", 
+            "Pygments>=0.7", "pudge>=0.1.3", 
+            "buildutils>=0.1.2", "Cheetah>=1.0", 
             "TurboCheetah>=0.9.5", "kid>=0.9", "TurboKid==dev,>=0.9.1dev",
         ],
     },
