@@ -1,7 +1,7 @@
 Pylons Changelog
 =================
 
-0.9.5 (**svn**)
+0.9.5 (Apr 11th, 2007)
 * Fixed paster shell breaking for projects where the base package was not
   the first package listed in top_level.txt. Patch from Alberto Valverde.
   Fixes #229.
