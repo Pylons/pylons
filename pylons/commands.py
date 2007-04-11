@@ -20,35 +20,32 @@ from paste.script.pluginlib import find_egg_info_dir
 
 import pylons.util as util
 
+def can_import(name):
+    """Attempt to __import__ the specified package/module, returning True when
+    succeeding, otherwise False"""
+    try:
+        __import__(name)
+        return True
+    except ImportError:
+        return False
+
 def validate_name(name):
     """Validate that the name for the controller isn't present on the
     path already"""
     if not name:
         # This happens when the name is an existing directory
         raise BadCommand('Please give the name of a controller.')
-    try:
-        __import__(name)
+    if can_import(name):
         raise BadCommand(
             "\n\nA module named '%s' is already present in your "
-            "PYTHON_PATH.\n Choosing a conflicting name will likely cause"
-            " import problems in\n your controller at some point. It's "
-            "suggested that you choose an alternate\nname, and if you'd "
-            "like that name to be accessible as '%s', add a route\n"
-            "to your projects config/routing.py file similar to:\n"
-            "  map.connect('%s', controller='my_%s')" \
+            "PYTHON_PATH.\nChoosing a conflicting name will likely cause "
+            "import problems in\nyour controller at some point. It's "
+            "suggested that you choose an\nalternate name, and if you'd "
+            "like that name to be accessible as\n'%s', add a route "
+            "to your projects config/routing.py file similar\nto:\n"
+            "    map.connect('%s', controller='my_%s')" \
             % (name, name, name, name))
-    except ImportError:
-        # This is actually the result we want
-        pass
-    
     return True
-
-def _can_import(modname):
-    try:
-        __import__(modname)
-        return True
-    except ImportError:
-        return False
 
 class ControllerCommand(Command):
     """Create a Controller and accompanying functional test
@@ -331,22 +328,26 @@ class ShellCommand(Command):
         packages = [l.strip() for l in f.readlines()
                     if l.strip() and not l.strip().startswith('#')]
         f.close()
-        
-        could_import = False
+
+        has_models = False
+        found_base = False
+        # Start the rest of our imports now that the app is loaded
         for pkg_name in packages:
-            # Start the rest of our imports now that the app is loaded
-            models_package = pkg_name + '.models'
-            has_models = _can_import(models_package)
+            if not has_models:
+                # The Minimal template lacks an official models package
+                models_package = pkg_name + '.models'
+                has_models = can_import(models_package)
 
             # Import all objects from the base module
-            base_module = pkg_name + '.lib.base'
-            could_import = _can_import(base_module)
-            if not could_import:
-                # Minimal template
-                base_module = pkg_name + '.controllers'
-                could_import = _can_import(base_module)
-            
-        if not could_import:
+            if not found_base:
+                base_module = pkg_name + '.lib.base'
+                found_base = can_import(base_module)
+                if not found_base:
+                    # Minimal template
+                    base_module = pkg_name + '.controllers'
+                    found_base = can_import(base_module)
+
+        if not found_base:
             raise ImportError("Could not import base module. Are you sure this "
                               "is a Pylons app?") 
 
@@ -412,3 +413,4 @@ class ShellCommand(Command):
             finally:
                 paste.registry.restorer.restoration_end()
 
+__all__ = ['ControllerCommand', 'RestControllerCommand', 'ShellCommand']
