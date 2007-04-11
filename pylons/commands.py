@@ -329,23 +329,22 @@ class ShellCommand(Command):
                     if l.strip() and not l.strip().startswith('#')]
         f.close()
 
-        has_models = False
-        found_base = False
         # Start the rest of our imports now that the app is loaded
+        found_base = False
         for pkg_name in packages:
-            if not has_models:
-                # The Minimal template lacks an official models package
-                models_package = pkg_name + '.models'
-                has_models = can_import(models_package)
-
             # Import all objects from the base module
+            base_module = pkg_name + '.lib.base'
+            found_base = can_import(base_module)
             if not found_base:
-                base_module = pkg_name + '.lib.base'
+                # Minimal template
+                base_module = pkg_name + '.controllers'
                 found_base = can_import(base_module)
-                if not found_base:
-                    # Minimal template
-                    base_module = pkg_name + '.controllers'
-                    found_base = can_import(base_module)
+
+            if found_base:
+                models_package = pkg_name + '.models'
+                # The Minimal template lacks an official models package
+                has_models = can_import(models_package)
+                break
 
         if not found_base:
             raise ImportError("Could not import base module. Are you sure this "
