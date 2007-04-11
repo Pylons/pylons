@@ -18,7 +18,7 @@ request_defaults = dict(charset=None, errors='strict',
                         decode_param_names=False,
                         language='en-us')
 response_defaults = dict(content_type='text/html',
-                         charset='UTF-8', errors='strict')
+                         charset='utf-8', errors='strict')
 
 class Config(object):
     """Pylons configuration object

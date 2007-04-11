@@ -220,7 +220,7 @@ You can encode a Unicode string using a particular encoding like this:
 
 .. code-block:: PyCon
 
-    >>> u'Hello World!'.encode('UTF-8')
+    >>> u'Hello World!'.encode('utf-8')
     'Hello World!'
 
 Unicode Literals in Python Source Code
@@ -529,7 +529,7 @@ optionally the decoding ``errors`` handler:
         # a MultiDict of string name/values
         raw_get = request.GET
 
-        request.charset = 'UTF-8'
+        request.charset = 'utf-8'
         #request.errors = 'strict' # strict is the default error handler
         # a MultiDict-like object of string names and unicode values
         decoded_get = request.GET
@@ -546,7 +546,7 @@ your Pylons Config object (in ``config/environment.py``):
 .. code-block:: Python
 
     # Return our loaded config object
-    request_settings = dict(charset='UTF-8', errors='replace')
+    request_settings = dict(charset='utf-8', errors='replace')
     return pylons.config.Config(tmpl_options, map, paths,
                                 request_settings=request_settings)
 
@@ -597,9 +597,9 @@ adding an option like this:
     # Add your own Myghty config options here, note that all config options will override
     # any Pylons config options
     
-    tmpl_options['myghty.output_encoding'] = 'UTF-8'
+    tmpl_options['myghty.output_encoding'] = 'utf-8'
 
-replacing ``UTF-8`` with the encoding you wish to use.
+replacing ``utf-8`` with the encoding you wish to use.
 
 If you need to disable Unicode support altogether you can set this:
 
@@ -618,7 +618,7 @@ section:
 
 .. code-block:: HyperText
 
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
 You should also set the charset in the ``Content-Type`` header:
 
