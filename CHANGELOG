@@ -2,6 +2,9 @@ Pylons Changelog
 =================
 
 0.9.5 (**svn**)
+* Fixed paster shell breaking for projects where the base package was not
+  the first package listed in top_level.txt. Patch from Alberto Valverde.
+  Fixes #229.
 * Fixed doc references to config['app_conf']. Fixes #116.
 * Changed `get_engine_conf` to properly evaluate sqlalchemy echo statement
   when its 'debug'. Fixes #226.

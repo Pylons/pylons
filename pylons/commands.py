@@ -43,6 +43,13 @@ def validate_name(name):
     
     return True
 
+def _can_import(modname):
+    try:
+        __import__(modname)
+        return True
+    except ImportError:
+        return False
+
 class ControllerCommand(Command):
     """Create a Controller and accompanying functional test
     
@@ -291,15 +298,6 @@ class ShellCommand(Command):
         here_dir = os.getcwd()
         locs = dict(__name__="pylons-admin")
 
-        # Determine the package name from the .egg-info top_level.txt. Assume
-        # it's the first package listed
-        egg_info = find_egg_info_dir(here_dir)
-        f = open(os.path.join(egg_info, 'top_level.txt'))
-        packages = [l.strip() for l in f.readlines()
-                    if l.strip() and not l.strip().startswith('#')]
-        f.close()
-        pkg_name = packages[0]
-
         # Load app config into paste.deploy to simulate request config
         conf = appconfig(config_name, relative_to=here_dir)
         conf = dict(app_conf=conf.local_conf,
@@ -327,23 +325,31 @@ class ShellCommand(Command):
         # (StackedObjectProxies)
         paste.registry.restorer.restoration_begin(request_id)
 
-        # Start the rest of our imports now that the app is loaded
-        has_models = True
-        try:
+        # Determine the package name from the .egg-info top_level.txt.
+        egg_info = find_egg_info_dir(here_dir)
+        f = open(os.path.join(egg_info, 'top_level.txt'))
+        packages = [l.strip() for l in f.readlines()
+                    if l.strip() and not l.strip().startswith('#')]
+        f.close()
+        
+        could_import = False
+        for pkg_name in packages:
+            # Start the rest of our imports now that the app is loaded
             models_package = pkg_name + '.models'
-            __import__(models_package)
-        except ImportError:
-            has_models = False
+            has_models = _can_import(models_package)
 
-        # Import all objects from the base module
-        try:
+            # Import all objects from the base module
             base_module = pkg_name + '.lib.base'
-            __import__(base_module)
-        except ImportError:
-            # Minimal template
-            base_module = pkg_name + '.controllers'
-            __import__(base_module)
+            could_import = _can_import(base_module)
+            if not could_import:
+                # Minimal template
+                base_module = pkg_name + '.controllers'
+                could_import = _can_import(base_module)
             
+        if not could_import:
+            raise ImportError("Could not import base module. Are you sure this "
+                              "is a Pylons app?") 
+
         base = sys.modules[base_module]
         base_public = [__name for __name in dir(base) if not \
                        __name.startswith('_') or __name == '_']
