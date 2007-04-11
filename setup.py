@@ -84,15 +84,14 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
         'pudge': ["docutils>=0.4", "elementtree>=1.2.6", "kid>=0.9", 
             "Pygments>=0.7", "pudge>=0.1.3", 
             "buildutils>=0.1.2",],
-        'test': ["py>=0.8.0_alpha2"],
         'cheetah':["Cheetah>=1.0", "TurboCheetah>=0.9.5"],
-        'kid':["kid>=0.9", "TurboKid==dev,>=0.9.1dev"],
+        'kid':["kid>=0.9", "TurboKid>=0.9.1"],
         'genshi':["Genshi>=0.3.6"],
         'full':[
             "docutils>=0.4", "elementtree>=1.2.6", 
             "Pygments>=0.7", "pudge>=0.1.3", 
             "buildutils>=0.1.2", "Cheetah>=1.0", 
-            "TurboCheetah>=0.9.5", "kid>=0.9", "TurboKid==dev,>=0.9.1dev",
+            "TurboCheetah>=0.9.5", "kid>=0.9", "TurboKid>=0.9.",
         ],
     },
     entry_points="""
