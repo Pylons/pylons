@@ -273,6 +273,7 @@ class XMLRPCController(WSGIController):
     
     Valid types that can be checked in the signature and their corresponding
     Python types::
+
         'string' - str
         'array' - list
         'boolean' - bool
@@ -287,6 +288,7 @@ class XMLRPCController(WSGIController):
     specification)
 
     Note::
+
         Requiring a signature is optional.
     """
     allow_none = False
