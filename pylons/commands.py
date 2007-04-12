@@ -5,7 +5,7 @@ various core Pylons templates.
 
 Currently available commands are::
 
-    controller, shell
+    controller, restcontroller, shell
 """
 import os
 import sys
