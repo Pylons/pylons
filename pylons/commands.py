@@ -353,7 +353,8 @@ class ShellCommand(Command):
         base = sys.modules[base_module]
         base_public = [__name for __name in dir(base) if not \
                        __name.startswith('_') or __name == '_']
-        locs.update([(name, getattr(base, name)) for name in base_public])
+        for name in base_public:
+            locs[name] = getattr(base, name)
         locs.update(
             dict(
                 mapper=tresponse.pylons_config.map,
