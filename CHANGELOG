@@ -2,13 +2,13 @@ Pylons Changelog
 =================
 
 0.9.6 (**svn**)
+
+0.9.5 (Apr 11th, 2007)
 * Fixed a Python 2.3 incompatibility with paster shell, causing the
   Exception:
   File "Pylons-0.9.5-py2.3.egg/pylons/commands.py", line 357, in command
     locs.update([(name, getattr(base, name)) for name in base_public])
   AttributeError: keys
-
-0.9.5 (Apr 11th, 2007)
 * Fixed paster shell breaking for projects where the base package was not
   the first package listed in top_level.txt. Patch from Alberto Valverde.
   Fixes #229.
