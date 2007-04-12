@@ -135,7 +135,7 @@ Python ``tempfiles`` are secure file objects that are automatically destroyed wh
 
 .. code-block:: Python
 
-    permanent_store = '/tmp/'
+    permanent_store = '/uploads/'
 
     class Uploader(BaseController):
         def upload(self):
