@@ -21,8 +21,8 @@ title = ${package.capitalize()}
 organization = Pylons
 
 # Optionally add extra links
-#organization_url = http://pylons.groovie.org/
-#trac_url=http://pylons.groovie.org/
+#organization_url = http://pylonshq.com/
+#trac_url = http://pylonshq.com/project
 settings = no_about=true
 
 # Optionally add extra settings 
