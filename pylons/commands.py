@@ -35,7 +35,10 @@ def validate_name(name):
     if not name:
         # This happens when the name is an existing directory
         raise BadCommand('Please give the name of a controller.')
-    if can_import(name):
+    # 'setup' is a valid controller name, but when paster controller is ran
+    # from the root directory of a project, importing setup will import the
+    # project's setup.py causing a sys.exit(). Blame relative imports
+    if name != 'setup' and can_import(name):
         raise BadCommand(
             "\n\nA module named '%s' is already present in your "
             "PYTHON_PATH.\nChoosing a conflicting name will likely cause "
