@@ -12,20 +12,20 @@ If you already have easy install:
 
 .. code-block:: Bash
 
-    $ easy_install Pylons
+    $ easy_install Pylons==0.9.5
 
 .. Note::
     On rare occasions, the python.org Cheeseshop goes down. It is still 
     possible to install Pylons and its dependencies however by specifying our
     local package directory for installation with:
     
-        ``easy_install -f http://pylonshq.com/download/ Pylons``
+        ``easy_install -f http://pylonshq.com/download/ Pylons==0.9.5``
     
     Which will use the packages necessary for the latest release. If you're 
     using an older version of Pylons, you can get the packages that went with
     it by specifying the version desired:
     
-        ``easy_install -f http://pylonshq.com/download/0.8.2/ Pylons``
+        ``easy_install -f http://pylonshq.com/download/0.8.2/ Pylons==0.9.5``
 
 Otherwise: 
 
@@ -34,12 +34,12 @@ Otherwise:
 
 .. code-block:: Bash
 
-    $ python ez_setup.py Pylons
+    $ python ez_setup.py Pylons==0.9.5
 
 .. Note::
    You may optionally install (or upgrade to at a later date) one of the following 'extras', by specifying the extra name in the command:
 
-         ``easy_install Pylons[extra]``
+         ``easy_install Pylons[extra]==0.9.5``
 
    ``pudge``:   Support for building documentation, see `Adding Documentation to your Application <adding_docs.html>`_. Be aware that some of the documentation tools are under development and may not be stable
 
@@ -53,7 +53,7 @@ Otherwise:
    
 .. Note::
 
-    If you have problems compiling Cheetah's ``_namemapper.c`` file on your platform you may need to install a precompiled copy using the appropriate tools for your platform. On Ubuntu for example the correct command for Python 2.4 cheetah support is::
+    If you are trying to install a version of Pylons earlier than 0.9.4 with an old version of Paste and you have problems compiling Cheetah's ``_namemapper.c`` file on your platform you may need to install a precompiled copy using the appropriate tools for your platform. On Ubuntu for example the correct command for Python 2.4 cheetah support is::
     
         apt-get install python2.4-cheetah
 
@@ -70,7 +70,7 @@ To upgrade to the latest version of Pylons run:
 
 .. code-block:: Bash
 
-    $ easy_install -U Pylons
+    $ easy_install -U Pylons==0.9.5
 
 
 Living on the Cutting Edge
@@ -103,6 +103,10 @@ Alternatively you could easy_install Myghty directly by specifying the URL of th
 
     $ easy_install -U http://cheeseshop.python.org/packages/source/M/Myghty/Myghty-1.1.tar.gz#md5=5865361811dca4054f1ec60ac32ee965
 
+Installing Other Software
+=========================
+
+While most Pylons-related software is available on the Python Cheeseshop and can be installed with the ``easy_install`` command not all of it is. A notable exception is the MySQLdb module which allows Python to communicate to MySQL databases. If your application requires software which isn't on the cheeseshop you will have to visit the project site and manually install it according to the instructions on the site. Most commonly used software which isn't on the cheeseshop will be available through your platform's software repository. For example there are versions of MySQLdb available for Windows which you can install with their installer and MySQLdb is available through the repositories for Debian, Ubuntu, Fedora and other platforms.
 
 Packaging Note
 ==============
