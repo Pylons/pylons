@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.6 (**svn**)
+* Added the '-d' ('--disable-ipython') option to paster shell for
+  disabling IPython.
 * Allow creation of controllers named 'setup' via paster controller.
   Reported by Matt Good.
 

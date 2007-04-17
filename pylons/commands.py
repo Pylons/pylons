@@ -279,6 +279,10 @@ class ShellCommand(Command):
     group_name = 'pylons'
     
     parser = Command.standard_parser(simulate=True)
+    parser.add_option('-d', '--disable-ipython',
+                      action='store_true',
+                      dest='disable_ipython',
+                      help="Don't use IPython if it is available")
 
     def command(self):
         """Main command to create a new shell"""
@@ -380,6 +384,9 @@ class ShellCommand(Command):
             'paste.fixture wrapped around wsgiapp')
 
         try:
+            if self.options.disable_ipython:
+                raise ImportError()
+
             # try to use IPython if possible
             from IPython.Shell import IPShellEmbed
             
