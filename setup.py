@@ -68,7 +68,7 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
     install_requires=[
         "Routes>=1.6.3", "WebHelpers>=0.3", "Beaker>=0.6.3",
         "Paste>=1.3", "PasteDeploy>=1.3", "PasteScript>=1.3.2",
-        "Myghty>=1.1", "FormEncode>=0.7", "simplejson>=1.7.1", "decorator>=2.0.1",
+        "FormEncode>=0.7", "simplejson>=1.7.1", "decorator>=2.0.1",
         "nose>=0.9.2", "Mako>=0.1.5"
     ],
     classifiers=[
@@ -85,6 +85,7 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
             "Pygments>=0.7", "pudge>=0.1.3", 
             "buildutils>=0.1.2",],
         'cheetah':["Cheetah>=1.0", "TurboCheetah>=0.9.5"],
+        'myghty':["Myghty>=1.1"],
         'kid':["kid>=0.9", "TurboKid>=0.9.1"],
         'genshi':["Genshi>=0.3.6"],
         'full':[
