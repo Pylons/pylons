@@ -111,9 +111,12 @@ class ControllerCommand(Command):
             try:
                 __import__(base_package + '.lib.base')
                 importstatement = "from %s.lib.base import *" % base_package
-            except:
+            except ImportError:
                 # Assume its the minimal template
                 importstatement = "from %s.controllers import *" % base_package
+            except:
+                # lib.base exists but throws an error
+                importstatement = "from %s.lib.base import *" % base_package
             
             # Setup the controller
             fullname = os.path.join(directory, name)
