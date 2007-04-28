@@ -6,6 +6,7 @@ import warnings
 import xmlrpclib
 
 from paste.httpexceptions import HTTPException
+from paste.response import replace_header
 from paste.deploy.converters import asbool
 
 import pylons
@@ -348,10 +349,18 @@ class XMLRPCController(WSGIController):
         kargs['start_response'] = start_response
         self.rpc_kargs = kargs
         self._func = func
-
+        
         # Now that we know the method is valid, and the args are valid,
         # we can dispatch control to the default WSGIController
-        return WSGIController.__call__(self, environ, start_response)
+        status = []
+        headers = []
+        def change_content(new_status, new_headers):
+            status.append(new_status)
+            headers.extend(new_headers)
+        output = WSGIController.__call__(self, environ, change_content)
+        replace_header(headers, 'Content-Type', 'application/xml')
+        start_response(status[0], headers)
+        return output
 
     def _dispatch_call(self):
         """Dispatch the call to the function chosen by __call__"""

@@ -111,5 +111,7 @@ class TestXMLRPCController(TestWSGIController):
     def test_multilinedoc(self):
         response = self.xmlreq('system.methodHelp', ('longdoc',))
         assert 'This function\nhas multiple lines\nin it' in response
-        
-        
+    
+    def test_contenttype(self):
+        response = self.xmlreq('system.methodHelp', ('longdoc',))
+        assert self.response.header('Content-Type') == 'application/xml'

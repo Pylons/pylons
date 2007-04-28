@@ -25,7 +25,7 @@ class TestWSGIController(TestCase):
             args = ()
         ee = dict(CONTENT_TYPE='text/xml')
         data = dumps(args, methodname=method)
-        response = self.app.post('/', params = data, extra_environ=ee)
+        self.response = response = self.app.post('/', params = data, extra_environ=ee)
         return loads(response.body)[0][0]
     
 

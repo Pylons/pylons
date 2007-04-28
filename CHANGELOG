@@ -2,6 +2,7 @@ Pylons Changelog
 =================
 
 0.9.6 (**svn**)
+* Fixed bug in XMLRPC Controller not setting proper Content-Type. Fixes #236.
 * Added the '-d' ('--disable-ipython') option to paster shell for
   disabling IPython.
 * Allow creation of controllers named 'setup' via paster controller.
