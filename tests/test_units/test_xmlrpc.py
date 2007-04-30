@@ -114,4 +114,4 @@ class TestXMLRPCController(TestWSGIController):
     
     def test_contenttype(self):
         response = self.xmlreq('system.methodHelp', ('longdoc',))
-        assert self.response.header('Content-Type') == 'application/xml'
+        assert self.response.header('Content-Type') == 'text/xml'
