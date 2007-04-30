@@ -244,14 +244,14 @@ class PylonsApp(object):
         # session and caching objects
         self.econf = econf = config.environ_config.copy()
         if 'session' not in econf:
-            from beaker.session import SessionMiddleware
+            from beaker.middleware import SessionMiddleware
             econf['session'] = 'beaker.session'
-            app = SessionMiddleware(app, config.global_conf, **config.app_conf)
+            app = SessionMiddleware(app, config.app_conf)
         
         if 'cache' not in econf:
-            from beaker.cache import CacheMiddleware
+            from beaker.middleware import CacheMiddleware
             econf['cache'] = 'beaker.cache'
-            app = CacheMiddleware(app, config.global_conf, **config.app_conf)
+            app = CacheMiddleware(app, config.app_conf)
         
         self.globals = g
         self.app = app

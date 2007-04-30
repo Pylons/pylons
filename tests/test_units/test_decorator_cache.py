@@ -5,7 +5,7 @@ import time
 from paste.fixture import TestApp
 from paste.registry import RegistryManager
 
-from beaker.cache import CacheMiddleware
+from beaker.middleware import CacheMiddleware
 
 import pylons
 from pylons import Response
@@ -56,8 +56,7 @@ except:
 environ = {}
 app = ControllerWrap(CacheController)
 app = sap = SetupCacheGlobal(app, environ)
-app = CacheMiddleware(app, {}, 
-    cache_data_dir=cachedir)
+app = CacheMiddleware(app, {}, data_dir=cachedir)
 app = RegistryManager(app)
 app = TestApp(app)
 

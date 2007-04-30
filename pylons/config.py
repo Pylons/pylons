@@ -283,7 +283,14 @@ class Config(object):
         if 'cache_data_dir' not in app_conf:
             app_conf['cache_data_dir'] = os.path.join(app_conf['cache_dir'], 
             'cache')
-
+        
+        # Copy old session/cache config to new keys for Beaker 0.7+
+        for key, val in app_conf.items():
+            if key.startswith('cache_'):
+                app_conf['cache.'+key[6:]] = val
+            elif key.startswith('session_'):
+                app_conf['session.'+key[8:]] = val
+        
         # Setup the main template options dict
         self.template_options.update(myghty_template_options)
         
