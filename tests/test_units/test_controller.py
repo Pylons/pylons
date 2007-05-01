@@ -1,3 +1,4 @@
+import warnings
 from unittest import TestCase
 
 from paste.wsgiwrappers import WSGIRequest
@@ -102,7 +103,19 @@ class TestBasicController(TestCase):
         request = id(pylons.request._current_obj())
         buffet = id(pylons.buffet._current_obj())
         cr = self.controller
+        
+        # Attach locals is now deprecated, expect the warning it'll throw
+        warnings.simplefilter('error', DeprecationWarning)
+        try:
+            cr._attach_locals()
+        except DeprecationWarning, msg:
+            assert '_attach_locals is deprecated: Pylons special objects are now' in msg[0]
+        
+        # Drop the notice of it this time, and do the command anyways, then 
+        # turn it back to normal
+        warnings.simplefilter('ignore', DeprecationWarning)
         cr._attach_locals()
+        warnings.simplefilter('always', DeprecationWarning)
         assert c == id(cr.c)
         assert g == id(cr.g)
         assert request == id(cr.request)
