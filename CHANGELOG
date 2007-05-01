@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.6 (**svn**)
+* Fixed beaker_cache decorator to take optional keyword arguments intended
+  for the backend cache container (such as url for memcached).
 * Fixed paster controller assuming the minimal template was in use when
   the lib.base module existed but raised an exception.
 * Fixed bug in XMLRPC Controller not setting proper Content-Type. Fixes #236.

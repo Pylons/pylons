@@ -8,7 +8,7 @@ from paste.deploy.converters import asbool
 import pylons
 
 def beaker_cache(key="cache_default", expire="never", type="dbm", 
-    query_args=False):
+    query_args=False, **b_kwargs):
     """Cache decorator utilizing Beaker. Caches action or other function that
     returns a pickle-able object as a result.
     
@@ -46,7 +46,7 @@ def beaker_cache(key="cache_default", expire="never", type="dbm",
         
         content = my_cache.get_value(cache_key,
             createfunc=lambda: func(*args, **kwargs), type=type,
-            expiretime=cache_expire)
+            expiretime=cache_expire, **b_kwargs)
         return content
     return decorator(wrapper)
 
