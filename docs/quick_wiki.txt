@@ -94,7 +94,6 @@ Now replace the contents of your ``models/__init__.py`` file so that it looks li
 
     from sqlalchemy import *
     from sqlalchemy.ext.assignmapper import assign_mapper
-    from pylons.database import create_engine
     from pylons.database import session_context as ctx
     
     meta = MetaData()
@@ -220,7 +219,6 @@ Now lets make the changes necessary to enable QuickWiki to be set up by an end u
 .. code-block:: Python
 
     import paste.deploy
-    from pylons.database import create_engine
     import quickwiki.models as model
 
     def setup_config(command, filename, section, vars):
@@ -230,7 +228,8 @@ Now lets make the changes necessary to enable QuickWiki to be set up by an end u
         conf = paste.deploy.appconfig('config:' + filename)
         conf.update(dict(app_conf=conf.local_conf, global_conf=conf.global_conf))
         paste.deploy.CONFIG.push_process_config(conf)
-
+        from pylons.database import create_engine
+        
         uri = conf['sqlalchemy.dburi']
         engine = create_engine(uri)
         print "Connecting to database %s" % uri
