@@ -1,3 +1,4 @@
+import warnings
 from unittest import TestCase
 
 from paste.fixture import TestApp
@@ -17,16 +18,19 @@ class OldController(Controller):
         return 'old'
 
 class TestDeprecatedControllerImport(TestCase):
-    def setUp(self):
+    def tearDown(self):
+        warnings.simplefilter('always', DeprecationWarning)
+    
+    def test_index(self):
+        warnings.simplefilter('error', DeprecationWarning)
         self.environ = {'pylons.routes_dict':dict(action='index'),
                         'paste.config':dict(global_conf=dict(debug=True))}
         pylons.request._push_object(WSGIRequest(self.environ))
         pylons.c._push_object(ContextObj())
-        self.controller = OldController()
-        self.controller.start_response = None
-
-    def test_index(self):
-        assert 'old' == self.controller()
+        try:
+            self.controller = OldController()
+        except DeprecationWarning, msg:
+            assert 'pylons.Controller has been moved' in msg[0]
 
 class SimpleTestWSGIController(TestWSGIController):
     wsgi_app = None
@@ -45,11 +49,19 @@ class SimpleTestWSGIController(TestWSGIController):
 class JsonifyController(WSGIController):
     def index(self):
         return {'iam': 'deprecated'}
-    index = jsonify(index)
 
 class TestDeprecatedJsonify(SimpleTestWSGIController):
     wsgi_app = JsonifyController
+    
+    def tearDown(self):
+        warnings.simplefilter('always', DeprecationWarning)
+    
     def test_wsgi_call(self):
-        resp = self.get_response()
-        assert '{"iam": "deprecated"}' in resp
-        assert orig_jsonify.__doc__ in jsonify.__doc__
+        warnings.simplefilter('error', DeprecationWarning)
+        try:
+            self.wsgi_app.index = jsonify(self.wsgi_app.index)
+            resp = self.get_response()
+        except DeprecationWarning, msg:
+            assert 'The pylons.jsonify function has moved to' in msg[0]
+        #assert '{"iam": "deprecated"}' in resp
+        #assert orig_jsonify.__doc__ in jsonify.__doc__
