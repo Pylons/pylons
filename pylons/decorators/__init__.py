@@ -1,15 +1,17 @@
 """Pylons Decorators: ``jsonify``, ``validate``, REST, and Cache decorators"""
-import simplejson as json
 import sys
+import warnings
+
+import simplejson as json
+
 from paste.util.multidict import UnicodeMultiDict
-
-from decorator import decorator
-
 import formencode.api as api
 import formencode.variabledecode as variabledecode
 from formencode import htmlfill
 
 import pylons
+
+from decorator import decorator
 
 def jsonify(func, *args, **kwargs):
     """Action decorator that formats output for JSON
@@ -20,7 +22,13 @@ def jsonify(func, *args, **kwargs):
     """
     response = pylons.Response()
     response.headers['Content-Type'] = 'text/javascript'
-    response.content.append(json.dumps(func(*args, **kwargs)))
+    data = func(*args, **kwargs)
+    if isinstance(data, list):
+        warnings.warn("JSON responses with Array envelopes are susceptible to "
+                      "cross-site data leak attacks, see "
+                      "http://pylonshq.com/warnings/JSONArray",
+                      Warning, 2)
+    response.content.append(json.dumps(data))
     return response
 jsonify = decorator(jsonify)
 

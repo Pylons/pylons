@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.6 (**svn**)
+* Added Warning to jsonify to warn about cross-site attacks when returning
+  a list as the outer-most element to jsonify. Fixes #232.
 * Fixed beaker_cache decorator to take optional keyword arguments intended
   for the backend cache container (such as url for memcached).
 * Fixed paster controller assuming the minimal template was in use when
