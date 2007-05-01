@@ -36,9 +36,10 @@ class TestJsonifyDecorator(TestWSGIController):
         warnings.simplefilter('always', Warning)
 
     def test_bad_json(self):
-        def get_bad_json():
+        try:
             response = self.get_response(action='test_bad_json')
-        self.assertRaises(Warning, get_bad_json)
+        except Warning, msg:
+            assert 'JSON responses with Array envelopes are' in msg[0]
     
     def test_good_json(self):
         response = self.get_response(action='test_good_json')
