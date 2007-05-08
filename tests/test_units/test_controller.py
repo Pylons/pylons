@@ -31,9 +31,18 @@ class BasicFilteredController(Controller):
 
     def __after__(self):
         self.after += 1
+        action = pylons.request.environ['pylons.routes_dict'].get('action')
+        if action in ('after_response', 'after_string_response'):
+            self.response.write(' from __after__')
 
     def index(self):
         return 'hi all, before is %s' % self.before
+
+    def after_response(self):
+        return pylons.Response('hi')
+
+    def after_string_response(self):
+        return 'hello'
 
 class BasicWSGIController(WSGIController):
     def index(self):
@@ -60,10 +69,18 @@ class FilteredWSGIController(WSGIController):
 
     def __after__(self):
         self.after += 1
+        action = pylons.request.environ['pylons.routes_dict'].get('action')
+        if action in ('after_response', 'after_string_response'):
+            self.response.write(' from __after__')
 
     def index(self):
         return pylons.Response('hi all, before is %s' % self.before)
 
+    def after_response(self):
+        return pylons.Response('hi')
+
+    def after_string_response(self):
+        return 'hello'
 
 class TestBasicController(TestCase):
     def setUp(self):
@@ -79,11 +96,11 @@ class TestBasicController(TestCase):
         pylons.c._pop_object()
 
     def test_basic_call(self):
-        assert "hi all" == self.controller()
+        assert "hi all" in str(self.controller())
     
     def test_inspect_call(self):
         self.environ['pylons.routes_dict'].update(dict(action='view', id=4, name='fred'))
-        assert "Hi 4, fred" == self.controller()
+        assert "Hi 4, fred" in str(self.controller())
 
     def test_private_action(self):
         self.environ['pylons.routes_dict']['action'] = '_private'
@@ -149,9 +166,19 @@ class TestFilteredController(TestCase):
         pylons.c._pop_object()
 
     def test_basic_call(self):
-        resp = self.controller()
+        resp = str(self.controller())
         assert "hi all" in resp
         assert "before is 1" in resp
+
+    def test_after_response(self):
+        self.environ['pylons.routes_dict'].update(dict(action='after_response'))
+        resp = str(self.controller())
+        assert 'hi from __after__' in resp
+
+    def test_after_string_response(self):
+        self.environ['pylons.routes_dict'].update(dict(action='after_string_response'))
+        resp = str(self.controller())
+        assert 'hello from __after__' in resp
 
 class TestBasicWSGI(TestWSGIController):
     def __init__(self, *args, **kargs):
@@ -208,3 +235,11 @@ class TestFilteredWSGI(TestWSGIController):
         resp = self.get_response(action='index')
         assert 'hi' in resp
         assert 'before is 1' in resp
+
+    def test_after_response(self):
+        resp = self.get_response(action='after_response')
+        assert 'hi from __after__' in resp
+
+    def test_after_string_response(self):
+        resp = self.get_response(action='after_string_response')
+        assert 'hello from __after__' in resp

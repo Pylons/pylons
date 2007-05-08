@@ -2,6 +2,10 @@ Pylons Changelog
 =================
 
 0.9.6 (**svn**)
+* The Response object is now available for __after__ via self.response in
+  the Controller. Original patch by Damjan Georgievski. Fixes #201.
+* HTTPExceptions are now converted to Response objects (for __after__),
+  making the httpexceptions middleware no longer required.
 * Added Warning to jsonify to warn about cross-site attacks when returning
   a list as the outer-most element to jsonify. Fixes #232.
 * Fixed beaker_cache decorator to take optional keyword arguments intended

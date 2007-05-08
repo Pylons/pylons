@@ -1,6 +1,5 @@
 import os
 
-from paste import httpexceptions
 from paste.cascade import Cascade
 from paste.urlparser import StaticURLParser
 from paste.registry import RegistryManager
@@ -52,7 +51,6 @@ def make_app(global_conf, full_stack=True, **app_conf):
         
     # Build the rest of the stack, see a full template for more details
     if asbool(full_stack):
-        app = httpexceptions.make_middleware(app, global_conf)
         app = ErrorHandler(app, global_conf, error_template=error_template, **config.errorware)
     
     app = RegistryManager(app)

@@ -166,6 +166,8 @@ class Controller(object):
                     'Action %s is not implemented' % action)
             else:
                 response = pylons.Response(code=404)
+        if isinstance(response, basestring):
+            response = pylons.Response(response)
         return response
     
     def __call__(self, *args, **kargs):
@@ -188,9 +190,9 @@ class Controller(object):
         else:
             try:
                 response = self._dispatch_call()
-            except HTTPException:
-                self._inspect_call(self.__after__)
-                raise
+            except HTTPException, httpe:
+                response = httpe.response(environ)
+            self.response = response
             self._inspect_call(self.__after__)
         return response
 
@@ -216,9 +218,9 @@ class WSGIController(Controller):
         else:
             try:
                 response = self._dispatch_call()
-            except HTTPException:
-                self._inspect_call(self.__after__)
-                raise
+            except HTTPException, httpe:
+                response = httpe.response(environ)
+            self.response = response
             self._inspect_call(self.__after__)
         
         if hasattr(response, 'wsgi_response'):
@@ -226,9 +228,6 @@ class WSGIController(Controller):
             if 'paste.testing_variables' in environ:
                 environ['paste.testing_variables']['response'] = response
             return response(environ, start_response)
-        elif isinstance(response, basestring):
-            resp = pylons.Response(response)
-            return resp(environ, start_response)
         
         return response
 
