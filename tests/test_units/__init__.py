@@ -18,7 +18,12 @@ class TestWSGIController(TestCase):
     def get_response(self, **kargs):
         url = kargs.pop('_url', '/')
         self.environ['pylons.routes_dict'].update(kargs)
-        return self.app.get(url)
+        return self.app.get(url, extra_environ=self.environ)
+
+    def post_response(self, **kargs):
+        url = kargs.pop('_url', '/')
+        self.environ['pylons.routes_dict'].update(kargs)
+        return self.app.post(url, extra_environ=self.environ, params=kargs)
     
     def xmlreq(self, method, args=None):
         if args is None:
