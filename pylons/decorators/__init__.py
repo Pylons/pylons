@@ -4,7 +4,7 @@ import warnings
 
 import simplejson as json
 
-from paste.util.multidict import UnicodeMultiDict
+from paste.util.multidict import MultiDict
 import formencode.api as api
 import formencode.variabledecode as variabledecode
 from formencode import htmlfill
@@ -103,17 +103,35 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
             pylons.request.environ['pylons.routes_dict']['action'] = form
             response = self._dispatch_call()
             form_content = ''.join(response.content)
-            if isinstance(params, UnicodeMultiDict) and \
-                    not isinstance(form_content, unicode):
+            if isinstance(params, MultiDict):
+                # Passing raw string form values to htmlfill: Ensure
+                # form_content and FormEncode's errors dict are also raw
+                # strings so htmlfill can safely combine them
+                encoding = determine_response_charset(response)
+                # WSGIResponse's content may (unlikely) be unicode
+                if isinstance(form_content, unicode):
+                    form_content = form_content.encode(encoding)
+                # FormEncode>=0.7 error strings are unicode (due to being
+                # localized via ugettext)
+                for key, value in errors.iteritems():
+                    if isinstance(value, unicode):
+                        errors[key] = value.encode(encoding)
+            elif not isinstance(form_content, unicode):
                 # Passing unicode form values to htmlfill: decode the response
                 # to unicode so htmlfill can safely combine the two
-                encoding = response.determine_charset()
-                if encoding is None:
-                    encoding = sys.getdefaultencoding()
+                encoding = determine_response_charset(response)
                 form_content = form_content.decode(encoding, response.errors)
             response.content = [htmlfill.render(form_content, params, errors)]
             return response
         return func(self, *args, **kwargs)
     return decorator(wrapper)
+
+def determine_response_charset(response):
+    """Determine the charset of the specified Response object, returning the
+    default system encoding when none is set"""
+    charset = response.determine_charset()
+    if charset is None:
+        charset = sys.getdefaultencoding()
+    return charset
 
 __all__ = ['jsonify', 'validate']

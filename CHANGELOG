@@ -2,6 +2,13 @@ Pylons Changelog
 =================
 
 0.9.6 (**svn**)
+* Fixed the validate decorator triggering the following error with
+  FormEncode>=0.7 and non-ascii rendered form content:
+  UnicodeDecodeError: 'ascii' codec can't decode byte 0xc3 in position 10:
+  ordinal not in range(128) the form was passed in as an encoded string, but
+  some data or error messages were unicode strings; the form should be passed
+  in as a unicode string
+  Reported by Christoph Haas.
 * The Response object is now available for __after__ via self.response in
   the Controller. Original patch by Damjan Georgievski. Fixes #201.
 * HTTPExceptions are now converted to Response objects (for __after__),
