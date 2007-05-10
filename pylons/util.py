@@ -10,6 +10,7 @@ from paste.script.appinstall import Installer
 from paste.script.templates import Template
 
 import pylons
+import pylons.config
 import pylons.helpers
 import pylons.i18n
 
@@ -123,10 +124,15 @@ class PylonsTemplate(Template):
     summary = 'Pylons application template'
     egg_plugins = ['Pylons', 'WebHelpers']
 
-class MinimalPylonsTemplate(Template):
+    def pre(self, command, output_dir, vars):
+        """Called before template is applied."""
+        template_engine = vars.pop('template_engine',
+                                   pylons.config.default_template_engine)
+        vars['template_engine_kw'] = "template_engine='%s'" % template_engine
+
+class MinimalPylonsTemplate(PylonsTemplate):
     _template_dir = 'templates/minimal_project'
     summary = 'Pylons minimal application template'
-    egg_plugins = ['Pylons', 'WebHelpers']
 
 class PylonsInstaller(Installer):
     use_cheetah = False

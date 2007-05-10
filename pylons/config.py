@@ -14,6 +14,7 @@ from paste.deploy.converters import asbool
 import pylons.legacy
 import pylons.templating
 
+default_template_engine = 'pylonsmyghty'
 request_defaults = dict(charset=None, errors='strict',
                         decode_param_names=False,
                         language='en-us')
@@ -182,7 +183,7 @@ class Config(object):
         self.template_engines.append(config)
     
     def init_app(self, global_conf, app_conf, package,
-                 template_engine='pylonsmyghty'):
+                 template_engine=default_template_engine):
         """Initialize configuration for the application
         
         ``global_config``

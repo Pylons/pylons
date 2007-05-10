@@ -2,6 +2,12 @@ Pylons Changelog
 =================
 
 0.9.6 (**svn**)
+
+* paster create now accepts a 'template_engine' option to setup the new
+  project's default template engine. E.g. to create a new project that
+  uses Genshi by default, use:
+  paster create --template=pylons mygenshiproj template_engine=genshi
+  Suggested by Ian Bicking. Fixes #141.
 * Fixed the validate decorator triggering the following error with
   FormEncode>=0.7 and non-ascii rendered form content:
   UnicodeDecodeError: 'ascii' codec can't decode byte 0xc3 in position 10:
