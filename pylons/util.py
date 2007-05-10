@@ -90,8 +90,8 @@ def config_get(key, default=None):
 
 
 class ContextObj(object):
-    """ The 'c' object, with strict attribute access (raises an Exception when
-    the attribute does not exist) """
+    """The 'c' object, with strict attribute access (raises an Exception when
+    the attribute does not exist)"""
     def __repr__(self):
         attrs = [(name, value)
                  for name, value in self.__dict__.items()
@@ -110,8 +110,8 @@ class ContextObj(object):
             ','.join(parts))
 
 class AttribSafeContextObj(ContextObj):
-    """ The 'c' object, with lax attribute access (returns '' when the
-    attribute does not exist) """
+    """The 'c' object, with lax attribute access (returns '' when the attribute
+    does not exist)"""
     def __getattr__(self, name):
         try:
             return object.__getattribute__(self, name)
