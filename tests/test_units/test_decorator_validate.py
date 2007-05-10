@@ -11,7 +11,7 @@ from __init__ import ControllerWrap, SetupCacheGlobal, TestWSGIController
 
 import formencode
 
-class DhcpZoneForm(formencode.Schema):
+class NetworkForm(formencode.Schema):
     allow_extra_fields = True
     filter_extra_fields = True
     new_network = formencode.validators.URL(not_empty=True)
@@ -34,11 +34,10 @@ class ValidatingController(WSGIController):
 </html>
                         """)
 
-    def test_str_params_unicode_fe_errors(self):
+    def network(self):
         return Response('Your network is: %s' %
             self.form_result.get('new_network'))
-    test_str_params_unicode_fe_errors = \
-        validate(schema=DhcpZoneForm, form='new')(test_str_params_unicode_fe_errors)
+    network = validate(schema=NetworkForm, form='new')(network)
 
 class TestValidateDecorator(TestWSGIController):
     def setUp(self):
@@ -49,13 +48,12 @@ class TestValidateDecorator(TestWSGIController):
         self.app = TestApp(app)
 
     def test_validated(self):
-        response = self.post_response(action='test_str_params_unicode_fe_errors',
+        response = self.post_response(action='network',
                                       new_network='http://pylonshq.com/')
         assert 'Your network is: http://pylonshq.com/' in response
 
     def test_failed_validation_non_ascii(self):
-        response = self.post_response(action='test_str_params_unicode_fe_errors',
-                                      new_network='Росси́я')
+        response = self.post_response(action='network', new_network='Росси́я')
         print response
         assert 'That is not a valid URL' in response
         assert 'Росси́я' in response
