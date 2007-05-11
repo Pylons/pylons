@@ -93,7 +93,8 @@ class PylonsBaseWSGIApp(object):
         elif response:
             return response
         
-        raise Exception("No content returned by controller: %s" % \
+        raise Exception("No content returned by controller (Did you remember "
+                        "to 'return' it?) in: %s" % \
                             controller.__name__)
     
     def setup_app_env(self, environ, start_response):
