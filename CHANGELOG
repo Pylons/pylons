@@ -2,7 +2,12 @@ Pylons Changelog
 =================
 
 0.9.6 (**svn**)
-
+* WARNING: Template names beginning with a / (or the OS's path separator)
+  will now result in the name not having the separator's replaced with '.'s
+  for the template engine. This shouldn't affect most projects as they usually
+  assume a dot notation will be used with dot notation template engines (Kid, 
+  Genshi, etc.). This change allows template engines that can take filename
+  paths to function properly. Fixes #233.
 * paster create now accepts a 'template_engine' option to setup the new
   project's default template engine. E.g. to create a new project that
   uses Genshi by default, use:
