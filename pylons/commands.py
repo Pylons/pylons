@@ -108,14 +108,19 @@ class ControllerCommand(Command):
             validate_name(name)
             
             # Check to see if PROJ.lib.base exists
+            minimal_template = False
             try:
                 __import__(base_package + '.lib.base')
-                importstatement = "from %s.lib.base import *" % base_package
-            except ImportError:
-                # Assume its the minimal template
-                importstatement = "from %s.controllers import *" % base_package
+            except ImportError, ie:
+                if 'No module named lib.base' in str(ie):
+                    minimal_template = True
             except:
                 # lib.base exists but throws an error
+                pass
+
+            if minimal_template:
+                importstatement = "from %s.controllers import *" % base_package
+            else:
                 importstatement = "from %s.lib.base import *" % base_package
             
             # Setup the controller
