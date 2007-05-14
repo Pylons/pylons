@@ -185,15 +185,14 @@ class Controller(object):
         if hasattr(self, '__before__'):
             self._inspect_call(self.__before__, **kargs)
 
-        if not hasattr(self, '__after__'):
+        try:
             response = self._dispatch_call()
-        else:
-            try:
-                response = self._dispatch_call()
-            except HTTPException, httpe:
-                response = httpe.response(environ)
+        except HTTPException, httpe:
+            response = httpe.response(environ)
+        if hasattr(self, '__after__'):
             self.response = response
             self._inspect_call(self.__after__)
+
         return response
 
 class WSGIController(Controller):
@@ -213,13 +212,11 @@ class WSGIController(Controller):
         if hasattr(self, '__before__'):
             self._inspect_call(self.__before__)
 
-        if not hasattr(self, '__after__'):
+        try:
             response = self._dispatch_call()
-        else:
-            try:
-                response = self._dispatch_call()
-            except HTTPException, httpe:
-                response = httpe.response(environ)
+        except HTTPException, httpe:
+            response = httpe.response(environ)
+        if hasattr(self, '__after__'):
             self.response = response
             self._inspect_call(self.__after__)
         
