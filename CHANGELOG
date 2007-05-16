@@ -2,6 +2,9 @@ Pylons Changelog
 =================
 
 0.9.6 (**svn**)
+* Fixed paster restcontroller to test for lib.base and only add that import 
+  statement when its present. This fixes the restcontroller template when used
+  with minimal Pylons project templates. Fixes #237.
 * Fixed the EvalException debugger showing broken links and buttons when the
   app's ErrorController was broken (such as when BaseController's __before__
   raises an exception). Suggested by Ian Bicking. Fixes #228.

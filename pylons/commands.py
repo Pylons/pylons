@@ -29,6 +29,21 @@ def can_import(name):
     except ImportError:
         return False
 
+def is_minimal_template(package):
+    """Determine if the specified Pylons project (package) uses the Pylons Minimal
+    Tempalte"""
+    minimal_template = False
+    try:
+        # Check if PACKAGE.lib.base exists
+        __import__(package + '.lib.base')
+    except ImportError, ie:
+        if 'No module named lib.base' in str(ie):
+            minimal_template = True
+    except:
+        # PACKAGE.lib.base exists but throws an error
+        pass
+    return minimal_template
+
 def validate_name(name):
     """Validate that the name for the controller isn't present on the
     path already"""
@@ -106,23 +121,13 @@ class ControllerCommand(Command):
             # Validate the name
             name = name.replace('-', '_')
             validate_name(name)
-            
-            # Check to see if PROJ.lib.base exists
-            minimal_template = False
-            try:
-                __import__(base_package + '.lib.base')
-            except ImportError, ie:
-                if 'No module named lib.base' in str(ie):
-                    minimal_template = True
-            except:
-                # lib.base exists but throws an error
-                pass
 
-            if minimal_template:
+            # Determine the module's import statement
+            if is_minimal_template(base_package):
                 importstatement = "from %s.controllers import *" % base_package
             else:
                 importstatement = "from %s.lib.base import *" % base_package
-            
+
             # Setup the controller
             fullname = os.path.join(directory, name)
             controller_name = util.class_name_from_module_name(
@@ -214,6 +219,12 @@ class RestControllerCommand(Command):
                 name = name.replace('-', '_')
                 validate_name(name)
 
+            # Determine the module's import statement
+            if is_minimal_template(base_package):
+                importstatement = "from %s.controllers import *" % base_package
+            else:
+                importstatement = "from %s.lib.base import *" % base_package
+
             # Setup the controller
             fullname = os.path.join(pluraldirectory, pluralname)
             controller_name = util.class_name_from_module_name(
@@ -243,7 +254,8 @@ class RestControllerCommand(Command):
                  'nameprefix': nameprefix,
                  'resource_command': command.replace('\n\t', '\n%s#%s' % \
                                                          (' '*4, ' '*9)),
-                 'fname': os.path.join(pluraldirectory, pluralname)}
+                 'fname': os.path.join(pluraldirectory, pluralname),
+                 'importstatement': importstatement}
             )
             
             resource_command = ("\nTo create the appropriate RESTful mapping, "
