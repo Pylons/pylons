@@ -9,42 +9,43 @@ class ${classname}Controller(BaseController):
         """GET /: All items in the collection."""
         # url_for('${nameprefix}${pluralname}')
         pass
-    
+
     def create(self):
         """POST /: Create a new item."""
         # url_for('${nameprefix}${pluralname}')
         pass
-    
+
     def new(self, format='html'):
         """GET /new: Form to create a new item."""
         # url_for('${nameprefix}new_${singularname}')
         pass
-    
+
     def update(self, id):
         """PUT /id: Update an existing item."""
         # Forms posted to this method should contain a hidden field:
         #    <input type="hidden" name="_method" value="PUT" />
         # Or using helpers:
-        #    h.form(h.url_for('${nameprefix}${singularname}', id=ID), method='put')
+        #    h.form(h.url_for('${nameprefix}${singularname}', id=ID),
+        #           method='put')
         # url_for('${nameprefix}${singularname}', id=ID)
         pass
-    
+
     def delete(self, id):
         """DELETE /id: Delete an existing item."""
         # Forms posted to this method should contain a hidden field:
         #    <input type="hidden" name="_method" value="DELETE" />
         # Or using helpers:
-        #    h.form(h.url_for('${nameprefix}${singularname}', id=ID), method='delete')
+        #    h.form(h.url_for('${nameprefix}${singularname}', id=ID),
+        #           method='delete')
         # url_for('${nameprefix}${singularname}', id=ID)
         pass
-    
+
     def show(self, id, format='html'):
         """GET /id: Show a specific item."""
         # url_for('${nameprefix}${singularname}', id=ID)
         pass
-    
+
     def edit(self, id, format='html'):
         """GET /id;edit: Form to edit an existing item."""
         # url_for('${nameprefix}edit_${singularname}', id=ID)
         pass
-    
