@@ -2,6 +2,9 @@ Pylons Changelog
 =================
 
 0.9.6 (**svn**)
+* Fixed the EvalException debugger showing broken links and buttons when the
+  app's ErrorController was broken (such as when BaseController's __before__
+  raises an exception). Suggested by Ian Bicking. Fixes #228.
 * WARNING: Template names beginning with a / (or the OS's path separator)
   will now result in the name not having the separator's replaced with '.'s
   for the template engine. This shouldn't affect most projects as they usually

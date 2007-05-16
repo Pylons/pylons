@@ -13,6 +13,7 @@ import sys
 from paste.evalexception.middleware import *
 from paste.exceptions.formatter import *
 
+from pylons.middleware import media_path
 from pylons.util import get_prefix
 
 class Supplement(errormiddleware.Supplement):
@@ -205,6 +206,16 @@ class PylonsEvalException(EvalException):
         except:
             raise Exception('Invalid template. Please ensure all % signs are properly '
                             'quoted as %% and no extra substitution strings are present.')
+
+    def media(self, environ, start_response):
+        """Handle Pylons specific media content @ /_debug/media/pylons"""
+        if environ['PATH_INFO'].startswith('/pylons'):
+            request.path_info_pop(environ)
+            app = urlparser.StaticURLParser(media_path)
+            return app(environ, start_response)
+        else:
+            return super(self.__class__, self).media(environ, start_response)
+    media.exposed = True
             
     def respond(self, environ, start_response):
         if environ.get('paste.throw_errors'):
@@ -359,7 +370,7 @@ class EvalHTMLFormatter(HTMLFormatter):
         return (line +
                 '  <a href="#" class="switch_source" '
                 'tbid="%s" onClick="return showFrame(this)">&nbsp; &nbsp; '
-                '<img src="%s/error/img/plus.jpg" border=0 width=9 '
+                '<img src="%s/_debug/media/pylons/img/plus.jpg" border=0 width=9 '
                 'height=9> &nbsp; &nbsp;</a>'
                 % (frame.tbid, self.base_path))
 
@@ -478,10 +489,10 @@ error_template = '''\
  %(head)s
 
 <!-- CSS Imports -->
-<link rel="stylesheet" href="%(prefix)s/error/style/orange.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="%(prefix)s/_debug/media/pylons/style/orange.css" type="text/css" media="screen" />
 
 <!-- Favorite Icons -->
-<link rel="icon" href="%(prefix)s/error/img/icon-16.png" type="image/png" />
+<link rel="icon" href="%(prefix)s/_debug/media/pylons/img/icon-16.png" type="image/png" />
 
 <!-- Mako Styles -->
 <style type="text/css">
@@ -501,7 +512,7 @@ error_template = '''\
 <noscript>
 <div style="border-bottom: 1px solid #808080">
 <div style="border-bottom: 1px solid #404040">
-<table width="100%%" border="0" cellpadding="0" bgcolor="#FFFFE1"><tr><td valign="middle"><img src="%(prefix)s/error/img/warning.gif" alt="Warning" /></td><td>&nbsp;</td><td><span style="padding: 0px; margin: 0px; font-family: Tahoma, sans-serif; font-size: 11px">Warning, your browser does not support JavaScript so you will not be able to use the interactive debugging on this page.</span></td></tr></table>
+<table width="100%%" border="0" cellpadding="0" bgcolor="#FFFFE1"><tr><td valign="middle"><img src="%(prefix)s/_debug/media/pylons/img/warning.gif" alt="Warning" /></td><td>&nbsp;</td><td><span style="padding: 0px; margin: 0px; font-family: Tahoma, sans-serif; font-size: 11px">Warning, your browser does not support JavaScript so you will not be able to use the interactive debugging on this page.</span></td></tr></table>
 </div>
 </div>
 </noscript>
@@ -510,7 +521,7 @@ error_template = '''\
     <a name="top"></a>
     
     <!-- Logo -->
-    <h1 id="logo"><a class="no-underline" href="http://pylonshq.com"><img class="no-border" src="%(prefix)s/error/img/logo.gif" alt="Pylons" title="Pylons"/></a></h1>
+    <h1 id="logo"><a class="no-underline" href="http://pylonshq.com"><img class="no-border" src="%(prefix)s/_debug/media/pylons/img/logo.gif" alt="Pylons" title="Pylons"/></a></h1>
     <p class="invisible"><a href="#content">Skip to content</a></p>
 
     <!-- Main Content -->
@@ -572,7 +583,7 @@ error_head_template = """
 if (document.images)
 {
   pic1= new Image(100,25); 
-  pic1.src="%(prefix)s/error/img/tab-yellow.png"; 
+  pic1.src="%(prefix)s/_debug/media/pylons/img/tab-yellow.png"; 
 }
 
 function switch_display(id) {
@@ -610,7 +621,7 @@ error_traceback_template = """
         <b>Extra Features</b>
         <table border="0">
         <tr><td>&gt;&gt;</td><td>Display the lines of code near each part of the traceback</td></tr>
-        <tr><td><img src="%(prefix)s/error/img/plus.jpg" /></td><td>Show a debug prompt to allow you to directly debug the code at the traceback</td></tr>
+        <tr><td><img src="%(prefix)s/_debug/media/pylons/img/plus.jpg" /></td><td>Show a debug prompt to allow you to directly debug the code at the traceback</td></tr>
         </table>
         </div>%(repost_button)s"""
 
