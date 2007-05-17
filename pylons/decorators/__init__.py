@@ -140,7 +140,7 @@ def determine_response_charset(response):
     charset = response.determine_charset()
     if charset is None:
         charset = sys.getdefaultencoding()
-    log.debug("Determined result charset to be: %s" % charset)
+    log.debug("Determined result charset to be: %s", charset)
     return charset
 
 __all__ = ['jsonify', 'validate']

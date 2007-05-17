@@ -33,7 +33,8 @@ def beaker_cache(key="cache_default", expire="never", type="dbm",
     """
     def wrapper(func, *args, **kwargs):
         """Decorator wrapper"""
-        log.debug("Wrapped with key: %s, expire: %s, type: %s, query_args: %s" % (key, expire, type, query_args))
+        log.debug("Wrapped with key: %s, expire: %s, type: %s, query_args: %s",
+                  key, expire, type, query_args)
         enabled = pylons.g.pylons_config.app_conf.get("cache_enabled", "True")
         if not asbool(enabled):
             log.debug("Caching disabled, skipping cache lookup.")
@@ -49,7 +50,8 @@ def beaker_cache(key="cache_default", expire="never", type="dbm",
             cache_expire = expire
         
         def create_func():
-            log.debug("Creating new cache copy with key: %s, type: %s" % (cache_key, type))
+            log.debug("Creating new cache copy with key: %s, type: %s",
+                      cache_key, type)
             return func(*args, **kwargs)
         
         content = my_cache.get_value(cache_key, createfunc=create_func, 
