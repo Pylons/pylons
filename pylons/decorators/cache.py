@@ -1,5 +1,7 @@
 """Caching decorators"""
 import inspect
+import logging
+log = logging.getLogger('pylons.decorators.cache')
 
 from decorator import decorator
 
@@ -31,8 +33,10 @@ def beaker_cache(key="cache_default", expire="never", type="dbm",
     """
     def wrapper(func, *args, **kwargs):
         """Decorator wrapper"""
+        log.debug("Wrapped with key: %s, expire: %s, type: %s, query_args: %s" % (key, expire, type, query_args))
         enabled = pylons.g.pylons_config.app_conf.get("cache_enabled", "True")
         if not asbool(enabled):
+            log.debug("Caching disabled, skipping cache lookup.")
             return func(*args, **kwargs)
         
         my_cache = pylons.cache.get_cache('%s.%s' % (func.__module__,
@@ -44,14 +48,18 @@ def beaker_cache(key="cache_default", expire="never", type="dbm",
         else:
             cache_expire = expire
         
-        content = my_cache.get_value(cache_key,
-            createfunc=lambda: func(*args, **kwargs), type=type,
-            expiretime=cache_expire, **b_kwargs)
+        def create_func():
+            log.debug("Creating new cache copy with key: %s, type: %s" % (cache_key, type))
+            return func(*args, **kwargs)
+        
+        content = my_cache.get_value(cache_key, createfunc=create_func, 
+                                     type=type, expiretime=cache_expire,
+                                     **b_kwargs)
         return content
     return decorator(wrapper)
 
 def _make_key(func, key, args, kwargs, query_args):
-    """Helps make unique key from largs, kewargs and request.GET"""
+    """Helps make unique key from largs, kwargs and request.GET"""
     if key == "cache_default":
         if query_args:
             cache_key = repr(dict(pylons.request.GET))
