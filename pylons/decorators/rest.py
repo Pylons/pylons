@@ -26,7 +26,7 @@ def restrict(*methods):
             response = pylons.Response()
             response.headers['Allow'] = ','.join(methods)
             response.status_code = 405
-            log.debug("Method not allowed by restrict.")
+            log.debug("Method not allowed by restrict")
             return response
         return func(*args, **kwargs)
     return decorator(check_methods)
@@ -59,7 +59,7 @@ def dispatch_on(**method_map):
         alt_method = method_map.get(pylons.request.method)
         if alt_method:
             alt_method = getattr(self, alt_method)
-            log.debug("Dispatching to %s instead.", alt_method)
+            log.debug("Dispatching to %s instead", alt_method)
             return self._inspect_call(alt_method, **kwargs)
         return func(self, *args, **kwargs)
     return decorator(dispatcher)

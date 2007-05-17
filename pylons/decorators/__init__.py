@@ -31,7 +31,7 @@ def jsonify(func, *args, **kwargs):
         warnings.warn(msg, Warning, 2)
         log.warning(msg)
     response.content.append(json.dumps(data))
-    log.debug("Returning JSON wrapped action output.")
+    log.debug("Returning JSON wrapped action output")
     return response
 jsonify = decorator(jsonify)
 
@@ -75,27 +75,27 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
         """Decorator Wrapper function"""
         errors = {}
         if not pylons.request.method == 'POST':
-            log.debug("Method was not a form post, validate skipped.")
+            log.debug("Method was not a form post, validate skipped")
             return func(self, *args, **kwargs)
         if post_only:
             params = pylons.request.POST.copy()
         else:
             params = pylons.request.params.copy()
         if variable_decode:
-            log.debug("Running variable_decode on params.")
+            log.debug("Running variable_decode on params")
             decoded = variabledecode.variable_decode(params, dict_char,
                                                      list_char)
         else:
             decoded = params
 
         if schema:
-            log.debug("Validating against a schema.")
+            log.debug("Validating against a schema")
             try:
                 self.form_result = schema.to_python(decoded)
             except api.Invalid, e:
                 errors = e.unpack_errors(variable_decode, dict_char, list_char)
         if validators:
-            log.debug("Validating against provided validators.")
+            log.debug("Validating against provided validators")
             if isinstance(validators, dict):
                 if not hasattr(self, 'form_result'):
                     self.form_result = {}
@@ -106,7 +106,7 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
                     except api.Invalid, error:
                         errors[field] = error
         if errors:
-            log.debug("Errors found in validation, parsing form with htmlfill for errors.")
+            log.debug("Errors found in validation, parsing form with htmlfill for errors")
             pylons.request.environ['REQUEST_METHOD'] = 'GET'
             pylons.request.environ['pylons.routes_dict']['action'] = form
             response = self._dispatch_call()
