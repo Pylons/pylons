@@ -69,7 +69,7 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
         "Routes>=1.6.3", "WebHelpers>=0.3", "Beaker==dev,>=0.7dev-r69",
         "Paste>=1.3", "PasteDeploy>=1.3", "PasteScript>=1.3.2",
         "FormEncode>=0.7", "simplejson>=1.7.1", "decorator>=2.0.1",
-        "nose>=0.9.2", "Mako>=0.1.5"
+        "nose>=0.9.2", "Mako==dev,>=0.1.5dev-r268"
     ],
     classifiers=[
         "Development Status :: 5 - Production/Stable",

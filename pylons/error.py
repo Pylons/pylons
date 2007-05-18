@@ -296,7 +296,8 @@ except ImportError:
 else:
     def mako_html_data(exc_value):
         if isinstance(exc_value, (mako.exceptions.CompileException, mako.exceptions.SyntaxException)):
-            return mako.exceptions.html_error_template().render()[610:-16]
+            return mako.exceptions.html_error_template().render(full=False,
+                                                                css=False)
     
     template_error_formatters.insert(0,mako_html_data)
     
