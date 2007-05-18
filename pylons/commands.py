@@ -323,9 +323,11 @@ class ShellCommand(Command):
         locs = dict(__name__="pylons-admin")
 
         # Load app config into paste.deploy to simulate request config
+        # Setup the Paste CONFIG object, adding app_conf/global_conf for legacy
+        # code
         conf = appconfig(config_name, relative_to=here_dir)
-        conf = dict(app_conf=conf.local_conf,
-                    global_conf=conf.global_conf)
+        conf.update(dict(app_conf=conf.local_conf,
+                         global_conf=conf.global_conf))
         paste.deploy.config.CONFIG.push_thread_config(conf)
         
         # Load locals and populate with objects for use in shell

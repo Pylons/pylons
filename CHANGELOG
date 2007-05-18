@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.6 (**svn**)
+* Fixed paster shell not merging app_conf and global_conf into the main CONFIG
+  dict namespace. Original patch by David Smith. Fixes #244.
 * Added logging to decorators. Refs #98.
 * Fixed paster restcontroller to test for lib.base and only add that import 
   statement when its present. This fixes the restcontroller template when used
