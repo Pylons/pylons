@@ -2,6 +2,11 @@ Pylons Changelog
 =================
 
 0.9.6 (**svn**)
+* Fixed the validate decorator not working with formencode's
+  CompoundValidators when variable_decode=False. Fixes #209.
+* Fixed the validate decorator failing with a KeyError when no value is
+  specified to validate against for separate validators (as opposed to a
+  schema). Reported by Graham Stratton.
 * Fixed paster shell not merging app_conf and global_conf into the main CONFIG
   dict namespace. Original patch by David Smith. Fixes #244.
 * Added logging to decorators. Refs #98.

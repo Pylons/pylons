@@ -7,7 +7,7 @@ log = logging.getLogger('pylons.decorators')
 import simplejson as json
 from decorator import decorator
 
-from paste.util.multidict import MultiDict
+from paste.util.multidict import UnicodeMultiDict
 import formencode.api as api
 import formencode.variabledecode as variabledecode
 from formencode import htmlfill
@@ -78,9 +78,11 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
             log.debug("Method was not a form post, validate skipped")
             return func(self, *args, **kwargs)
         if post_only:
-            params = pylons.request.POST.copy()
+            params = pylons.request.POST
         else:
-            params = pylons.request.params.copy()
+            params = pylons.request.params
+        is_unicode_params = isinstance(params, UnicodeMultiDict)
+        params = params.mixed()
         if variable_decode:
             log.debug("Running variable_decode on params")
             decoded = variabledecode.variable_decode(params, dict_char,
@@ -102,7 +104,7 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
                 for field, validator in validators.iteritems():
                     try:
                         self.form_result[field] = \
-                            validator.to_python(decoded[field] or None)
+                            validator.to_python(decoded.get(field))
                     except api.Invalid, error:
                         errors[field] = error
         if errors:
@@ -111,24 +113,29 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
             pylons.request.environ['pylons.routes_dict']['action'] = form
             response = self._dispatch_call()
             form_content = ''.join(response.content)
-            if isinstance(params, MultiDict):
-                # Passing raw string form values to htmlfill: Ensure
-                # form_content and FormEncode's errors dict are also raw
-                # strings so htmlfill can safely combine them
+            # Ensure htmlfill can safely combine the form_content, params and
+            # errors variables (that they're all of the same string type)
+            if not is_unicode_params:
+                log.debug("Raw string form params: ensuring the '%s' form and "
+                          "FormEncode errors are converted to raw strings for "
+                          "htmlfill", form)
                 encoding = determine_response_charset(response)
+
                 # WSGIResponse's content may (unlikely) be unicode
                 if isinstance(form_content, unicode):
-                    form_content = form_content.encode(encoding)
-                # FormEncode>=0.7 error strings are unicode (due to being
-                # localized via ugettext)
-                for key, value in errors.iteritems():
-                    if isinstance(value, unicode):
-                        errors[key] = value.encode(encoding)
+                    form_content = form_content.encode(encoding,
+                                                       response.errors)
+
+                # FormEncode>=0.7 errors are unicode (due to being localized
+                # via ugettext). Convert any of the possible formencode
+                # unpack_errors formats to contain raw strings
+                errors = encode_formencode_errors(errors, encoding,
+                                                  response.errors)
             elif not isinstance(form_content, unicode):
-                # Passing unicode form values to htmlfill: decode the response
-                # to unicode so htmlfill can safely combine the two
+                log.debug("Unicode form params: ensuring the '%s' form is "
+                          "converted to unicode for htmlfill", form)
                 encoding = determine_response_charset(response)
-                form_content = form_content.decode(encoding, response.errors)
+                form_content = form_content.decode(encoding)
             response.content = [htmlfill.render(form_content, params, errors)]
             return response
         return func(self, *args, **kwargs)
@@ -142,5 +149,23 @@ def determine_response_charset(response):
         charset = sys.getdefaultencoding()
     log.debug("Determined result charset to be: %s", charset)
     return charset
+
+def encode_formencode_errors(errors, encoding, encoding_errors='strict'):
+    """Encode any unicode values contained in a FormEncode errors dict to raw
+    strings of the specified encoding"""
+    if errors is None or isinstance(errors, str):
+        # None or Just incase this is FormEncode<=0.7
+        pass
+    elif isinstance(errors, unicode):
+        errors = errors.encode(encoding, encoding_errors)
+    elif isinstance(errors, dict):
+        for key, value in errors.iteritems():
+            errors[key] = encode_formencode_errors(value, encoding,
+                                                   encoding_errors)
+    else:
+        # Fallback to an iterable (a list)
+        errors = [encode_formencode_errors(error, encoding, encoding_errors) \
+                      for error in errors]
+    return errors
 
 __all__ = ['jsonify', 'validate']
