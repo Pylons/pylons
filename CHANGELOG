@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.6 (**svn**)
+* Catch any exceptions raised by template engine entry points and emit a
+  warning instead of crashing. Thanks markbradley. Fixes #249
 * Fixed the validate decorator not working with formencode's
   CompoundValidators when variable_decode=False. Fixes #209.
 * Fixed the validate decorator failing with a KeyError when no value is
