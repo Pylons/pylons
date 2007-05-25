@@ -331,6 +331,4 @@ def render_response(*args, **kargs):
         response.encoding_errors = encoding_errors
     return response
 
-
-__pudge_all__ = ['render', 'render_response', 'Buffet', 'MyghtyTemplatePlugin']
 __all__ = ['render', 'render_response', 'Buffet', 'MyghtyTemplatePlugin']
