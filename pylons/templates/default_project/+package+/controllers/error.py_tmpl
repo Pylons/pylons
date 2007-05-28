@@ -1,7 +1,6 @@
 import os.path
 from paste import fileapp
 from pylons.middleware import media_path, error_document_template
-from pylons.util import get_prefix
 from ${package}.lib.base import *
 
 class ErrorController(BaseController):
@@ -16,7 +15,7 @@ class ErrorController(BaseController):
         Change this method to change how error documents are displayed
         """
         page = error_document_template % {
-            'prefix': get_prefix(request.environ),
+            'prefix': request.environ.get('SCRIPT_NAME', ''),
             'code': request.params.get('code', ''),
             'message': request.params.get('message', ''),
         }

@@ -35,7 +35,11 @@ _ = deprecated(pylons.i18n._, func_move('_'))
 log = deprecated(pylons.helpers.log, func_move('log',
                                                moved_to='pylons.helpers'))
     
-def get_prefix(environ):
+def get_prefix(environ, warn=True):
+    if warn:
+        warnings.warn("The get_prefix function is deprecated, please use "
+                      "environ.get('SCRIPT_NAME', '') instead.",
+                      DeprecationWarning, 2)
     if 'paste.config' in environ:
         prefix = environ['paste.config']['app_conf'].get('prefix', '')
     else:

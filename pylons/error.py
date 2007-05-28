@@ -262,7 +262,8 @@ class PylonsEvalException(EvalException):
 
             exc_data = collector.collect_exception(*exc_info)
             #debug_info = PylonsDebugInfo(count, exc_info, exc_data, base_path,
-            debug_info = PylonsDebugInfo(count, exc_info, exc_data, get_prefix(environ),
+            debug_info = PylonsDebugInfo(count, exc_info, exc_data,
+                                         get_prefix(environ, warn=False),
                                          environ, view_uri, error_template)
             assert count not in self.debug_infos
             self.debug_infos[count] = debug_info

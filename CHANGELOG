@@ -2,6 +2,11 @@ Pylons Changelog
 =================
 
 0.9.6 (**svn**)
+* WARNING: The pylons.util.get_prefix(environ) function is deprecated. Please
+  use:
+      environ.get('SCRIPT_NAME', '')
+  instead (the get_prefix function is used in the default ErrorController).
+  Fixes #243.
 * Catch any exceptions raised by template engine entry points and emit a
   warning instead of crashing. Thanks markbradley. Fixes #249
 * Fixed the validate decorator not working with formencode's
