@@ -182,16 +182,18 @@ class Controller(object):
         if req.environ['pylons.routes_dict'].get('action', '').startswith('_'):
             return pylons.Response(code=404)
         
-        if hasattr(self, '__before__'):
-            self._inspect_call(self.__before__, **kargs)
-
         try:
+            if hasattr(self, '__before__'):
+                self._inspect_call(self.__before__, **kargs)
             response = self._dispatch_call()
         except HTTPException, httpe:
             response = httpe.response(environ)
         if hasattr(self, '__after__'):
             self.response = response
-            self._inspect_call(self.__after__)
+            try:
+                self._inspect_call(self.__after__)
+            except HTTPException, httpe:
+                response = httpe.response(environ)
 
         return response
 
@@ -209,16 +211,18 @@ class WSGIController(Controller):
         if environ['pylons.routes_dict'].get('action', '').startswith('_'):
             return pylons.Response(code=404)(environ, start_response)
         
-        if hasattr(self, '__before__'):
-            self._inspect_call(self.__before__)
-
         try:
+            if hasattr(self, '__before__'):
+                self._inspect_call(self.__before__)
             response = self._dispatch_call()
         except HTTPException, httpe:
             response = httpe.response(environ)
         if hasattr(self, '__after__'):
             self.response = response
-            self._inspect_call(self.__after__)
+            try:
+                self._inspect_call(self.__after__)
+            except HTTPException, httpe:
+                response = httpe.response(environ)
         
         if hasattr(response, 'wsgi_response'):
             # Copy the response object into the testing vars if we're testing
