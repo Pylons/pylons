@@ -136,7 +136,7 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
                           "converted to unicode for htmlfill", form)
                 encoding = determine_response_charset(response)
                 form_content = form_content.decode(encoding)
-            response.content = [htmlfill.render(form_content, params, errors)]
+            response.content = htmlfill.render(form_content, params, errors)
             return response
         return func(self, *args, **kwargs)
     return decorator(wrapper)
