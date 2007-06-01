@@ -34,7 +34,7 @@ Our project is going to use a third party library for Flickr web services. We've
 .. code-block:: Bash
 
     $ cd flickrsearch/lib
-    $ wget http://jamesclarke.info/projects/flickr/flickr.py
+    $ wget http://flickrpy.googlecode.com/svn/trunk/flickr.py
 
 Now lets start the server and see what we have:
 
