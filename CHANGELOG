@@ -2,6 +2,9 @@ Pylons Changelog
 =================
 
 0.9.6 (**svn**)
+* Updated config object to optionally take a single merged conf dict, updated
+  project templates to pass around the single merged conf dict.
+* Changed project template to use new Beaker session keys.
 * Changed default routing for raw template matching to not unicode decode the
   route argument. Fixes #242.
 * WARNING: The pylons.util.get_prefix(environ) function is deprecated. Please

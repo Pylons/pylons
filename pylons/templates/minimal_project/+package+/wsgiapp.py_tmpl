@@ -14,8 +14,8 @@ from pylons.middleware import ErrorHandler, ErrorDocuments, StaticJavascripts, e
 import ${package}.helpers
 from ${package}.routing import make_map
 
-def load_environment(global_conf={}, app_conf={}):
-    map = make_map(global_conf, app_conf)
+def load_environment(conf={}):
+    map = make_map(conf)
     root_path = os.path.dirname(os.path.abspath(__file__))
     paths = {'root_path': root_path,
              'controllers': os.path.join(root_path, 'controllers'),
@@ -39,9 +39,8 @@ def make_app(global_conf, full_stack=True, **app_conf):
     CONFIG.push_process_config(conf)
 
     # Load our Pylons configuration defaults
-    config = load_environment(global_conf, app_conf)
-    config.init_app(global_conf, app_conf, package='${package}',
-                    template_engine='${template_engine}')
+    config = load_environment(conf)
+    config.init_app(conf, package='${package}', template_engine='${template_engine}')
         
     # Load our default Pylons WSGI app and make g available
     app = pylons.wsgiapp.PylonsApp(config, helpers=${package}.helpers, g=Globals)

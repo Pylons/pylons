@@ -8,6 +8,8 @@ necessary.
 import os
 import re
 import warnings
+import logging
+log = logging.getLogger('pylons.config')
 
 from paste.deploy.converters import asbool
 
@@ -70,12 +72,8 @@ class Config(object):
         ``pylons.Response``. May contain the values ``content_type``,
         ``charset`` and ``errors``. Overrides the Pylons default values
         specified by the ``response_defaults`` dict.
-    ``global_conf``
-        Global configuration passed in from Paste, this corresponds to the
-        DEFAULTS section in the config file.
-    ``app_conf``
-        Application specific configuration directives, passed in via Paste
-        from the app section of the config file.
+    ``conf``
+        Configuration information for the app from the ini file.
     """
     def __init__(self, tmpl_options=None, map=None, paths=None, 
                  environ_config=None, default_charset=None, strict_c=False,
@@ -182,7 +180,7 @@ class Config(object):
             template_options=options, alias=alias)
         self.template_engines.append(config)
     
-    def init_app(self, global_conf, app_conf, package,
+    def init_app(self, global_conf, app_conf=None, package=None,
                  template_engine=default_template_engine):
         """Initialize configuration for the application
         
@@ -211,16 +209,25 @@ class Config(object):
             Declare the default template engine to setup. Choices are kid,
             genshi, mako, and pylonsmyghty (the default custom Pylons plugin).
         """
-        self.global_conf = global_conf
-        self.app_conf = app_conf
+        # Check for legacy apps that still pass in app_conf separately
+        if app_conf:
+            warnings.warn("Passing in separate conf dicts is being dropped, "
+                          "update middleware.py to pass the config object "
+                          "functions the merged conf dict.", 
+                          DeprecationWarning, 2)
+            conf = global_conf.copy()
+            conf.update(app_conf)
+            conf.update(dict(app_conf=app_conf, global_conf=global_conf))
+            self.conf = conf
+        else:
+            self.conf = conf = global_conf
+        
         self.package = package
         
-        app_conf['package'] = package
+        conf['package'] = package
         
         # Setup the prefix to override the routes if necessary.
-        prefix = app_conf.get('prefix')
-        if not prefix:
-            prefix = global_conf.get('prefix')
+        prefix = conf.get('prefix')
         if prefix:
             warnings.warn(pylons.legacy.prefix_warning % prefix,
                           DeprecationWarning, 2)
@@ -231,18 +238,18 @@ class Config(object):
         # Load the errorware configuration from the Paste configuration file
         # These all have defaults, and emails are only sent if configured and
         # if this application is running in production mode
-        errorware['debug'] = asbool(global_conf.get('debug'))
+        errorware['debug'] = asbool(conf.get('debug'))
         if not errorware['debug']:
             errorware['debug'] = False
-            errorware['error_email'] = global_conf.get('email_to')
-            errorware['error_log'] = global_conf.get('error_log', None)
-            errorware['smtp_server'] = global_conf.get('smtp_server', 
+            errorware['error_email'] = conf.get('email_to')
+            errorware['error_log'] = conf.get('error_log', None)
+            errorware['smtp_server'] = conf.get('smtp_server', 
                 'localhost')
-            errorware['error_subject_prefix'] = global_conf.get(
+            errorware['error_subject_prefix'] = conf.get(
                 'error_subject_prefix', 'WebApp Error: ')
-            errorware['from_address'] = global_conf.get('from_address', 
+            errorware['from_address'] = conf.get('from_address', 
                 global_conf.get('error_email_from', 'pylons@yourapp.com'))
-            errorware['error_message'] = global_conf.get('error_message', 
+            errorware['error_message'] = conf.get('error_message', 
                 'An internal server error occurred')
         
         # Standard Pylons configuration directives for Myghty
@@ -263,34 +270,36 @@ class Config(object):
         
         self.myghty = myghty_defaults
         myghty_template_options = {}
-        if 'myghty_data_dir' in app_conf:
-            myghty_defaults['data_dir'] = app_conf['myghty_data_dir']
-        elif 'cache_dir' in app_conf:
-            myghty_defaults['data_dir'] = os.path.join(app_conf['cache_dir'], 
+        if 'myghty_data_dir' in conf:
+            warnings.warn("Old config option found in ini file, replace "
+                          "'myghty_data_dir' option with 'data_dir'",
+                          DeprecationWarning, 2)
+            myghty_defaults['data_dir'] = conf['myghty_data_dir']
+        elif 'cache_dir' in conf:
+            myghty_defaults['data_dir'] = os.path.join(conf['cache_dir'], 
                 'templates')
+        
+        # Copy in some defaults
+        if 'cache_dir' in conf:
+            conf.setdefault('beaker.session.data_dir', 
+                            os.path.join(conf['cache_dir'], 'sessions'))
+            conf.setdefault('beaker.cache.data_dir',
+                            os.path.join(conf['cache_dir'], 'cache'))
         
         # Copy Myghty defaults and options into template options
         for k, v in self.myghty.iteritems():
             myghty_template_options['myghty.'+k] = v
             
-            # Legacy copy of session and cache settings into app_conf
+            # Legacy copy of session and cache settings into conf
             if k.startswith('session_') or k.startswith('cache_'):
-                self.app_conf[k] = v
-            
-        
-        if 'session_data_dir' not in app_conf:
-            app_conf['session_data_dir'] = os.path.join(app_conf['cache_dir'], 
-                'sessions')
-        if 'cache_data_dir' not in app_conf:
-            app_conf['cache_data_dir'] = os.path.join(app_conf['cache_dir'], 
-            'cache')
+                conf[k] = v
         
         # Copy old session/cache config to new keys for Beaker 0.7+
-        for key, val in app_conf.items():
+        for key, val in conf.items():
             if key.startswith('cache_'):
-                app_conf['cache.'+key[6:]] = val
+                conf['cache.'+key[6:]] = val
             elif key.startswith('session_'):
-                app_conf['session.'+key[8:]] = val
+                conf['session.'+key[8:]] = val
         
         # Setup the main template options dict
         self.template_options.update(myghty_template_options)
@@ -303,9 +312,9 @@ class Config(object):
         defaults['mako.filesystem_checks'] = True
         defaults['mako.output_encoding'] = \
             self.response_settings['charset']
-        if 'cache_dir' in app_conf:
+        if 'cache_dir' in conf:
             defaults['mako.module_directory'] = \
-                os.path.join(app_conf['cache_dir'], 'templates')
+                os.path.join(conf['cache_dir'], 'templates')
         
         # Setup kid defaults
         defaults['kid.assume_encoding'] = 'utf-8'
