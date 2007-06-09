@@ -2,7 +2,7 @@ from paste import httpexceptions
 from paste.cascade import Cascade
 from paste.urlparser import StaticURLParser
 from paste.registry import RegistryManager
-from paste.deploy.config import ConfigMiddleware
+from paste.deploy.config import ConfigMiddleware, CONFIG
 from paste.deploy.converters import asbool
 
 from pylons.error import error_template
@@ -21,9 +21,14 @@ def make_app(global_conf, full_stack=True, **app_conf):
     to ensure they're treated properly.
     
     """
+    conf = global_conf.copy()
+    conf.update(app_conf)
+    conf.update(dict(app_conf=app_conf, global_conf=global_conf))
+    CONFIG.push_process_config(conf)
+    
     # Load our Pylons configuration defaults
     config = load_environment()
-    config.init_app(global_conf, app_conf, package='projectname')
+    config.init_app(conf, package='projectname')
     
     # Pull the other engine and put a new one up first
     config.template_engines.pop()
