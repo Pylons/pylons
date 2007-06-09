@@ -215,16 +215,19 @@ class Config(object):
                           "update middleware.py to pass the config object "
                           "functions the merged conf dict.", 
                           DeprecationWarning, 2)
-            conf = global_conf.copy()
+            conf = global_conf
             conf.update(app_conf)
             conf.update(dict(app_conf=app_conf, global_conf=global_conf))
             self.conf = conf
         else:
             self.conf = conf = global_conf
         
+        self.app_conf = conf['app_conf']
+        self.global_conf = conf['global_conf']
+        
         self.package = package
         
-        conf['package'] = package
+        conf['package'] = self.app_conf['package'] = package
         
         # Setup the prefix to override the routes if necessary.
         prefix = conf.get('prefix')

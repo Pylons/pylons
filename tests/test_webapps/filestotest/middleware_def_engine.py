@@ -27,7 +27,7 @@ def make_app(global_conf, full_stack=True, **app_conf):
     CONFIG.push_process_config(conf)
     
     # Load our Pylons configuration defaults
-    config = load_environment()
+    config = load_environment(conf)
     config.init_app(conf, package='projectname')
     
     # Pull the other engine and put a new one up first
@@ -39,8 +39,7 @@ def make_app(global_conf, full_stack=True, **app_conf):
     app = pylons.wsgiapp.PylonsApp(config, helpers=projectname.lib.helpers,
                                    g=app_globals.Globals)
     g = app.globals
-    app = ConfigMiddleware(app, {'app_conf':app_conf,
-        'global_conf':global_conf})
+    app = ConfigMiddleware(app, conf)
     
     # If errror handling and exception catching will be handled by middleware
     # for multiple apps, you will want to set full_stack = False in your config
