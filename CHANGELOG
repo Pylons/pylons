@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.6 (**svn**)
+* Changed default routing for raw template matching to not unicode decode the
+  route argument. Fixes #242.
 * WARNING: The pylons.util.get_prefix(environ) function is deprecated. Please
   use:
       environ.get('SCRIPT_NAME', '')

@@ -4,7 +4,7 @@ Setup your Routes options here
 import os
 from routes import Mapper
 
-def make_map(global_conf={}, app_conf={}):
+def make_map(conf={}):
     root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
     map = Mapper(directory=os.path.join(root_path, 'controllers'))
@@ -18,6 +18,6 @@ def make_map(global_conf={}, app_conf={}):
     # so they may take precedent over the more generic routes. For more information, refer
     # to the routes manual @ http://routes.groovie.org/docs/
     map.connect(':controller/:action/:id')
-    map.connect('*url', controller='template', action='view')
+    map.connect('*url', controller='template', action='view', _encoding=None)
 
     return map
