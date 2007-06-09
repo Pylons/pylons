@@ -80,17 +80,17 @@ def config_get(key, default=None):
         # environ['paste.config'] is assured to be the correct CONFIG
         # during requests
         CONFIG = pylons.request.environ['paste.config']
-        value = CONFIG['app_conf'].get(key, default)
+        value = CONFIG.get(key, default)
     except TypeError:
         # TypeError: pylons.request isn't registered (this function call was
         # made outside of a web request). fall back to paste.config.CONFIG
         # directly, and finally paste.deploy.CONFIG
         try:
             from paste.config import CONFIG
-            value = CONFIG['app_conf'].get(key, default)
+            value = CONFIG.get(key, default)
         except AttributeError:
             from paste.deploy import CONFIG
-            value = CONFIG['app_conf'].get(key, default)
+            value = CONFIG.get(key, default)
     return value
 
 
