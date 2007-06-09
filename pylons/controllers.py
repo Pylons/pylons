@@ -157,8 +157,11 @@ class Controller(object):
         req = pylons.request._current_obj()
         action = req.environ['pylons.routes_dict'].get('action')
         action_method = action.replace('-', '_')
-        func = getattr(self, action_method, None)
+        func = getattr(self, action_method, None)        
         if isinstance(func, types.MethodType):
+            # Store function used to handle request
+            req.environ['pylons.action_method'] = func
+            
             response = self._inspect_call(func)
         else:
             if asbool(req.environ['paste.config']['global_conf'].get('debug')):
