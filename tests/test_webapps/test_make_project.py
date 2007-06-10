@@ -150,6 +150,21 @@ def do_cheetah():
      ]
     _do_proj_test(copydict, empty)
 
+def do_mako():
+    copydict = {
+        'controller_sample.py':'projectname/controllers/mako.py',
+        'test_mako.html':'projectname/templates/test_mako.html',
+        'middleware_mako.py':'projectname/config/middleware.py',
+        'functional_sample_controller_mako.py':'projectname/tests/functional/test_mako.py',
+    }
+    empty = [
+         'projectname/tests/functional/test_cheetah.py',
+         'projectname/tests/functional/test_sample.py',
+         'projectname/tests/functional/test_sample2.py',
+         'projectname/tests/functional/test_sample3.py'
+     ]
+    _do_proj_test(copydict, empty)
+
 def do_cache_decorator():
     copydict = {
         'middleware_def_engine.py':'projectname/config/middleware.py',
@@ -158,6 +173,7 @@ def do_cache_decorator():
         'functional_controller_cache_decorator.py':'projectname/tests/functional/test_cache.py',
     }
     empty = [
+        'projectname/tests/functional/test_mako.py',
         'projectname/tests/functional/test_cheetah.py',
         'projectname/tests/functional/test_sample.py',
         'projectname/tests/functional/test_sample2.py',
@@ -214,6 +230,7 @@ def test_project():
     yield (do_kid_default,)
     yield (do_two_engines,)
     yield (do_cheetah,)
+    yield (do_mako,)
     yield (do_crazy_decorators,)
     yield (do_cache_decorator,)
     yield (do_xmlrpc,)

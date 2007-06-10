@@ -29,6 +29,9 @@ class SampleController(BaseController):
     
     def testdefault(self):
         return render_response('testkid')
+    
+    def testmako(self):
+        return render_response('/test_mako.html')
 
     def test_extra_engine(self):
         return render_response('kid', 'testkid')
