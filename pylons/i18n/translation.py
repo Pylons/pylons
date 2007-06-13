@@ -6,8 +6,6 @@ and get/set_lang for changing the language translated to."""
 import os
 from gettext import NullTranslations, translation
 
-from pkg_resources import resource_exists, resource_stream
-
 import pylons
 
 class LanguageError(Exception):
