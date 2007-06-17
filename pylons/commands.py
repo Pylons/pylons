@@ -386,7 +386,7 @@ class ShellCommand(Command):
             locs[name] = getattr(base, name)
         locs.update(
             dict(
-                mapper=tresponse.pylons_config.map,
+                mapper=tresponse.pylons_config['pylons.map'],
                 wsgiapp=wsgiapp,
                 app=test_app,
             )
