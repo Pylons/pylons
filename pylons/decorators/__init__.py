@@ -40,8 +40,7 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
     """Validate input either for a FormEncode schema, or individual validators
     
     Given a form schema or dict of validators, validate will attempt to
-    validate the schema or validator list as long as a POST request is made. No
-    validation is performed on GET requests.
+    validate the schema or validator list.
     
     If validation was succesfull, the valid result dict will be saved
     as ``self.form_result``. Otherwise, the action will be re-run as if it was
@@ -54,8 +53,8 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
     
     .. warning::
         ``post_only`` applies to *where* the arguments to be validated come 
-        from. The validate decorator *only* validates during a POST, it does
-        *not* validate during a GET request. 
+        from. It does *not* restrict the form to only working with post, merely
+        only checking POST vars.
     
     Example:
     
@@ -73,10 +72,7 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
     """
     def wrapper(func, self, *args, **kwargs):
         """Decorator Wrapper function"""
-        errors = {}
-        if not pylons.request.method == 'POST':
-            log.debug("Method was not a form post, validate skipped")
-            return func(self, *args, **kwargs)
+        self.errors = errors = {}
         if post_only:
             params = pylons.request.POST
         else:
@@ -110,6 +106,12 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
         if errors:
             log.debug("Errors found in validation, parsing form with htmlfill for errors")
             pylons.request.environ['REQUEST_METHOD'] = 'GET'
+            
+            # If there's no form supplied, just continue with the current 
+            # function call.
+            if not form:
+                return func(self, *args, **kwargs)
+            
             pylons.request.environ['pylons.routes_dict']['action'] = form
             response = self._dispatch_call()
             form_content = ''.join(response.content)
