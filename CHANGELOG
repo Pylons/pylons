@@ -2,6 +2,15 @@ Pylons Changelog
 =================
 
 0.9.6 (**svn**)
+* Added PylonsConfig, which gets accessed as pylons.config dict. Contains
+  all the merged ini options, in addition to the Config options such as
+  'pylons.map', 'pylons.paths', 'buffet.template_options', etc. Check the
+  pylons.config docs on PylonsConfig for dict keys populated by it.
+* Split up resolution stages in wsgiapp, so that controller lookup is a
+  separate function making it easier to subclass. PylonsApp now takes a 
+  base_wsgi_app argument which is then used for the BaseWSGIApp instead of the
+  one from wsgiapp.py.
+* Added mako template render tests.
 * Added storage of the action func used to handle a call, for later code that
   might need a reference to the action that originally handled the request.
   Fixes #253.

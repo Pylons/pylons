@@ -35,7 +35,7 @@ def beaker_cache(key="cache_default", expire="never", type="dbm",
         """Decorator wrapper"""
         log.debug("Wrapped with key: %s, expire: %s, type: %s, query_args: %s",
                   key, expire, type, query_args)
-        enabled = pylons.g.pylons_config.app_conf.get("cache_enabled", "True")
+        enabled = pylons.config.get("cache_enabled", "True")
         if not asbool(enabled):
             log.debug("Caching disabled, skipping cache lookup")
             return func(*args, **kwargs)

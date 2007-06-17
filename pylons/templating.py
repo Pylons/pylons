@@ -79,7 +79,7 @@ class Buffet(object):
         d = dict(
             c=pylons.c._current_obj(),
             g=g,
-            h=g.pylons_config.helpers or pylons.h._current_obj(),
+            h=pylons.config.get('pylons.helpers') or pylons.h._current_obj(),
             render=render,
             request=pylons.request._current_obj(),
             session=pylons.session._current_obj(),

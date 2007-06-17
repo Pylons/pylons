@@ -12,6 +12,7 @@ import logging
 log = logging.getLogger('pylons.config')
 
 from paste.deploy.converters import asbool
+from paste.config import DispatchingConfig
 
 import pylons.legacy
 import pylons.templating
@@ -23,7 +24,7 @@ request_defaults = dict(charset=None, errors='strict',
 response_defaults = dict(content_type='text/html',
                          charset='utf-8', errors='strict')
 
-class Config(object):
+class PylonsConfig(DispatchingConfig):
     """Pylons configuration object
     
     The Pylons configuration object is a per-application instance object
@@ -31,11 +32,19 @@ class Config(object):
     well as per-application instance specific data such as the mapper, the
     paths for this instance, and the myghty configuration.
     
-    The Config object is available in your application as a Pylons global
-    ``pylons_config`` under the ``g`` object. There's several useful
-    attributes of the config object most people will be interested in:
+    The config object is available in your application as a Pylons global
+    ``pylons_config`` under the ``g`` object. You can also import it from
+    pylons with:
     
-    ``tmpl_options``
+    .. code :: Python
+        import pylons
+        
+        map = pylons.config['map']
+    
+    There's several useful keys of the config object most people will be 
+    interested in:
+    
+    ``template_options``
         Full dict of template options that any TG compatible plugin should
         be able to parse. Comes with basic config needed for Myghty, Kid,
         and Mako.
@@ -62,68 +71,99 @@ class Config(object):
     ``strict_c``
         Whether or not the ``c`` object should throw an attribute error when
         access is attempted to an attribute that doesn't exist.
-    ``request_settings``
+    ``request_options``
         A dict of Content-Type related default settings for new instances of
         ``paste.wsgiwrappers.WSGIRequest``. May contain the values ``charset``
         and ``errors`` and ``decode_param_names``. Overrides the Pylons default
         values specified by the ``request_defaults`` dict.
-    ``response_settings``
+    ``response_options``
         A dict of Content-Type related default settings for new instances of
         ``pylons.Response``. May contain the values ``content_type``,
         ``charset`` and ``errors``. Overrides the Pylons default values
         specified by the ``response_defaults`` dict.
-    ``conf``
-        Configuration information for the app from the ini file.
     """
-    def __init__(self, tmpl_options=None, map=None, paths=None, 
-                 environ_config=None, default_charset=None, strict_c=False,
-                 request_settings=None, response_settings=None):
-        if paths is None:
-            paths = {}
-        if tmpl_options is None:
-            tmpl_options = {}
-        if environ_config is None:
-            environ_config = {}
-        self.myghty = tmpl_options
-        self.template_options = tmpl_options
-        self.map = map
-        self.paths = paths
-        self.environ_config = environ_config
-        self.strict_c = strict_c
-        self.helpers = None
-
-        self.request_settings = request_defaults.copy()
+    defaults = {
+        # The current project's package name
+        'pylons.package': None,
+        # The Routes?? only?? mapper
+        'pylons.mapper': None,
+        'pylons.paths': {},
+        'pylons.g': None,
+        'pylons.helpers': None, # should call this h or g
+        'pylons.request_options': request_defaults.copy(), # just define these here
+        'pylons.response_options': response_defaults.copy(),
+        'pylons.environ_config': {}, # hrmph!
+        'pylons.strict_c': False,
+        'pylons.config_namespaces': {},
+        'pylons.initialized': False,
+        'buffet.options': {},
+        'buffet.template_engines': [],
+        'buffet.template_options': {},
+    }
+    
+    def __getattr__(self, name):
+        # Backwards compatibility
+        if name == 'Config':
+            class FakeConfig(object):
+                def __init__(this, *args, **kwargs):
+                    self.load_environment(*args, **kwargs)
+                def __getattr__(this, name):
+                    return getattr(self, name)
+                def __setattr__(this, name, value):
+                    setattr(self, name, value)
+            return FakeConfig
+        else:
+            dct = self._current_obj()
+            
+            # Backwards compat for when the option is now in the dict, and 
+            # access was attempted via attribute
+            if name in dct:
+                warnings.warn("The name '%s' is has been moved into the config"
+                              "dict, and should be accessed via the "
+                              "pylons.config dict as pylons.config[%s]." 
+                              % (name, name), DeprecationWarning, 2)
+                return dct[name]
+            elif 'pylons.' + name in dct:
+                warnings.warn("The name '%s' is has been moved into the config"
+                              "dict, and should be accessed via the "
+                              "pylons.config dict as pylons.config[pylons.%s]." 
+                              % (name, name), DeprecationWarning, 2)
+                return dct['pylons.' + name]
+            elif 'buffet.' + name in dct:
+                warnings.warn("The name '%s' is has been moved into the config"
+                              "dict, and should be accessed via the "
+                              "pylons.config dict as pylons.config[buffet.%s]." 
+                              % (name, name), DeprecationWarning, 2)
+                return dct['buffet.' + name]
+            else:
+                return getattr(self._current_obj(), name)        
+    
+    def load_environment(self, tmpl_options=None, map=None, paths=None, 
+                         environ_config=None, default_charset=None, 
+                         strict_c=False, request_settings=None, 
+                         response_settings=None):
+        """Load the environment options"""
+        conf = PylonsConfig.defaults.copy()
+        if tmpl_options:
+            conf['buffet.template_options'] = tmpl_options
+        
         if request_settings:
-            self.request_settings.update(request_settings)
-        self.response_settings = response_defaults.copy()
+            conf['pylons.request_options'].update(request_settings)
+
         if response_settings:
-            self.response_settings.update(response_settings)
-
-        self.global_conf = {}
-        self.app_conf = {}
-        self.template_engines = []
-        self._clean_tmpl_options()
-
-        if default_charset is not None:
+            conf['pylons.response_options'].update(response_settings)
+        
+        conf['pylons.map'] = map
+        conf['pylons.paths'] = paths or {}
+        conf['pylons.environ_config'] = environ_config or {}
+        conf['pylons.strict_c'] = strict_c
+                
+        if default_charset:
             warnings.warn(pylons.legacy.default_charset_warning % \
                               dict(klass='Config', charset=default_charset),
                           DeprecationWarning, 2)
-            self.response_settings['charset'] = default_charset
-    
-    def _clean_tmpl_options(self):
-        """Prase the template options, set self.myghty to have myghty options
-        with no prefix and template_options to be a proper set of options for 
-        any template engine"""
-        oldopts = self.myghty
-        self.template_options = {}
-        self.myghty = {}
-        for k, v in oldopts.iteritems():
-            if not re.match(r'\w+\.\w*', k):
-                self.myghty[k] = v
-            elif k.startswith('myghty.'):
-                self.myghty[k[7:]] = v
-            else:
-                self.template_options[k] = v
+            conf['pylons.response_options']['charset'] = default_charset
+        self['environment_load'] = conf
     
     def add_template_engine(self, engine, root, options=None, alias=None):
         """Add additional template engines for configuration on Pylons WSGI
@@ -175,12 +215,12 @@ class Config(object):
             config.template_engines.append(old_default)
         """
         if not options:
-            options = self.template_options
+            options = self['buffet.template_options']
         config = dict(engine=engine, template_root=root, 
             template_options=options, alias=alias)
-        self.template_engines.append(config)
+        self['buffet.template_engines'].append(config)
     
-    def init_app(self, global_conf, app_conf=None, package=None,
+    def init_app(self, global_conf, app_conf, package=None,
                  template_engine=default_template_engine):
         """Initialize configuration for the application
         
@@ -207,35 +247,33 @@ class Config(object):
             The name of the application package, to be stored in the app_conf.
         ``template_engine``
             Declare the default template engine to setup. Choices are kid,
-            genshi, mako, and pylonsmyghty (the default custom Pylons plugin).
+            genshi, mako (the default), and pylonsmyghty.
         """
-        # Check for legacy apps that still pass in app_conf separately
-        if app_conf:
-            warnings.warn("Passing in separate conf dicts is being dropped, "
-                          "update middleware.py to pass the config object "
-                          "functions the merged conf dict.", 
-                          DeprecationWarning, 2)
-            conf = global_conf
-            conf.update(app_conf)
-            conf.update(dict(app_conf=app_conf, global_conf=global_conf))
-            self.conf = conf
-        else:
-            self.conf = conf = global_conf
+        conf = global_conf.copy()
+        conf.update(app_conf)
+        conf.update(dict(app_conf=app_conf, global_conf=global_conf))
+        conf.update(self.pop('environment_load', {}))
         
-        self.app_conf = conf['app_conf']
-        self.global_conf = conf['global_conf']
+        # XXX Legacy: More backwards compatibility locations for the package
+        #             name
+        conf['pylons.package'] = conf['package'] = conf['app_conf']['package'] = package
         
-        self.package = package
-        
-        conf['package'] = self.app_conf['package'] = package
+        self.push_process_config(conf)
+        self.set_defaults(template_engine)
+    
+    def set_defaults(self, template_engine):
+        conf = self._current_obj()
+        # Ensure all the keys from defaults are present, load them if not
+        for key, val in PylonsConfig.defaults.iteritems():
+            conf.setdefault(key, val)
         
         # Setup the prefix to override the routes if necessary.
-        prefix = conf.get('prefix')
+        prefix = self.get('prefix')
         if prefix:
             warnings.warn(pylons.legacy.prefix_warning % prefix,
                           DeprecationWarning, 2)
-            self.map.prefix = app_conf['prefix']
-            self.map._created_regs = False
+            conf['pylons.map'].prefix = app_conf['prefix']
+            conf['pylons.map']._created_regs = False
         
         errorware = {}
         # Load the errorware configuration from the Paste configuration file
@@ -260,18 +298,14 @@ class Config(object):
         
         # Raise a complete error for the error middleware to catch
         myghty_defaults['raise_error'] = True
-        myghty_defaults['output_encoding'] = self.response_settings['charset']
+        myghty_defaults['output_encoding'] = conf['pylons.response_options']['charset']
         myghty_defaults['component_root'] = [{os.path.basename(path): path} \
-            for path in self.paths['templates']]
-                    
-        # Merge in the user-supplied Myghty values
-        myghty_defaults.update(self.myghty)
+            for path in conf['pylons.paths']['templates']]
         
         # Merge additional globals
         myghty_defaults.setdefault('allow_globals',
                                    []).extend(pylons.templating.PYLONS_VARS)
         
-        self.myghty = myghty_defaults
         myghty_template_options = {}
         if 'myghty_data_dir' in conf:
             warnings.warn("Old config option found in ini file, replace "
@@ -290,7 +324,7 @@ class Config(object):
                             os.path.join(conf['cache_dir'], 'cache'))
         
         # Copy Myghty defaults and options into template options
-        for k, v in self.myghty.iteritems():
+        for k, v in myghty_defaults.iteritems():
             myghty_template_options['myghty.'+k] = v
             
             # Legacy copy of session and cache settings into conf
@@ -305,27 +339,27 @@ class Config(object):
                 conf['session.'+key[8:]] = val
         
         # Setup the main template options dict
-        self.template_options.update(myghty_template_options)
+        conf['buffet.template_options'].update(myghty_template_options)
         
         # Setup several defaults for various template languages
         defaults = {}
         
         # Rearrange template options as default for Mako
-        defaults['mako.directories'] = self.paths['templates']
+        defaults['mako.directories'] = conf['pylons.paths']['templates']
         defaults['mako.filesystem_checks'] = True
         defaults['mako.output_encoding'] = \
-            self.response_settings['charset']
+            conf['pylons.response_options']['charset']
         if 'cache_dir' in conf:
             defaults['mako.module_directory'] = \
                 os.path.join(conf['cache_dir'], 'templates')
         
         # Setup kid defaults
         defaults['kid.assume_encoding'] = 'utf-8'
-        defaults['kid.encoding'] = self.response_settings['charset']
+        defaults['kid.encoding'] = conf['pylons.response_options']['charset']
         
         # Merge template options into defaults
-        defaults.update(self.template_options)
-        self.template_options = defaults
+        defaults.update(conf['buffet.template_options'])
+        conf['buffet.template_options'] = defaults
 
         # Prepare our default template engine
         if template_engine == 'pylonsmyghty':
@@ -337,4 +371,12 @@ class Config(object):
             self.add_template_engine(template_engine, package + '.templates')
         
         # Save our errorware values
-        self.errorware = errorware
+        conf['errorware'] = errorware
+
+config = PylonsConfig()
+
+# Push an empty config so all accesses to config at import time
+# have something to look at and modify. This config will be merged with the 
+# app's when it's built in the paste.app_factory entry point.
+initial_config = {'default_template_engine':default_template_engine}
+config.push_process_config(initial_config)

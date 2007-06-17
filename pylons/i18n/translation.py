@@ -130,12 +130,12 @@ lazy_ungettext = lazify(ungettext)
 def _get_translator(lang, **kwargs):
     """Utility method to get a valid translator object from a language name"""
     import pylons.util as util
-    rootdir = pylons.g.pylons_config.paths.get('root_path')
+    rootdir = pylons.config['pylons.paths'].get('root_path')
     localedir = os.path.join(rootdir, 'i18n')
     if not isinstance(lang, list):
         lang = [lang]
     try:
-        translator = translation(util.config_get('package'), localedir,
+        translator = translation(pylons.config['pylons.package'], localedir,
                                  languages=lang, **kwargs)
     except IOError, ioe:
         raise LanguageError('IOError: %s' % ioe)

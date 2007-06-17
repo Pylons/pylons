@@ -108,9 +108,9 @@ class TestCacheDecorator(TestWSGIController):
 
     def test_nocache(self):
         sap.g.counter = 0
-        sap.g.pylons_config.app_conf['cache_enabled'] = 'False'
+        pylons.config['cache_enabled'] = 'False'
         response = self.get_response(action='test_default_cache_decorator')
         assert 'Counter=1' in response
         response = self.get_response(action='test_default_cache_decorator')
         assert 'Counter=2' in response
-        sap.g.pylons_config.app_conf['cache_enabled'] = 'True'
+        pylons.config['cache_enabled'] = 'True'

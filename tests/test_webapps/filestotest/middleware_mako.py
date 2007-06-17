@@ -28,7 +28,7 @@ def make_app(global_conf, full_stack=True, **app_conf):
     
     # Load our Pylons configuration defaults
     config = load_environment(conf)
-    config.init_app(conf, package='projectname', template_engine='mako')
+    config.init_app(global_conf, app_conf, package='projectname', template_engine='mako')
             
     # Load our default Pylons WSGI app and make g available
     app = pylons.wsgiapp.PylonsApp(config, helpers=projectname.lib.helpers,

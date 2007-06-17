@@ -28,7 +28,7 @@ def make_app(global_conf, full_stack=True, **app_conf):
     
     # Load our Pylons configuration defaults
     config = load_environment(conf)
-    config.init_app(conf, package='projectname')
+    config.init_app(global_conf, app_conf, package='projectname')
     
     # Pull the other engine and put a new one up first
     config.template_engines.pop()

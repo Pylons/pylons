@@ -40,19 +40,20 @@ class PylonsBaseWSGIApp(object):
     Resolving the URL and dispatching can be customized by sub-classing or
     "monkey-patching" this class. Subclassing is the preferred approach.
     """
-    def __init__(self, package_name, globals, helpers=None):
+    def __init__(self, config, globals, helpers=None):
         """Initialize a base Pylons WSGI application
         
         The base Pylons WSGI application requires several keywords, the package
         name, and the globals object. If no helpers object is provided then h
         will be None.
         """
+        self.config = config
+        package_name = config['pylons.package']
         self.helpers = helpers
         self.globals = globals
         self.package_name = package_name
-        config = globals.pylons_config
-        self.request_settings = config.request_settings
-        self.response_settings = config.response_settings
+        self.request_settings = config['pylons.request_options']
+        self.response_settings = config['pylons.response_options']
         
         # Create the redirect function we'll use and save it
         def redirect_to(url):
@@ -61,18 +62,18 @@ class PylonsBaseWSGIApp(object):
         
         # Initialize Buffet and all our template engines, default engine is the
         # first in the template_engines list
-        def_eng = config.template_engines[0]
+        def_eng = config['buffet.template_engines'][0]
         self.buffet = pylons.templating.Buffet(
             def_eng['engine'], 
             template_root=def_eng['template_root'],
             **def_eng['template_options']
             )
-        for e in config.template_engines[1:]:
+        for e in config['buffet.template_engines'][1:]:
             self.buffet.prepare(e['engine'], template_root=e['template_root'], 
                 alias=e['alias'], **e['template_options'])
     
     def __call__(self, environ, start_response):
-        req = self.setup_app_env(environ, start_response)
+        self.setup_app_env(environ, start_response)
         if 'paste.testing_variables' in environ:
             self.load_test_env(environ)
             if environ['PATH_INFO'] == '/_test_vars':
@@ -110,16 +111,17 @@ class PylonsBaseWSGIApp(object):
         registry.register(pylons.request, req)
         registry.register(pylons.buffet, self.buffet)
         registry.register(pylons.g, self.globals)
+        registry.register(pylons.config, self.config)
         registry.register(pylons.h, self.helpers or \
                           pylons.legacy.load_h(self.package_name))
         
         # Setup the translator global object
         registry.register(pylons.translator, gettext.NullTranslations())
-        lang = self.globals.pylons_config.app_conf.get('lang')
+        lang = self.config.get('lang')
         if lang:
             set_lang(lang)
         
-        if self.globals.pylons_config.strict_c:
+        if self.config['pylons.strict_c']:
             registry.register(pylons.c, ContextObj())
         else:
             registry.register(pylons.c, AttribSafeContextObj())
@@ -129,13 +131,15 @@ class PylonsBaseWSGIApp(object):
             registry.register(pylons.session, environ[econf['session']])
         if econf.get('cache'):
             registry.register(pylons.cache, environ[econf['cache']])
-        return req
     
     def resolve(self, environ, start_response):
         """Uses dispatching information found in 
         ``environ['wsgiorg.routing_args']`` to retrieve a controller name and
         return the controller instance from the appropriate controller 
-        module"""
+        module.
+        
+        Override this to change how the controller name is found and returned.
+        """
         # Update the Routes config object in case we're using Routes
         config = request_config()
         config.redirect = self.redirect_to
@@ -146,6 +150,15 @@ class PylonsBaseWSGIApp(object):
         if not controller:
             return None
         
+        return self.find_controller(controller)
+    
+    def find_controller(self, controller):
+        """Locates a controller by attempting to import it then grab the 
+        SomeController instance from the imported module.
+        
+        Override this to change how the controller object is found once the URL
+        has been resolved.
+        """
         # Pull the controllers class name, import controller
         full_module_name = self.package_name + '.controllers.' \
             + controller.replace('/', '.')
@@ -160,7 +173,10 @@ class PylonsBaseWSGIApp(object):
         
     def dispatch(self, controller, environ, start_response):
         """Dispatches to a controller, will instantiate the controller if
-        necessary"""
+        necessary.
+        
+        Override this to change how the controller dispatch is handled.
+        """
         if not controller:
             raise httpexceptions.HTTPNotFound()
         match = environ['pylons.routes_dict']
@@ -189,8 +205,8 @@ class PylonsBaseWSGIApp(object):
         testenv['c'] = pylons.c._current_obj()
         g = pylons.g._current_obj()
         testenv['g'] = g
-        testenv['h'] = g.pylons_config.helpers or pylons.h._current_obj()
-        testenv['pylons_config'] = self.globals.pylons_config
+        testenv['h'] = self.config['pylons.helpers'] or pylons.h._current_obj()
+        testenv['pylons_config'] = self.config
         econf = environ['pylons.environ_config']
         if econf.get('session'):
             testenv['session'] = environ[econf['session']]
@@ -206,24 +222,24 @@ class PylonsApp(object):
     where objects for the session/cache will be. If they're set to none,
     then no session/cache objects will be available.
     """
-    def __init__(self, config, default_charset=None, helpers=None, g=None,
-                 use_routes=True):
-        self.config = config
+    def __init__(self, config=None, default_charset=None, helpers=None, g=None,
+                 use_routes=True, base_wsgi_app=None):
+        self.config = config = pylons.config._current_obj()
         if default_charset:
             warnings.warn(pylons.legacy.default_charset_warning % \
                               dict(klass='PylonsApp', charset=default_charset),
                           DeprecationWarning, 2)
-            self.config.response_settings['charset'] = default_charset
+            self.config['pylons.response_options']['charset'] = default_charset
 
         if helpers is None or g is None:
             warnings.warn(pylons.legacy.helpers_and_g_warning % \
-                              dict(package=config.package),
+                              dict(package=config['pylons.package']),
                           DeprecationWarning, 2)
             
         if not g:
             try:
                 globals_package = \
-                    __import__(config.package + '.lib.app_globals', globals(),
+                    __import__(config['pylons.package'] + '.lib.app_globals', globals(),
                                locals(), ['Globals'])
                 g = getattr(globals_package, 'Globals')
             except ImportError:
@@ -232,27 +248,28 @@ class PylonsApp(object):
         if not g:
             g = type("Globals", (), {})()
         else:
-            g = g(config.global_conf, config.app_conf, config=config)
-        g.pylons_config = config
-        config.helpers = helpers
+            g = g(config['global_conf'], config['app_conf'], config=config)
+        g.pylons_config = pylons.config
+        config['pylons.helpers'] = helpers
         
         # Create the base Pylons wsgi app
-        app = PylonsBaseWSGIApp(config.package, g, helpers=helpers)
+        base_app = base_wsgi_app or PylonsBaseWSGIApp
+        app = base_app(config, g, helpers=helpers)
         if use_routes:
-            app = RoutesMiddleware(app, config.map)
+            app = RoutesMiddleware(app, config['pylons.map'])
         
         # Pull user-specified environ overrides, or just setup default
         # session and caching objects
-        self.econf = econf = config.environ_config.copy()
+        self.econf = econf = config['pylons.environ_config'].copy()
         if 'session' not in econf:
             from beaker.middleware import SessionMiddleware
             econf['session'] = 'beaker.session'
-            app = SessionMiddleware(app, config.app_conf)
+            app = SessionMiddleware(app, config)
         
         if 'cache' not in econf:
             from beaker.middleware import CacheMiddleware
             econf['cache'] = 'beaker.cache'
-            app = CacheMiddleware(app, config.app_conf)
+            app = CacheMiddleware(app, config)
         
         self.globals = g
         self.app = app

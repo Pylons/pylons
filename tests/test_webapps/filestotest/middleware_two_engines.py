@@ -28,7 +28,7 @@ def make_app(global_conf, full_stack=True, **app_conf):
     
     # Load our Pylons configuration defaults
     config = load_environment(conf)
-    config.init_app(conf, package='projectname')
+    config.init_app(global_conf, app_conf, package='projectname')
     
     # Add the second engine
     kidopts = {'kid.assume_encoding':'utf-8', 'kid.encoding':'utf-8'}
