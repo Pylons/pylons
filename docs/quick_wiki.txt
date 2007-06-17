@@ -281,7 +281,7 @@ You can now run the ``paster setup-app`` command to setup your tables in the sam
     
 At this stage you will need to ensure you have the appropriate Python database drivers for the database you chose otherwise you might find SQLAlchemy complains it can't get the DBAPI module for the dialect it needs.
 
-You should also edit ``QuickWiki.egg_info/paste_deploy_config.ini_tmpl`` so that when users run ``paster make-config`` the configuration file that is produced for them will already have a section telling them to enter their own database URI as we did when we installed the finished QuickWiki at the start of the tutorial. We can also remove the SQLObject lines since our application will not use SQLObject. Replace these lines:
+You should also edit ``QuickWiki.egg-info/paste_deploy_config.ini_tmpl`` so that when users run ``paster make-config`` the configuration file that is produced for them will already have a section telling them to enter their own database URI as we did when we installed the finished QuickWiki at the start of the tutorial. We can also remove the SQLObject lines since our application will not use SQLObject. Replace these lines:
 
 .. code-block:: PasteIni
 
