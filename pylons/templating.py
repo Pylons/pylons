@@ -152,7 +152,10 @@ class Buffet(object):
                 if key in namespace:
                     options[key] = namespace.pop(key)
 
-            namespace['_global_args'] = self._update_names({})
+            if include_pylons_variables:
+                namespace['_global_args'] = self._update_names({})
+            else:
+                namespace['_global_args'] = {}
             
             # If they passed in a variable thats listed in the global_args,
             # update the global args one instead of duplicating it
@@ -168,7 +171,7 @@ class Buffet(object):
                                       '``include_pylons_variables`` is False')
                 else:
                     namespace = self._update_names({})
-            else:
+            elif include_pylons_variables:
                 namespace = self._update_names(namespace)
             
             if not full_path.startswith(os.path.sep) and not \
