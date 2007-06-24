@@ -2,6 +2,9 @@ Pylons Changelog
 =================
 
 0.9.6 (**svn**)
+* Added an authenticate_form decorator for use with WebHelpers'
+  secure_form_tag functions for preventing CSRF attacks. Original patch
+  by David Turner. Fixes #157.
 * Fix Buffet's include_pylons_variables not being upheld. Thanks Jonathan
   LaCour.
 * Removed POST-only restriction on validate decorator, now handles GET 
