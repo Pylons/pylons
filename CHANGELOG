@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.6 (**svn**)
+* Fix Buffet's include_pylons_variables not being upheld. Thanks Jonathan
+  LaCour.
 * Removed POST-only restriction on validate decorator, now handles GET 
   requests. No form arg required during a GET request, which will run the
   current action with self.errors set to the errors. Fixes #246.
