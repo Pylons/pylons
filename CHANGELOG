@@ -2,6 +2,7 @@ Pylons Changelog
 =================
 
 0.9.6 (**svn**)
+* Added upgrade instructions, and posted a copy on the wiki. Fixes #230.
 * Added deprecation warnings for usage of the Pylons Controller class, all
   controllers should inherit from WSGIController instead. Fixes #239.
 * Removed deprecated attach_locals function from Controller class.
