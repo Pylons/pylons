@@ -107,39 +107,7 @@ class TestBasicController(TestCase):
         response = self.controller()
         assert isinstance(response, pylons.Response)
         assert response.status_code == 404
-    
-    def test_attach_locals(self):
-        pylons.g._push_object(object())
-        pylons.session._push_object(object())
-        pylons.cache._push_object(object())
-        pylons.buffet._push_object(object())
-        c = id(pylons.c._current_obj())
-        g = id(pylons.g._current_obj())
-        cache = id(pylons.cache._current_obj())
-        session = id(pylons.session._current_obj())
-        request = id(pylons.request._current_obj())
-        buffet = id(pylons.buffet._current_obj())
-        cr = self.controller
         
-        # Attach locals is now deprecated, expect the warning it'll throw
-        warnings.simplefilter('error', DeprecationWarning)
-        try:
-            cr._attach_locals()
-        except DeprecationWarning, msg:
-            assert '_attach_locals is deprecated: Pylons special objects are now' in msg[0]
-        
-        # Drop the notice of it this time, and do the command anyways, then 
-        # turn it back to normal
-        warnings.simplefilter('ignore', DeprecationWarning)
-        cr._attach_locals()
-        warnings.simplefilter('always', DeprecationWarning)
-        assert c == id(cr.c)
-        assert g == id(cr.g)
-        assert request == id(cr.request)
-        assert cache == id(cr.cache)
-        assert session == id(cr.session)
-        assert buffet == id(cr.buffet)
-    
     def test_kwargs_call(self):
         self.environ['pylons.routes_dict'].update(dict(action='kargs', id=4, 
                                                        name='fred'))

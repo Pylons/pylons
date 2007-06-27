@@ -59,52 +59,34 @@ def trim(docstring):
     # Return a single string:
     return '\n'.join(trimmed)
 
-class Controller(object):
-    """Standard Pylons Controller for Web Requests
+class WSGIController(object):
+    """WSGI Controller that follows WSGI spec for calling and return values
     
-    The Pylons Controller handles incoming web requests that are dispatched
-    from the custom Myghty Routes resolver. These requests result in a new
-    instance of the Controller being created, which is then called with the
-    dict options from the Routes match.
+    The Pylons WSGI Controller handles incoming web requests that are 
+    dispatched from the PylonsBaseWSGIApp. These requests result in a new 
+    instance of the WSGIController being created, which is then called with the
+    dict options from the Routes match. The standard WSGI response is then
+    returned with start_response called as per the WSGI spec.
     
-    By default, the Controller will search and attempt to call a ``__before__``
-    method before calling the action, and will try to call a ``__after__``
-    method after the action was called. These two methods can act as filters
-    controlling access to the action, setup variables/objects for use with a
-    set of actions, etc.
+    By default, the WSGIController will search and attempt to call a 
+    ``__before__`` method before calling the action, and will try to call a
+    ``__after__`` method after the action was called. These two methods can act
+    as filters controlling access to the action, setup variables/objects for 
+    use with a set of actions, etc.
     
     Each action to be called is inspected with ``_inspect_call`` so that it is
     only passed the arguments in the Routes match dict that it asks for. The
-    only exception to the dict is that the Myghty ``ARGS`` variable is
-    included.
+    arguments passed into the action can be customized by overriding the 
+    ``_get_method_args`` function which is expected to return a dict.
     
     In the event that an action is not found to handle the request, the
     Controller will raise an "Action Not Found" error if in debug mode,
     otherwise a ``404 Not Found`` error will be returned.
     """
-    __pudge_all__ = ['_inspect_call', '__call__', '_attach_locals']
     
-    def _attach_locals(self):
-        """Attach Pylons special objects to the controller
-        
-        When debugging, the Pylons special objects are unavailable because they
-        are thread locals. This function pulls the actual object and attaches
-        it to the controller so that it can be examined for debugging
-        purposes.
-
-        Deprecated (Nov 30 2006); Pylons special objects are now available
-        within the interactive debugger.
-        """
-        warnings.warn('_attach_locals is deprecated: Pylons special objects '
-                      'are now available within the interactive debugger',
-                      DeprecationWarning, 2)
-        self.c = pylons.c._current_obj()
-        self.g = pylons.g._current_obj()
-        self.cache = pylons.cache._current_obj()
-        self.session = pylons.session._current_obj()
-        self.request = pylons.request._current_obj()
-        self.buffet = pylons.buffet._current_obj()
-
+    __pudge_all__ = ['_inspect_call', '__call__', '_get_method_args', 
+                     '_dispatch_call']
+    
     def _inspect_call(self, func, **kargs):
         """Calls a function with as many arguments from args and kargs as
         possible
@@ -173,40 +155,6 @@ class Controller(object):
             response = pylons.Response(response)
         return response
     
-    def __call__(self, *args, **kargs):
-        """Makes our controller a callable to handle requests
-        
-        This is called when dispatched to as the Controller class docs explain
-        more fully.
-        """
-        req = pylons.request._current_obj()
-        
-        # Keep private methods private
-        if req.environ['pylons.routes_dict'].get('action', '').startswith('_'):
-            return pylons.Response(code=404)
-        
-        try:
-            if hasattr(self, '__before__'):
-                self._inspect_call(self.__before__, **kargs)
-            response = self._dispatch_call()
-        except HTTPException, httpe:
-            response = httpe.response(environ)
-        if hasattr(self, '__after__'):
-            self.response = response
-            try:
-                self._inspect_call(self.__after__)
-            except HTTPException, httpe:
-                response = httpe.response(environ)
-
-        return response
-
-class WSGIController(Controller):
-    """WSGI Controller that follows WSGI spec for calling and return values
-    
-    This function works identically to the normal Controller, however it is
-    called with the WSGI interface, and behaves as a WSGI application calling
-    start_response and returning an iterable as content.
-    """
     def __call__(self, environ, start_response):
         self.start_response = start_response
         
@@ -233,6 +181,43 @@ class WSGIController(Controller):
                 environ['paste.testing_variables']['response'] = response
             return response(environ, start_response)
         
+        return response
+
+class Controller(WSGIController):
+    """Deprecated Pylons Controller for Web Requests
+    
+    All Pylons projects should use the WSGIController.
+    """
+    def __init__(self, *args, **kwargs):
+        warnings.warn("Controller class is deprecated, switch to using the"
+                      "WSGIController class.", DeprecationWarning, 2)
+        WSGIController.__init__(self, *args, **kwargs)
+    
+    def __call__(self, *args, **kargs):
+        """Makes our controller a callable to handle requests
+        
+        This is called when dispatched to as the Controller class docs explain
+        more fully.
+        """
+        req = pylons.request._current_obj()
+        
+        # Keep private methods private
+        if req.environ['pylons.routes_dict'].get('action', '').startswith('_'):
+            return pylons.Response(code=404)
+        
+        try:
+            if hasattr(self, '__before__'):
+                self._inspect_call(self.__before__, **kargs)
+            response = self._dispatch_call()
+        except HTTPException, httpe:
+            response = httpe.response(environ)
+        if hasattr(self, '__after__'):
+            self.response = response
+            try:
+                self._inspect_call(self.__after__)
+            except HTTPException, httpe:
+                response = httpe.response(environ)
+
         return response
 
 class XMLRPCController(WSGIController):

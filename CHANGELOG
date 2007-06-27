@@ -2,6 +2,9 @@ Pylons Changelog
 =================
 
 0.9.6 (**svn**)
+* Added deprecation warnings for usage of the Pylons Controller class, all
+  controllers should inherit from WSGIController instead. Fixes #239.
+* Removed deprecated attach_locals function from Controller class.
 * Added an authenticate_form decorator for use with WebHelpers'
   secure_form_tag functions for preventing CSRF attacks. Original patch
   by David Turner. Fixes #157.
