@@ -3,7 +3,7 @@ from paste.fixture import TestApp
 from paste.registry import RegistryManager
 
 from pylons import Response
-from pylons.decorators.secure_form import authenticate_form, denied_message
+from pylons.decorators.secure import authenticate_form, denied_message
 
 from pylons.controllers import WSGIController
 
