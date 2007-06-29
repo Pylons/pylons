@@ -1,7 +1,7 @@
 """
 ${package}
 
-This file loads the finished app from ${package}.config.middleware.
+This file loads the finished app from ${package}.wsgiapp.
 
 """
 
