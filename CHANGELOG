@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.6 (**svn**)
+* Added the https decorator. It requires an action to be loaded via
+  https. Patch by ido. Fixes #241.
 * Added upgrade instructions, and posted a copy on the wiki. Fixes #230.
 * Added deprecation warnings for usage of the Pylons Controller class, all
   controllers should inherit from WSGIController instead. Fixes #239.

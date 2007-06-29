@@ -3,7 +3,7 @@ from paste.fixture import TestApp
 from paste.registry import RegistryManager
 
 from pylons import Response
-from pylons.decorators.secure import authenticate_form, denied_message
+from pylons.decorators.secure import authenticate_form, csrf_detected_message
 
 from pylons.controllers import WSGIController
 
@@ -26,4 +26,4 @@ class TestAuthenticateFormDecorator(TestWSGIController):
         self.environ['pylons.routes_dict'].update(action='protected')
         response = self.app.post('/', extra_environ=self.environ,
                                  expect_errors=True)
-        assert denied_message in response
+        assert csrf_detected_message in response
