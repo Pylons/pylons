@@ -106,6 +106,6 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
     pylons_minimal=pylons.util:MinimalPylonsTemplate
     
     [python.templating.engines]
-    pylonsmyghty = pylons.templating:MyghtyTemplatePlugin
+    pylonsmyghty = pylons.templating:MyghtyTemplatePlugin [myghty]
     """,
 )

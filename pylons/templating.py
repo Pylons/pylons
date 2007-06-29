@@ -271,12 +271,19 @@ for entry_point in \
         Engine = entry_point.load()
         available_engines[entry_point.name] = Engine
     except:
-        import traceback
-        import warnings
-        tb = StringIO()
-        traceback.print_exc(file=tb)
-        warnings.warn("Unable to load template engine entry point: '%s': %s" %
-                      (entry_point, tb.getvalue()), RuntimeWarning, 2)
+        import sys
+        from pkg_resources import DistributionNotFound
+        # Warn when there's a problem loading a Buffet plugin unless it's
+        # pylonsmyghty reporting there's no Myghty installed
+        if not isinstance(sys.exc_info()[1], DistributionNotFound) or \
+                entry_point.name != 'pylonsmyghty':
+            import traceback
+            import warnings
+            tb = StringIO()
+            traceback.print_exc(file=tb)
+            warnings.warn("Unable to load template engine entry point: '%s': "
+                          "%s" % (entry_point, tb.getvalue()), RuntimeWarning,
+                          2)
 
 def render(*args, **kargs):
     """Render a template and return it as a string (possibly Unicode)
