@@ -87,7 +87,7 @@ def load_h(package_name):
     # style helpers via:
     # from pylons import h
     helpers_name = package_name + '.lib.helpers'
-    __import__(helpers_name) 
+    __import__(helpers_name)
     helpers_module = sys.modules[helpers_name]
 
     # Pre 0.9.2 lib.helpers did not import the pylons helper functions,
