@@ -95,8 +95,7 @@ class PylonsBaseWSGIApp(object):
             return response
         
         raise Exception("No content returned by controller (Did you remember "
-                        "to 'return' it?) in: %s" % \
-                            controller.__name__)
+                        "to 'return' it?) in: %s" % controller.__name__)
     
     def setup_app_env(self, environ, start_response):
         """Setup and register all the Pylons objects with the registry"""
