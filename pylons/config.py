@@ -113,30 +113,18 @@ class PylonsConfig(DispatchingConfig):
                     setattr(self, name, value)
             return FakeConfig
         else:
-            dct = self._current_obj()
+            conf_dict = self._current_obj()
             
             # Backwards compat for when the option is now in the dict, and 
             # access was attempted via attribute
-            if name in dct:
-                warnings.warn("The name '%s' is has been moved into the config"
-                              "dict, and should be accessed via the "
-                              "pylons.config dict as pylons.config[%s]." 
-                              % (name, name), DeprecationWarning, 2)
-                return dct[name]
-            elif 'pylons.' + name in dct:
-                warnings.warn("The name '%s' is has been moved into the config"
-                              "dict, and should be accessed via the "
-                              "pylons.config dict as pylons.config[pylons.%s]." 
-                              % (name, name), DeprecationWarning, 2)
-                return dct['pylons.' + name]
-            elif 'buffet.' + name in dct:
-                warnings.warn("The name '%s' is has been moved into the config"
-                              "dict, and should be accessed via the "
-                              "pylons.config dict as pylons.config[buffet.%s]." 
-                              % (name, name), DeprecationWarning, 2)
-                return dct['buffet.' + name]
+            for prefix in ('', 'pylons.', 'buffet.'):
+                full_name = prefix + name
+                if full_name in conf_dict:
+                    warnings.warn(pylons.legacy.config_name_moved % \
+                                      (name, full_name), DeprecationWarning, 2)
+                    return conf_dict[full_name]
             else:
-                return getattr(self._current_obj(), name)        
+                return getattr(conf_dict, name)        
     
     def load_environment(self, tmpl_options=None, map=None, paths=None, 
                          environ_config=None, default_charset=None, 
