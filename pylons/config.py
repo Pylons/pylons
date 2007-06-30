@@ -123,8 +123,7 @@ class PylonsConfig(DispatchingConfig):
                     warnings.warn(pylons.legacy.config_name_moved % \
                                       (name, full_name), DeprecationWarning, 2)
                     return conf_dict[full_name]
-            else:
-                return getattr(conf_dict, name)
+            return getattr(conf_dict, name)
 
     def load_environment(self, tmpl_options=None, map=None, paths=None,
                          environ_config=None, default_charset=None,
