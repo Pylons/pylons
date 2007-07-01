@@ -113,8 +113,8 @@ class PylonsTemplate(Template):
 
     def pre(self, command, output_dir, vars):
         """Called before template is applied."""
-        if 'template_engine' not in vars:
-            vars['template_engine'] = pylons.config['default_template_engine']
+        vars.setdefault('template_engine',
+                        pylons.config['default_template_engine'])
 
 class MinimalPylonsTemplate(PylonsTemplate):
     _template_dir = 'templates/minimal_project'
