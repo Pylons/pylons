@@ -95,7 +95,7 @@ class PylonsConfig(DispatchingConfig):
         'pylons.environ_config': {}, # hrmph!
         'pylons.strict_c': False,
         'pylons.config_namespaces': {},
-        'pylons.initialized': False,
+        'pylons.db_engines': {},
         'buffet.options': {},
         'buffet.template_engines': [],
         'buffet.template_options': {},
@@ -355,7 +355,7 @@ class PylonsConfig(DispatchingConfig):
         elif template_engine == 'mako':
             self.add_template_engine('mako', '')
         elif template_engine in ['genshi', 'kid']:
-            self.add_template_engine(template_engine, package + '.templates')
+            self.add_template_engine(template_engine, conf['pylons.package'] + '.templates')
 
         # Save our errorware values
         conf['errorware'] = errorware
@@ -365,5 +365,6 @@ config = PylonsConfig()
 # Push an empty config so all accesses to config at import time
 # have something to look at and modify. This config will be merged with the
 # app's when it's built in the paste.app_factory entry point.
-initial_config = {'default_template_engine':default_template_engine}
+initial_config = {'default_template_engine':default_template_engine,
+                  'pylons.db_engines':{}}
 config.push_process_config(initial_config)
