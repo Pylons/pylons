@@ -17,7 +17,7 @@ from paste.config import DispatchingConfig
 import pylons.legacy
 import pylons.templating
 
-default_template_engine = 'pylonsmyghty'
+default_template_engine = 'mako'
 request_defaults = dict(charset=None, errors='strict',
                         decode_param_names=False,
                         language='en-us')
@@ -86,7 +86,7 @@ class PylonsConfig(DispatchingConfig):
         # The current project's package name
         'pylons.package': None,
         # The Routes?? only?? mapper
-        'pylons.mapper': None,
+        'pylons.map': None,
         'pylons.paths': {},
         'pylons.g': None,
         'pylons.helpers': None, # should call this h or g
