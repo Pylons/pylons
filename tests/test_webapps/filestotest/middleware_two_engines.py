@@ -6,6 +6,7 @@ from paste.deploy.config import ConfigMiddleware, CONFIG
 from paste.deploy.converters import asbool
 
 from pylons.error import error_template
+from pylons import config
 from pylons.middleware import ErrorHandler, ErrorDocuments, StaticJavascripts, error_mapper
 import pylons.wsgiapp
 
@@ -21,24 +22,17 @@ def make_app(global_conf, full_stack=True, **app_conf):
     to ensure they're treated properly.
     
     """
-    conf = global_conf.copy()
-    conf.update(app_conf)
-    conf.update(dict(app_conf=app_conf, global_conf=global_conf))
-    CONFIG.push_process_config(conf)
-    
     # Load our Pylons configuration defaults
-    config = load_environment(conf)
-    config.init_app(global_conf, app_conf, package='projectname')
+    load_environment(global_conf, app_conf)
     
     # Add the second engine
     kidopts = {'kid.assume_encoding':'utf-8', 'kid.encoding':'utf-8'}
     config.add_template_engine('kid', 'projectname.kidtemplates', kidopts)
         
     # Load our default Pylons WSGI app and make g available
-    app = pylons.wsgiapp.PylonsApp(config, helpers=projectname.lib.helpers,
+    app = pylons.wsgiapp.PylonsApp(helpers=projectname.lib.helpers,
                                    g=app_globals.Globals)
-    g = app.globals
-    app = ConfigMiddleware(app, conf)
+    app = ConfigMiddleware(app, config._current_obj())
     
     # If errror handling and exception catching will be handled by middleware
     # for multiple apps, you will want to set full_stack = False in your config
@@ -48,7 +42,7 @@ def make_app(global_conf, full_stack=True, **app_conf):
         app = httpexceptions.make_middleware(app, global_conf)
     
         # Error Handling
-        app = ErrorHandler(app, global_conf, error_template=error_template, **config.errorware)
+        app = ErrorHandler(app, global_conf, error_template=error_template, **config['pylons.errorware'])
     
         # Display error documents for 401, 403, 404 status codes (if debug is disabled also
         # intercepts 500)
@@ -57,7 +51,7 @@ def make_app(global_conf, full_stack=True, **app_conf):
     # Establish the Registry for this application
     app = RegistryManager(app)
     
-    static_app = StaticURLParser(config.paths['static_files'])
+    static_app = StaticURLParser(config['pylons.paths']['static_files'])
     javascripts_app = StaticJavascripts()
     app = Cascade([static_app, javascripts_app, app])
     return app

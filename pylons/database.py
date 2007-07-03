@@ -13,12 +13,9 @@ import thread
 from paste.deploy.converters import asbool
 
 import pylons
-import pylons.util
 
 __all__ = ["PackageHub", "AutoConnectHub"]
 
-# Provide support for sqlalchemy
-_db_engines = {}
 try:
     import sqlalchemy
     from sqlalchemy.ext import sessioncontext
@@ -31,7 +28,7 @@ try:
         application's Globals object at pylons.g (if one is registered).
         """
         try:
-            app_scope_id = str(id(pylons.g._current_obj()))
+            app_scope_id = str(id(pylons.config._current_obj()))
         except TypeError:
             app_scope_id = ''
         return '%s|%i' % (app_scope_id, thread.get_ident())
@@ -45,7 +42,7 @@ try:
         uri, echo = get_engine_conf(uri, echo)
         kwargs['echo'] = echo
         engine_key = '%s|%s' % (uri, str(kwargs))
-        db_engines = get_engines()
+        db_engines = pylons.config['pylons.db_engines']
         if engine_key in db_engines:
             engine = db_engines[engine_key]
         else:
@@ -58,31 +55,15 @@ try:
         echo) from the Pylons config file values ``sqlalchemy.dburi`` and
         ``sqlalchemy.echo`` when none are specified."""
         if uri is None:
-            uri = pylons.util.config_get('sqlalchemy.dburi')
+            uri = pylons.config.get('sqlalchemy.dburi')
         if not uri:
             raise KeyError('No SQLAlchemy database config found!')
         if echo is None:
-            echo = pylons.util.config_get('sqlalchemy.echo', False)
+            echo = pylons.config.get('sqlalchemy.echo', False)
             if echo != 'debug':
                 echo = asbool(echo)
         return uri, echo
-
-    def get_engines():
-        """Return a dict of cached SQLAlchemy engines.
-
-        Engines are cached to an application's ``Globals`` (``g``) object. If
-        for whatever reason the ``g`` object has not been registered (outside
-        of a web request), engines are cached to the global ``engines`` dict
-        instead."""
-        try:
-            if not hasattr(pylons.g, '_db_engines'):
-                db_engines = pylons.g._db_engines = {}
-            else:
-                db_engines = pylons.g._db_engines
-            return db_engines
-        except TypeError:
-            return _db_engines
-
+    
     def make_session(uri=None, echo=None, session_kwargs=None, **kwargs):
         """Returns a SQLAlchemy session for the specified database uri from
         the the engine cache (returned from ``get_engines``)``. Uses the
@@ -127,7 +108,7 @@ class AutoConnectHub(ConnectionHub):
     
     def __init__(self, uri=None, pool_connections=True):
         if not uri:
-            uri = pylons.util.config_get('sqlobject.dburi')
+            uri = pylons.config.get('sqlobject.dburi')
         self.uri = uri
         self.pool_connections = pool_connections
         ConnectionHub.__init__(self)
@@ -240,13 +221,13 @@ class PackageHub(object):
         dburi = self.dburi
         if not dburi:
             try:
-                dburi = pylons.util.config_get("%s.dburi" % \
+                dburi = pylons.config.get("%s.dburi" % \
                                                    self.packagename)
             except TypeError, e:
                 # No configuration is registered
                 raise UnconfiguredConnectionError(str(e))
         if not dburi:
-            dburi = pylons.util.config_get("sqlobject.dburi")
+            dburi = pylons.config.get("sqlobject.dburi")
         if not dburi:
             raise UnconfiguredConnectionError(
                 "No database configuration found!")

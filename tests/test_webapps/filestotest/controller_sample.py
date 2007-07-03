@@ -30,14 +30,11 @@ class SampleController(BaseController):
     def testdefault(self):
         return render_response('testkid')
     
-    def testmako(self):
-        return render_response('/test_mako.html')
-
     def test_extra_engine(self):
         return render_response('kid', 'testkid')
     
     def test_template_caching(self):
-        return render_response('/test_myghty.myt', cache_expire='never')
+        return render_response('/test_mako.html', cache_expire='never')
     
     def test_only_post(self):
         return Response('It was a post!')

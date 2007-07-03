@@ -208,7 +208,7 @@ class PylonsConfig(DispatchingConfig):
         self['buffet.template_engines'].append(config)
 
     def init_app(self, global_conf, app_conf, package=None,
-                 template_engine=default_template_engine):
+                 template_engine=default_template_engine, paths=None):
         """Initialize configuration for the application
 
         ``global_config``
@@ -240,14 +240,17 @@ class PylonsConfig(DispatchingConfig):
         conf.update(app_conf)
         conf.update(dict(app_conf=app_conf, global_conf=global_conf))
         conf.update(self.pop('environment_load', {}))
-
+        
+        if paths:
+            conf['pylons.paths'] = paths
+        
         # XXX Legacy: More backwards compatibility locations for the package
         #             name
         conf['pylons.package'] = conf['package'] = conf['app_conf']['package'] = package
-
+        
         self.push_process_config(conf)
         self.set_defaults(template_engine)
-
+    
     def set_defaults(self, template_engine):
         conf = self._current_obj()
         # Ensure all the keys from defaults are present, load them if not
@@ -358,7 +361,7 @@ class PylonsConfig(DispatchingConfig):
             self.add_template_engine(template_engine, conf['pylons.package'] + '.templates')
 
         # Save our errorware values
-        conf['errorware'] = errorware
+        conf['pylons.errorware'] = errorware
 
 config = PylonsConfig()
 
