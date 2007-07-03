@@ -108,6 +108,7 @@ class PylonsBaseWSGIApp(object):
                 
         # Setup the basic pylons global objects
         registry.register(pylons.request, req)
+        registry.register(pylons.response, WSGIResponse())
         registry.register(pylons.buffet, self.buffet)
         registry.register(pylons.g, self.globals)
         registry.register(pylons.config, self.config)

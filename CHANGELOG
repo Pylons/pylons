@@ -2,6 +2,9 @@ Pylons Changelog
 =================
 
 0.9.6 (**svn**)
+* Refactored global response to be setup in wsgiapp along with the other 
+  globals. Updated WSGIController to copy in global response headers and
+  cookies into a WSGI app's output.
 * Added global pylons.response object. Removed old Controller tests. 
   Fixes #268.
 * Updated default project template files for new configuration layout. Options

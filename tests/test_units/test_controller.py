@@ -1,13 +1,8 @@
-import warnings
-from unittest import TestCase
-
-from paste.wsgiwrappers import WSGIRequest
 from paste.fixture import TestApp
 from paste.registry import RegistryManager
 
 import pylons
-from pylons.util import ContextObj
-from pylons.controllers import WSGIController, XMLRPCController
+from pylons.controllers import WSGIController
 
 from __init__ import TestWSGIController, SetupCacheGlobal, ControllerWrap
 

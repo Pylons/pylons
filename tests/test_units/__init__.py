@@ -1,7 +1,7 @@
 from unittest import TestCase
 from xmlrpclib import loads, dumps
 
-from paste.wsgiwrappers import WSGIRequest
+from paste.wsgiwrappers import WSGIRequest, WSGIResponse
 
 import pylons
 from pylons.util import ContextObj
@@ -67,4 +67,5 @@ class SetupCacheGlobal(object):
         # Update the environ
         environ.update(self.environ)
         registry.register(pylons.request, WSGIRequest(environ))
+        registry.register(pylons.response, WSGIResponse())
         return self.app(environ, start_response)

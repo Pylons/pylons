@@ -6,9 +6,8 @@ import warnings
 import xmlrpclib
 
 from paste.httpexceptions import HTTPException
-from paste.response import replace_header
+from paste.response import replace_header, HeaderDict
 from paste.deploy.converters import asbool
-from paste.wsgiwrappers import WSGIResponse
 
 import pylons
 from pylons.helpers import abort
@@ -161,12 +160,21 @@ class WSGIController(object):
         return response
     
     def __call__(self, environ, start_response):
-        registry = environ['paste.registry']
-        registry.register(pylons.response, WSGIResponse())
-        
         start_response_called = []
         def repl_start_response(status, headers, exc_info=None):
+            response = pylons.response._current_obj()
             start_response_called.append(None)
+            
+            # Copy the headers from the global response in if its a 2XX or
+            # 3XX status code
+            # XXX: TODO: This should really be done wiht a more efficient 
+            #            header merging function at some point.
+            if status.startswith('2'):
+                response.headers.update(HeaderDict.fromlist(headers))
+                headers = pylons.response.headeritems()
+            if status.startswith('3') or status.startswith('2'):
+                for c in pylons.response.cookies.values():
+                    headers.append(('Set-Cookie', c.output(header='')))
             return start_response(status, headers, exc_info)
         self.start_response = repl_start_response
         
@@ -192,6 +200,7 @@ class WSGIController(object):
                     for c in pylons.response.cookies.values():
                         response.headers.append(('Set-Cookie', 
                                                  c.output(header='')))
+                registry = environ['paste.registry']
                 registry.replace(pylons.response, response)
             elif isinstance(response, types.GeneratorType):
                 pylons.response.content = response
@@ -228,8 +237,6 @@ class Controller(WSGIController):
         more fully.
         """
         req = pylons.request._current_obj()
-        registry = req.environ['paste.registry']
-        registry.register(pylons.response, WSGIResponse())
         
         # Keep private methods private
         if req.environ['pylons.routes_dict'].get('action', '').startswith('_'):
@@ -252,6 +259,7 @@ class Controller(WSGIController):
                 for c in pylons.response.cookies.values():
                     response.headers.append(('Set-Cookie', 
                                              c.output(header='')))
+            registry = req.environ['paste.registry']
             registry.replace(pylons.response, response)
         elif isinstance(response, types.GeneratorType):
             pylons.response.content = response
