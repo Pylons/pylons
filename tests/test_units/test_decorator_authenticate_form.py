@@ -23,7 +23,7 @@ class TestAuthenticateFormDecorator(TestWSGIController):
         self.app = TestApp(app)
 
     def test_unauthenticated(self):
-        self.environ['pylons.routes_dict'].update(dict(action='protected'))
+        self.environ['pylons.routes_dict']['action'] = 'protected'
         response = self.app.post('/', extra_environ=self.environ,
                                  expect_errors=True)
         assert csrf_detected_message in response
