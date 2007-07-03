@@ -4,7 +4,7 @@ Pylons Changelog
 0.9.6 (**svn**)
 * Updated default project template files for new configuration layout. Options
   to handle config now just in environment.py, and middleware.py handling just
-  middleware.
+  middleware. Fixes #203.
 * Removing mako tests, as its now the default. Default test changed from 
   Myghty to Mako.
 * Changing default templating to mako.
