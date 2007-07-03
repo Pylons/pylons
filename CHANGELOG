@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.6 (**svn**)
+* Added global pylons.response object. Removed old Controller tests. 
+  Fixes #268.
 * Updated default project template files for new configuration layout. Options
   to handle config now just in environment.py, and middleware.py handling just
   middleware. Fixes #203.

@@ -88,8 +88,8 @@ class PylonsBaseWSGIApp(object):
                                                             'wsgi_response'):
             environ['paste.testing_variables']['response'] = response
         
-        # Transform HttpResponse objects into WSGI response
         if hasattr(response, 'wsgi_response'):
+            # Transform Response objects from legacy Controller
             return response(environ, start_response)
         elif response:
             return response

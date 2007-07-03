@@ -7,42 +7,9 @@ from paste.registry import RegistryManager
 
 import pylons
 from pylons.util import ContextObj
-from pylons.controllers import Controller, WSGIController, XMLRPCController
+from pylons.controllers import WSGIController, XMLRPCController
 
 from __init__ import TestWSGIController, SetupCacheGlobal, ControllerWrap
-
-class BasicController(Controller):
-    def index(self):
-        return "hi all"
-
-    def view(self, id, name):
-        return "Hi %s, %s" % (id, name)
-    
-    def kargs(self, id, **kargs):
-        return [id, kargs]
-
-class BasicFilteredController(Controller):
-    def __init__(self):
-        self.before = 0
-        self.after = 0
-
-    def __before__(self):
-        self.before += 1
-
-    def __after__(self):
-        self.after += 1
-        action = pylons.request.environ['pylons.routes_dict'].get('action')
-        if action in ('after_response', 'after_string_response'):
-            self.response.write(' from __after__')
-
-    def index(self):
-        return 'hi all, before is %s' % self.before
-
-    def after_response(self):
-        return pylons.Response('hi')
-
-    def after_string_response(self):
-        return 'hello'
 
 class BasicWSGIController(WSGIController):
     def index(self):
@@ -58,6 +25,10 @@ class BasicWSGIController(WSGIController):
     
     def strme(self):
         return "hi there"
+    
+    def header_check(self):
+        pylons.response.headers['Content-Type'] = 'text/plain'
+        return "Hello all!"
 
 class FilteredWSGIController(WSGIController):
     def __init__(self):
@@ -81,72 +52,6 @@ class FilteredWSGIController(WSGIController):
 
     def after_string_response(self):
         return 'hello'
-
-class TestBasicController(TestCase):
-    def setUp(self):
-        self.environ = {'pylons.routes_dict':dict(action='index'),
-                        'paste.config':dict(global_conf=dict(debug=True))}
-        pylons.request._push_object(WSGIRequest(self.environ))
-        pylons.c._push_object(ContextObj())
-        self.controller = BasicController()
-        self.controller.start_response = None
-    
-    def tearDown(self):
-        pylons.request._pop_object()
-        pylons.c._pop_object()
-
-    def test_basic_call(self):
-        assert "hi all" in str(self.controller())
-    
-    def test_inspect_call(self):
-        self.environ['pylons.routes_dict'].update(dict(action='view', id=4, name='fred'))
-        assert "Hi 4, fred" in str(self.controller())
-
-    def test_private_action(self):
-        self.environ['pylons.routes_dict']['action'] = '_private'
-        response = self.controller()
-        assert isinstance(response, pylons.Response)
-        assert response.status_code == 404
-        
-    def test_kwargs_call(self):
-        self.environ['pylons.routes_dict'].update(dict(action='kargs', id=4, 
-                                                       name='fred'))
-        id, kargs = self.controller()
-        assert id == 4
-        assert kargs == {'action': 'kargs', 'start_response': None, 
-                         'environ': self.environ, 'name': 'fred'}
-
-    def test_method_missing(self):
-        self.environ['pylons.routes_dict']['action'] = 'notthere'
-        self.assertRaises(NotImplementedError, self.controller)
-        
-class TestFilteredController(TestCase):
-    def setUp(self):
-        self.environ = {'pylons.routes_dict':dict(action='index'),
-                        'paste.config':dict(global_conf=dict(debug=True))}
-        pylons.request._push_object(WSGIRequest(self.environ))
-        pylons.c._push_object(ContextObj())
-        self.controller = BasicFilteredController()
-        self.controller.start_response = None
-    
-    def tearDown(self):
-        pylons.request._pop_object()
-        pylons.c._pop_object()
-
-    def test_basic_call(self):
-        resp = str(self.controller())
-        assert "hi all" in resp
-        assert "before is 1" in resp
-
-    def test_after_response(self):
-        self.environ['pylons.routes_dict'].update(dict(action='after_response'))
-        resp = str(self.controller())
-        assert 'hi from __after__' in resp
-
-    def test_after_string_response(self):
-        self.environ['pylons.routes_dict'].update(dict(action='after_string_response'))
-        resp = str(self.controller())
-        assert 'hello from __after__' in resp
 
 class TestBasicWSGI(TestWSGIController):
     def __init__(self, *args, **kargs):
@@ -184,7 +89,13 @@ class TestBasicWSGI(TestWSGIController):
         self.baseenviron['pylons.routes_dict']['action'] = 'strme'
         resp = self.app.get('/')
         assert "hi there" in resp
-
+    
+    def test_header_check(self):
+        self.baseenviron['pylons.routes_dict']['action'] = 'header_check'
+        resp = self.app.get('/')
+        assert "Hello all!" in resp
+        assert resp.response.headers['Content-Type'] == 'text/plain'
+        assert resp.header('Content-Type') == 'text/plain'
 
 class TestFilteredWSGI(TestWSGIController):
     def __init__(self, *args, **kargs):

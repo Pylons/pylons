@@ -8,6 +8,7 @@ import xmlrpclib
 from paste.httpexceptions import HTTPException
 from paste.response import replace_header
 from paste.deploy.converters import asbool
+from paste.wsgiwrappers import WSGIResponse
 
 import pylons
 from pylons.helpers import abort
@@ -104,10 +105,11 @@ class WSGIController(object):
         __traceback_hide__ = 'before_and_this'
         
         c = pylons.c._current_obj()
+        args = None
         if argspec[2]:
             for k, val in kargs.iteritems():
                 setattr(c, k, val)
-            result = func(**kargs)
+            args = kargs
         else:
             args = {}
             argnames = argspec[0][1:]
@@ -115,12 +117,16 @@ class WSGIController(object):
                 if name in kargs:
                     setattr(c, name, kargs[name])
                     args[name] = kargs[name]
+        try:
             result = func(**args)
-        if isinstance(result, types.GeneratorType):
-            return pylons.Response(result)
-        else:
-            return result
-
+            if hasattr(result, 'wsgi_response'):
+                warnings.warn("Returning a WSGIResponse object from a controller"
+                              "will be deprecated in 0.9.7.", 
+                              PendingDeprecationWarning, 2)
+        except HTTPException, httpe:
+            result = httpe.response(pylons.request.environ)
+        return result
+    
     def _get_method_args(self):
         """Retrieve the method arguments to use with inspect call
         
@@ -130,8 +136,9 @@ class WSGIController(object):
         """
         req = pylons.request._current_obj()
         kargs = req.environ['pylons.routes_dict'].copy()
-        kargs.update(dict(environ=req.environ, 
-                          start_response=self.start_response))
+        kargs['environ'] = req.environ
+        if hasattr(self, 'start_response'):
+            kargs['start_response'] = self.start_response
         return kargs
     
     def _dispatch_call(self):
@@ -151,29 +158,50 @@ class WSGIController(object):
                     'Action %s is not implemented' % action)
             else:
                 response = pylons.Response(code=404)
-        if isinstance(response, basestring):
-            response = pylons.Response(response)
         return response
     
     def __call__(self, environ, start_response):
-        self.start_response = start_response
+        registry = environ['paste.registry']
+        registry.register(pylons.response, WSGIResponse())
+        
+        start_response_called = []
+        def repl_start_response(status, headers, exc_info=None):
+            start_response_called.append(None)
+            return start_response(status, headers, exc_info)
+        self.start_response = repl_start_response
         
         # Keep private methods private
         if environ['pylons.routes_dict'].get('action', '').startswith('_'):
             return pylons.Response(code=404)(environ, start_response)
         
-        try:
-            if hasattr(self, '__before__'):
-                self._inspect_call(self.__before__)
-            response = self._dispatch_call()
-        except HTTPException, httpe:
-            response = httpe.response(environ)
+        if hasattr(self, '__before__'):
+            self._inspect_call(self.__before__)
+        
+        response = self._dispatch_call()
+        if not start_response_called:
+            # If its not a WSGI response, and we have content, it needs to
+            # be wrapped in the response object
+            if hasattr(response, 'wsgi_response'):
+                # It's either a legacy WSGIResponse object, or an exception
+                # that got tossed. Strip headers if its anything other than a
+                # 2XX status code, and strip cookies if its anything other than
+                # a 2XX or 3XX status code.
+                if response.status_code < 300:
+                    response.headers.update(pylons.response.headers)
+                if response.status_code < 400:
+                    for c in pylons.response.cookies.values():
+                        response.headers.append(('Set-Cookie', 
+                                                 c.output(header='')))
+                registry.replace(pylons.response, response)
+            elif isinstance(response, types.GeneratorType):
+                pylons.response.content = response
+            elif isinstance(response, basestring):
+                pylons.response.write(response)
+            response = pylons.response._current_obj()
+        
         if hasattr(self, '__after__'):
             self.response = response
-            try:
-                self._inspect_call(self.__after__)
-            except HTTPException, httpe:
-                response = httpe.response(environ)
+            self._inspect_call(self.__after__)
         
         if hasattr(response, 'wsgi_response'):
             # Copy the response object into the testing vars if we're testing
@@ -200,24 +228,41 @@ class Controller(WSGIController):
         more fully.
         """
         req = pylons.request._current_obj()
+        registry = req.environ['paste.registry']
+        registry.register(pylons.response, WSGIResponse())
         
         # Keep private methods private
         if req.environ['pylons.routes_dict'].get('action', '').startswith('_'):
             return pylons.Response(code=404)
         
-        try:
-            if hasattr(self, '__before__'):
-                self._inspect_call(self.__before__, **kargs)
-            response = self._dispatch_call()
-        except HTTPException, httpe:
-            response = httpe.response(environ)
+        if hasattr(self, '__before__'):
+            self._inspect_call(self.__before__, **kargs)
+        response = self._dispatch_call()
+        
+        # If its not a WSGI response, and we have content, it needs to
+        # be wrapped in the response object
+        if hasattr(response, 'wsgi_response'):
+            # It's either a legacy WSGIResponse object, or an exception
+            # that got tossed. Strip headers if its anything other than a
+            # 2XX status code, and strip cookies if its anything other than
+            # a 2XX or 3XX status code.
+            if response.status_code < 300:
+                response.headers.update(pylons.response.headers)
+            if response.status_code < 400:
+                for c in pylons.response.cookies.values():
+                    response.headers.append(('Set-Cookie', 
+                                             c.output(header='')))
+            registry.replace(pylons.response, response)
+        elif isinstance(response, types.GeneratorType):
+            pylons.response.content = response
+        elif isinstance(response, basestring):
+            pylons.response.write(response)
+        response = pylons.response._current_obj()
+        
         if hasattr(self, '__after__'):
             self.response = response
-            try:
-                self._inspect_call(self.__after__)
-            except HTTPException, httpe:
-                response = httpe.response(environ)
-
+            self._inspect_call(self.__after__)
+        
         return response
 
 class XMLRPCController(WSGIController):
