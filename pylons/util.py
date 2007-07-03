@@ -10,6 +10,7 @@ from paste.script.appinstall import Installer
 from paste.script.templates import Template
 
 import pylons
+import pylons.configuration
 import pylons.helpers
 import pylons.i18n
 
@@ -35,6 +36,7 @@ log = deprecated(pylons.helpers.log, func_move('log',
                                                moved_to='pylons.helpers'))
     
 def get_prefix(environ, warn=True):
+    """Deprecated: Use environ.get('SCRIPT_NAME', '') instead"""
     if warn:
         warnings.warn("The get_prefix function is deprecated, please use "
                       "environ.get('SCRIPT_NAME', '') instead.",
@@ -67,15 +69,6 @@ def class_name_from_module_name(module_name):
     words = module_name.replace('-', '_').split('_')
     return ''.join([w.title() for w in words])
 
-
-def config_get(key, default=None):
-    """Return a value from ``CONFIG``. Supports both ``paste.config.CONFIG``
-    and the older ``paste.deploy.CONFIG``.
-
-    This is for Pylons internal use only; to support both versions of the
-    ``CONFIG`` objects, depending on which is used by the current Pylons
-    web app."""
-    return pylons.config.get(key, default)
 
 class ContextObj(object):
     """The 'c' object, with strict attribute access (raises an Exception when
@@ -114,7 +107,7 @@ class PylonsTemplate(Template):
     def pre(self, command, output_dir, vars):
         """Called before template is applied."""
         vars.setdefault('template_engine',
-                        pylons.config['default_template_engine'])
+                        pylons.configuration.default_template_engine)
 
 class MinimalPylonsTemplate(PylonsTemplate):
     _template_dir = 'templates/minimal_project'
