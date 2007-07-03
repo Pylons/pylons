@@ -19,7 +19,7 @@ def func_move(name, moved_to='pylons.i18n'):
             "statements to reflect the move." % (name, moved_to))
 
 def deprecated(func, message):
-    def deprecated_method(*args, **kargs):        
+    def deprecated_method(*args, **kargs):
         warnings.warn(message, DeprecationWarning, 2)
         return func(*args, **kargs)
     try:
@@ -34,7 +34,7 @@ set_lang = deprecated(pylons.i18n.set_lang, func_move('set_lang'))
 _ = deprecated(pylons.i18n._, func_move('_'))
 log = deprecated(pylons.helpers.log, func_move('log',
                                                moved_to='pylons.helpers'))
-    
+
 def get_prefix(environ, warn=True):
     """Deprecated: Use environ.get('SCRIPT_NAME', '') instead"""
     if warn:
@@ -56,9 +56,9 @@ def class_name_from_module_name(module_name):
     """Takes a module name and returns the name of the class it defines.
 
     If the module name contains dashes, they are replaced with underscores.
-    
+
     Example::
-    
+
         >>> class_name_from_module_name('with-dashes')
         'WithDashes'
         >>> class_name_from_module_name('with_underscores')
