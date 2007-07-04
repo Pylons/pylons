@@ -254,11 +254,11 @@ class PylonsConfig(DispatchingConfig):
             conf.setdefault(key, val)
 
         # Setup the prefix to override the routes if necessary.
-        prefix = self.get('prefix')
+        prefix = conf.get('prefix')
         if prefix:
             warnings.warn(pylons.legacy.prefix_warning % prefix,
-                          DeprecationWarning, 2)
-            conf['pylons.map'].prefix = app_conf['prefix']
+                          DeprecationWarning, 3)
+            conf['pylons.map'].prefix = prefix
             conf['pylons.map']._created_regs = False
 
         errorware = {}
@@ -297,7 +297,7 @@ class PylonsConfig(DispatchingConfig):
         if 'myghty_data_dir' in conf:
             warnings.warn("Old config option found in ini file, replace "
                           "'myghty_data_dir' option with 'data_dir'",
-                          DeprecationWarning, 2)
+                          DeprecationWarning, 3)
             myghty_defaults['data_dir'] = conf['myghty_data_dir']
         elif 'cache_dir' in conf:
             myghty_defaults['data_dir'] = os.path.join(conf['cache_dir'],
