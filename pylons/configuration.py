@@ -5,6 +5,7 @@ This module supplies pylons_config which handles setting up defaults
 for templating systems, Paste errorware, and prefixing Routes if
 necessary.
 """
+import copy
 import os
 import re
 import warnings
@@ -19,8 +20,7 @@ import pylons.templating
 
 default_template_engine = 'mako'
 request_defaults = dict(charset=None, errors='strict',
-                        decode_param_names=False,
-                        language='en-us')
+                        decode_param_names=False, language='en-us')
 response_defaults = dict(content_type='text/html',
                          charset='utf-8', errors='strict')
 
@@ -83,20 +83,16 @@ class PylonsConfig(DispatchingConfig):
         specified by the ``response_defaults`` dict.
     """
     defaults = {
-        # The current project's package name
         'pylons.package': None,
-        # The Routes?? only?? mapper
         'pylons.map': None,
         'pylons.paths': {},
         'pylons.g': None,
-        'pylons.helpers': None, # should call this h or g
-        'pylons.request_options': request_defaults.copy(), # just define these here
+        'pylons.h': None,
+        'pylons.request_options': request_defaults.copy(),
         'pylons.response_options': response_defaults.copy(),
-        'pylons.environ_config': {}, # hrmph!
+        'pylons.environ_config': {},
         'pylons.strict_c': False,
-        'pylons.config_namespaces': {},
         'pylons.db_engines': {},
-        'buffet.options': {},
         'buffet.template_engines': [],
         'buffet.template_options': {},
     }
@@ -130,7 +126,7 @@ class PylonsConfig(DispatchingConfig):
                          strict_c=False, request_settings=None,
                          response_settings=None):
         """Load the environment options"""
-        conf = PylonsConfig.defaults.copy()
+        conf = copy.deepcopy(PylonsConfig.defaults)
         if tmpl_options:
             conf['buffet.template_options'] = tmpl_options
 
@@ -240,10 +236,10 @@ class PylonsConfig(DispatchingConfig):
         conf.update(app_conf)
         conf.update(dict(app_conf=app_conf, global_conf=global_conf))
         conf.update(self.pop('environment_load', {}))
-        
+
         if paths:
             conf['pylons.paths'] = paths
-        
+
         # XXX Legacy: More backwards compatibility locations for the package
         #             name
         conf['pylons.package'] = conf['package'] = conf['app_conf']['package'] = package
@@ -254,7 +250,7 @@ class PylonsConfig(DispatchingConfig):
     def set_defaults(self, template_engine):
         conf = self._current_obj()
         # Ensure all the keys from defaults are present, load them if not
-        for key, val in PylonsConfig.defaults.iteritems():
+        for key, val in copy.deepcopy(PylonsConfig.defaults).iteritems():
             conf.setdefault(key, val)
 
         # Setup the prefix to override the routes if necessary.
@@ -366,9 +362,8 @@ class PylonsConfig(DispatchingConfig):
 
 config = PylonsConfig()
 
-# Push an empty config so all accesses to config at import time
-# have something to look at and modify. This config will be merged with the
-# app's when it's built in the paste.app_factory entry point.
-initial_config = {'default_template_engine':default_template_engine,
-                  'pylons.db_engines':{}}
+# Push an empty config so all accesses to config at import time have something
+# to look at and modify. This config will be merged with the app's when it's
+# built in the paste.app_factory entry point.
+initial_config = copy.deepcopy(PylonsConfig.defaults)
 config.push_process_config(initial_config)
