@@ -31,7 +31,7 @@ def etag_cache(key=None):
         class YourController(BaseController):
             def index(self):
                 resp = etag_cache(key=1)
-                resp.write(render('/splash.myt'))
+                resp.write(render('/splash.mak'))
                 return resp
     
     .. Note:: 

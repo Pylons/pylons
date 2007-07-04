@@ -292,9 +292,9 @@ def render(*args, **kargs):
     
     Examples::
         
-        content = render('/my/template.myt')
+        content = render('/my/template.mak')
         print content
-        content = render('/my/template.myt', fragment=True)
+        content = render('/my/template.mak', fragment=True)
     
     .. admonition:: Note
         
@@ -328,7 +328,7 @@ def render_response(*args, **kargs):
     .. code-block:: Python
         
         def view(self):
-            return render_response('/my/template.myt')
+            return render_response('/my/template.mak')
     """
     response = pylons.Response(render(*args, **kargs))
     output_encoding = kargs.get('output_encoding')
