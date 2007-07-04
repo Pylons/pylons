@@ -66,8 +66,7 @@ class PylonsBaseWSGIApp(object):
         self.buffet = pylons.templating.Buffet(
             def_eng['engine'], 
             template_root=def_eng['template_root'],
-            **def_eng['template_options']
-            )
+            **def_eng['template_options'])
         for e in config['buffet.template_engines'][1:]:
             self.buffet.prepare(e['engine'], template_root=e['template_root'], 
                 alias=e['alias'], **e['template_options'])
@@ -78,7 +77,7 @@ class PylonsBaseWSGIApp(object):
             self.load_test_env(environ)
             if environ['PATH_INFO'] == '/_test_vars':
                 paste.registry.restorer.save_registry_state(environ)
-                start_response('200 OK', [('Content-type','text/plain')])
+                start_response('200 OK', [('Content-type', 'text/plain')])
                 return ['%s' % paste.registry.restorer.get_request_id(environ)]
         
         controller = self.resolve(environ, start_response)
@@ -239,8 +238,8 @@ class PylonsApp(object):
         if not g:
             try:
                 globals_package = \
-                    __import__(config['pylons.package'] + '.lib.app_globals', globals(),
-                               locals(), ['Globals'])
+                    __import__(config['pylons.package'] + '.lib.app_globals',
+                               globals(), locals(), ['Globals'])
                 g = getattr(globals_package, 'Globals')
             except ImportError:
                 pass

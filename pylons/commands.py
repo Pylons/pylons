@@ -30,8 +30,8 @@ def can_import(name):
         return False
 
 def is_minimal_template(package):
-    """Determine if the specified Pylons project (package) uses the Pylons Minimal
-    Tempalte"""
+    """Determine if the specified Pylons project (package) uses the Pylons
+    Minimal Tempalte"""
     minimal_template = False
     try:
         # Check if PACKAGE.lib.base exists
@@ -116,8 +116,7 @@ class ControllerCommand(Command):
             if base_package.lower() == name.lower():
                 raise BadCommand(
                     'Your controller name should not be the same as '
-                    'the package name %r.'% base_package
-            )
+                    'the package name %r.' % base_package)
             # Validate the name
             name = name.replace('-', '_')
             validate_name(name)
@@ -135,9 +134,10 @@ class ControllerCommand(Command):
             if not fullname.startswith(os.sep):
                 fullname = os.sep + fullname
             testname = fullname.replace(os.sep, '_')[1:]
-            file_op.template_vars.update({'name': controller_name,
-                                          'fname': os.path.join(directory, name),
-                                          'importstatement': importstatement})
+            file_op.template_vars.update(
+                {'name': controller_name,
+                 'fname': os.path.join(directory, name),
+                 'importstatement': importstatement})
             file_op.copy_file(template='controller.py_tmpl',
                          dest=os.path.join('controllers', directory), 
                          filename=name)
@@ -212,8 +212,7 @@ class RestControllerCommand(Command):
             if base_package.lower() == pluralname.lower():
                 raise BadCommand(
                     'Your controller name should not be the same as '
-                    'the package name %r.'% base_package
-            )
+                    'the package name %r.'% base_package)
             # Validate the name
             for name in [singularname, pluralname]:
                 name = name.replace('-', '_')
@@ -255,8 +254,7 @@ class RestControllerCommand(Command):
                  'resource_command': command.replace('\n\t', '\n%s#%s' % \
                                                          (' '*4, ' '*9)),
                  'fname': os.path.join(pluraldirectory, pluralname),
-                 'importstatement': importstatement}
-            )
+                 'importstatement': importstatement})
             
             resource_command = ("\nTo create the appropriate RESTful mapping, "
                                 "add a map statement to your\n")
@@ -376,8 +374,8 @@ class ShellCommand(Command):
                 break
 
         if not found_base:
-            raise ImportError("Could not import base module. Are you sure this "
-                              "is a Pylons app?") 
+            raise ImportError("Could not import base module. Are you sure "
+                              "this is a Pylons app?") 
 
         base = sys.modules[base_module]
         base_public = [__name for __name in dir(base) if not \
