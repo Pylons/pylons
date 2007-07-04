@@ -32,7 +32,7 @@ development. Using a MVC style dispath, Python knowledge is used at various leve
 * The Controller is just a basic Python class, called for each request. Customizing the
   response is as easy as overriding __call__ to make your webapp work how you want.
 
-* Myghty templating compiles directly to Python byte-code for speed and utilizes Python
+* Mako templating compiles directly to Python byte-code for speed and utilizes Python
   for template control rather than creating its own template syntax for "for, while, etc"
 
 Current Status
@@ -57,7 +57,7 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
 
 
 """%version,
-    keywords='web wsgi framework sqlalchemy formencode myghty templates buffet',
+    keywords='web wsgi framework sqlalchemy formencode mako templates buffet',
     license='BSD',
     author='Ben Bangert, Philip Jenvey, James Gardner',
     author_email='ben@groovie.org, pjenvey@groovie.org',
