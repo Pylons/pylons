@@ -182,7 +182,7 @@ class Buffet(object):
                 full_path = full_path.replace(os.path.sep, '.').lstrip('.')
         
         # Don't pass format into the template engine if it's None
-        if options.has_key('format') and options['format'] is None:
+        if 'format' in options and options['format'] is None:
             del options['format']
         
         # If one of them is not None then the user did set something
