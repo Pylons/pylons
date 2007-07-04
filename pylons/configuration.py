@@ -278,8 +278,9 @@ class PylonsConfig(DispatchingConfig):
                 'localhost')
             errorware['error_subject_prefix'] = conf.get(
                 'error_subject_prefix', 'WebApp Error: ')
-            errorware['from_address'] = conf.get('from_address',
-                global_conf.get('error_email_from', 'pylons@yourapp.com'))
+            errorware['from_address'] = conf.get(
+                'from_address', conf.get('error_email_from',
+                                         'pylons@yourapp.com'))
             errorware['error_message'] = conf.get('error_message',
                 'An internal server error occurred')
 
