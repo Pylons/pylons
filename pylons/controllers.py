@@ -167,11 +167,11 @@ class WSGIController(object):
             
             # Copy the headers from the global response in if its a 2XX or
             # 3XX status code
-            # XXX: TODO: This should really be done wiht a more efficient 
+            # XXX: TODO: This should really be done with a more efficient 
             #            header merging function at some point.
             if status.startswith('2'):
                 response.headers.update(HeaderDict.fromlist(headers))
-                headers = pylons.response.headeritems()
+                headers = pylons.response.headers.headeritems()
             if status.startswith('3') or status.startswith('2'):
                 for c in pylons.response.cookies.values():
                     headers.append(('Set-Cookie', c.output(header='')))
