@@ -71,19 +71,19 @@ class HelloController(BaseController):
 </p>  
 <pre>
 &lt;h2&gt;
-Server info for ${request.host}
+Server info for $${request.host}
 &lt;/h2&gt;
 
 &lt;p&gt;
-The URL you called: ${h.url_for()}
+The URL you called: $${h.url_for()}
 &lt;/p&gt;
 
 &lt;p&gt;
-The name you set: ${c.name}
+The name you set: $${c.name}
 &lt;/p&gt;
 
 &lt;p&gt;The server environment:&lt;br /&gt;
-&lt;pre&gt;${c.pretty_environ}&lt;/pre&gt;
+&lt;pre&gt;$${c.pretty_environ}&lt;/pre&gt;
 &lt;/p&gt;
 </pre>
 
