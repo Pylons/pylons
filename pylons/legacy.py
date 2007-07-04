@@ -11,9 +11,9 @@ import pylons.decorators
 from pylons.controllers import Controller as OrigController
 from pylons.util import deprecated, func_move
 
-config_name_moved = (
-    "The name '%s' has been moved into the config dict, and should be accessed "
-    "via the pylons.config dict as pylons.config['%s']")
+config_attr_moved = (
+    "The attribute 'config.%s' has moved to the pylons.config dictionary: "
+    "Please access it via pylons.config['%s']")
 
 default_charset_warning = (
 "The 'default_charset' keyword argument to the %(klass)s constructor is "

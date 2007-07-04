@@ -120,8 +120,8 @@ class PylonsConfig(DispatchingConfig):
             for prefix in ('', 'pylons.', 'buffet.'):
                 full_name = prefix + name
                 if full_name in conf_dict:
-                    warnings.warn(pylons.legacy.config_name_moved % \
-                                      (name, full_name), DeprecationWarning, 2)
+                    warnings.warn(pylons.legacy.config_attr_moved % \
+                                      (name, full_name), DeprecationWarning, 3)
                     return conf_dict[full_name]
             return getattr(conf_dict, name)
 
