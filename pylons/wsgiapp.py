@@ -52,8 +52,8 @@ class PylonsBaseWSGIApp(object):
         self.helpers = helpers
         self.globals = globals
         self.package_name = package_name
-        self.request_settings = config['pylons.request_options']
-        self.response_settings = config['pylons.response_options']
+        self.request_options = config['pylons.request_options']
+        self.response_options = config['pylons.response_options']
         
         # Create the redirect function we'll use and save it
         def redirect_to(url):
@@ -100,8 +100,8 @@ class PylonsBaseWSGIApp(object):
         """Setup and register all the Pylons objects with the registry"""
         registry = environ['paste.registry']
 
-        registry.register(WSGIRequest.defaults, self.request_settings)
-        registry.register(WSGIResponse.defaults, self.response_settings)
+        registry.register(WSGIRequest.defaults, self.request_options)
+        registry.register(WSGIResponse.defaults, self.response_options)
 
         req = WSGIRequest(environ)
                 
