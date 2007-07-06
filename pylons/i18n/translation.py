@@ -1,8 +1,8 @@
 """Translation/Localization functions.
 
 Provides ``gettext`` translation functions via an app's ``pylons.translator``
-and get/set_lang for changing the language translated to."""
-
+and get/set_lang for changing the language translated to.
+"""
 import os
 from gettext import NullTranslations, translation
 
@@ -18,13 +18,13 @@ class LazyString(object):
     
     This method copied from TurboGears.
     """
-    def __init__(self, func, *args, **kw):
+    def __init__(self, func, *args, **kwargs):
         self.func = func
         self.args = args
-        self.kw = kw
+        self.kwargs = kwargs
 
     def eval(self): 
-        return self.func(*self.args, **self.kw)
+        return self.func(*self.args, **self.kwargs)
 
     def __unicode__(self):
         return unicode(self.eval())
@@ -37,9 +37,14 @@ class LazyString(object):
 
 def lazify(func): 
     """Decorator to return a lazy-evaluated version of the original"""
-    def newfunc(*args, **kw):
-        return LazyString(func, *args, **kw)
-    newfunc.__doc__ = func.__doc__
+    def newfunc(*args, **kwargs):
+        return LazyString(func, *args, **kwargs)
+    try:
+        newfunc.__name__ = 'lazy_%s' % func.__name__
+    except TypeError: # Python < 2.4
+        pass
+    newfunc.__doc__ = 'Lazy-evaluated version of the %s function\n\n%s' % \
+        (func.__name__, func.__doc__)
     return newfunc
 
 def gettext_noop(value):
@@ -129,13 +134,15 @@ lazy_ungettext = lazify(ungettext)
 
 def _get_translator(lang, **kwargs):
     """Utility method to get a valid translator object from a language name"""
-    import pylons.util as util
-    rootdir = pylons.config['pylons.paths'].get('root_path')
+    conf = pylons.config.current_conf()
+    # XXX: root_path is deprecated
+    rootdir = conf['pylons.paths'].get('root',
+                                       conf['pylons.paths'].get('root_path'))
     localedir = os.path.join(rootdir, 'i18n')
     if not isinstance(lang, list):
         lang = [lang]
     try:
-        translator = translation(pylons.config['pylons.package'], localedir,
+        translator = translation(conf['pylons.package'], localedir,
                                  languages=lang, **kwargs)
     except IOError, ioe:
         raise LanguageError('IOError: %s' % ioe)
