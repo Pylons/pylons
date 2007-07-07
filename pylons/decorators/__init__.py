@@ -1,11 +1,11 @@
 """Pylons Decorators: ``jsonify``, ``validate``, REST, and Cache decorators"""
+import logging
 import sys
 import warnings
-import logging
 
-import formencode.api as api
+import formencode
 import formencode.variabledecode as variabledecode
-import simplejson as json
+import simplejson
 from decorator import decorator
 from formencode import htmlfill
 from paste.util.multidict import UnicodeMultiDict
@@ -32,7 +32,7 @@ def jsonify(func, *args, **kwargs):
               "http://pylonshq.com/warnings/JSONArray"
         warnings.warn(msg, Warning, 2)
         log.warning(msg)
-    response.content.append(json.dumps(data))
+    response.content.append(simplejson.dumps(data))
     log.debug("Returning JSON wrapped action output")
     return response
 jsonify = decorator(jsonify)
@@ -92,7 +92,7 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
             log.debug("Validating against a schema")
             try:
                 self.form_result = schema.to_python(decoded)
-            except api.Invalid, e:
+            except formencode.Invalid, e:
                 errors = e.unpack_errors(variable_decode, dict_char, list_char)
         if validators:
             log.debug("Validating against provided validators")
@@ -103,7 +103,7 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
                     try:
                         self.form_result[field] = \
                             validator.to_python(decoded.get(field))
-                    except api.Invalid, error:
+                    except formencode.Invalid, error:
                         errors[field] = error
         if errors:
             log.debug("Errors found in validation, parsing form with htmlfill for errors")
