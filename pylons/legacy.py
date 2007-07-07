@@ -15,26 +15,51 @@ config_attr_moved = (
     "The attribute 'config.%s' has moved to the pylons.config dictionary: "
     "Please access it via pylons.config['%s']")
 
+config_load_environment = (
+"The pylons.config.Config object is deprecated. Please load the environment "
+"configuration via the pylons.config object in config/environment.py instead, "
+".e.g:"
+"""
+
+    from pylons import config
+
+And in in the load_environment function:
+
+    config['routes.map'] = make_map()
+    config['pylons.template_options'] = tmpl_options
+    # etc.
+
+See the default config/environment.py created via the "paster create -t pylons"
+command for a full example.
+""")
+
 default_charset_warning = (
 "The 'default_charset' keyword argument to the %(klass)s constructor is "
-"deprecated. Please specify response_settings=dict(charset='%(charset)s') to "
-"""the Config constructor in your 'config/environment.py file instead, e.g.:\n
-    return pylons.config.Config(tmpl_options, map, paths,
-                                response_settings=dict(charset='%(charset)s'))"
+"deprecated. Please specify the charset in the response_options dictionary "
+"in your config/environment.py file instead, .e.g."
+"""
+
+    from pylons import config
+
+Add the following lines to the end of the load_environment function:
+
+    config['pylons.response_options']['charset'] = '%(charset)s'
 """)
 
 helpers_and_g_warning = (
-"Pylons 0.9.3 and above now explicitly pass helpers and g "
-"references to the PylonsApp constructor. Please update your "
-"""middleware.py with:
+"Pylons 0.9.3 and above now explicitly specify the helpers and g objects. "
+"Please update your config/environment.py with:"
+"""
+
+    from pylons import config
 
     import %(package)s.lib.app_globals as app_globals
     import %(package)s.lib.helpers
 
-Then edit the PylonsApp instantiation with:
+And add the following lines to the load_environment function:
 
-    app = pylons.wsgiapp.PylonsApp(config, helpers=%(package)s.lib.helpers,
-                                   g=app_globals.Globals)
+    config['pylons.g'] = app_globals.Globals()
+    config['pylons.h'] = ${package}.lib.helpers
 """)
 
 prefix_warning = (
