@@ -11,15 +11,15 @@ log = logging.getLogger('pylons.decorators.rest')
 
 def restrict(*methods):
     """Restricts access to the function depending on HTTP method
-    
+
     Example:
-    
+
     .. code-block:: Python
-        
+
         from pylons.decorators import rest
-        
+
         class SomeController(BaseController):
-            
+
             @rest.restrict('GET')
             def comment(self, id):
     """
@@ -36,24 +36,24 @@ def restrict(*methods):
 
 def dispatch_on(**method_map):
     """Dispatches to alternate controller methods based on HTTP method
-    
+
     Multiple keyword arguments should be passed, with the keyword corresponding
     to the HTTP method to dispatch on (DELETE, POST, GET, etc.) and the
     value being the function to call. The value should be a string indicating
     the name of the function to dispatch to.
-    
+
     Example:
-    
+
     .. code-block:: Python
-        
+
         from pylons.decorators import rest
-        
+
         class SomeController(BaseController):
-            
+
             @rest.dispatch_on(POST='create_comment')
             def comment(self):
                 # Do something with the comment
-            
+
             def create_comment(self, id):
                 # Do something if its a post to comment
     """

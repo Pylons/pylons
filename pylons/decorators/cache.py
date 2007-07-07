@@ -9,13 +9,13 @@ import pylons
 
 log = logging.getLogger('pylons.decorators.cache')
 
-def beaker_cache(key="cache_default", expire="never", type="dbm", 
+def beaker_cache(key="cache_default", expire="never", type="dbm",
     query_args=False, **b_kwargs):
     """Cache decorator utilizing Beaker. Caches action or other function that
     returns a pickle-able object as a result.
-    
+
     Optional arguments:
-    
+
     key
         None - No variable key, uses function name as key
         "cache_default" - Uses all function arguments as the key
@@ -28,7 +28,7 @@ def beaker_cache(key="cache_default", expire="never", type="dbm",
     query_args
         Uses the query arguments as the key, defaults to False
 
-    If cache_enabled is set to False in the .ini file, then cache is disabled 
+    If cache_enabled is set to False in the .ini file, then cache is disabled
     globally.
     """
     def wrapper(func, *args, **kwargs):
@@ -39,22 +39,22 @@ def beaker_cache(key="cache_default", expire="never", type="dbm",
         if not asbool(enabled):
             log.debug("Caching disabled, skipping cache lookup")
             return func(*args, **kwargs)
-        
+
         my_cache = pylons.cache.get_cache('%s.%s' % (func.__module__,
                                                      func.__name__))
         cache_key = _make_key(func, key, args, kwargs, query_args)
-        
+
         if expire == "never":
             cache_expire = None
         else:
             cache_expire = expire
-        
+
         def create_func():
             log.debug("Creating new cache copy with key: %s, type: %s",
                       cache_key, type)
             return func(*args, **kwargs)
-        
-        content = my_cache.get_value(cache_key, createfunc=create_func, 
+
+        content = my_cache.get_value(cache_key, createfunc=create_func,
                                      type=type, expiretime=cache_expire,
                                      **b_kwargs)
         return content

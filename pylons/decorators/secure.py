@@ -46,15 +46,15 @@ def https(*redirect_args, **redirect_kwargs):
     decorator to controller methods (actions).
 
     Non-https POST requests are aborted (405 response code) by this decorator.
-    
+
     Example:
-    
+
     .. code-block: Python
-    
+
     @https('/pylons') # redirect to HTTPS /pylons
     def index(self):
         ...
-        
+
     @https(controller='auth', action='login') # redirect to HTTPS /auth/login
     def login(self):
         ...

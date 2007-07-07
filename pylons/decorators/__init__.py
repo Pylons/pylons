@@ -18,7 +18,7 @@ log = logging.getLogger('pylons.decorators')
 
 def jsonify(func, *args, **kwargs):
     """Action decorator that formats output for JSON
-    
+
     Given a function that will return content, this decorator will
     turn the result into JSON, with a content-type of 'text/javascript'
     and output it.
@@ -40,33 +40,33 @@ jsonify = decorator(jsonify)
 def validate(schema=None, validators=None, form=None, variable_decode=False,
              dict_char='.', list_char='-', post_only=True, **htmlfill_kwargs):
     """Validate input either for a FormEncode schema, or individual validators
-    
+
     Given a form schema or dict of validators, validate will attempt to
     validate the schema or validator list.
-    
+
     If validation was succesfull, the valid result dict will be saved
     as ``self.form_result``. Otherwise, the action will be re-run as if it was
     a GET, and the output will be filled by FormEncode's htmlfill to fill in
     the form field errors.
-    
+
     If you'd like validate to also check GET (query) variables (**not** GET
-    requests!) during its validation, set the ``post_only`` keyword argument 
+    requests!) during its validation, set the ``post_only`` keyword argument
     to False.
-    
+
     .. warning::
-        ``post_only`` applies to *where* the arguments to be validated come 
+        ``post_only`` applies to *where* the arguments to be validated come
         from. It does *not* restrict the form to only working with post, merely
         only checking POST vars.
-    
+
     Example:
-    
+
     .. code-block:: Python
-        
+
         class SomeController(BaseController):
-            
+
             def create(self, id):
                 return render_response('/myform.mak')
-            
+
             @validate(schema=model.forms.myshema(), form='create')
             def update(self, id):
                 # Do something with self.form_result
@@ -108,12 +108,12 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
         if errors:
             log.debug("Errors found in validation, parsing form with htmlfill for errors")
             pylons.request.environ['REQUEST_METHOD'] = 'GET'
-            
-            # If there's no form supplied, just continue with the current 
+
+            # If there's no form supplied, just continue with the current
             # function call.
             if not form:
                 return func(self, *args, **kwargs)
-            
+
             pylons.request.environ['pylons.routes_dict']['action'] = form
             response = self._dispatch_call()
             form_content = ''.join(response.content)
