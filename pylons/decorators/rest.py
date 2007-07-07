@@ -5,7 +5,7 @@ from decorator import decorator
 
 import pylons
 
-__all__ = ['restrict', 'dispatch_on']
+__all__ = ['dispatch_on', 'restrict']
 
 log = logging.getLogger('pylons.decorators.rest')
 
