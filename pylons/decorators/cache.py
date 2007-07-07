@@ -1,13 +1,13 @@
 """Caching decorators"""
 import inspect
 import logging
-log = logging.getLogger('pylons.decorators.cache')
 
 from decorator import decorator
-
 from paste.deploy.converters import asbool
 
 import pylons
+
+log = logging.getLogger('pylons.decorators.cache')
 
 def beaker_cache(key="cache_default", expire="never", type="dbm", 
     query_args=False, **b_kwargs):

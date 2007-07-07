@@ -1,10 +1,13 @@
 """REST decorators"""
 import logging
-log = logging.getLogger('pylons.decorators.rest')
 
 from decorator import decorator
 
 import pylons
+
+__all__ = ['restrict', 'dispatch_on']
+
+log = logging.getLogger('pylons.decorators.rest')
 
 def restrict(*methods):
     """Restricts access to the function depending on HTTP method
@@ -63,5 +66,3 @@ def dispatch_on(**method_map):
             return self._inspect_call(alt_method, **kwargs)
         return func(self, *args, **kwargs)
     return decorator(dispatcher)
-
-__all__ = ['restrict', 'dispatch_on']

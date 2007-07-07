@@ -1,12 +1,15 @@
 """Security related decorators"""
 import logging
-from decorator import decorator
-log = logging.getLogger('pylons.decorators.secure')
 
+from decorator import decorator
 from webhelpers.rails.secure_form_tag import authentication_token, token_key
 
 from pylons import request, Response
 from pylons.helpers import abort, redirect_to
+
+__all__ = ['authenticate_form', 'https']
+
+log = logging.getLogger('pylons.decorators.secure')
 
 csrf_detected_message = (
     "Cross-site request forgery detected, request denied. See "
@@ -71,5 +74,3 @@ def https(*redirect_args, **redirect_kwargs):
             else:
                 abort(405) # don't allow POSTs.
     return decorator(wrapper)
-
-__all__ = ['authenticate_form', 'https']
