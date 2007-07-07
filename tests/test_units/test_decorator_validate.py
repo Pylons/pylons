@@ -10,6 +10,10 @@ from pylons.controllers import WSGIController
 from __init__ import ControllerWrap, SetupCacheGlobal, TestWSGIController
 
 import formencode
+from formencode.htmlfill import html_quote
+
+def custom_error_formatter(error):
+    return '<p><span class="pylons-error">%s</span></p>\n' % html_quote(error)
 
 class NetworkForm(formencode.Schema):
     allow_extra_fields = True
@@ -66,6 +70,12 @@ class ValidatingController(WSGIController):
         return Response(str(self.form_result))
     hello = validate(schema=HelloForm(), post_only=False, form='view_hello')(hello)
 
+    def hello_custom(self):
+        return Response(str(self.form_result))
+    hello_custom = \
+        validate(schema=HelloForm(), post_only=False, form='view_hello',
+                     auto_error_formatter=custom_error_formatter)(hello_custom)
+
 class TestValidateDecorator(TestWSGIController):
     def setUp(self):
         TestWSGIController.setUp(self)
@@ -96,6 +106,16 @@ class TestValidateDecorator(TestWSGIController):
                                  extra_environ=self.environ)
         assert 'Bad Hello!&nbsp;' in response
         assert "[None, None, 'Please enter an integer value']" in response
+
+    def test_hello_custom_failed(self):
+        self.environ['pylons.routes_dict']['action'] = 'hello_custom'
+        response = \
+            self.app.post('/hello_custom?hello=1&hello=2&hello=hi',
+                          extra_environ=self.environ)
+        assert 'Bad Hello!&nbsp;' in response
+        assert "[None, None, 'Please enter an integer value']" in response
+        assert ("""<p><span class="pylons-error">[None, None, 'Please enter """
+                """an integer value']</span></p>""") in response
 
 def test_encode_formencode_errors():
     assert None == encode_formencode_errors(None, 'utf-8')

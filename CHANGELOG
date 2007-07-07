@@ -24,6 +24,8 @@ Pylons Changelog
   by David Turner. Fixes #157.
 * Fix Buffet's include_pylons_variables not being upheld. Thanks Jonathan
   LaCour.
+* The validate decorator now accepts extra keyword arguments (**htmlfill_kwargs)
+  to pass along to formencode's htmlfill.render function.
 * Removed POST-only restriction on validate decorator, now handles GET 
   requests. No form arg required during a GET request, which will run the
   current action with self.errors set to the errors. Fixes #246.

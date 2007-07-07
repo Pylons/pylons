@@ -36,7 +36,7 @@ def jsonify(func, *args, **kwargs):
 jsonify = decorator(jsonify)
 
 def validate(schema=None, validators=None, form=None, variable_decode=False,
-             dict_char='.', list_char='-', post_only=True):
+             dict_char='.', list_char='-', post_only=True, **htmlfill_kwargs):
     """Validate input either for a FormEncode schema, or individual validators
     
     Given a form schema or dict of validators, validate will attempt to
@@ -138,7 +138,9 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
                           "converted to unicode for htmlfill", form)
                 encoding = determine_response_charset(response)
                 form_content = form_content.decode(encoding)
-            response.content = htmlfill.render(form_content, params, errors)
+            response.content = \
+                htmlfill.render(form_content, defaults=params, errors=errors,
+                                **htmlfill_kwargs)
             return response
         return func(self, *args, **kwargs)
     return decorator(wrapper)
