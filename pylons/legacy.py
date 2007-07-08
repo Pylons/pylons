@@ -46,6 +46,19 @@ Add the following lines to the end of the load_environment function:
     config['pylons.response_options']['charset'] = '%(charset)s'
 """)
 
+g_confargs = (
+"Handling conf arguments in your app_globals __init__ function is no longer"
+"required. Please update your config/app_globals.py with:"
+"""
+    from pylons import config
+
+    class Globals(object):
+        def __init__(self):
+            pass
+
+And use the config object in your Globals instance.
+""")
+
 helpers_and_g_warning = (
 "Pylons 0.9.3 and above now explicitly specify the helpers and g objects. "
 "Please update your config/environment.py with:"

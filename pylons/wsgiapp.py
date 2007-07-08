@@ -5,16 +5,20 @@ It's generally assumed that it will be called by Paste, though any WSGI
 application server could create and call the WSGI app as well.
 """
 import gettext
+import logging
 import inspect
 import sys
 import warnings
+
 
 import paste.httpexceptions as httpexceptions
 import paste.registry
 from paste.wsgiwrappers import WSGIRequest, WSGIResponse
 
+
 from routes import request_config
 from routes.middleware import RoutesMiddleware
+
 
 import pylons
 import pylons.legacy
@@ -23,6 +27,10 @@ from pylons.controllers import Controller, WSGIController
 from pylons.i18n import set_lang
 from pylons.util import ContextObj, AttribSafeContextObj, \
     class_name_from_module_name
+
+
+log = logging.getLogger(__name__)
+
 
 class PylonsBaseWSGIApp(object):
     """Basic Pylons WSGI Application
@@ -211,7 +219,8 @@ class PylonsBaseWSGIApp(object):
             testenv['session'] = environ[econf['session']]
         if econf.get('cache'):
             testenv['cache'] = environ[econf['cache']]
-    
+
+
 class PylonsApp(object):
     """Setup the Pylons default environment
     
@@ -247,7 +256,12 @@ class PylonsApp(object):
         if not g:
             g = type("Globals", (), {})()
         else:
-            g = g(config['global_conf'], config['app_conf'], config=config)
+            if len(inspect.getargspec(g.__init__)[0]) > 1:
+                warnings.warn(pylons.legacy.g_confargs, DeprecationWarning, 2)
+                g = g(config['global_conf'], config['app_conf'], config=config)
+            else:
+                g = g()
+        
         g.pylons_config = pylons.config
         config['pylons.helpers'] = helpers
         
