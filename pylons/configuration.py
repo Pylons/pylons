@@ -8,7 +8,6 @@ necessary.
 import copy
 import logging
 import os
-import re
 import warnings
 
 from paste.config import DispatchingConfig
