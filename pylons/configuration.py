@@ -6,23 +6,26 @@ for templating systems, Paste errorware, and prefixing Routes if
 necessary.
 """
 import copy
+import logging
 import os
 import re
 import warnings
-import logging
-log = logging.getLogger('pylons.config')
 
-from paste.deploy.converters import asbool
 from paste.config import DispatchingConfig
+from paste.deploy.converters import asbool
 
 import pylons.legacy
 import pylons.templating
+
 
 default_template_engine = 'mako'
 request_defaults = dict(charset=None, errors='strict',
                         decode_param_names=False, language='en-us')
 response_defaults = dict(content_type='text/html',
                          charset='utf-8', errors='strict')
+
+log = logging.getLogger(__name__)
+
 
 class PylonsConfig(DispatchingConfig):
     """Pylons configuration object
@@ -125,7 +128,10 @@ class PylonsConfig(DispatchingConfig):
                          environ_config=None, default_charset=None,
                          strict_c=False, request_settings=None,
                          response_settings=None):
-        """Load the environment options"""
+        """Load the environment options
+        
+        Deprecated functionality for pre-0.9.6 projects.
+        """
         conf = copy.deepcopy(PylonsConfig.defaults)
         if tmpl_options:
             conf['buffet.template_options'] = tmpl_options
@@ -201,12 +207,18 @@ class PylonsConfig(DispatchingConfig):
             options = self['buffet.template_options']
         config = dict(engine=engine, template_root=root,
             template_options=options, alias=alias)
+        log.debug("Adding %s engine with alias %s and %s options", engine, 
+                  alias, options)
         self['buffet.template_engines'].append(config)
 
     def init_app(self, global_conf, app_conf, package=None,
                  template_engine=default_template_engine, paths=None):
         """Initialize configuration for the application
-
+        
+        .. note
+            This *must* be called at least once, as soon as possible tosetup 
+            all the configuration options.
+        
         ``global_config``
             Several options are expected to be set for a Pylons web
             application. They will be loaded from the global_config which has
@@ -232,6 +244,7 @@ class PylonsConfig(DispatchingConfig):
             Declare the default template engine to setup. Choices are kid,
             genshi, mako (the default), and pylonsmyghty.
         """
+        log.debug("Initializing configuration object.")
         conf = global_conf.copy()
         conf.update(app_conf)
         conf.update(dict(app_conf=app_conf, global_conf=global_conf))
@@ -245,10 +258,13 @@ class PylonsConfig(DispatchingConfig):
         conf['pylons.package'] = conf['package'] = conf['app_conf']['package'] = package
         
         self.push_process_config(conf)
+        log.debug("Pushed process configuration.")
         self.set_defaults(template_engine)
     
     def set_defaults(self, template_engine):
         conf = self._current_obj()
+        log.debug("Loading configuration defaults.")
+        
         # Ensure all the keys from defaults are present, load them if not
         for key, val in copy.deepcopy(PylonsConfig.defaults).iteritems():
             conf.setdefault(key, val)
@@ -260,11 +276,11 @@ class PylonsConfig(DispatchingConfig):
                           DeprecationWarning, 3)
             conf['pylons.map'].prefix = prefix
             conf['pylons.map']._created_regs = False
-
-        errorware = {}
+        
         # Load the errorware configuration from the Paste configuration file
         # These all have defaults, and emails are only sent if configured and
         # if this application is running in production mode
+        errorware = {}
         errorware['debug'] = asbool(conf.get('debug'))
         if not errorware['debug']:
             errorware['debug'] = False
@@ -356,11 +372,14 @@ class PylonsConfig(DispatchingConfig):
             self.add_template_engine('mako', '')
         elif template_engine in ['genshi', 'kid']:
             self.add_template_engine(template_engine, conf['pylons.package'] + '.templates')
-
+        log.debug("Loaded %s template engine as the default template renderer.", template_engine)
+        
         # Save our errorware values
         conf['pylons.errorware'] = errorware
 
+
 config = PylonsConfig()
+
 
 # Push an empty config so all accesses to config at import time have something
 # to look at and modify. This config will be merged with the app's when it's
