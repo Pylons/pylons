@@ -7,7 +7,7 @@ import pylons
 
 __all__ = ['dispatch_on', 'restrict']
 
-log = logging.getLogger('pylons.decorators.rest')
+log = logging.getLogger(__name__)
 
 def restrict(*methods):
     """Restricts access to the function depending on HTTP method

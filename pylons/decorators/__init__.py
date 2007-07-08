@@ -14,7 +14,7 @@ import pylons
 
 __all__ = ['jsonify', 'validate']
 
-log = logging.getLogger('pylons.decorators')
+log = logging.getLogger(__name__)
 
 def jsonify(func, *args, **kwargs):
     """Action decorator that formats output for JSON
@@ -106,7 +106,8 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
                     except formencode.Invalid, error:
                         errors[field] = error
         if errors:
-            log.debug("Errors found in validation, parsing form with htmlfill for errors")
+            log.debug("Errors found in validation, parsing form with htmlfill "
+                      "for errors")
             pylons.request.environ['REQUEST_METHOD'] = 'GET'
 
             # If there's no form supplied, just continue with the current

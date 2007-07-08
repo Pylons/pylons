@@ -2,14 +2,14 @@
 import logging
 
 from decorator import decorator
-from webhelpers.rails.secure_form_tag import authentication_token, token_key
+from webhelpers.rails import secure_form_tag
 
 from pylons import request, Response
 from pylons.helpers import abort, redirect_to
 
 __all__ = ['authenticate_form', 'https']
 
-log = logging.getLogger('pylons.decorators.secure')
+log = logging.getLogger(__name__)
 
 csrf_detected_message = (
     "Cross-site request forgery detected, request denied. See "
@@ -17,9 +17,9 @@ csrf_detected_message = (
     "information.")
 
 def authenticated_form(params):
-    submitted_token = params.get(token_key)
+    submitted_token = params.get(secure_form_tag.token_key)
     return submitted_token is not None and \
-        submitted_token == authentication_token()
+        submitted_token == secure_form_tag.authentication_token()
 
 def authenticate_form(func, *args, **kwargs):
     """Decorator for authenticating a form according to an authorization token
@@ -31,7 +31,7 @@ def authenticate_form(func, *args, **kwargs):
     For use with the ``webhelpers.rails.secure_form_tag`` helper functions.
     """
     if authenticated_form(request.POST):
-        del request.POST[token_key]
+        del request.POST[secure_form_tag.token_key]
         return func(*args, **kwargs)
     else:
         log.debug('Cross-site request forgery detected, request denied: %r' %

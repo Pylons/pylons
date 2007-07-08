@@ -7,7 +7,7 @@ from paste.deploy.converters import asbool
 
 import pylons
 
-log = logging.getLogger('pylons.decorators.cache')
+log = logging.getLogger(__name__)
 
 def beaker_cache(key="cache_default", expire="never", type="dbm",
     query_args=False, **b_kwargs):
