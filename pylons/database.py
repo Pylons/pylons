@@ -8,13 +8,19 @@ file called ``sqlobject.dburi``.
 A SQLAlchemy ``SessionContext`` is also available: it provides both thread and
 process safe ``Session`` objects via the ``session_context.current`` property.
 """
+import logging
 import thread
 
 from paste.deploy.converters import asbool
 
 import pylons
 
-__all__ = ["PackageHub", "AutoConnectHub"]
+
+__all__ = ["AutoConnectHub", "PackageHub"]
+
+
+log = logging.getLogger(__name__)
+
 
 try:
     import sqlalchemy
@@ -31,6 +37,8 @@ try:
             app_scope_id = str(id(pylons.config._current_obj()))
         except TypeError:
             app_scope_id = ''
+        log.debug("Returning %s as the database session scope id.", 
+                  app_scope_id)
         return '%s|%i' % (app_scope_id, thread.get_ident())
 
     def create_engine(uri=None, echo=None, **kwargs):
@@ -48,6 +56,7 @@ try:
         else:
             engine = db_engines[engine_key] = \
                 sqlalchemy.create_engine(uri, **kwargs)
+        log.debug("Created engine using uri: %s with echo %s", uri, echo)
         return engine
 
     def get_engine_conf(uri=None, echo=None):
@@ -79,6 +88,7 @@ try:
         if session_kwargs is None:
             session_kwargs = {}
         engine = create_engine(uri, echo=echo, **kwargs)
+        log.debug("Created engine for session context.")
         return sqlalchemy.create_session(bind_to=engine, **session_kwargs)
 
     session_context = sessioncontext.SessionContext(make_session,
@@ -90,12 +100,14 @@ try:
 except ImportError:
     pass
 
+
 # Provide support for sqlobject
 try:
     import sqlobject
     from sqlobject.dbconnection import ConnectionHub, Transaction, TheURIOpener
 except:
     ConnectionHub = object
+
 
 class AutoConnectHub(ConnectionHub):
     """Connects to the database once per thread.
@@ -170,14 +182,17 @@ class AutoConnectHub(ConnectionHub):
         del self.threadingLocal.old_conn
         self.threadingLocal.connection.cache.clear()
 
+
 # This dictionary stores the AutoConnectHubs used for each
 # connection URI
 _hubs = dict()
+
 
 class UnconfiguredConnectionError(KeyError):
     """
     Raised when no configuration is available to set up a connection.
     """
+
 
 class PackageHub(object):
     """Transparently proxies to an AutoConnectHub for the URI
