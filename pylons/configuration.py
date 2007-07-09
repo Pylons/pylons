@@ -39,9 +39,9 @@ class PylonsConfig(DispatchingConfig):
     pylons with:
 
     .. code :: Python
-        import pylons
+        from pylons import config
 
-        map = pylons.config['map']
+        template_paths = config['pylons.paths']['templates']
 
     There's several useful keys of the config object most people will be
     interested in:
@@ -85,16 +85,19 @@ class PylonsConfig(DispatchingConfig):
         specified by the ``response_defaults`` dict.
     """
     defaults = {
+        'debug': False,
         'pylons.package': None,
-        'pylons.map': None,
-        'pylons.paths': {},
+        'pylons.paths': {'root_path': None,
+                         'controllers': None,
+                         'templates': [],
+                         'static_files': None},
+        'pylons.db_engines': {},
+        'pylons.environ_config': {},
         'pylons.g': None,
         'pylons.h': None,
         'pylons.request_options': request_defaults.copy(),
         'pylons.response_options': response_defaults.copy(),
-        'pylons.environ_config': {},
         'pylons.strict_c': False,
-        'pylons.db_engines': {},
         'buffet.template_engines': [],
         'buffet.template_options': {},
     }
@@ -111,7 +114,7 @@ class PylonsConfig(DispatchingConfig):
                     setattr(self, name, value)
             return FakeConfig
         else:
-            conf_dict = self._current_obj()
+            conf_dict = self.current_conf()
 
             # Backwards compat for when the option is now in the dict, and
             # access was attempted via attribute
@@ -131,6 +134,9 @@ class PylonsConfig(DispatchingConfig):
         
         Deprecated functionality for pre-0.9.6 projects.
         """
+        warnings.warn(pylons.legacy.config_load_environment,
+                      DeprecationWarning, 3)
+
         conf = copy.deepcopy(PylonsConfig.defaults)
         if tmpl_options:
             conf['buffet.template_options'] = tmpl_options
@@ -254,14 +260,18 @@ class PylonsConfig(DispatchingConfig):
 
         # XXX Legacy: More backwards compatibility locations for the package
         #             name
-        conf['pylons.package'] = conf['package'] = conf['app_conf']['package'] = package
+        conf['pylons.package'] = conf['package'] = \
+            conf['app_conf']['package'] = package
+
+        if 'debug' in conf:
+            conf['debug'] = asbool(conf['debug'])
         
         self.push_process_config(conf)
         log.debug("Pushed process configuration.")
         self.set_defaults(template_engine)
     
     def set_defaults(self, template_engine):
-        conf = self._current_obj()
+        conf = self.current_conf()
         log.debug("Loading configuration defaults.")
         
         # Ensure all the keys from defaults are present, load them if not
@@ -273,8 +283,10 @@ class PylonsConfig(DispatchingConfig):
         if prefix:
             warnings.warn(pylons.legacy.prefix_warning % prefix,
                           DeprecationWarning, 3)
-            conf['pylons.map'].prefix = prefix
-            conf['pylons.map']._created_regs = False
+            map = conf.get('pylons.map')
+            if map:
+                map.prefix = prefix
+                map._created_regs = False
         
         # Load the errorware configuration from the Paste configuration file
         # These all have defaults, and emails are only sent if configured and
@@ -300,7 +312,8 @@ class PylonsConfig(DispatchingConfig):
 
         # Raise a complete error for the error middleware to catch
         myghty_defaults['raise_error'] = True
-        myghty_defaults['output_encoding'] = conf['pylons.response_options']['charset']
+        myghty_defaults['output_encoding'] = \
+            conf['pylons.response_options']['charset']
         myghty_defaults['component_root'] = [{os.path.basename(path): path} \
             for path in conf['pylons.paths']['templates']]
 
@@ -370,7 +383,8 @@ class PylonsConfig(DispatchingConfig):
         elif template_engine == 'mako':
             self.add_template_engine('mako', '')
         elif template_engine in ['genshi', 'kid']:
-            self.add_template_engine(template_engine, conf['pylons.package'] + '.templates')
+            self.add_template_engine(template_engine,
+                                     conf['pylons.package'] + '.templates')
         log.debug("Loaded %s template engine as the default template renderer.", template_engine)
         
         # Save our errorware values
