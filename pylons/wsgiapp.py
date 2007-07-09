@@ -5,20 +5,16 @@ It's generally assumed that it will be called by Paste, though any WSGI
 application server could create and call the WSGI app as well.
 """
 import gettext
-import logging
 import inspect
+import logging
 import sys
 import warnings
-
 
 import paste.httpexceptions as httpexceptions
 import paste.registry
 from paste.wsgiwrappers import WSGIRequest, WSGIResponse
-
-
 from routes import request_config
 from routes.middleware import RoutesMiddleware
-
 
 import pylons
 import pylons.legacy
@@ -28,9 +24,7 @@ from pylons.i18n import set_lang
 from pylons.util import ContextObj, AttribSafeContextObj, \
     class_name_from_module_name
 
-
 log = logging.getLogger(__name__)
-
 
 class PylonsBaseWSGIApp(object):
     """Basic Pylons WSGI Application
@@ -65,6 +59,7 @@ class PylonsBaseWSGIApp(object):
         
         # Create the redirect function we'll use and save it
         def redirect_to(url):
+            log.debug("Raising redirect to %s.", url)
             raise httpexceptions.HTTPFound(url)
         self.redirect_to = redirect_to
         
@@ -75,6 +70,7 @@ class PylonsBaseWSGIApp(object):
             def_eng['engine'], 
             template_root=def_eng['template_root'],
             **def_eng['template_options'])
+        log.debug("Initializing additional template engines.")
         for e in config['buffet.template_engines'][1:]:
             self.buffet.prepare(e['engine'], template_root=e['template_root'], 
                 alias=e['alias'], **e['template_options'])
@@ -97,6 +93,8 @@ class PylonsBaseWSGIApp(object):
         
         if hasattr(response, 'wsgi_response'):
             # Transform Response objects from legacy Controller
+            log.debug("Transforming legacy Response object into WSGI "
+                      "response.")
             return response(environ, start_response)
         elif response:
             return response
@@ -106,6 +104,7 @@ class PylonsBaseWSGIApp(object):
     
     def setup_app_env(self, environ, start_response):
         """Setup and register all the Pylons objects with the registry"""
+        log.debug("Setting up Pylons stacked object globals.")
         registry = environ['paste.registry']
 
         registry.register(WSGIRequest.defaults, self.request_options)
@@ -157,6 +156,7 @@ class PylonsBaseWSGIApp(object):
         if not controller:
             return None
         
+        log.debug("Resolved URL to controller: %s.", controller)
         return self.find_controller(controller)
     
     def find_controller(self, controller):
@@ -176,6 +176,8 @@ class PylonsBaseWSGIApp(object):
         __import__(full_module_name)
         module_name = controller.split('/')[-1]
         class_name = class_name_from_module_name(module_name) + 'Controller'
+        log.debug("Looked up controller module '%s', returning the class %s.",
+                  full_module_name, class_name)
         return getattr(sys.modules[full_module_name], class_name)
         
     def dispatch(self, controller, environ, start_response):
@@ -185,6 +187,7 @@ class PylonsBaseWSGIApp(object):
         Override this to change how the controller dispatch is handled.
         """
         if not controller:
+            log.debug("No controller found, returning 404 HTTP Not Found.")
             raise httpexceptions.HTTPNotFound()
         match = environ['pylons.routes_dict']
         
@@ -195,18 +198,22 @@ class PylonsBaseWSGIApp(object):
             controller = controller()
             controller.start_response = start_response
             
+            log.debug("Calling older Controller subclass.")
             return controller(**match)
-                
+        
         # If it's a class, instantiate it
         if not hasattr(controller, '__class__') or \
             getattr(controller, '__class__') == type:
+            log.debug("Controller appears to be a class, instantiating.")
             controller = controller()
         
         # Controller is assumed to handle a WSGI call
+        log.debug("Calling controller class with WSGI interface.")
         return controller(environ, start_response)
     
     def load_test_env(self, environ):
         """Sets up our Paste testing environment"""
+        log.debug("Setting up paste testing environment variables.")
         testenv = environ['paste.testing_variables']
         testenv['req'] = pylons.request._current_obj()
         testenv['c'] = pylons.c._current_obj()
@@ -230,20 +237,10 @@ class PylonsApp(object):
     where objects for the session/cache will be. If they're set to none,
     then no session/cache objects will be available.
     """
-    def __init__(self, config=None, default_charset=None, helpers=None, g=None,
+    def __init__(self, config=None, helpers=None, g=None,
                  use_routes=True, base_wsgi_app=None):
         self.config = config = pylons.config._current_obj()
-        if default_charset:
-            warnings.warn(pylons.legacy.default_charset_warning % \
-                              dict(klass='PylonsApp', charset=default_charset),
-                          DeprecationWarning, 2)
-            self.config['pylons.response_options']['charset'] = default_charset
-
-        if helpers is None or g is None:
-            warnings.warn(pylons.legacy.helpers_and_g_warning % \
-                              dict(package=config['pylons.package']),
-                          DeprecationWarning, 2)
-            
+                
         if not g:
             try:
                 globals_package = \
