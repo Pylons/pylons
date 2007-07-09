@@ -13,4 +13,5 @@ class TestSample2Controller(TestController):
     def test_kid_default(self):
         response = self.app.get(url_for(controller='/sample', action='testdefault'))
         assert 'Hello from Kid' in response
-    
+        assert 'This is in c var' in response
+        assert '--Empty var: --' in response

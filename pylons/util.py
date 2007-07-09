@@ -19,7 +19,7 @@ __all__ = ['AttribSafeContextObj', 'ContextObj', 'Helpers',
            'class_name_from_module_name', 'log', '_', 'set_lang', 'get_lang']
 __pudge_all__ = __all__ + ['MinimalPylonsTemplate', 'PylonsTemplate']
 
-log = logging.getLogger(__name__)
+pylons_log = logging.getLogger(__name__)
 
 def func_move(name, moved_to='pylons.i18n'):
     return ("The %s function has moved to %s, please update your import "
@@ -109,8 +109,8 @@ class AttribSafeContextObj(ContextObj):
         try:
             return object.__getattribute__(self, name)
         except AttributeError:
-            log.debug("No attribute called %s found on c object, returning "
-                      "empty string.", name)
+            pylons_log.debug("No attribute called %s found on c object, "
+                             "returning empty string.", name)
             return ''
 
 

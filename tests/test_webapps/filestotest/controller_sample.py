@@ -28,6 +28,7 @@ class SampleController(BaseController):
         return Response(str(request.params))
     
     def testdefault(self):
+        c.test = "This is in c var"
         return render_response('testkid')
     
     def test_extra_engine(self):
