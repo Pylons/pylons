@@ -137,6 +137,7 @@ class WSGIController(object):
         except HTTPException, httpe:
             log.debug("Action method resulted in HTTP Exception: %s.", httpe)
             result = httpe.response(pylons.request.environ)
+            result._exception = True
         return result
     
     def _get_method_args(self):
@@ -207,7 +208,9 @@ class WSGIController(object):
         
         if hasattr(self, '__before__'):
             log.debug("Calling __before__ action.")
-            self._inspect_call(self.__before__)
+            response = self._inspect_call(self.__before__)
+            if hasattr(response, '_exception'):
+                return response(environ, start_response)
         
         response = self._dispatch_call()
         if not start_response_called:
@@ -242,7 +245,9 @@ class WSGIController(object):
         if hasattr(self, '__after__'):
             log.debug("Calling __after__ action.")
             self.response = response
-            self._inspect_call(self.__after__)
+            after = self._inspect_call(self.__after__)
+            if hasattr(after, '_exception'):
+                return after(environ, start_response)
         
         if hasattr(response, 'wsgi_response'):
             # Copy the response object into the testing vars if we're testing
