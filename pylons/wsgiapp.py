@@ -219,7 +219,7 @@ class PylonsBaseWSGIApp(object):
         testenv['c'] = pylons.c._current_obj()
         g = pylons.g._current_obj()
         testenv['g'] = g
-        testenv['h'] = self.config['pylons.helpers'] or pylons.h._current_obj()
+        testenv['h'] = self.config['pylons.h'] or pylons.h._current_obj()
         testenv['pylons_config'] = self.config
         econf = environ['pylons.environ_config']
         if econf.get('session'):
@@ -240,7 +240,12 @@ class PylonsApp(object):
     def __init__(self, config=None, helpers=None, g=None,
                  use_routes=True, base_wsgi_app=None):
         self.config = config = pylons.config._current_obj()
-                
+
+        if helpers is None:
+            helpers = config.get('pylons.h')
+        if g is None:
+            g = config.get('pylons.g')
+
         if not g:
             try:
                 globals_package = \
@@ -249,18 +254,19 @@ class PylonsApp(object):
                 g = getattr(globals_package, 'Globals')
             except ImportError:
                 pass
+
         # Assign a default globals object, and instantiate it
         if not g:
             g = type("Globals", (), {})()
-        else:
+        elif isinstance(g, type):
             if len(inspect.getargspec(g.__init__)[0]) > 1:
                 warnings.warn(pylons.legacy.g_confargs, DeprecationWarning, 2)
                 g = g(config['global_conf'], config['app_conf'], config=config)
             else:
                 g = g()
-        
-        g.pylons_config = pylons.config
-        config['pylons.helpers'] = helpers
+
+        config['pylons.g'] = g
+        config['pylons.h'] = helpers
         
         # Create the base Pylons wsgi app
         base_app = base_wsgi_app or PylonsBaseWSGIApp
@@ -280,7 +286,8 @@ class PylonsApp(object):
             from beaker.middleware import CacheMiddleware
             econf['cache'] = 'beaker.cache'
             app = CacheMiddleware(app, config)
-        
+
+        # Legacy: PylonsApp.globals
         self.globals = g
         self.app = app
     
