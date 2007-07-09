@@ -8,6 +8,7 @@ The only additional thing besides skinning supplied, is the Template traceback
 information.
 """
 import cgi
+import logging
 import sys
 
 from paste.evalexception.middleware import *
@@ -15,6 +16,11 @@ from paste.exceptions.formatter import *
 
 from pylons.middleware import media_path
 from pylons.util import get_prefix
+
+__all__ = []
+
+log = logging.getLogger(__name__)
+
 
 class Supplement(errormiddleware.Supplement):
     """This is a supplement used to display standard WSGI information in
@@ -49,6 +55,7 @@ class Supplement(errormiddleware.Supplement):
         # Add any extra sections here
        
         return data
+
 
 class HTMLFormatter(formatter.HTMLFormatter):
     def format_collected_data(self, exc_data):
@@ -173,8 +180,10 @@ class HTMLFormatter(formatter.HTMLFormatter):
             # and so the js & CSS are unneeded
             return text, extra_data
 
+
 class InvalidTemplate(Exception):
     pass
+
 
 class PylonsEvalException(EvalException):
 
@@ -281,14 +290,15 @@ class PylonsEvalException(EvalException):
             return debug_info.content()
 
 
-
 def myghty_html_data(exc_value):
     if hasattr(exc_value, 'htmlformat'):
         return exc_value.htmlformat()[333:-14]
     if hasattr(exc_value, 'mtrace'):
         return exc_value.mtrace.htmlformat()[333:-14]
 
+
 template_error_formatters = [myghty_html_data]
+
 
 try:
     import mako.exceptions
@@ -301,7 +311,8 @@ else:
                                                                 css=False)
     
     template_error_formatters.insert(0,mako_html_data)
-    
+
+
 class PylonsDebugInfo(DebugInfo):
     def __init__(self, counter, exc_info, exc_data, base_path,
                  environ, view_uri, error_template):
@@ -358,6 +369,7 @@ class PylonsDebugInfo(DebugInfo):
             'debug_count = %r;\n'
             '</script>\n'
             % (base_path, base_path, base_path, counter))
+
 
 class EvalHTMLFormatter(HTMLFormatter):
 
@@ -459,6 +471,7 @@ def format_eval_html(exc_data, base_path, counter):
     """ % (short_er, len(short_text_er.splitlines()), short_text_er,
            full_traceback_html), extra_data
 
+
 def format_extra_data_text(exc_data):
     """ Return a text representation of the 'extra_data' dict when one exists """
     extra_data_text = ''
@@ -482,6 +495,7 @@ def format_extra_data_text(exc_data):
     for title in titles:
         extra_data_text += by_title[title]
     return extra_data_text
+
 
 error_template = '''\
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -564,6 +578,7 @@ error_template = '''\
 </html>
 '''
 
+
 error_head_template = """
 <!-- 
     This is the Pylons error handler.
@@ -609,6 +624,7 @@ function switch_display(id) {
 </script>
 """
 
+
 error_traceback_template = """
         <div style="float: left; width: 100%%; padding-bottom: 20px;">
         <h1 class="first"><a name="content"></a>Error Traceback</h1>
@@ -626,5 +642,3 @@ error_traceback_template = """
         <tr><td><img src="%(prefix)s/_debug/media/pylons/img/plus.jpg" /></td><td>Show a debug prompt to allow you to directly debug the code at the traceback</td></tr>
         </table>
         </div>%(repost_button)s"""
-
-__all__ = []
