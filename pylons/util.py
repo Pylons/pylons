@@ -4,6 +4,7 @@ PylonsTemplate is a Paste Template sub-class that configures the source
 directory and default plug-ins for a new Pylons project. The minimal template
 provides a more minimal template with less additional directories and layout.
 """
+import logging
 import warnings
 
 from paste.script.appinstall import Installer
@@ -14,9 +15,16 @@ import pylons.configuration
 import pylons.helpers
 import pylons.i18n
 
+__all__ = ['AttribSafeContextObj', 'ContextObj', 'Helpers',
+           'class_name_from_module_name', 'log', '_', 'set_lang', 'get_lang']
+__pudge_all__ = __all__ + ['MinimalPylonsTemplate', 'PylonsTemplate']
+
+log = logging.getLogger(__name__)
+
 def func_move(name, moved_to='pylons.i18n'):
     return ("The %s function has moved to %s, please update your import "
             "statements to reflect the move." % (name, moved_to))
+
 
 def deprecated(func, message):
     def deprecated_method(*args, **kargs):
@@ -29,11 +37,13 @@ def deprecated(func, message):
     deprecated_method.__doc__ = message + "\n\n" + func.__doc__
     return deprecated_method
 
+
 get_lang = deprecated(pylons.i18n.get_lang, func_move('get_lang'))
 set_lang = deprecated(pylons.i18n.set_lang, func_move('set_lang'))
 _ = deprecated(pylons.i18n._, func_move('_'))
 log = deprecated(pylons.helpers.log, func_move('log',
                                                moved_to='pylons.helpers'))
+
 
 def get_prefix(environ, warn=True):
     """Deprecated: Use environ.get('SCRIPT_NAME', '') instead"""
@@ -51,6 +61,7 @@ def get_prefix(environ, warn=True):
         if environ.get('SCRIPT_NAME', '') != '':
             prefix = environ['SCRIPT_NAME']
     return prefix
+
 
 def class_name_from_module_name(module_name):
     """Takes a module name and returns the name of the class it defines.
@@ -90,6 +101,7 @@ class ContextObj(object):
             hex(id(self)),
             ','.join(parts))
 
+
 class AttribSafeContextObj(ContextObj):
     """The 'c' object, with lax attribute access (returns '' when the attribute
     does not exist)"""
@@ -97,7 +109,10 @@ class AttribSafeContextObj(ContextObj):
         try:
             return object.__getattribute__(self, name)
         except AttributeError:
+            log.debug("No attribute called %s found on c object, returning "
+                      "empty string.", name)
             return ''
+
 
 class PylonsTemplate(Template):
     _template_dir = 'templates/default_project'
@@ -109,13 +124,11 @@ class PylonsTemplate(Template):
         vars.setdefault('template_engine',
                         pylons.configuration.default_template_engine)
 
+
 class MinimalPylonsTemplate(PylonsTemplate):
     _template_dir = 'templates/minimal_project'
     summary = 'Pylons minimal application template'
 
+
 class PylonsInstaller(Installer):
     use_cheetah = False
-
-__all__ = ['AttribSafeContextObj', 'ContextObj', 'Helpers',
-           'class_name_from_module_name', 'log', '_', 'set_lang', 'get_lang']
-__pudge_all__ = __all__ + ['MinimalPylonsTemplate', 'PylonsTemplate']
