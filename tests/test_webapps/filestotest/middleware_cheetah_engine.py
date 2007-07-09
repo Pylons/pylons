@@ -26,7 +26,7 @@ def make_app(global_conf, full_stack=True, **app_conf):
     load_environment(global_conf, app_conf)
     
     # Pull the other engine and put a new one up first
-    config.template_engines.pop()
+    config['buffet.template_engines'].pop()
     config.add_template_engine('cheetah', 'projectname.cheetah', {})    
         
     # Load our default Pylons WSGI app and make g available

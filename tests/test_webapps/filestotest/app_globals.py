@@ -1,6 +1,6 @@
 class Globals(object):
 
-    def __init__(self, global_conf, app_conf, **extra):
+    def __init__(self):
         self.message = 'Hello'
         self.counter = 0
         
