@@ -2,15 +2,23 @@
 
 Additional helper object available for use in Controllers is the etag_cache.
 """
+import logging
+
 import paste.httpexceptions as httpexceptions
 
 from routes import url_for
 
 import pylons
 
+__all__ = ['abort', 'etag_cache', 'log', 'redirect_to']
+
+syslog = logging.getLogger(__name__)
+
+
 def log(msg):
     """Log a message to the output log."""
     pylons.request.environ['wsgi.errors'].write('=> %s\n' % str(msg))
+
 
 def etag_cache(key=None):
     """Use the HTTP Entity Tag cache for Browser side caching
@@ -19,8 +27,7 @@ def etag_cache(key=None):
     a ``304`` HTTP message will be returned with the ETag to tell the browser
     that it should use its current cache of the page.
     
-    Otherwise, the ETag header will be added to a new response object and
-    returned for use in your action.
+    Otherwise, the ETag header will be added to the response headers.
     
     Suggested use is within a Controller Action like so:
     
@@ -30,21 +37,22 @@ def etag_cache(key=None):
         
         class YourController(BaseController):
             def index(self):
-                resp = etag_cache(key=1)
-                resp.write(render('/splash.mak'))
-                return resp
+                etag_cache(key=1)
+                return render('/splash.mak')
     
     .. Note:: 
         This works because etag_cache will raise an HTTPNotModified
         exception if the ETag recieved matches the key provided.
     """
     if_none_match = pylons.request.environ.get('HTTP_IF_NONE_MATCH', None)
-    resp = pylons.Response()
-    resp.headers['ETag'] = key
+    pylons.response.headers['ETag'] = key
     if str(key) == if_none_match:
+        syslog.debug("ETag match, returning 304 HTTP Not Modified Response")
         raise httpexceptions.HTTPNotModified()
     else:
-        return resp
+        syslog.debug("ETag didn't match, returning response object.")
+        return pylons.response
+
 
 def abort(status_code=None, detail="", headers=None, comment=None):
     """Aborts the request immediately by returning an HTTP exception
@@ -54,7 +62,10 @@ def abort(status_code=None, detail="", headers=None, comment=None):
     in the headers attribute.
     """
     exc = httpexceptions.get_exception(status_code)(detail, headers, comment)
+    syslog.debug("Aborting request, status: %s, detail: %s, headers: %s, "
+                 "comment: %s", status_code, detail, headers, comment)
     raise exc
+
 
 def redirect_to(*args, **kargs):
     """Raises a redirect exception
@@ -63,12 +74,13 @@ def redirect_to(*args, **kargs):
     and cookies extracted from it and added into the redirect issued."""
     response = kargs.pop('_response', None)
     found = httpexceptions.HTTPFound(url_for(*args, **kargs))
+    syslog.debug("Generating redirect HTTP Exception.")
     if response:
         if str(response.status_code).startswith('3'):
             found.code = response.status_code
         found.headers.extend(response.headers.headeritems())
         for c in response.cookies.values():
             found.headers.append(('Set-Cookie', c.output(header='')))
+        syslog.debug("Merged cookie's into provided response object for "
+                     "redirect.")
     raise found
-
-__all__ = ['etag_cache', 'redirect_to', 'abort', 'log']
