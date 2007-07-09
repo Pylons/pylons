@@ -1,15 +1,21 @@
 """Pylons' WSGI middlewares"""
+import logging
 import os.path
 import urllib
 
+from paste.deploy.converters import asbool
 from paste.errordocument import StatusBasedForward
 from paste.recursive import RecursiveMiddleware
 from paste.urlparser import StaticURLParser
-from paste.deploy.converters import asbool
 
 from webhelpers.rails.asset_tag import javascript_path
 
+__pudge_all__ = ['StaticJavascripts', 'ErrorHandler', 'ErrorDocuments']
+
 media_path = os.path.join(os.path.dirname(__file__), 'media')
+
+log = logging.getLogger(__name__)
+
 
 class StaticJavascripts(object):
     """Middleware for intercepting requests for WebHelpers' included 
@@ -23,6 +29,7 @@ class StaticJavascripts(object):
         
     def __call__(self, environ, start_response):
         if environ.get('PATH_INFO', '').startswith('/javascripts/'):
+            log.debug("Handling Javascript URL (Starts with /javascripts/).")
             return self.javascripts_app(environ, start_response)
         else:
             return self.javascripts_app.not_found(environ, start_response)
@@ -48,6 +55,7 @@ def ErrorHandler(app, global_conf, **errorware):
         app = ErrorMiddleware(app, global_conf, **errorware)
     return app
 
+
 def error_mapper(code, message, environ, global_conf=None, **kw):
     if environ.get('pylons.error_call'):
         return None
@@ -65,6 +73,7 @@ def error_mapper(code, message, environ, global_conf=None, **kw):
                                                          'code': code}))
         return url
 
+
 def ErrorDocuments(app, global_conf=None, mapper=None, **kw):
     """Wraps the app in error docs using Paste RecursiveMiddleware and
     ErrorDocumentsMiddleware
@@ -78,6 +87,7 @@ def ErrorDocuments(app, global_conf=None, mapper=None, **kw):
         mapper = error_mapper
     return RecursiveMiddleware(StatusBasedForward(app, global_conf=global_conf,
                                                   mapper=mapper, **kw))
+
 
 error_document_template = """\
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -214,5 +224,3 @@ a.switch_source:hover {
 </body>
 </html>
 """
-
-__pudge_all__ = ['StaticJavascripts', 'ErrorHandler', 'ErrorDocuments']
