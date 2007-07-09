@@ -15,22 +15,28 @@ Myghty template names can be used with ``/`` and file extensions.
 The render functions are intended as the primary user-visible rendering 
 commands and hook into Buffet to make rendering content easy.
 """
+import logging
 import os
+
 try:
     from cStringIO import StringIO
 except ImportError:
     from StringIO import StringIO
-
 import pkg_resources
 
 import pylons
 
+__all__ = ['Buffet', 'MyghtyTemplatePlugin', 'render', 'render_response']
+
 PYLONS_VARS = ['c', 'g', 'h', 'render', 'request', 'session', 'translator',
                'ungettext', '_', 'N_']
+
+log = logging.getLogger(__name__)
 
 class BuffetError(Exception):
     """Buffet Exception"""
     pass
+
 
 class Buffet(object):
     """Buffet style plug-in template rendering
@@ -49,6 +55,7 @@ class Buffet(object):
         self.template_root = template_root
         self.default_options = default_options
         self.engines = {}
+        log.debug("Initialized Buffet object.")
         if self.default_engine:
             self.prepare(default_engine, template_root, **config)
         
@@ -71,6 +78,8 @@ class Buffet(object):
             dict(engine=Engine(extra_vars_func=extra_vars_func,
                                options=config), 
                  root=template_root)
+        log.debug("Adding %s template language for use with Buffet.", 
+                  engine_name)
     
     def _update_names(self, ns):
         """Return a dict of Pylons vars and their respective objects updated
@@ -89,6 +98,7 @@ class Buffet(object):
             N_=pylons.i18n.N_
             )
         d.update(ns)
+        log.debug("Updated render namespace with pylons vars: %s", d)
         return d
     
     def render(self, engine_name=None, template_name=None,
@@ -195,6 +205,7 @@ class Buffet(object):
             if cache_expire == 'never':
                 cache_expire = None
             def content():
+                log.debug("Cached render running for %s", full_path)
                 return engine_config['engine'].render(namespace, 
                     template=full_path, **options)
             tfile = full_path
@@ -202,17 +213,21 @@ class Buffet(object):
                 tfile += '_frag'
             if options.get('format', False):
                 tfile += options['format']
+            log.debug("Using render cache for %s", full_path)
             mycache = pylons.cache.get_cache(tfile)
             content = mycache.get_value(cache_key, createfunc=content, 
                 type=cache_type, expiretime=cache_expire)
             return content
         
+        log.debug("Rendering template %s with engine %s.", full_path, engine_name)
         return engine_config['engine'].render(namespace, template=full_path, 
             **options)
-        
+
+
 class TemplateEngineMissing(Exception):
     """Exception to toss when an engine is missing"""
     pass
+
 
 class MyghtyTemplatePlugin(object):
     """Myghty Template Plugin
@@ -265,6 +280,7 @@ class MyghtyTemplatePlugin(object):
 
 available_engines = {}
 
+
 for entry_point in \
         pkg_resources.iter_entry_points('python.templating.engines'):
     try:
@@ -284,6 +300,7 @@ for entry_point in \
             warnings.warn("Unable to load template engine entry point: '%s': "
                           "%s" % (entry_point, tb.getvalue()), RuntimeWarning,
                           2)
+
 
 def render(*args, **kargs):
     """Render a template and return it as a string (possibly Unicode)
@@ -310,6 +327,7 @@ def render(*args, **kargs):
     cache_args = dict(cache_expire=kargs.pop('cache_expire', None), 
                        cache_type=kargs.pop('cache_type', None),
                        cache_key=kargs.pop('cache_key', None))
+    log.debug("Render called with %s args and %s keyword args.", args, kargs)
     if args: 
         engine = args.pop()
         return pylons.buffet.render(engine, template, fragment=fragment,
@@ -317,6 +335,7 @@ def render(*args, **kargs):
                                     **cache_args)
     return pylons.buffet.render(template_name=template, fragment=fragment,
                                 format=format, namespace=kargs, **cache_args)
+
 
 def render_response(*args, **kargs):
     """Returns the rendered response within a Response object
@@ -340,5 +359,3 @@ def render_response(*args, **kargs):
     if encoding_errors:
         response.encoding_errors = encoding_errors
     return response
-
-__all__ = ['render', 'render_response', 'Buffet', 'MyghtyTemplatePlugin']
