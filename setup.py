@@ -85,6 +85,8 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
         "Topic :: Software Development :: Libraries :: Python Modules",
+        "Topic :: Internet :: WWW/HTTP :: WSGI",
+        "Framework :: Pylons",
     ],
     extras_require = {
         'pudge': ["docutils>=0.4", "elementtree>=1.2.6", "kid>=0.9",
