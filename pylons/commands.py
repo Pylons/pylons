@@ -70,20 +70,20 @@ def validate_name(name):
 
 class ControllerCommand(Command):
     """Create a Controller and accompanying functional test
-    
+
     The Controller command will create the standard controller template
     file and associated functional test to speed creation of controllers.
-    
+
     Example usage::
-    
+
         yourproj% paster controller comments
         Creating yourproj/yourproj/controllers/comments.py
         Creating yourproj/yourproj/tests/functional/test_comments.py
-    
+
     If you'd like to have controllers underneath a directory, just include
     the path as the controller name and the necessary directories will be
     created for you::
-    
+
         yourproj% paster controller admin/trackback
         Creating yourproj/controllers/admin
         Creating yourproj/yourproj/controllers/admin/trackback.py
@@ -91,13 +91,13 @@ class ControllerCommand(Command):
     """
     summary = __doc__.splitlines()[0]
     usage = '\n' + __doc__
-    
+
     min_args = 1
     max_args = 1
     group_name = 'pylons'
-    
+
     default_verbosity = 3
-    
+
     parser = Command.standard_parser(simulate=True)
     parser.add_option('--no-test',
                       action='store_true',
@@ -113,7 +113,7 @@ class ControllerCommand(Command):
                 name, directory = file_op.parse_path_name_args(self.args[0])
             except:
                 raise BadCommand('No egg_info directory was found')
-            
+
             # Check the name isn't the same as the package
             base_package = file_op.find_dir('controllers', True)[0]
             if base_package.lower() == name.lower():
@@ -142,7 +142,7 @@ class ControllerCommand(Command):
                  'fname': os.path.join(directory, name),
                  'importstatement': importstatement})
             file_op.copy_file(template='controller.py_tmpl',
-                         dest=os.path.join('controllers', directory), 
+                         dest=os.path.join('controllers', directory),
                          filename=name)
             if not self.options.no_test:
                 file_op.copy_file(template='test_controller.py_tmpl',
@@ -157,27 +157,27 @@ class ControllerCommand(Command):
 
 class RestControllerCommand(Command):
     """Create a REST Controller and accompanying functional test
-    
+
     The RestController command will create a REST-based Controller file for use
     with the map.resource REST-based dispatching. This template includes the
     methods that map.resource dispatches to in addition to doc strings for
     clarification on when the methods will be called.
-    
-    The first argument should be the singular form of the REST resource. The 
+
+    The first argument should be the singular form of the REST resource. The
     second argument is the plural form of the word. If its a nested controller,
     put the directory information in front as shown in the second example
     below.
-    
+
     Example usage::
-    
+
         yourproj% paster restcontroller comment comments
         Creating yourproj/yourproj/controllers/comments.py
         Creating yourproj/yourproj/tests/functional/test_comments.py
-    
+
     If you'd like to have controllers underneath a directory, just include
     the path as the controller name and the necessary directories will be
     created for you::
-    
+
         yourproj% paster restcontroller admin/tracback admin/trackbacks
         Creating yourproj/controllers/admin
         Creating yourproj/yourproj/controllers/admin/trackbacks.py
@@ -185,13 +185,13 @@ class RestControllerCommand(Command):
     """
     summary = __doc__.splitlines()[0]
     usage = '\n' + __doc__
-    
+
     min_args = 2
     max_args = 2
     group_name = 'pylons'
-    
+
     default_verbosity = 3
-    
+
     parser = Command.standard_parser(simulate=True)
     parser.add_option('--no-test',
                       action='store_true',
@@ -210,7 +210,7 @@ class RestControllerCommand(Command):
                     file_op.parse_path_name_args(self.args[1])
             except:
                 raise BadCommand('No egg_info directory was found')
-            
+
             # Check the name isn't the same as the package
             base_package = file_op.find_dir('controllers', True)[0]
             if base_package.lower() == pluralname.lower():
@@ -235,11 +235,11 @@ class RestControllerCommand(Command):
             if not fullname.startswith(os.sep):
                 fullname = os.sep + fullname
             testname = fullname.replace(os.sep, '_')[1:]
-            
+
             nameprefix = ''
             if pluraldirectory:
                 nameprefix = pluraldirectory.replace(os.path.sep, '_') + '_'
-            
+
             controller_c = ''
             if nameprefix:
                 controller_c = ", controller='%s', \n\t" % \
@@ -248,7 +248,7 @@ class RestControllerCommand(Command):
                     (pluraldirectory, pluraldirectory)
             command = "map.resource('%s', '%s'%s)\n" % \
                 (singularname, pluralname, controller_c)
-            
+
             file_op.template_vars.update(
                 {'classname': controller_name,
                  'pluralname': pluralname,
@@ -259,14 +259,14 @@ class RestControllerCommand(Command):
                                                          (' '*4, ' '*9)),
                  'fname': os.path.join(pluraldirectory, pluralname),
                  'importstatement': importstatement})
-            
+
             resource_command = ("\nTo create the appropriate RESTful mapping, "
                                 "add a map statement to your\n")
             resource_command += ("config/routing.py file near the top like "
                                  "this:\n\n")
             resource_command += command
             file_op.copy_file(template='restcontroller.py_tmpl',
-                         dest=os.path.join('controllers', pluraldirectory), 
+                         dest=os.path.join('controllers', pluraldirectory),
                          filename=pluralname)
             if not self.options.no_test:
                 file_op.copy_file(template='test_controller.py_tmpl',
@@ -282,24 +282,24 @@ class RestControllerCommand(Command):
 
 class ShellCommand(Command):
     """Open an interactive shell with the Pylons app loaded
-    
+
     The optional CONFIG_FILE argument specifies the config file to use for
     the interactive shell. CONFIG_FILE defaults to 'development.ini'.
-    
+
     This allows you to test your mapper, models, and simulate web requests
     using ``paste.fixture``.
-    
+
     Example::
-        
+
         $ paster shell my-development.ini
     """
     summary = __doc__.splitlines()[0]
     usage = '\n' + __doc__
-    
+
     min_args = 0
     max_args = 1
     group_name = 'pylons'
-    
+
     parser = Command.standard_parser(simulate=True)
     parser.add_option('-d', '--disable-ipython',
                       action='store_true',
@@ -319,7 +319,7 @@ class ShellCommand(Command):
                                   config_file))
         else:
             config_file = self.args[0]
-            
+
         config_name = 'config:%s' % config_file
         here_dir = os.getcwd()
         locs = dict(__name__="pylons-admin")
@@ -334,14 +334,14 @@ class ShellCommand(Command):
         conf.update(dict(app_conf=conf.local_conf,
                          global_conf=conf.global_conf))
         paste.deploy.config.CONFIG.push_thread_config(conf)
-        
+
         # Load locals and populate with objects for use in shell
         sys.path.insert(0, here_dir)
-        
+
         # Load the wsgi app first so that everything is initialized right
         wsgiapp = loadapp(config_name, relative_to=here_dir)
         test_app = paste.fixture.TestApp(wsgiapp)
-        
+
         # Query the test app to setup the environment
         tresponse = test_app.get('/_test_vars')
         request_id = int(tresponse.body)
@@ -382,7 +382,7 @@ class ShellCommand(Command):
 
         if not found_base:
             raise ImportError("Could not import base module. Are you sure "
-                              "this is a Pylons app?") 
+                              "this is a Pylons app?")
 
         base = sys.modules[base_module]
         base_public = [__name for __name in dir(base) if not \
@@ -404,9 +404,9 @@ class ShellCommand(Command):
         if has_models:
             banner += "  %-10s -  %s\n" % ('model',
                                            'Models from models package')
-        banner += "  %-10s -  %s\n" % ('wsgiapp', 
+        banner += "  %-10s -  %s\n" % ('wsgiapp',
             'This projects WSGI App instance')
-        banner += "  %-10s -  %s\n" % ('app', 
+        banner += "  %-10s -  %s\n" % ('app',
             'paste.fixture wrapped around wsgiapp')
 
         try:
@@ -415,7 +415,7 @@ class ShellCommand(Command):
 
             # try to use IPython if possible
             from IPython.Shell import IPShellEmbed
-            
+
             shell = IPShellEmbed()
             shell.set_banner(shell.IP.BANNER + '\n\n' + banner)
             try:
@@ -424,7 +424,7 @@ class ShellCommand(Command):
                 paste.registry.restorer.restoration_end()
         except ImportError:
             import code
-            
+
             class CustomShell(code.InteractiveConsole):
                 """Custom shell class to handle raw input"""
                 def raw_input(self, *args, **kw):
@@ -433,10 +433,10 @@ class ShellCommand(Command):
                         return code.InteractiveConsole.raw_input(
                             self, *args, **kw)
                     except EOFError:
-                        # In the future, we'll put our own override as needed 
+                        # In the future, we'll put our own override as needed
                         # to save models, TG style
                         raise EOFError
-            
+
             newbanner = "Pylons Interactive Shell\nPython %s\n\n" % sys.version
             banner = newbanner + banner
             shell = CustomShell(locals=locs)
