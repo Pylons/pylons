@@ -20,6 +20,8 @@ from paste.script.pluginlib import find_egg_info_dir
 
 import pylons.util as util
 
+__all__ = ['ControllerCommand', 'RestControllerCommand', 'ShellCommand']
+
 def can_import(name):
     """Attempt to __import__ the specified package/module, returning True when
     succeeding, otherwise False"""
@@ -64,6 +66,7 @@ def validate_name(name):
             "    map.connect('%s', controller='my_%s')" \
             % (name, name, name, name))
     return True
+
 
 class ControllerCommand(Command):
     """Create a Controller and accompanying functional test
@@ -150,6 +153,7 @@ class ControllerCommand(Command):
         except:
             msg = str(sys.exc_info()[1])
             raise BadCommand('An unknown error occurred. %s' % msg)
+
 
 class RestControllerCommand(Command):
     """Create a REST Controller and accompanying functional test
@@ -320,6 +324,9 @@ class ShellCommand(Command):
         here_dir = os.getcwd()
         locs = dict(__name__="pylons-admin")
 
+        # XXX: Note, initializing CONFIG here is Legacy support. pylons.config
+        # will automatically be initialized and restored via the registry
+        # restorer along with the other StackedObjectProxys
         # Load app config into paste.deploy to simulate request config
         # Setup the Paste CONFIG object, adding app_conf/global_conf for legacy
         # code
@@ -382,19 +389,18 @@ class ShellCommand(Command):
                        __name.startswith('_') or __name == '_']
         for name in base_public:
             locs[name] = getattr(base, name)
-        locs.update(
-            dict(
-                mapper=tresponse.pylons_config['pylons.map'],
-                wsgiapp=wsgiapp,
-                app=test_app,
-            )
-        )
+        locs.update(dict(wsgiapp=wsgiapp, app=test_app))
+
+        mapper = tresponse.pylons_config.get('pylons.map')
+        if mapper:
+            locs['mapper'] = mapper
         if has_models:
             locs['model'] = sys.modules[models_package]
 
         banner = "  All objects from %s are available\n" % base_module
         banner += "  Additional Objects:\n"
-        banner += "  %-10s -  %s\n" % ('mapper', 'Routes mapper object')
+        if mapper:
+            banner += "  %-10s -  %s\n" % ('mapper', 'Routes mapper object')
         if has_models:
             banner += "  %-10s -  %s\n" % ('model',
                                            'Models from models package')
@@ -410,10 +416,10 @@ class ShellCommand(Command):
             # try to use IPython if possible
             from IPython.Shell import IPShellEmbed
             
-            shell = IPShellEmbed(user_ns=locs)
+            shell = IPShellEmbed()
             shell.set_banner(shell.IP.BANNER + '\n\n' + banner)
             try:
-                shell()
+                shell(local_ns=locs, global_ns={})
             finally:
                 paste.registry.restorer.restoration_end()
         except ImportError:
@@ -442,5 +448,3 @@ class ShellCommand(Command):
                 shell.interact(banner)
             finally:
                 paste.registry.restorer.restoration_end()
-
-__all__ = ['ControllerCommand', 'RestControllerCommand', 'ShellCommand']
