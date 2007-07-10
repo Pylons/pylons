@@ -87,7 +87,7 @@ class PylonsConfig(DispatchingConfig):
     defaults = {
         'debug': False,
         'pylons.package': None,
-        'pylons.paths': {'root_path': None,
+        'pylons.paths': {'root': None,
                          'controllers': None,
                          'templates': [],
                          'static_files': None},
@@ -265,6 +265,10 @@ class PylonsConfig(DispatchingConfig):
 
         if 'debug' in conf:
             conf['debug'] = asbool(conf['debug'])
+
+        if paths and 'root_path' in paths:
+            warnings.warn(pylons.legacy.root_path, DeprecationWarning, 2)
+            paths['root'] = paths['root_path']
         
         self.push_process_config(conf)
         log.debug("Pushed process configuration.")

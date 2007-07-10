@@ -117,6 +117,9 @@ uses h):
     from pylons import h
 """)
 
+root_path = (
+"paths['root_path'] has been moved to paths['root'], please update your "
+"configuration")
 
 def load_h(package_name):
     """
