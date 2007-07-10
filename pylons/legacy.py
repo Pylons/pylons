@@ -25,8 +25,9 @@ config_load_environment = (
 
 And in in the load_environment function:
 
-    config['routes.map'] = make_map()
-    config['pylons.template_options'] = tmpl_options
+    config['pylons.map'] = map
+
+    config['buffet.template_options'] = tmpl_options
     # etc.
 
 See the default config/environment.py created via the "paster create -t pylons"
@@ -60,8 +61,10 @@ And use the config object in your Globals instance.
 """)
 
 helpers_and_g_warning = (
-"Pylons 0.9.3 and above now explicitly specify the helpers and g objects. "
-"Please update your config/environment.py with:"
+"Pylons 0.9.6 and above projects must explicitly initialize the helpers and g "
+"objects in their config/environment.py. Please no longer specify the helpers "
+"and g keyword arguments to PylonsApp in your config/middleware.py: instead, "
+"update your config/environment.py with:"
 """
 
     from pylons import config
@@ -71,8 +74,16 @@ helpers_and_g_warning = (
 
 And add the following lines to the load_environment function:
 
+    # Initialize config with the basic options
+    config.init_app(global_conf, app_conf, package='%(package)s',
+                    template_engine='%(template_engine)s', paths=paths)
+
+    config['pylons.map'] = make_map()
     config['pylons.g'] = app_globals.Globals()
-    config['pylons.h'] = ${package}.lib.helpers
+    config['pylons.h'] = %(package)s.lib.helpers
+
+See the default config/environment.py created via the "paster create -t pylons"
+command for a full example.
 """)
 
 prefix_warning = (

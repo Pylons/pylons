@@ -241,24 +241,18 @@ class PylonsApp(object):
                  use_routes=True, base_wsgi_app=None):
         self.config = config = pylons.config._current_obj()
 
+        if helpers is not None or g is not None:
+            template_engine = config['buffet.template_engines'][0]['engine']
+            warnings.warn(pylons.legacy.helpers_and_g_warning % \
+                              dict(package=config['pylons.package'],
+                                   template_engine=template_engine),
+                          DeprecationWarning, 2)
+
         if helpers is None:
             helpers = config.get('pylons.h')
         if g is None:
             g = config.get('pylons.g')
-
-        if not g:
-            try:
-                globals_package = \
-                    __import__(config['pylons.package'] + '.lib.app_globals',
-                               globals(), locals(), ['Globals'])
-                g = getattr(globals_package, 'Globals')
-            except ImportError:
-                pass
-
-        # Assign a default globals object, and instantiate it
-        if not g:
-            g = type("Globals", (), {})()
-        elif isinstance(g, type):
+        else:
             if len(inspect.getargspec(g.__init__)[0]) > 1:
                 warnings.warn(pylons.legacy.g_confargs, DeprecationWarning, 2)
                 g = g(config['global_conf'], config['app_conf'], config=config)
