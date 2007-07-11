@@ -9,6 +9,7 @@ import xmlrpclib
 from paste.deploy.converters import asbool
 from paste.httpexceptions import HTTPException
 from paste.response import replace_header, HeaderDict
+from paste.wsgiwrappers import WSGIResponse
 
 import pylons
 from pylons.helpers import abort
@@ -40,7 +41,7 @@ def xmlrpc_sig(args):
 def xmlrpc_fault(code, message):
     """Convienence method to return a Pylons response XMLRPC Fault"""
     fault = xmlrpclib.Fault(code, message)
-    return pylons.Response(xmlrpclib.dumps(fault, methodresponse=True))
+    return WSGIResponse(xmlrpclib.dumps(fault, methodresponse=True))
 
 
 def trim(docstring):
@@ -170,7 +171,7 @@ class WSGIController(object):
                 raise NotImplementedError('Action %s is not implemented' %
                                           action)
             else:
-                response = pylons.Response(code=404)
+                response = WSGIResponse(code=404)
         return response
     
     def __call__(self, environ, start_response):
@@ -200,7 +201,7 @@ class WSGIController(object):
         if environ['pylons.routes_dict'].get('action', '').startswith('_'):
             log.debug("Action starts with _, private action not allowed. "
                       "Returning a 404 response.")
-            return pylons.Response(code=404)(environ, start_response)
+            return WSGIResponse(code=404)(environ, start_response)
         
         if hasattr(self, '__before__'):
             log.debug("Calling __before__ action.")
@@ -276,7 +277,7 @@ class Controller(WSGIController):
         
         # Keep private methods private
         if req.environ['pylons.routes_dict'].get('action', '').startswith('_'):
-            return pylons.Response(code=404)
+            return WSGIResponse(code=404)
         
         if hasattr(self, '__before__'):
             self._inspect_call(self.__before__, **kargs)
@@ -457,7 +458,7 @@ class XMLRPCController(WSGIController):
 
         response = xmlrpclib.dumps(raw_response, methodresponse=True,
                                    allow_none=self.allow_none)
-        return pylons.Response(response)
+        return WSGIResponse(response)
 
     def _find_method_name(self, name):
         """Locate a method in the controller by the appropriate name
