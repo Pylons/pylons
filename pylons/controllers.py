@@ -128,6 +128,8 @@ class WSGIController(object):
                 if name in kargs:
                     setattr(c, name, kargs[name])
                     args[name] = kargs[name]
+        log.debug("Calling %s method with keyword arguments: **%s",
+                  func.__name__, args)
         try:
             result = func(**args)
             log.debug("Action method returned a response.")
@@ -149,7 +151,6 @@ class WSGIController(object):
         kargs['environ'] = req.environ
         if hasattr(self, 'start_response'):
             kargs['start_response'] = self.start_response
-        log.debug("Loaded %s as method arguments to call action with.", kargs)
         return kargs
     
     def _dispatch_call(self):
