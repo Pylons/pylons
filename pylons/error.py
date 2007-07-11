@@ -14,6 +14,7 @@ import sys
 from paste.evalexception.middleware import *
 from paste.exceptions.formatter import *
 
+import pylons
 from pylons.middleware import media_path
 from pylons.util import get_prefix
 
@@ -30,6 +31,7 @@ class Supplement(errormiddleware.Supplement):
         data = {}
         cgi_vars = data[('extra', 'CGI Variables')] = {}
         wsgi_vars = data[('extra', 'WSGI Variables')] = {}
+        # XXX: Legacy: hiding paste.config
         hide_vars = ['paste.config', 'wsgi.errors', 'wsgi.input',
                      'wsgi.multithread', 'wsgi.multiprocess',
                      'wsgi.run_once', 'wsgi.version',
@@ -48,9 +50,7 @@ class Supplement(errormiddleware.Supplement):
                                        'wsgi.run_once')])
         wsgi_vars['wsgi process'] = self.process_combos[proc_desc]
         wsgi_vars['application'] = self.middleware.application
-        if 'paste.config' in self.environ:
-            data[('extra', 'Configuration')] = \
-                dict(self.environ['paste.config'])
+        data[('extra', 'Configuration')] = pylons.config.current_conf()
             
         # Add any extra sections here
        

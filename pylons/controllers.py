@@ -170,9 +170,9 @@ class WSGIController(object):
             response = self._inspect_call(func)
         else:
             log.debug("Couldn't find method to handle response.")
-            if asbool(req.environ['paste.config']['global_conf'].get('debug')):
-                raise NotImplementedError(
-                    'Action %s is not implemented' % action)
+            if pylons.config['debug']:
+                raise NotImplementedError('Action %s is not implemented' %
+                                          action)
             else:
                 response = pylons.Response(code=404)
         return response

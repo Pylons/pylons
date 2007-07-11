@@ -51,12 +51,7 @@ def get_prefix(environ, warn=True):
         warnings.warn("The get_prefix function is deprecated, please use "
                       "environ.get('SCRIPT_NAME', '') instead.",
                       DeprecationWarning, 2)
-    if 'paste.config' in environ:
-        prefix = environ['paste.config']['app_conf'].get('prefix', '')
-    else:
-        # Not ideal but if the error occurs before the paste.config is
-        # available not a lot we can do
-        prefix = ''
+    prefix = pylons.config.get('prefix', '')
     if not prefix:
         if environ.get('SCRIPT_NAME', '') != '':
             prefix = environ['SCRIPT_NAME']
