@@ -130,10 +130,6 @@ class WSGIController(object):
         try:
             result = func(**args)
             log.debug("Action method returned a response.")
-            if hasattr(result, 'wsgi_response'):
-                warnings.warn("Returning a WSGIResponse object from a controller"
-                              "will be deprecated in 0.9.7.", 
-                              PendingDeprecationWarning, 2)
         except HTTPException, httpe:
             log.debug("Action method resulted in HTTP Exception: %s.", httpe)
             result = httpe.response(pylons.request.environ)

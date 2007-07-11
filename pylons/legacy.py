@@ -5,6 +5,7 @@ import types
 import warnings
 
 from paste.registry import StackedObjectProxy
+from paste.wsgiwrappers import WSGIResponse
 
 import pylons
 import pylons.decorators
@@ -176,5 +177,12 @@ class DeprecatedStackedObjectProxy(StackedObjectProxy):
         warnings.warn(pylons_h_warning, DeprecationWarning, 3)
         return StackedObjectProxy._current_obj(*args, **kwargs)
 h = DeprecatedStackedObjectProxy(name="h")
+
+response_warning = ("Returning a Response object from a controller will be "
+                    "deprecated in 0.9.7.")
+class Response(WSGIResponse):
+    def __init__(self, *args, **kwargs):
+        warnings.warn(response_warning, PendingDeprecationWarning, 2)
+        WSGIResponse.__init__(self, *args, **kwargs)
 
 __all__ = ['load_h']

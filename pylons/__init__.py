@@ -1,9 +1,8 @@
 """Base objects to be exported for use in Controllers"""
 from paste.registry import StackedObjectProxy
-from paste.wsgiwrappers import WSGIResponse as Response
 
 from pylons.config import config
-from pylons.legacy import h, jsonify, Controller
+from pylons.legacy import h, jsonify, Controller, Response
 
 __all__ = ['c', 'g', 'cache', 'request', 'response', 'session', 'jsonify',
            'Controller', 'Response']
