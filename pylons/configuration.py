@@ -118,7 +118,7 @@ class PylonsConfig(DispatchingConfig):
 
             # Backwards compat for when the option is now in the dict, and
             # access was attempted via attribute
-            for prefix in ('', 'pylons.', 'buffet.'):
+            for prefix in ('', 'pylons.', 'buffet.', 'routes.'):
                 full_name = prefix + name
                 if full_name in conf_dict:
                     warnings.warn(pylons.legacy.config_attr_moved % \
@@ -147,7 +147,7 @@ class PylonsConfig(DispatchingConfig):
         if response_settings:
             conf['pylons.response_options'].update(response_settings)
 
-        conf['pylons.map'] = map
+        conf['routes.map'] = map
         conf['pylons.paths'] = paths or {}
         conf['pylons.environ_config'] = environ_config or {}
         conf['pylons.strict_c'] = strict_c
@@ -287,7 +287,7 @@ class PylonsConfig(DispatchingConfig):
         if prefix:
             warnings.warn(pylons.legacy.prefix_warning % prefix,
                           DeprecationWarning, 3)
-            map = conf.get('pylons.map')
+            map = conf.get('routes.map')
             if map:
                 map.prefix = prefix
                 map._created_regs = False

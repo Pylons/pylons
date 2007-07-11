@@ -20,11 +20,11 @@ def load_environment(global_conf, app_conf):
     config.init_app(global_conf, app_conf, package='${package}',
                     template_engine='${template_engine}', paths=paths)
 
-    config['pylons.map'] = make_map()
     config['pylons.g'] = app_globals.Globals()
     config['pylons.h'] = ${package}.lib.helpers
+    config['routes.map'] = make_map()
 
-    # Load-up the template options
+    # The template options
     tmpl_options = config['buffet.template_options']
 
     # CONFIGURATION OPTIONS HERE (note: all config options will override any

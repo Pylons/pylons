@@ -25,10 +25,13 @@ config_load_environment = (
 
 And in in the load_environment function:
 
-    config['pylons.map'] = map
+    config['routes.map'] = map
 
-    config['buffet.template_options'] = tmpl_options
-    # etc.
+    # The template options
+    tmpl_options = config['buffet.template_options']
+
+    # CONFIGURATION OPTIONS HERE (note: all config options will override any
+    # Pylons config options)
 
 See the default config/environment.py created via the "paster create -t pylons"
 command for a full example.
@@ -78,9 +81,9 @@ And add the following lines to the load_environment function:
     config.init_app(global_conf, app_conf, package='%(package)s',
                     template_engine='%(template_engine)s', paths=paths)
 
-    config['pylons.map'] = make_map()
     config['pylons.g'] = app_globals.Globals()
     config['pylons.h'] = %(package)s.lib.helpers
+    config['routes.map'] = make_map()
 
 See the default config/environment.py created via the "paster create -t pylons"
 command for a full example.

@@ -266,7 +266,7 @@ class PylonsApp(object):
         base_app = base_wsgi_app or PylonsBaseWSGIApp
         app = base_app(config, g, helpers=helpers)
         if use_routes:
-            app = RoutesMiddleware(app, config['pylons.map'])
+            app = RoutesMiddleware(app, config['routes.map'])
         
         # Pull user-specified environ overrides, or just setup default
         # session and caching objects

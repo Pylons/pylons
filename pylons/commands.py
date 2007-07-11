@@ -391,7 +391,7 @@ class ShellCommand(Command):
             locs[name] = getattr(base, name)
         locs.update(dict(wsgiapp=wsgiapp, app=test_app))
 
-        mapper = tresponse.pylons_config.get('pylons.map')
+        mapper = tresponse.pylons_config.get('routes.map')
         if mapper:
             locs['mapper'] = mapper
         if has_models:

@@ -33,7 +33,7 @@ Pylons Changelog
   current action with self.errors set to the errors. Fixes #246.
 * Added PylonsConfig, which gets accessed as pylons.config dict. Contains
   all the merged ini options, in addition to the Config options such as
-  'pylons.map', 'pylons.paths', 'buffet.template_options', etc. Check the
+  'routes.map', 'pylons.paths', 'buffet.template_options', etc. Check the
   pylons.config docs on PylonsConfig for dict keys populated by it.
 * Split up resolution stages in wsgiapp, so that controller lookup is a
   separate function making it easier to subclass. PylonsApp now takes a 
