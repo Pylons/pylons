@@ -26,4 +26,5 @@ class TestAuthenticateFormDecorator(TestWSGIController):
         self.environ['pylons.routes_dict']['action'] = 'protected'
         response = self.app.post('/', extra_environ=self.environ,
                                  expect_errors=True)
+        assert response.status == 403
         assert csrf_detected_message in response
