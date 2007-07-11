@@ -34,7 +34,7 @@ class CacheController(WSGIController):
     def test_expire_cache_decorator(self):
         pylons.g.counter += 1
         return Response('Counter=%s' % pylons.g.counter)
-    test_expire_cache_decorator = beaker_cache(expire=8)(test_expire_cache_decorator)
+    test_expire_cache_decorator = beaker_cache(expire=1)(test_expire_cache_decorator)
     
     def test_key_cache_decorator(self, id):
         pylons.g.counter += 1
@@ -82,7 +82,7 @@ class TestCacheDecorator(TestWSGIController):
         assert 'Counter=3' in response
         response = self.get_response(action='test_expire_cache_decorator')
         assert 'Counter=3' in response
-        time.sleep(8)
+        time.sleep(1)
         response = self.get_response(action='test_expire_cache_decorator')
         assert 'Counter=4' in response
         
