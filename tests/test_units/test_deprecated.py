@@ -38,7 +38,7 @@ class SimpleTestWSGIController(TestWSGIController):
         TestWSGIController.__init__(self, *args, **kargs)
         self.baseenviron = {}
         app = ControllerWrap(self.wsgi_app)
-        app = self.sap = SetupCacheGlobal(app, self.baseenviron, setup_cache=False)
+        app = self.sap = SetupCacheGlobal(app, self.baseenviron)
         app = RegistryManager(app)
         self.app = TestApp(app)
         

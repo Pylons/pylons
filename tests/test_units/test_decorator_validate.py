@@ -80,7 +80,7 @@ class TestValidateDecorator(TestWSGIController):
     def setUp(self):
         TestWSGIController.setUp(self)
         app = SetupCacheGlobal(ControllerWrap(ValidatingController),
-                               self.environ, setup_cache=False)
+                               self.environ)
         app = RegistryManager(app)
         self.app = TestApp(app)
 

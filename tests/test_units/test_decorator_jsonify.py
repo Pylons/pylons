@@ -21,7 +21,7 @@ class CacheController(WSGIController):
 
 environ = {}
 app = ControllerWrap(CacheController)
-app = sap = SetupCacheGlobal(app, environ, setup_cache=False)
+app = sap = SetupCacheGlobal(app, environ)
 app = RegistryManager(app)
 app = TestApp(app)
 

@@ -55,7 +55,7 @@ except:
 
 environ = {}
 app = ControllerWrap(CacheController)
-app = sap = SetupCacheGlobal(app, environ)
+app = sap = SetupCacheGlobal(app, environ, setup_cache=True)
 app = CacheMiddleware(app, {}, data_dir=cachedir)
 app = RegistryManager(app)
 app = TestApp(app)

@@ -44,7 +44,8 @@ class ControllerWrap(object):
         return app(environ, start_response)
 
 class SetupCacheGlobal(object):
-    def __init__(self, app, environ, setup_g=True, setup_cache=True):
+    def __init__(self, app, environ, setup_g=True, setup_cache=False,
+                 setup_session=False):
         if setup_g:
             g = type('G object', (object,), {})
             g.message = 'Hello'
@@ -55,12 +56,15 @@ class SetupCacheGlobal(object):
         self.app = app
         self.environ = environ
         self.setup_cache = setup_cache
+        self.setup_session = setup_session
         self.setup_g = setup_g
 
     def __call__(self, environ, start_response):
         registry = environ['paste.registry']
         if self.setup_cache:
             registry.register(pylons.cache, environ['beaker.cache'])
+        if self.setup_session:
+            registry.register(pylons.session, environ['beaker.session'])
         if self.setup_g:
             registry.register(pylons.g, self.g)
 
