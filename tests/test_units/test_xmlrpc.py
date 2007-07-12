@@ -51,7 +51,7 @@ class TestXMLRPCController(TestWSGIController):
         self.baseenviron = {}
         self.baseenviron['pylons.routes_dict'] = {}
         app = ControllerWrap(BaseXMLRPCController)
-        app = self.sap = SetupCacheGlobal(app, self.baseenviron, setup_cache=False)
+        app = self.sap = SetupCacheGlobal(app, self.baseenviron)
         app = RegistryManager(app)
         self.app = TestApp(app)
 
