@@ -50,9 +50,9 @@ from ${package}.lib.base import *
 class HelloController(BaseController):
     def index(self):
         # Return a rendered template
-        #   return render_response('/some/template.html')
-        # or, Return a response object
-        return Response('Hello World')
+        #   return render('/some/template.html')
+        # or, Return a response
+        return 'Hello World'
 </pre>
 </p>
 <p>This controller simply prints out 'Hello World' to the browser. Pylons' default routes
@@ -94,7 +94,7 @@ Then add the following to your 'hello' controller class:
         import pprint
         c.pretty_environ = cgi.escape(pprint.pformat(request.environ))
         c.name = 'The Black Knight'
-        return render_response('/serverinfo.mak)
+        return render('/serverinfo.mak)
 </pre>
 
 You can now view the page at: <tt><a href="/hello/serverinfo">/hello/serverinfo</a></tt>

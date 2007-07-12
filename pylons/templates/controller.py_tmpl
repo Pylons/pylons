@@ -3,6 +3,6 @@ ${importstatement}
 class ${name}Controller(BaseController):
     def index(self):
         # Return a rendered template
-        #   return render_response('/some/template.html')
-        # or, Return a response object
-        return Response('Hello World')
+        #   return render('/some/template.html')
+        # or, Return a response
+        return 'Hello World'
