@@ -4,7 +4,7 @@ import logging
 from decorator import decorator
 from webhelpers.rails import secure_form_tag
 
-from pylons import request, Response
+import pylons
 from pylons.helpers import abort, redirect_to
 
 __all__ = ['authenticate_form', 'https']
@@ -30,13 +30,14 @@ def authenticate_form(func, *args, **kwargs):
 
     For use with the ``webhelpers.rails.secure_form_tag`` helper functions.
     """
+    request = pylons.request._current_obj()
     if authenticated_form(request.POST):
         del request.POST[secure_form_tag.token_key]
         return func(*args, **kwargs)
     else:
         log.debug('Cross-site request forgery detected, request denied: %r' %
                   request)
-        return Response(csrf_detected_message, code=403)
+        abort(403, detail=csrf_detected_message)
 authenticate_form = decorator(authenticate_form)
 
 def https(*redirect_args, **redirect_kwargs):
@@ -65,12 +66,16 @@ def https(*redirect_args, **redirect_kwargs):
     """
     def wrapper(func, *args, **kwargs):
         """Decorator Wrapper function"""
+        request = pylons.request._current_obj()
         if request.scheme.lower() == 'https':
             return func(*args, **kwargs)
         else:
             if request.method.upper() != 'POST':
                 redirect_kwargs['protocol'] = 'https' # ensure https
+                log.debug('Redirecting non-https request: %s to redirect '
+                          'args: *%r, **%r', request.path_info, redirect_args,
+                          redirect_kwargs)
                 redirect_to(*redirect_args, **redirect_kwargs)
             else:
-                abort(405) # don't allow POSTs.
+                abort(405, headers=[('Allow', 'GET')]) # don't allow POSTs.
     return decorator(wrapper)

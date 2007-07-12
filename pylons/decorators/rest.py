@@ -26,11 +26,8 @@ def restrict(*methods):
     def check_methods(func, *args, **kwargs):
         """Wrapper for restrict"""
         if pylons.request.method not in methods:
-            response = pylons.Response()
-            response.headers['Allow'] = ','.join(methods)
-            response.status_code = 405
             log.debug("Method not allowed by restrict")
-            return response
+            abort(405, headers=[('Allow', ','.join(methods))])
         return func(*args, **kwargs)
     return decorator(check_methods)
 

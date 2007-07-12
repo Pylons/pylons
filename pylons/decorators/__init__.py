@@ -23,8 +23,7 @@ def jsonify(func, *args, **kwargs):
     turn the result into JSON, with a content-type of 'text/javascript'
     and output it.
     """
-    response = pylons.Response()
-    response.headers['Content-Type'] = 'text/javascript'
+    pylons.response.headers['Content-Type'] = 'text/javascript'
     data = func(*args, **kwargs)
     if isinstance(data, list):
         msg = "JSON responses with Array envelopes are susceptible to " \
@@ -32,9 +31,8 @@ def jsonify(func, *args, **kwargs):
               "http://pylonshq.com/warnings/JSONArray"
         warnings.warn(msg, Warning, 2)
         log.warning(msg)
-    response.content.append(simplejson.dumps(data))
     log.debug("Returning JSON wrapped action output")
-    return response
+    return simplejson.dumps(data)
 jsonify = decorator(jsonify)
 
 def validate(schema=None, validators=None, form=None, variable_decode=False,
@@ -74,11 +72,12 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
     """
     def wrapper(func, self, *args, **kwargs):
         """Decorator Wrapper function"""
+        request = pylons.request._current_obj()
         self.errors = errors = {}
         if post_only:
-            params = pylons.request.POST
+            params = request.POST
         else:
-            params = pylons.request.params
+            params = request.params
         is_unicode_params = isinstance(params, UnicodeMultiDict)
         params = params.mixed()
         if variable_decode:
@@ -108,22 +107,27 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
         if errors:
             log.debug("Errors found in validation, parsing form with htmlfill "
                       "for errors")
-            pylons.request.environ['REQUEST_METHOD'] = 'GET'
+            request.environ['REQUEST_METHOD'] = 'GET'
 
             # If there's no form supplied, just continue with the current
             # function call.
             if not form:
                 return func(self, *args, **kwargs)
 
-            pylons.request.environ['pylons.routes_dict']['action'] = form
+            request.environ['pylons.routes_dict']['action'] = form
             response = self._dispatch_call()
-            form_content = ''.join(response.content)
+            # XXX: Legacy WSGIResponse support
+            if hasattr(response, 'wsgi_response'):
+                form_content = ''.join(response.content)
+            else:
+                form_content = response
             # Ensure htmlfill can safely combine the form_content, params and
             # errors variables (that they're all of the same string type)
             if not is_unicode_params:
                 log.debug("Raw string form params: ensuring the '%s' form and "
                           "FormEncode errors are converted to raw strings for "
                           "htmlfill", form)
+                response = pylons.response._current_obj()
                 encoding = determine_response_charset(response)
 
                 # WSGIResponse's content may (unlikely) be unicode
@@ -141,10 +145,8 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
                           "converted to unicode for htmlfill", form)
                 encoding = determine_response_charset(response)
                 form_content = form_content.decode(encoding)
-            response.content = \
-                htmlfill.render(form_content, defaults=params, errors=errors,
-                                **htmlfill_kwargs)
-            return response
+            return htmlfill.render(form_content, defaults=params,
+                                   errors=errors, **htmlfill_kwargs)
         return func(self, *args, **kwargs)
     return decorator(wrapper)
 
