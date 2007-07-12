@@ -37,7 +37,7 @@ class FilteredWSGIController(WSGIController):
         self.after += 1
         action = pylons.request.environ['pylons.routes_dict'].get('action')
         if action in ('after_response', 'after_string_response'):
-            self.response.write(' from __after__')
+            pylons.response.write(' from __after__')
 
     def index(self):
         return pylons.Response('hi all, before is %s' % self.before)

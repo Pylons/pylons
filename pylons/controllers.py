@@ -242,7 +242,6 @@ class WSGIController(object):
         
         if hasattr(self, '__after__'):
             log.debug("Calling __after__ action")
-            self.response = response
             after = self._inspect_call(self.__after__)
             if hasattr(after, '_exception'):
                 return after(environ, start_response)
@@ -306,7 +305,6 @@ class Controller(WSGIController):
         response = pylons.response._current_obj()
         
         if hasattr(self, '__after__'):
-            self.response = response
             self._inspect_call(self.__after__)
         
         return response

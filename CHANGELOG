@@ -9,8 +9,8 @@ Pylons Changelog
 * Refactored global response to be setup in wsgiapp along with the other 
   globals. Updated WSGIController to copy in global response headers and
   cookies into a WSGI app's output.
-* Added global pylons.response object. Removed old Controller tests. 
-  Fixes #268.
+* Added global pylons.response object. Thanks Shannon -jj Behrens and Damjan
+  Georgievski. Fixes #268 and #201.
 * Updated default project template files for new configuration layout. Options
   to handle config now just in environment.py, and middleware.py handling just
   middleware. Fixes #203.
@@ -89,8 +89,6 @@ Pylons Changelog
   some data or error messages were unicode strings; the form should be passed
   in as a unicode string
   Reported by Christoph Haas.
-* The Response object is now available for __after__ via self.response in
-  the Controller. Original patch by Damjan Georgievski. Fixes #201.
 * HTTPExceptions are now converted to Response objects (for __after__),
   making the httpexceptions middleware no longer required.
 * Added Warning to jsonify to warn about cross-site attacks when returning
