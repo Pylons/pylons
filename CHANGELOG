@@ -104,6 +104,8 @@ Pylons Changelog
   disabling IPython.
 * Allow creation of controllers named 'setup' via paster controller.
   Reported by Matt Good.
+* Added support for generic arguments to SQLAlchemy's create_engine of
+  the form sqlalchemy.* from the PasteDeploy config file.
 
 0.9.5 (Apr 11th, 2007)
 * Fixed a Python 2.3 incompatibility with paster shell, causing the
