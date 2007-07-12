@@ -47,6 +47,11 @@ class TestHttpsDecorator(TestWSGIController):
         assert 'location' not in response.header_dict
         assert 'index page' in response
 
+    def test_https_disallows_post(self):
+        self.environ['pylons.routes_dict']['action'] = 'index'
+
+        response = self.app.post('/index', status=405)
+
     def test_https_url_for_kwargs(self):
         self.environ['pylons.routes_dict']['action'] = 'login'
 
