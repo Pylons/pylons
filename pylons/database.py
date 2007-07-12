@@ -26,6 +26,22 @@ try:
     import sqlalchemy
     from sqlalchemy.ext import sessioncontext
 
+    BOOL_OPTIONS = set([
+            "convert_unicode",
+            "echo",
+            "echo_pool",
+            "threaded",
+            "use_ansi",
+            "use_oids",
+            ])
+
+    INT_OPTIONS = set([
+            "max_overflow",
+            "pool_size",
+            "pool_recycle",
+            "pool_timeout",
+            ])
+
     def app_scope():
         """Return the id keying the current database session's scope.
 
@@ -43,36 +59,63 @@ try:
 
     def create_engine(uri=None, echo=None, **kwargs):
         """Return a SQLAlchemy db engine. Uses the configuration values from
-        ``get_engine_conf`` for uri and echo if none are specified.
+        ``get_engine_conf``.
 
         Engines are cached in the ``get_engines`` dict.
         """
-        uri, echo = get_engine_conf(uri, echo)
-        kwargs['echo'] = echo
-        engine_key = '%s|%s' % (uri, str(kwargs))
+        conf = get_engine_conf()
+        conf.update(kwargs)
+
+        # replace 'dburi' with 'uri' for consistency
+        if 'dburi' in conf:
+            if not 'uri' in conf:
+                conf['uri'] = conf['dburi']
+            del conf['dburi']
+
+        # override config with passed-in values
+        conf['uri'] = uri or conf.get('uri')
+        conf['echo'] = asbool(echo) or conf.get('echo')
+
+        uri = conf.pop('uri')
+        assert uri
+
+        # call create_engine or fetch engine from cache
+
+        ## use a sorted list of tuples since order isn't guaranteed
+        ## in the dict
+        conf_key = str(sorted(conf.items(), key=lambda x: x[0]))
+
+        engine_key = '%s|%s' % (uri, conf_key)
         db_engines = pylons.config['pylons.db_engines']
         if engine_key in db_engines:
             engine = db_engines[engine_key]
         else:
             engine = db_engines[engine_key] = \
-                sqlalchemy.create_engine(uri, **kwargs)
-        log.debug("Created engine using uri: %s with echo %s", uri, echo)
+                sqlalchemy.create_engine(uri, **conf)
+
+        log.debug("Created engine using uri: %s with engine arguments %s", uri, conf)
         return engine
 
-    def get_engine_conf(uri=None, echo=None):
-        """Returns a tuple of SQLAlchemy engine configuration values (uri,
-        echo) from the Pylons config file values ``sqlalchemy.dburi`` and
-        ``sqlalchemy.echo`` when none are specified."""
-        if uri is None:
-            uri = pylons.config.get('sqlalchemy.dburi')
-        if not uri:
-            raise KeyError('No SQLAlchemy database config found!')
-        if echo is None:
-            echo = pylons.config.get('sqlalchemy.echo', False)
-            if echo != 'debug':
-                echo = asbool(echo)
-        return uri, echo
-    
+    def get_engine_conf():
+        """Returns a dict of SQLAlchemy engine configuration values
+        from the Pylons config file values ``sqlalchemy.*``"""
+        result = {}
+        for k,v in pylons.config.iteritems():
+            if not k.startswith('sqlalchemy.'):
+                continue
+            k = k[11:]
+            if k in BOOL_OPTIONS:
+                result[k] = asbool(v)
+            elif k in INT_OPTIONS:
+                try:
+                    result[k] = int(v)
+                except ValueError:
+                    reason = 'config sqlalchemy.%s is not an integer: %s'
+                    raise ValueError(reason % (k,v))
+            else:
+                result[k] = v
+        return result
+
     def make_session(uri=None, echo=None, session_kwargs=None, **kwargs):
         """Returns a SQLAlchemy session for the specified database uri from
         the the engine cache (returned from ``get_engines``)``. Uses the
