@@ -1,10 +1,18 @@
+import os
 from unittest import TestCase
 from xmlrpclib import loads, dumps
 
-from paste.wsgiwrappers import WSGIRequest, WSGIResponse
-
 import pylons
+from paste.wsgiwrappers import WSGIRequest, WSGIResponse
 from pylons.util import ContextObj
+from routes import request_config
+
+data_dir = os.path.dirname(os.path.abspath(__file__))
+
+try:
+    shutil.rmtree(data_dir)
+except:
+    pass
 
 class TestWSGIController(TestCase):
     def setUp(self):
@@ -61,10 +69,13 @@ class SetupCacheGlobal(object):
 
     def __call__(self, environ, start_response):
         registry = environ['paste.registry']
+        environ_config = environ.setdefault('pylons.environ_config', {})
         if self.setup_cache:
             registry.register(pylons.cache, environ['beaker.cache'])
+            environ_config['cache'] = 'beaker.cache'
         if self.setup_session:
             registry.register(pylons.session, environ['beaker.session'])
+            environ_config['session'] = 'beaker.session'
         if self.setup_g:
             registry.register(pylons.g, self.g)
 

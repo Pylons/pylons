@@ -13,7 +13,8 @@ from pylons.decorators.cache import beaker_cache
 
 from pylons.controllers import Controller, WSGIController, XMLRPCController
 
-from __init__ import TestWSGIController, SetupCacheGlobal, ControllerWrap
+from __init__ import data_dir, TestWSGIController, SetupCacheGlobal, \
+    ControllerWrap
 
 class CacheController(WSGIController):
     def test_default_cache_decorator(self):
@@ -46,17 +47,17 @@ class CacheController(WSGIController):
         return Response('Counter=%s, id=%s' % (pylons.g.counter, id))
     test_keyslist_cache_decorator = beaker_cache(key=["id", "id2"])(test_keyslist_cache_decorator)
 
-cachedir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'cache')
+cache_dir = os.path.join(data_dir, 'cache')
 
 try:
-    shutil.rmtree(cachedir)
+    shutil.rmtree(cache_dir)
 except:
     pass
 
 environ = {}
 app = ControllerWrap(CacheController)
 app = sap = SetupCacheGlobal(app, environ, setup_cache=True)
-app = CacheMiddleware(app, {}, data_dir=cachedir)
+app = CacheMiddleware(app, {}, data_dir=cache_dir)
 app = RegistryManager(app)
 app = TestApp(app)
 
