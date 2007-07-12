@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.6 (**svn**)
+* Added logging statements throughout Pylons code, added logging setup to
+  default template. Fixes #98.
 * WARNING: The paths dictionary's 'root_path' has moved to the less
   redundant 'root'.
 * Refactored global response to be setup in wsgiapp along with the other 
