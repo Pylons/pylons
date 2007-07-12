@@ -117,17 +117,20 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
             request.environ['pylons.routes_dict']['action'] = form
             response = self._dispatch_call()
             # XXX: Legacy WSGIResponse support
+            legacy_response = False
             if hasattr(response, 'wsgi_response'):
                 form_content = ''.join(response.content)
+                legacy_response = True
             else:
                 form_content = response
+                response = pylons.response._current_obj()
+
             # Ensure htmlfill can safely combine the form_content, params and
             # errors variables (that they're all of the same string type)
             if not is_unicode_params:
                 log.debug("Raw string form params: ensuring the '%s' form and "
                           "FormEncode errors are converted to raw strings for "
                           "htmlfill", form)
-                response = pylons.response._current_obj()
                 encoding = determine_response_charset(response)
 
                 # WSGIResponse's content may (unlikely) be unicode
@@ -145,8 +148,13 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
                           "converted to unicode for htmlfill", form)
                 encoding = determine_response_charset(response)
                 form_content = form_content.decode(encoding)
-            return htmlfill.render(form_content, defaults=params,
-                                   errors=errors, **htmlfill_kwargs)
+
+            response.content = \
+                htmlfill.render(form_content, defaults=params, errors=errors,
+                                **htmlfill_kwargs)
+            if legacy_response:
+                # Let the Controller merge the legacy response
+                return response
         return func(self, *args, **kwargs)
     return decorator(wrapper)
 
