@@ -29,7 +29,7 @@ class StaticJavascripts(object):
         
     def __call__(self, environ, start_response):
         if environ.get('PATH_INFO', '').startswith('/javascripts/'):
-            log.debug("Handling Javascript URL (Starts with /javascripts/).")
+            log.debug("Handling Javascript URL (Starts with /javascripts/)")
             return self.javascripts_app(environ, start_response)
         else:
             return self.javascripts_app.not_found(environ, start_response)

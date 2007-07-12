@@ -179,7 +179,7 @@ class DeprecatedStackedObjectProxy(StackedObjectProxy):
 h = DeprecatedStackedObjectProxy(name="h")
 
 response_warning = ("Returning a Response object from a controller will be "
-                    "deprecated in 0.9.7.")
+                    "deprecated in 0.9.7")
 class Response(WSGIResponse):
     def __init__(self, *args, **kwargs):
         warnings.warn(response_warning, PendingDeprecationWarning, 2)

@@ -50,7 +50,7 @@ def etag_cache(key=None):
         syslog.debug("ETag match, returning 304 HTTP Not Modified Response")
         raise httpexceptions.HTTPNotModified()
     else:
-        syslog.debug("ETag didn't match, returning response object.")
+        syslog.debug("ETag didn't match, returning response object")
         return pylons.response
 
 
@@ -74,7 +74,7 @@ def redirect_to(*args, **kargs):
     and cookies extracted from it and added into the redirect issued."""
     response = kargs.pop('_response', None)
     found = httpexceptions.HTTPFound(url_for(*args, **kargs))
-    syslog.debug("Generating redirect HTTP Exception.")
+    syslog.debug("Generating redirect HTTP Exception")
     if response:
         if str(response.status_code).startswith('3'):
             found.code = response.status_code
@@ -82,5 +82,5 @@ def redirect_to(*args, **kargs):
         for c in response.cookies.values():
             found.headers.append(('Set-Cookie', c.output(header='')))
         syslog.debug("Merged cookie's into provided response object for "
-                     "redirect.")
+                     "redirect")
     raise found

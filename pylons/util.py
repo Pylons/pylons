@@ -23,7 +23,7 @@ pylons_log = logging.getLogger(__name__)
 
 def func_move(name, moved_to='pylons.i18n'):
     return ("The %s function has moved to %s, please update your import "
-            "statements to reflect the move." % (name, moved_to))
+            "statements to reflect the move" % (name, moved_to))
 
 
 def deprecated(func, message):
@@ -49,7 +49,7 @@ def get_prefix(environ, warn=True):
     """Deprecated: Use environ.get('SCRIPT_NAME', '') instead"""
     if warn:
         warnings.warn("The get_prefix function is deprecated, please use "
-                      "environ.get('SCRIPT_NAME', '') instead.",
+                      "environ.get('SCRIPT_NAME', '') instead",
                       DeprecationWarning, 2)
     prefix = pylons.config.get('prefix', '')
     if not prefix:
@@ -105,7 +105,7 @@ class AttribSafeContextObj(ContextObj):
             return object.__getattribute__(self, name)
         except AttributeError:
             pylons_log.debug("No attribute called %s found on c object, "
-                             "returning empty string.", name)
+                             "returning empty string", name)
             return ''
 
 

@@ -55,7 +55,7 @@ class Buffet(object):
         self.template_root = template_root
         self.default_options = default_options
         self.engines = {}
-        log.debug("Initialized Buffet object.")
+        log.debug("Initialized Buffet object")
         if self.default_engine:
             self.prepare(default_engine, template_root, **config)
         
@@ -78,7 +78,7 @@ class Buffet(object):
             dict(engine=Engine(extra_vars_func=extra_vars_func,
                                options=config), 
                  root=template_root)
-        log.debug("Adding %s template language for use with Buffet.", 
+        log.debug("Adding %s template language for use with Buffet", 
                   engine_name)
     
     def _update_names(self, ns):
@@ -219,7 +219,7 @@ class Buffet(object):
                 type=cache_type, expiretime=cache_expire)
             return content
         
-        log.debug("Rendering template %s with engine %s.", full_path, engine_name)
+        log.debug("Rendering template %s with engine %s", full_path, engine_name)
         return engine_config['engine'].render(namespace, template=full_path, 
             **options)
 
@@ -327,7 +327,7 @@ def render(*args, **kargs):
     cache_args = dict(cache_expire=kargs.pop('cache_expire', None), 
                        cache_type=kargs.pop('cache_type', None),
                        cache_key=kargs.pop('cache_key', None))
-    log.debug("Render called with %s args and %s keyword args.", args, kargs)
+    log.debug("Render called with %s args and %s keyword args", args, kargs)
     if args: 
         engine = args.pop()
         return pylons.buffet.render(engine, template, fragment=fragment,

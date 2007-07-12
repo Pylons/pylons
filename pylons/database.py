@@ -37,7 +37,7 @@ try:
             app_scope_id = str(id(pylons.config._current_obj()))
         except TypeError:
             app_scope_id = ''
-        log.debug("Returning %s as the database session scope id.", 
+        log.debug("Returning %s as the database session scope id", 
                   app_scope_id)
         return '%s|%i' % (app_scope_id, thread.get_ident())
 
@@ -88,7 +88,7 @@ try:
         if session_kwargs is None:
             session_kwargs = {}
         engine = create_engine(uri, echo=echo, **kwargs)
-        log.debug("Created engine for session context.")
+        log.debug("Created engine for session context")
         return sqlalchemy.create_session(bind_to=engine, **session_kwargs)
 
     session_context = sessioncontext.SessionContext(make_session,

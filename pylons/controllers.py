@@ -132,9 +132,9 @@ class WSGIController(object):
                   func.__name__, args)
         try:
             result = func(**args)
-            log.debug("Action method returned a response.")
+            log.debug("Action method returned a response")
         except HTTPException, httpe:
-            log.debug("Action method resulted in HTTP Exception: %s.", httpe)
+            log.debug("Action method resulted in HTTP Exception: %s", httpe)
             result = httpe.response(pylons.request.environ)
             result._exception = True
         return result
@@ -158,8 +158,7 @@ class WSGIController(object):
         req = pylons.request._current_obj()
         action = req.environ['pylons.routes_dict'].get('action')
         action_method = action.replace('-', '_')
-        log.debug("Looking for %s method to handle the request.", 
-                  action_method)
+        log.debug("Looking for %s method to handle the request", action_method)
         func = getattr(self, action_method, None)        
         if isinstance(func, types.MethodType):
             # Store function used to handle request
@@ -167,7 +166,7 @@ class WSGIController(object):
             
             response = self._inspect_call(func)
         else:
-            log.debug("Couldn't find method to handle response.")
+            log.debug("Couldn't find method to handle response")
             if pylons.config['debug']:
                 raise NotImplementedError('Action %s is not implemented' %
                                           action)
@@ -189,23 +188,23 @@ class WSGIController(object):
                 response.headers.update(HeaderDict.fromlist(headers))
                 headers = response.headers.headeritems()
                 log.debug("Merging headers into start_response call, "
-                          "status: %s.", status)
+                          "status: %s", status)
             if status.startswith('3') or status.startswith('2'):
                 for c in pylons.response.cookies.values():
                     headers.append(('Set-Cookie', c.output(header='')))
                 log.debug("Merging cookies into start_response call, "
-                          "status: %s.", status)
+                          "status: %s", status)
             return start_response(status, headers, exc_info)
         self.start_response = repl_start_response
         
         # Keep private methods private
         if environ['pylons.routes_dict'].get('action', '').startswith('_'):
             log.debug("Action starts with _, private action not allowed. "
-                      "Returning a 404 response.")
+                      "Returning a 404 response")
             return WSGIResponse(code=404)(environ, start_response)
         
         if hasattr(self, '__before__'):
-            log.debug("Calling __before__ action.")
+            log.debug("Calling __before__ action")
             response = self._inspect_call(self.__before__)
             if hasattr(response, '_exception'):
                 return response(environ, start_response)
@@ -221,27 +220,27 @@ class WSGIController(object):
                 # a 2XX or 3XX status code.
                 if response.status_code < 300:
                     log.debug("Merging global headers into returned response"
-                              " object.")
+                              " object")
                     response.headers.update(pylons.response.headers)
                 if response.status_code < 400:
                     log.debug("Merging global cookies into returned response"
-                              " object.")
+                              " object")
                     for c in pylons.response.cookies.values():
                         response.headers.append(('Set-Cookie', 
                                                  c.output(header='')))
                 registry = environ['paste.registry']
                 registry.replace(pylons.response, response)
-                log.debug("Replaced global response object with returned one.")
+                log.debug("Replaced global response object with returned one")
             elif isinstance(response, types.GeneratorType):
                 pylons.response.content = response
-                log.debug("Set response content to returned generator.")
+                log.debug("Set response content to returned generator")
             elif isinstance(response, basestring):
                 pylons.response.write(response)
-                log.debug("Set response content to returned string data.")
+                log.debug("Set response content to returned string data")
             response = pylons.response._current_obj()
         
         if hasattr(self, '__after__'):
-            log.debug("Calling __after__ action.")
+            log.debug("Calling __after__ action")
             self.response = response
             after = self._inspect_call(self.__after__)
             if hasattr(after, '_exception'):
@@ -251,10 +250,10 @@ class WSGIController(object):
             # Copy the response object into the testing vars if we're testing
             if 'paste.testing_variables' in environ:
                 environ['paste.testing_variables']['response'] = response
-            log.debug("Calling response object to return WSGI data.")
+            log.debug("Calling response object to return WSGI data")
             return response(environ, start_response)
         
-        log.debug("Response assumed to be WSGI content, returning un-touched.")
+        log.debug("Response assumed to be WSGI content, returning un-touched")
         return response
 
 
@@ -265,7 +264,7 @@ class Controller(WSGIController):
     """
     def __init__(self, *args, **kwargs):
         warnings.warn("Controller class is deprecated, switch to using the"
-                      "WSGIController class.", DeprecationWarning, 2)
+                      "WSGIController class", DeprecationWarning, 2)
         WSGIController.__init__(self, *args, **kwargs)
     
     def __call__(self, *args, **kargs):
@@ -388,11 +387,11 @@ class XMLRPCController(WSGIController):
             length = int(length)
         else:
             # No valid Content-Length header found
-            log.debug("No Content-Length found, returning 411 error.")
+            log.debug("No Content-Length found, returning 411 error")
             abort(411)
         if length > self.max_body_length or length == 0:
             log.debug("Content-Length larger than max body length. Max: %s,"
-                      " Sent: %s. Returning 413 error.", self.max_body_length, 
+                      " Sent: %s. Returning 413 error", self.max_body_length, 
                       length)
             abort(413, "XML body too large")
 
@@ -400,16 +399,16 @@ class XMLRPCController(WSGIController):
         rpc_args, orig_method = xmlrpclib.loads(body)
 
         method = self._find_method_name(orig_method)
-        log.debug("Looking for XMLRPC method called: %s.", method)
+        log.debug("Looking for XMLRPC method called: %s", method)
         if not hasattr(self, method):
-            log.debug("No method found, returning xmlrpc fault.")
+            log.debug("No method found, returning xmlrpc fault")
             return xmlrpc_fault(0, "No method by that name")(environ, start_response)
 
         func = getattr(self, method)
 
         # Signature checking for params
         if hasattr(func, 'signature'):
-            log.debug("Checking XMLRPC argument signature.")
+            log.debug("Checking XMLRPC argument signature")
             valid_args = False
             params = xmlrpc_sig(rpc_args)
             for sig in func.signature:
@@ -424,7 +423,7 @@ class XMLRPCController(WSGIController):
 
             if not valid_args:
                 log.debug("Bad argument signature recieved, returning xmlrpc"
-                          " fault.")
+                          " fault")
                 msg = ("Incorrect argument signature. %s recieved does not "
                        "match %s signature for method %s" % \
                            (params, func.signature, orig_method))
