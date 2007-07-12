@@ -364,5 +364,5 @@ def render_response(*args, **kargs):
     if encoding_errors:
         response.encoding_errors = encoding_errors
     return response
-render_response.__doc__ = 'Pending Deprecation: %s\n\n%s' % \
+render_response.__doc__ = 'Pending Deprecation: %s.\n\n%s' % \
     (pylons.legacy.render_response_warning, render_response.__doc__)
