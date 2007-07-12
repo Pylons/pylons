@@ -17,6 +17,7 @@ commands and hook into Buffet to make rendering content easy.
 """
 import logging
 import os
+import warnings
 
 try:
     from cStringIO import StringIO
@@ -349,7 +350,11 @@ def render_response(*args, **kargs):
         def view(self):
             return render_response('/my/template.mak')
     """
-    response = pylons.Response(render(*args, **kargs))
+    warnings.warn(pylons.legacy.render_response_warning,
+                  PendingDeprecationWarning, 2)
+
+    response = pylons.response._current_obj()
+    response.content = render(*args, **kargs)
     output_encoding = kargs.get('output_encoding')
     encoding_errors = kargs.get('encoding_errors')
     if output_encoding:
@@ -359,3 +364,5 @@ def render_response(*args, **kargs):
     if encoding_errors:
         response.encoding_errors = encoding_errors
     return response
+render_response.__doc__ = 'Pending Deprecation: %s\n\n%s' % \
+    (pylons.legacy.render_response_warning, render_response.__doc__)

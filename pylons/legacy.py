@@ -1,5 +1,4 @@
-"""Legacy functionality for pre Pylons 0.9.3 projects
-"""
+"""Legacy (older versions of Pylons) functionality and warnings"""
 import sys
 import types
 import warnings
@@ -11,6 +10,8 @@ import pylons
 import pylons.decorators
 from pylons.controllers import Controller as OrigController
 from pylons.util import deprecated, func_move
+
+__all__ = ['load_h']
 
 config_attr_moved = (
     "The attribute 'config.%s' has moved to the pylons.config dictionary: "
@@ -121,6 +122,12 @@ uses h):
     from pylons import h
 """)
 
+render_response_warning = (
+"render_response will be deprecated (trigger a DeprecationWarning) in "
+"Pylons 0.9.7, and support for it will be removed in a future version of "
+"Pylons. Please return the response content directly (via the render "
+"function) instead")
+
 root_path = (
 "paths['root_path'] has been moved to paths['root'], please update your "
 "configuration")
@@ -178,11 +185,12 @@ class DeprecatedStackedObjectProxy(StackedObjectProxy):
         return StackedObjectProxy._current_obj(*args, **kwargs)
 h = DeprecatedStackedObjectProxy(name="h")
 
-response_warning = ("Returning a Response object from a controller will be "
-                    "deprecated in 0.9.7")
+response_warning = (
+"Returning a Response object from a controller will be deprecated (trigger a "
+"full DeprecationWarning) in Pylons 0.9.7, and support for it will be removed "
+"in a future version of Pylons. Please return the response content directly "
+"and or use pylons.response instead")
 class Response(WSGIResponse):
     def __init__(self, *args, **kwargs):
         warnings.warn(response_warning, PendingDeprecationWarning, 2)
         WSGIResponse.__init__(self, *args, **kwargs)
-
-__all__ = ['load_h']
