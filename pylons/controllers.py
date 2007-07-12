@@ -128,13 +128,14 @@ class WSGIController(object):
                 if name in kargs:
                     setattr(c, name, kargs[name])
                     args[name] = kargs[name]
-        log.debug("Calling %s method with keyword arguments: **%s",
+        log.debug("Calling '%s' method with keyword arguments: **%s",
                   func.__name__, args)
         try:
             result = func(**args)
-            log.debug("Action method returned a response")
+            log.debug("'%s' method returned a response", func.__name__)
         except HTTPException, httpe:
-            log.debug("Action method resulted in HTTP Exception: %s", httpe)
+            log.debug("'%s' method resulted in HTTP Exception: %s", 
+                      func.__name__, httpe)
             result = httpe.response(pylons.request.environ)
             result._exception = True
         return result
@@ -158,7 +159,7 @@ class WSGIController(object):
         req = pylons.request._current_obj()
         action = req.environ['pylons.routes_dict'].get('action')
         action_method = action.replace('-', '_')
-        log.debug("Looking for %s method to handle the request", action_method)
+        log.debug("Looking for '%s' method to handle the request", action_method)
         func = getattr(self, action_method, None)        
         if isinstance(func, types.MethodType):
             # Store function used to handle request
@@ -166,7 +167,7 @@ class WSGIController(object):
             
             response = self._inspect_call(func)
         else:
-            log.debug("Couldn't find method to handle response")
+            log.debug("Couldn't find '%s' method to handle response", action)
             if pylons.config['debug']:
                 raise NotImplementedError('Action %s is not implemented' %
                                           action)
