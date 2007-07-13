@@ -149,14 +149,14 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
                 encoding = determine_response_charset(response)
                 form_content = form_content.decode(encoding)
 
-            response.content = \
-                htmlfill.render(form_content, defaults=params, errors=errors,
-                                **htmlfill_kwargs)
+            form_content = htmlfill.render(form_content, defaults=params,
+                                           errors=errors, **htmlfill_kwargs)
             if legacy_response:
                 # Let the Controller merge the legacy response
+                response.content = form_content
                 return response
             else:
-                return response.content
+                return form_content
         return func(self, *args, **kwargs)
     return decorator(wrapper)
 
