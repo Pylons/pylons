@@ -20,6 +20,9 @@ modules = ${package}
 title = ${package.capitalize()}
 organization = Pylons
 
+# Highlight code-block sections with Pygments
+highlighter = pygments
+
 # Optionally add extra links
 #organization_url = http://pylonshq.com/
 #trac_url = http://pylonshq.com/project
