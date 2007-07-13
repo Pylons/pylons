@@ -9,7 +9,7 @@ find_links = http://www.pylonshq.com/download/
 theme = pythonpaste.org
 
 # Add extra doc files here with spaces between them
-docs = ${package}/docs/index.txt 
+docs = ${package}/docs/index.txt
 
 # Doc Settings
 doc_base = ${package}/docs/
@@ -25,10 +25,10 @@ organization = Pylons
 #trac_url = http://pylonshq.com/project
 settings = no_about=true
 
-# Optionally add extra settings 
+# Optionally add extra settings
 #           link1=/community/ Community
 #           link2=/download/ Download
- 
+
 [publish]
 doc-dir=${package}/docs/html
 make-dirs=1
