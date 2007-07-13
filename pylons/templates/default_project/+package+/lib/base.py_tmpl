@@ -11,7 +11,7 @@ from pylons.i18n import _, ungettext, N_
 from pylons.templating import render
 
 import ${package}.lib.helpers as h
-import ${package}.models as model
+import ${package}.model as model
 
 class BaseController(WSGIController):
 
