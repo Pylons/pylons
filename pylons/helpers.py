@@ -3,12 +3,14 @@
 Additional helper object available for use in Controllers is the etag_cache.
 """
 import logging
+import warnings
 
 import paste.httpexceptions as httpexceptions
 
 from routes import url_for
 
 import pylons
+import pylons.legacy
 
 __all__ = ['abort', 'etag_cache', 'log', 'redirect_to']
 
@@ -76,6 +78,8 @@ def redirect_to(*args, **kargs):
     found = httpexceptions.HTTPFound(url_for(*args, **kargs))
     syslog.debug("Generating redirect HTTP Exception")
     if response:
+        warnings.warn(pylons.legacy.redirect_response_warning,
+                      PendingDeprecationWarning, 2)
         if str(response.status_code).startswith('3'):
             found.code = response.status_code
         found.headers.extend(response.headers.headeritems())

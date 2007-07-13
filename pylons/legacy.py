@@ -122,6 +122,12 @@ uses h):
     from pylons import h
 """)
 
+redirect_response_warning = (
+"redirect_to's _response argument will be deprecated (trigger a "
+"DeprecationWarning) in Pylons 0.9.7, and support for it will be removed in a "
+"future version of Pylons. Please use pylons.response prior to redirecting "
+"instead")
+
 render_response_warning = (
 "render_response will be deprecated (trigger a DeprecationWarning) in "
 "Pylons 0.9.7, and support for it will be removed in a future version of "
