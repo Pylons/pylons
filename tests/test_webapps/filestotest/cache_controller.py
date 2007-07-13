@@ -1,4 +1,6 @@
+from pylons import Response
 from pylons.decorators.cache import beaker_cache
+from pylons.templating import render_response
 from projectname.lib.base import *
 
 class CacheController(BaseController):

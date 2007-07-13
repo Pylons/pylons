@@ -1,7 +1,8 @@
 from projectname.lib.base import *
+from pylons import h as deprecated_h, Response
 from pylons.decorators import rest
 from pylons.i18n import get_lang, set_lang, LanguageError
-from pylons import h as deprecated_h
+from pylons.templating import render_response
 
 class SampleController(BaseController):
     def index(self):

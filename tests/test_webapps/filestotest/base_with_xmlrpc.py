@@ -4,7 +4,7 @@ from pylons.decorators import jsonify, validate
 from pylons.templating import render, render_response
 from pylons.helpers import abort, redirect_to, etag_cache
 from pylons.i18n import N_, _, ungettext
-import projectname.models as model
+import projectname.model as model
 import projectname.lib.helpers as h
 
 class BaseController(WSGIController):
