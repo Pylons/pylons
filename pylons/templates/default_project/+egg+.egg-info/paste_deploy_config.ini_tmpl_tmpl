@@ -53,7 +53,7 @@ keys = console
 keys = generic
 
 [logger_root]
-level = WARN
+level = INFO
 handlers = console
 
 [handler_console]
