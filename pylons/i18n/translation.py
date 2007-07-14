@@ -8,6 +8,10 @@ from gettext import NullTranslations, translation
 
 import pylons
 
+__all__ = ['gettext_noop', 'N_', 'gettext', 'ugettext', '_', 'ngettext',
+           'ungettext', 'lazy_gettext', 'lazy_ugettext', 'lazy_ngettext',
+           'lazy_ungettext', 'set_lang', 'get_lang', 'LanguageError']
+
 class LanguageError(Exception):
     """Exception raised when a problem occurs with changing languages"""
     pass
@@ -166,7 +170,3 @@ def add_fallback(lang):
     """Add a fallback language from which words not matched in other languages
     will be translated to."""
     return pylons.translator.add_fallback(_get_translator(lang))
-
-__all__ = ['gettext_noop', 'N_', 'gettext', 'ugettext', '_', 'ngettext',
-           'ungettext', 'lazy_gettext', 'lazy_ugettext', 'lazy_ngettext',
-           'lazy_ungettext', 'set_lang', 'get_lang', 'LanguageError']
