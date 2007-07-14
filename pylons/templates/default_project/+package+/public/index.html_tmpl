@@ -94,7 +94,7 @@ Then add the following to your 'hello' controller class:
         import pprint
         c.pretty_environ = cgi.escape(pprint.pformat(request.environ))
         c.name = 'The Black Knight'
-        return render('/serverinfo.mak)
+        return render('/serverinfo.mak')
 </pre>
 
 You can now view the page at: <tt><a href="/hello/serverinfo">/hello/serverinfo</a></tt>
