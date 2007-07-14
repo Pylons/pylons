@@ -6,7 +6,6 @@ import types
 import warnings
 import xmlrpclib
 
-from paste.deploy.converters import asbool
 from paste.httpexceptions import HTTPException
 from paste.response import replace_header, HeaderDict
 from paste.wsgiwrappers import WSGIResponse
