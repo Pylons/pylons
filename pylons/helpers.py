@@ -80,11 +80,11 @@ def redirect_to(*args, **kargs):
     A Response object can be passed in as _response which will have the headers
     and cookies extracted from it and added into the redirect issued."""
     response = kargs.pop('_response', None)
-    status_code = kargs.pop('_code', None)
-    found = httpexceptions.HTTPFound(url_for(*args, **kargs))
-    syslog.debug("Generating redirect HTTP Exception")
-    if status_code:
-        found.code = status_code
+    status_code = kargs.pop('_code', 302)
+    exc = httpexceptions.get_exception(status_code)
+    found = exc(url_for(*args, **kargs))
+    syslog.debug("Generating %s redirect (%s)" % (status_code,
+                                                  found.__class__.__name__))
     if response:
         warnings.warn(pylons.legacy.redirect_response_warning,
                       PendingDeprecationWarning, 2)
