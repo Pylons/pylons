@@ -72,17 +72,24 @@ def abort(status_code=None, detail="", headers=None, comment=None):
 def redirect_to(*args, **kargs):
     """Raises a redirect exception
     
+    Optionally, a _code variable may be passed with the status code of the 
+    redirect, ie:
+        redirect_to('home_page', _code=303)
+    
+    ``Deprecated``
     A Response object can be passed in as _response which will have the headers
     and cookies extracted from it and added into the redirect issued."""
     response = kargs.pop('_response', None)
+    status_code = kargs.pop('_code', None)
     found = httpexceptions.HTTPFound(url_for(*args, **kargs))
     syslog.debug("Generating redirect HTTP Exception")
+    if status_code:
+        found.code = status_code
     if response:
         warnings.warn(pylons.legacy.redirect_response_warning,
                       PendingDeprecationWarning, 2)
         if str(response.status_code).startswith('3'):
             found.code = response.status_code
-        found.headers.extend(response.headers.headeritems())
         for c in response.cookies.values():
             found.headers.append(('Set-Cookie', c.output(header='')))
         syslog.debug("Merged cookie's into provided response object for "
