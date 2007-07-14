@@ -62,4 +62,5 @@ level = NOTSET
 formatter = generic
 
 [formatter_generic]
-format = [%(levelname)s] %(name)s  %(message)s
+format = %(asctime)s,%(msecs)d [%(levelname)s] %(name)s  %(message)s
+datefmt = %H:%M:%S
