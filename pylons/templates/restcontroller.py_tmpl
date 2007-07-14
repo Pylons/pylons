@@ -5,6 +5,7 @@ class ${classname}Controller(BaseController):
     # To properly map this controller, ensure your config/routing.py file has
     # a resource setup:
     #     ${resource_command}
+
     def index(self, format='html'):
         """GET /${nameprefix}${pluralname}: All items in the collection."""
         # url_for('${nameprefix}${pluralname}')

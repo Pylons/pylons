@@ -1,6 +1,7 @@
 ${importstatement}
 
 class ${name}Controller(BaseController):
+
     def index(self):
         # Return a rendered template
         #   return render('/some/template.html')
