@@ -18,11 +18,11 @@ import pylons.templating
 
 
 default_template_engine = 'mako'
-request_defaults = dict(charset=None, errors='strict',
+request_defaults = dict(charset='utf-8', errors='replace',
                         decode_param_names=False, language='en-us')
 response_defaults = dict(content_type='text/html',
                          charset='utf-8', errors='strict', 
-                         headers={'Cache-Control':'no-cache'})
+                         headers={'Cache-Control': 'no-cache'})
 
 log = logging.getLogger(__name__)
 
@@ -125,6 +125,10 @@ class PylonsConfig(DispatchingConfig):
                     warnings.warn(pylons.legacy.config_attr_moved % \
                                       (name, full_name), DeprecationWarning, 3)
                     return conf_dict[full_name]
+            if name == 'request_defaults':
+                return request_defaults
+            elif name == 'response_defaults':
+                return response_defaults
             return getattr(conf_dict, name)
 
     def load_environment(self, tmpl_options=None, map=None, paths=None,

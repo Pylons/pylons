@@ -2,10 +2,37 @@ Pylons Changelog
 =================
 
 0.9.6 (**svn**)
-* Added logging statements throughout Pylons code, added logging setup to
-  default template. Fixes #98.
+* WARNING: By default, the Pylons response object now returns unicode
+  parameter (pylons.GET/POST/params) values (and assumes those parameters
+  were sent to Pylons as utf-8). Unicode parameters can cause major
+  problems if your application is not setup to handle unicode. To disable
+  unicode parameters (0.9.5 default behavior), add the following to your
+  load_environment function (0.9.6 syntax):
+
+  pylons.config['request_options']['charset'] = None
+
+  or, if still using the deprecated pre-0.9.6 pylons.config syntax, add:
+
+  request_settings = pylons.config.request_defaults.copy()
+  request_settings['charset'] = None
+  return pylons.config.Config(tmpl_options, map, paths,
+                              request_settings=request_settings)
+
+* WARNING: Template names beginning with a / (or the OS's path separator)
+  will now result in the name not having the separator's replaced with '.'s
+  for the template engine. This shouldn't affect most projects as they usually
+  assume a dot notation will be used with dot notation template engines (Kid, 
+  Genshi, etc.). This change allows template engines that can take filename
+  paths to function properly. Fixes #233.
+* WARNING: The pylons.util.get_prefix(environ) function is deprecated. Please
+  use:
+      environ.get('SCRIPT_NAME', '')
+  instead (the get_prefix function is used in the default ErrorController).
+  Fixes #243.
 * WARNING: The paths dictionary's 'root_path' has moved to the less
   redundant 'root'.
+* Added logging statements throughout Pylons code, added logging setup to
+  default template. Fixes #98.
 * Refactored global response to be setup in wsgiapp along with the other 
   globals. Updated WSGIController to copy in global response headers and
   cookies into a WSGI app's output.
@@ -50,11 +77,6 @@ Pylons Changelog
 * Changed project template to use new Beaker session keys.
 * Changed default routing for raw template matching to not unicode decode the
   route argument. Fixes #242.
-* WARNING: The pylons.util.get_prefix(environ) function is deprecated. Please
-  use:
-      environ.get('SCRIPT_NAME', '')
-  instead (the get_prefix function is used in the default ErrorController).
-  Fixes #243.
 * Catch any exceptions raised by template engine entry points and emit a
   warning instead of crashing. Thanks markbradley. Fixes #249
 * Fixed the validate decorator not working with formencode's
@@ -71,12 +93,6 @@ Pylons Changelog
 * Fixed the EvalException debugger showing broken links and buttons when the
   app's ErrorController was broken (such as when BaseController's __before__
   raises an exception). Suggested by Ian Bicking. Fixes #228.
-* WARNING: Template names beginning with a / (or the OS's path separator)
-  will now result in the name not having the separator's replaced with '.'s
-  for the template engine. This shouldn't affect most projects as they usually
-  assume a dot notation will be used with dot notation template engines (Kid, 
-  Genshi, etc.). This change allows template engines that can take filename
-  paths to function properly. Fixes #233.
 * paster create now accepts a 'template_engine' option to setup the new
   project's default template engine. E.g. to create a new project that
   uses Genshi by default, use:
