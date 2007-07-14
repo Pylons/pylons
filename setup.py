@@ -79,14 +79,14 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
     ],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
+        "Framework :: Pylons",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: BSD License",
         "Programming Language :: Python",
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
-        "Topic :: Software Development :: Libraries :: Python Modules",
         "Topic :: Internet :: WWW/HTTP :: WSGI",
-        "Framework :: Pylons",
+        "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     extras_require = {
         'pudge': ["docutils>=0.4", "elementtree>=1.2.6", "kid>=0.9",
