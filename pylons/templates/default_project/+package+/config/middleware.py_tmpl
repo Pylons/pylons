@@ -6,8 +6,8 @@ from paste.deploy.converters import asbool
 
 from pylons import config
 from pylons.error import error_template
-from pylons.middleware import ErrorHandler, ErrorDocuments, \
-    StaticJavascripts, error_mapper
+from pylons.middleware import error_mapper, ErrorDocuments, ErrorHandler, \
+    StaticJavascripts
 from pylons.wsgiapp import PylonsApp
 
 from ${package}.config.environment import load_environment
