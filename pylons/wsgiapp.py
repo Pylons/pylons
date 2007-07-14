@@ -188,7 +188,9 @@ class PylonsBaseWSGIApp(object):
         """
         if not controller:
             log.debug("No controller found, returning 404 HTTP Not Found")
-            raise httpexceptions.HTTPNotFound()
+            not_found = httpexceptions.HTTPNotFound()
+            return not_found.wsgi_application(environ, start_response)
+
         match = environ['pylons.routes_dict']
         
         # Older subclass of Controller
