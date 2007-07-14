@@ -70,8 +70,8 @@ class PylonsBaseWSGIApp(object):
             def_eng['engine'], 
             template_root=def_eng['template_root'],
             **def_eng['template_options'])
-        log.debug("Initializing additional template engines")
         for e in config['buffet.template_engines'][1:]:
+            log.debug("Initializing additional template engine: %s", e['engine'])
             self.buffet.prepare(e['engine'], template_root=e['template_root'], 
                 alias=e['alias'], **e['template_options'])
     
