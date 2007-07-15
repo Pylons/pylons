@@ -65,7 +65,8 @@ Pylons Changelog
   to pass along to formencode's htmlfill.render function.
 * Removed POST-only restriction on validate decorator, now handles GET 
   requests. No form arg required during a GET request, which will run the
-  current action with self.errors set to the errors. Fixes #246.
+  current action with self.errors and c.form_errors set to the errors. Fixes
+  #246.
 * Added PylonsConfig, which gets accessed as pylons.config dict. Contains
   all the merged ini options, in addition to the Config options such as
   'routes.map', 'pylons.paths', 'buffet.template_options', etc. Check the
