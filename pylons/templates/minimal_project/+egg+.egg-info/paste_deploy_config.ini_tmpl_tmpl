@@ -22,8 +22,8 @@ beaker.session.secret = somesecret
 app_instance_uuid = $${app_instance_uuid}
 
 # If you'd like to fine-tune the individual locations of the cache data dirs
-# for the Cache data, or the Session saves, un-comment the desired
-# settings here:
+# for the Cache data, or the Session saves, un-comment the desired settings
+# here:
 #beaker.cache.data_dir = %(here)s/data/cache
 #beaker.session.data_dir = %(here)s/data/sessions
 
