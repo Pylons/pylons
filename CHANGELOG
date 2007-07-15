@@ -2,6 +2,12 @@ Pylons Changelog
 =================
 
 0.9.6 (**svn**)
+* Fixed cookie header addition to use add instead of append. Thanks to 
+  anonymous patcher. Fixes #268, again.
+* Added ability to pass _code option to specify the status code type for
+  redirect_to.
+* Fixed redirect_to to not copy all headers into redirect for old _response
+  usage. Fixes #268.
 * WARNING: By default, the Pylons response object now returns unicode
   parameter (pylons.GET/POST/params) values (and assumes those parameters
   were sent to Pylons as utf-8). Unicode parameters can cause major

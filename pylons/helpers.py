@@ -91,7 +91,7 @@ def redirect_to(*args, **kargs):
         if str(response.status_code).startswith('3'):
             found.code = response.status_code
         for c in response.cookies.values():
-            found.headers.append(('Set-Cookie', c.output(header='')))
+            found.headers.add('Set-Cookie', c.output(header=''))
         syslog.debug("Merged cookie's into provided response object for "
                      "redirect")
     raise found

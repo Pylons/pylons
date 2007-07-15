@@ -1,14 +1,16 @@
 from paste.fixture import TestApp
 from paste.registry import RegistryManager
+import paste.httpexceptions as httpexceptions
 
 import pylons
 from pylons.controllers import WSGIController
+from pylons.helpers import redirect_to
 
 from __init__ import TestWSGIController, SetupCacheGlobal, ControllerWrap
 
 class BasicWSGIController(WSGIController):
     def index(self):
-        return pylons.Response('hello world')
+        return 'hello world'
 
     def yield_fun(self):
         def its():
@@ -20,6 +22,11 @@ class BasicWSGIController(WSGIController):
     
     def strme(self):
         return "hi there"
+    
+    def use_redirect(self):
+        pylons.response.set_cookie('message', 'Hello World')
+        exc = httpexceptions.get_exception(301)
+        raise exc('/elsewhere')
     
     def header_check(self):
         pylons.response.headers['Content-Type'] = 'text/plain'
@@ -40,10 +47,10 @@ class FilteredWSGIController(WSGIController):
             pylons.response.write(' from __after__')
 
     def index(self):
-        return pylons.Response('hi all, before is %s' % self.before)
+        return 'hi all, before is %s' % self.before
 
     def after_response(self):
-        return pylons.Response('hi')
+        return 'hi'
 
     def after_string_response(self):
         return 'hello'
@@ -91,6 +98,11 @@ class TestBasicWSGI(TestWSGIController):
         assert "Hello all!" in resp
         assert resp.response.headers['Content-Type'] == 'text/plain'
         assert resp.header('Content-Type') == 'text/plain'
+    
+    def test_redirect(self):
+        self.baseenviron['pylons.routes_dict']['action'] = 'use_redirect'
+        resp = self.app.get('/', status=301)
+        
 
 class TestFilteredWSGI(TestWSGIController):
     def __init__(self, *args, **kargs):

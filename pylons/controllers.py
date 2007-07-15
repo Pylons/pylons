@@ -191,7 +191,7 @@ class WSGIController(object):
                           "status: %s", status)
             if status.startswith('3') or status.startswith('2'):
                 for c in pylons.response.cookies.values():
-                    headers.append(('Set-Cookie', c.output(header='')))
+                    headers.add('Set-Cookie', c.output(header=''))
                 log.debug("Merging cookies into start_response call, "
                           "status: %s", status)
             return start_response(status, headers, exc_info)
@@ -226,8 +226,7 @@ class WSGIController(object):
                     log.debug("Merging global cookies into returned response"
                               " object")
                     for c in pylons.response.cookies.values():
-                        response.headers.append(('Set-Cookie', 
-                                                 c.output(header='')))
+                        response.headers.add('Set-Cookie', c.output(header=''))
                 registry = environ['paste.registry']
                 registry.replace(pylons.response, response)
                 log.debug("Replaced global response object with returned one")
@@ -293,8 +292,7 @@ class Controller(WSGIController):
                 response.headers.update(pylons.response.headers)
             if response.status_code < 400:
                 for c in pylons.response.cookies.values():
-                    response.headers.append(('Set-Cookie', 
-                                             c.output(header='')))
+                    response.headers.add('Set-Cookie', c.output(header=''))
             registry = req.environ['paste.registry']
             registry.replace(pylons.response, response)
         elif isinstance(response, types.GeneratorType):

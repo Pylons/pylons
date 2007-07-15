@@ -2,7 +2,6 @@
 from paste.fixture import TestApp
 from paste.registry import RegistryManager
 
-from pylons import Response
 from pylons.decorators import validate, encode_formencode_errors
 
 from pylons.controllers import WSGIController
@@ -25,7 +24,7 @@ class HelloForm(formencode.Schema):
 
 class ValidatingController(WSGIController):
     def new_network(self):
-        return Response("""
+        return """
 <html>
   <form action="/dhcp/new_form" method="POST">
     <table>
@@ -39,15 +38,14 @@ class ValidatingController(WSGIController):
     <input name="commit" type="submit" value="Save changes" />
   </form>
 </html>
-""")
+"""
 
     def network(self):
-        return Response('Your network is: %s' %
-            self.form_result.get('new_network'))
+        return 'Your network is: %s' % self.form_result.get('new_network')
     network = validate(schema=NetworkForm, form='new_network')(network)
 
     def view_hello(self):
-        return Response("""
+        return """
 <html>
   <form action="/hello" method="POST">
     <table>
@@ -64,14 +62,14 @@ class ValidatingController(WSGIController):
     <input name="commit" type="submit" value="Submit" />
   </form>
 </html>
-""")
+"""
 
     def hello(self):
-        return Response(str(self.form_result))
+        return str(self.form_result)
     hello = validate(schema=HelloForm(), post_only=False, form='view_hello')(hello)
 
     def hello_custom(self):
-        return Response(str(self.form_result))
+        return str(self.form_result)
     hello_custom = \
         validate(schema=HelloForm(), post_only=False, form='view_hello',
                      auto_error_formatter=custom_error_formatter)(hello_custom)
