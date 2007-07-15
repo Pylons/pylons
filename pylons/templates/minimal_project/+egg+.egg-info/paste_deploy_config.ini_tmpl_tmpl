@@ -16,6 +16,7 @@ port = 5000
 
 [app:main]
 use = egg:${project}
+full_stack = True
 cache_dir = %(here)s/data
 beaker.session.key = ${package}
 beaker.session.secret = somesecret
@@ -54,4 +55,4 @@ level = NOTSET
 formatter = generic
 
 [formatter_generic]
-format = %(asctime)s [%(levelname)s] %(name)s  %(message)s
+format = %(asctime)s %(levelname)-5.5s [%(name)s] %(message)s
