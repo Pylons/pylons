@@ -2,7 +2,7 @@ from ez_setup import use_setuptools
 use_setuptools()
 from setuptools import setup, find_packages
 
-version = '0.9.6rc1'
+version = '0.9.6rc2'
 
 setup(
     name="Pylons",
