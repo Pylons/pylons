@@ -395,7 +395,8 @@ class PylonsConfig(DispatchingConfig):
             self.add_template_engine(template_engine,
                                      conf['pylons.package'] + '.templates')
         elif template_engine == 'cheetah':
-            self.add_template_engine(template_engine, conf['pylons.package'])
+            self.add_template_engine(template_engine, '%s.templates' % 
+                                     conf['pylons.package'])
         
         log.debug("Loaded %s template engine as the default template renderer", template_engine)
         
