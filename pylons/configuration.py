@@ -396,6 +396,7 @@ class PylonsConfig(DispatchingConfig):
                                      conf['pylons.package'] + '.templates')
         log.debug("Loaded %s template engine as the default template renderer", template_engine)
         
+        conf['pylons.cache_dir'] = conf.pop('cache_dir', None)
         # Save our errorware values
         conf['pylons.errorware'] = errorware
 
