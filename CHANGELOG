@@ -15,7 +15,7 @@ Pylons Changelog
   unicode parameters (0.9.5 default behavior), add the following to your
   load_environment function (0.9.6 syntax):
 
-  pylons.config['request_options']['charset'] = None
+  config['request_options']['charset'] = None
 
   or, if still using the deprecated pre-0.9.6 pylons.config syntax, add:
 
