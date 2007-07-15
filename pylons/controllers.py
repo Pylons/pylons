@@ -133,7 +133,7 @@ class WSGIController(object):
             result = func(**args)
             log.debug("'%s' method returned a response", func.__name__)
         except HTTPException, httpe:
-            log.debug("'%s' method resulted in %s (code: %s)", 
+            log.debug("'%s' method raised HTTPException: %s (code: %s)",
                       func.__name__, httpe.__class__.__name__, httpe.code)
             result = httpe.response(pylons.request.environ)
             result._exception = True
