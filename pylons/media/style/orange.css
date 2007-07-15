@@ -265,7 +265,7 @@ pre{
 }
 
 .go{
-    background: url(../img/go.png) no-repeat right bottom;
+    /*background: url(../img/go.png) no-repeat right bottom;*/
     padding-right: 20px;
 }
 
@@ -368,7 +368,7 @@ h4{
 }
 
 h4.asterix{
-    background: url(../img/box-small.png) no-repeat left center;
+    /*background: url(../img/box-small.png) no-repeat left center;*/
     padding: 0px 0px 0px 15px;
     margin: 0px;
     /*font-size: 110%; */
@@ -381,7 +381,7 @@ div.faq-box{
     /*border-style: solid;
     border-color: #C6F27A;
     border-width: 1px;*/
-    background:url('../img/hatch-green.png');
+    /*background:url('../img/hatch-green.png');*/
     padding: 10px; 
     /*font-family: Verdana, Geneva, Arial, sans-serif;
     font-size: 11px;
@@ -402,15 +402,15 @@ div.highlight-box{
 
 .box-top{
     width: 518px;
-    background: url(../img/box-top.png) no-repeat left top;
+    /*background: url(../img/box-top.png) no-repeat left top;*/
     padding-top: 7px;
     margin-bottom: 15px;
 }
 .box-middle{
-    background: url(../img/box-middle.png) repeat-y left top;
+    /*background: url(../img/box-middle.png) repeat-y left top;*/
 }
 .box-bottom{
-    background: url(../img/box-bottom.png) no-repeat left bottom;
+    /*background: url(../img/box-bottom.png) no-repeat left bottom;*/
     padding: 0 10px 11px 12px;
 }
 
@@ -465,7 +465,7 @@ br.clear{
 }
 .quote-author{
     
-    background: url(../img/quote-author.png) no-repeat left top;
+    /*background: url(../img/quote-author.png) no-repeat left top;*/
     padding-left: 20px;
     padding-bottom: 20px;
 }

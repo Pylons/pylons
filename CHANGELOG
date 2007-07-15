@@ -2,10 +2,6 @@ Pylons Changelog
 =================
 
 0.9.6 (**svn**)
-* Added ability to pass _code option to specify the status code type for
-  redirect_to.
-* Fixed redirect_to to not copy all headers into redirect for old _response
-  usage. Fixes #268.
 * WARNING: By default, the Pylons response object now returns unicode
   parameter (pylons.GET/POST/params) values (and assumes those parameters
   were sent to Pylons as utf-8). Unicode parameters can cause major
@@ -35,6 +31,12 @@ Pylons Changelog
   Fixes #243.
 * WARNING: The paths dictionary's 'root_path' has moved to the less
   redundant 'root'.
+* Fixed the Error Documents/EvalException css referencing non-existent images.
+  Thanks Shannon -jj Behrens. Fixes #238.
+* Added ability to pass _code option to specify the status code type for
+  redirect_to.
+* Fixed redirect_to to not copy all headers into redirect for old _response
+  usage. Fixes #268.
 * Added logging statements throughout Pylons code, added logging setup to
   default template. Fixes #98.
 * Refactored global response to be setup in wsgiapp along with the other 
