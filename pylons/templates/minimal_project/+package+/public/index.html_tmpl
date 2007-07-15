@@ -45,9 +45,14 @@ ${project}$$ paster controller hello
 
   This generates the following the following code in <tt>${package}/controllers/hello.py</tt>:
 <pre>
+import logging
+
 from ${package}.controllers import *
 
+log = logging.getLogger(__name__)
+
 class HelloController(BaseController):
+
     def index(self):
         # Return a rendered template
         #   return render('/some/template.html')
