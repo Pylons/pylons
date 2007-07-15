@@ -10,7 +10,7 @@ from pylons.helpers import abort, etag_cache, redirect_to
 from pylons.i18n import _, ungettext, N_
 from pylons.templating import render
 
-import ${package}.lib.helpers as h
+import ${package}.helpers as h
 
 class BaseController(WSGIController):
 
