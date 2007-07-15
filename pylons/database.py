@@ -10,17 +10,17 @@ process safe ``Session`` objects via the ``session_context.current`` property.
 """
 import logging
 import thread
+import warnings
 
 from paste.deploy.converters import asbool
 
 import pylons
 
-
 __all__ = ["AutoConnectHub", "PackageHub"]
-
 
 log = logging.getLogger(__name__)
 
+warnings.warn(pylons.legacy.pylons_database_warning, DeprecationWarning, 2)
 
 try:
     import sqlalchemy

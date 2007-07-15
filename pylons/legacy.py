@@ -39,6 +39,11 @@ See the default config/environment.py created via the "paster create -t pylons"
 command for a full example.
 """)
 
+pylons_database_warning = (
+"pylons.database is deprecated, and will be removed from a future version of "
+"Pylons. SQLAlchemy users are recommended to migrate to SAContext "
+"(http://cheeseshop.python.org/pypi/SAContext) for similar functionality")
+
 default_charset_warning = (
 "The 'default_charset' keyword argument to the %(klass)s constructor is "
 "deprecated. Please specify the charset in the response_options dictionary "
