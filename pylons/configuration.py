@@ -394,6 +394,9 @@ class PylonsConfig(DispatchingConfig):
         elif template_engine in ['genshi', 'kid']:
             self.add_template_engine(template_engine,
                                      conf['pylons.package'] + '.templates')
+        elif template_engine == 'cheetah':
+            self.add_template_engine(template_engine, conf['pylons.package'])
+        
         log.debug("Loaded %s template engine as the default template renderer", template_engine)
         
         conf['pylons.cache_dir'] = conf.pop('cache_dir', None)
