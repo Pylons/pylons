@@ -219,10 +219,9 @@ class PylonsBaseWSGIApp(object):
         testenv = environ['paste.testing_variables']
         testenv['req'] = pylons.request._current_obj()
         testenv['c'] = pylons.c._current_obj()
-        g = pylons.g._current_obj()
-        testenv['g'] = g
+        testenv['g'] = pylons.g._current_obj()
         testenv['h'] = self.config['pylons.h'] or pylons.h._current_obj()
-        testenv['pylons_config'] = self.config
+        testenv['config'] = self.config
         econf = environ['pylons.environ_config']
         if econf.get('session'):
             testenv['session'] = environ[econf['session']]

@@ -85,10 +85,9 @@ class Buffet(object):
     def _update_names(self, ns):
         """Return a dict of Pylons vars and their respective objects updated
         with the ``ns`` dict."""
-        g = pylons.g._current_obj()
         d = dict(
             c=pylons.c._current_obj(),
-            g=g,
+            g=pylons.g._current_obj(),
             h=pylons.config.get('pylons.h') or pylons.h._current_obj(),
             render=render,
             request=pylons.request._current_obj(),
