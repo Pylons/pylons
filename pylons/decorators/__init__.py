@@ -73,7 +73,7 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
     def wrapper(func, self, *args, **kwargs):
         """Decorator Wrapper function"""
         request = pylons.request._current_obj()
-        pylons.c.form_errors = self.errors = errors = {}
+        pylons.c.form_errors = errors = {}
         if post_only:
             params = request.POST
         else:
