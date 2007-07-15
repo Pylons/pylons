@@ -39,11 +39,6 @@ See the default config/environment.py created via the "paster create -t pylons"
 command for a full example.
 """)
 
-pylons_database_warning = (
-"pylons.database is deprecated, and will be removed from a future version of "
-"Pylons. SQLAlchemy users are recommended to migrate to SAContext "
-"(http://cheeseshop.python.org/pypi/SAContext) for similar functionality")
-
 default_charset_warning = (
 "The 'default_charset' keyword argument to the %(klass)s constructor is "
 "deprecated. Please specify the charset in the response_options dictionary "
@@ -96,6 +91,9 @@ See the default config/environment.py created via the "paster create -t pylons"
 command for a full example.
 """)
 
+log_warning = (
+'The log function is deprecated. Use the logging module instead')
+
 prefix_warning = (
 "The [app:main] 'prefix' configuration option has been deprecated, please use "
 "paste.deploy.config.PrefixMiddleware instead. To enable PrefixMiddleware in "
@@ -109,6 +107,11 @@ and the following lines to the end of the config file:
     use = egg:PasteDeploy#prefix
     prefix = %s
 """)
+
+pylons_database_warning = (
+"pylons.database is deprecated, and will be removed from a future version of "
+"Pylons. SQLAlchemy users are recommended to migrate to SAContext "
+"(http://cheeseshop.python.org/pypi/SAContext) for similar functionality")
 
 pylons_h_warning = (
 "pylons.h is deprecated: use your project's lib.helpers module directly "

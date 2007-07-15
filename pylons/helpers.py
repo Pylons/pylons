@@ -19,6 +19,7 @@ syslog = logging.getLogger(__name__)
 
 def log(msg):
     """Log a message to the output log."""
+    warnings.warn(pylons.legacy.log_warning, DeprecationWarning, 2)
     pylons.request.environ['wsgi.errors'].write('=> %s\n' % str(msg))
 
 
