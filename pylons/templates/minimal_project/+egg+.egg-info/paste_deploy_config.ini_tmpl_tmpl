@@ -17,21 +17,21 @@ port = 5000
 [app:main]
 use = egg:${project}
 cache_dir = %(here)s/data
-session_key = ${package}
-session_secret = $${app_instance_secret}
+beaker.session.key = ${package}
+beaker.session.secret = somesecret
 app_instance_uuid = $${app_instance_uuid}
 
 # If you'd like to fine-tune the individual locations of the cache data dirs
-# for Myghty, the Cache data, or the Session saves, un-comment the desired
+# for the Cache data, or the Session saves, un-comment the desired
 # settings here:
-#myghty_data_dir = %(here)s/data/templates
-#cache_data_dir = %(here)s/data/cache
-#session_data_dir = %(here)s/data/sessions
+#beaker.cache.data_dir = %(here)s/data/cache
+#beaker.session.data_dir = %(here)s/data/sessions
 
 # WARNING: *THE LINE BELOW MUST BE UNCOMMENTED ON A PRODUCTION ENVIRONMENT*
 # Debug mode will enable the interactive debugging tool, allowing ANYONE to
 # execute malicious code after an exception is raised.
 set debug = false
+
 
 # Logging Setup
 [loggers]

@@ -16,7 +16,6 @@ port = 5000
 
 [app:main]
 use = egg:${project}
-full_stack = True
 cache_dir = %(here)s/data
 beaker.session.key = ${package}
 beaker.session.secret = somesecret
@@ -31,6 +30,7 @@ beaker.session.secret = somesecret
 # Debug mode will enable the interactive debugging tool, allowing ANYONE to
 # execute malicious code after an exception is raised.
 #set debug = false
+
 
 # Logging Setup
 [loggers]
