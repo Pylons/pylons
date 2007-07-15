@@ -31,6 +31,7 @@ def can_import(name):
     except ImportError:
         return False
 
+
 def is_minimal_template(package):
     """Determine if the specified Pylons project (package) uses the Pylons
     Minimal Tempalte"""
@@ -45,6 +46,7 @@ def is_minimal_template(package):
         # PACKAGE.lib.base exists but throws an error
         pass
     return minimal_template
+
 
 def validate_name(name):
     """Validate that the name for the controller isn't present on the
@@ -375,9 +377,6 @@ class ShellCommand(Command):
                 found_base = can_import(base_module)
 
             if found_base:
-                models_package = pkg_name + '.models'
-                # The Minimal template lacks an official models package
-                has_models = can_import(models_package)
                 break
 
         if not found_base:
@@ -394,18 +393,13 @@ class ShellCommand(Command):
         mapper = tresponse.pylons_config.get('routes.map')
         if mapper:
             locs['mapper'] = mapper
-        if has_models:
-            locs['model'] = sys.modules[models_package]
 
         banner = "  All objects from %s are available\n" % base_module
         banner += "  Additional Objects:\n"
         if mapper:
             banner += "  %-10s -  %s\n" % ('mapper', 'Routes mapper object')
-        if has_models:
-            banner += "  %-10s -  %s\n" % ('model',
-                                           'Models from models package')
         banner += "  %-10s -  %s\n" % ('wsgiapp',
-            'This projects WSGI App instance')
+            "This project's WSGI App instance")
         banner += "  %-10s -  %s\n" % ('app',
             'paste.fixture wrapped around wsgiapp')
 
