@@ -79,7 +79,6 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
     ],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
-        "Framework :: Pylons",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: BSD License",
         "Programming Language :: Python",
