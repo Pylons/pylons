@@ -1,7 +1,7 @@
 """Configuration setup for templating systems and Paste error
 middleware
 
-This module supplies pylons_config which handles setting up defaults
+This module supplies PylonsConfig which handles setting up defaults
 for templating systems, Paste errorware, and prefixing Routes if
 necessary.
 """
@@ -35,9 +35,8 @@ class PylonsConfig(DispatchingConfig):
     well as per-application instance specific data such as the mapper, the
     paths for this instance, and the myghty configuration.
 
-    The config object is available in your application as a Pylons global
-    ``pylons_config`` under the ``g`` object. You can also import it from
-    pylons with:
+    The config object is available in your application as the Pylons global
+    ``pylons.config``. An example usage:
 
     .. code :: Python
         from pylons import config
@@ -47,43 +46,43 @@ class PylonsConfig(DispatchingConfig):
     There's several useful keys of the config object most people will be
     interested in:
 
-    ``template_options``
+    ``pylons.template_options``
         Full dict of template options that any TG compatible plugin should
         be able to parse. Comes with basic config needed for Myghty, Kid,
         and Mako.
-    ``map``
-        Mapper object used for Routing. Yes, it is possible to add routes
-        after your application has started running.
-    ``paths``
+    ``pylons.paths``
         A dict of absolute paths that were defined in the applications
         ``config/environment.py`` module.
-    ``environ_config``
+    ``pylons.environ_config``
         Dict of environ keys for where in the environ to pickup various
         objects for registering with Pylons. If these are present then
         PylonsApp will use them from environ rather than using default
         middleware from Beaker. Valid keys are: ``session, cache``
-    ``template_engines``
+    ``pylons.template_engines``
         List of template engines to configure. The first one in the list will
         be configured as the default template engine. Each item in the list is
         a dict indicating how to configure the template engine with keys:
         ``engine``, ``template_root``, ``template_options``, and ``alias``
-    ``default_charset``
+    ``pylons.default_charset``
         Deprecated: Use the response_settings dict instead.
         Default character encoding specified to the browser via the
         'charset' parameter of the HTTP response's Content-Type header.
-    ``strict_c``
+    ``pylons.strict_c``
         Whether or not the ``c`` object should throw an attribute error when
         access is attempted to an attribute that doesn't exist.
-    ``request_options``
+    ``pylons.request_options``
         A dict of Content-Type related default settings for new instances of
         ``paste.wsgiwrappers.WSGIRequest``. May contain the values ``charset``
         and ``errors`` and ``decode_param_names``. Overrides the Pylons default
         values specified by the ``request_defaults`` dict.
-    ``response_options``
+    ``pylons.response_options``
         A dict of Content-Type related default settings for new instances of
         ``pylons.Response``. May contain the values ``content_type``,
         ``charset`` and ``errors``. Overrides the Pylons default values
         specified by the ``response_defaults`` dict.
+    ``routes.map``
+        Mapper object used for Routing. Yes, it is possible to add routes
+        after your application has started running.
     """
     defaults = {
         'debug': False,
