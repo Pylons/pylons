@@ -46,6 +46,12 @@ class CacheController(WSGIController):
         pylons.g.counter += 1
         return Response('Counter=%s, id=%s' % (pylons.g.counter, id))
     test_keyslist_cache_decorator = beaker_cache(key=["id", "id2"])(test_keyslist_cache_decorator)
+    
+    def test_header_cache(self):
+        pylons.response.headers['Content-Type'] = 'text/plain'
+        pylons.response.headers['x-powered-by'] = 'pylons'
+        return "Hello folks, time is %s" % time.time()
+    test_header_cache = beaker_cache()(test_header_cache)
 
 cache_dir = os.path.join(data_dir, 'cache')
 
@@ -105,6 +111,17 @@ class TestCacheDecorator(TestWSGIController):
         assert 'Counter=9' in response
         response = self.get_response(action='test_get_cache_default', _url="/?param=1243")
         assert 'Counter=8' in response
+    
+    def test_header_cache(self):
+        response = self.get_response(action='test_header_cache')
+        assert response.header_dict['content-type'] == 'text/plain'
+        assert response.header_dict['x-powered-by'] == 'pylons'
+        output = response.body
+        
+        response = self.get_response(action='test_header_cache')
+        assert response.body == output
+        assert response.header_dict['content-type'] == 'text/plain'
+        assert response.header_dict['x-powered-by'] == 'pylons'
         
 
     def test_nocache(self):

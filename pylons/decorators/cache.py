@@ -48,16 +48,27 @@ def beaker_cache(key="cache_default", expire="never", type="dbm",
             cache_expire = None
         else:
             cache_expire = expire
-
+        
+        
         def create_func():
             log.debug("Creating new cache copy with key: %s, type: %s",
                       cache_key, type)
-            return func(*args, **kwargs)
-
-        content = my_cache.get_value(cache_key, createfunc=create_func,
+            result = func(*args, **kwargs)
+            glob_response = pylons.response._current_obj()
+            full_response = dict(headers=glob_response.headers,
+                                 status=glob_response.status_code,
+                                 cookies=glob_response.cookies,
+                                 content=result)
+            return full_response
+        
+        response = my_cache.get_value(cache_key, createfunc=create_func,
                                      type=type, expiretime=cache_expire,
                                      **b_kwargs)
-        return content
+        glob_response = pylons.response._current_obj()
+        glob_response.headers = response['headers']
+        glob_response.status_code = response['status']
+        glob_response.cookies = response['cookies']
+        return response['content']
     return decorator(wrapper)
 
 def _make_key(func, key, args, kwargs, query_args):
