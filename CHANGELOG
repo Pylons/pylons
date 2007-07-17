@@ -2,6 +2,7 @@ Pylons Changelog
 =================
 
 0.9.6 (**svn**)
+* Fixed missing abort name import in restrict rest decorator. Fixes #281.
 * Added cheetah as a supported template language for template_engine option.
 * Fixed cookie header addition to use add instead of append. Thanks to 
   anonymous patcher. Fixes #268, again.
