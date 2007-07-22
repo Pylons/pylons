@@ -28,10 +28,11 @@ additional tools.
 
 .. code-block :: Bash
 
-    easy_install TurboKid TurboCheetah "Kid==0.9.5" "Cheetah=2.0rc8"
+    easy_install TurboKid TurboCheetah "Kid==0.9.4" "Cheetah=2.0rc8"
 
-Cheetah 2.0rc8 requires compilation and is not available directly from the
-Cheeseshop. You can compile and install it on Debian with these commands:
+Kid 0.9.6 does not currently pass the tests. Cheetah 2.0rc8 requires
+compilation and is not available directly from the Cheeseshop. You can compile
+and install it on Debian with these commands:
 
 .. code-block :: Bash
 
@@ -52,8 +53,7 @@ Generating module documentation also requires specific tools. You will need to i
 
 .. code-block :: Bash
 
-    easy_install -f http://turbogears.org/download/filelist.html "Kid==0.9.3"
-    easy_install "pudge==dev" pygments "Buildutils==dev" TurboKid 
+    easy_install "pudge==dev" Pygments "Buildutils==dev" TurboKid Kid
 
 Then to build the documentation use this command:
 
