@@ -2,6 +2,18 @@ Pylons Changelog
 =================
 
 0.9.6 (**svn**)
+* email_to lines commented out in development.ini and test.ini files to avoid
+  emails being sent to a non-existent address by mistake. If an error occurs it 
+  is logged but no email is sent unless email_to is specified.
+* [paste.app_factory] entry points changed to point to the actual make_app() 
+  function to make it simpler for someone to work out how Pylons works (tests 
+  updated accordingly too)
+* All use of the ez_setup module is now tested by an ImportError to make Pylons
+  compatible with Buildout. Note: Tags and releases should be made using an svn
+  export and an svn add to ensure a real copy of the ez_setup module is 
+  included and not just an svn:external so that the module is tied to time of 
+  the release.
+* More full-featured README.txt included.
 * Updated beaker_cache to cache global response cookies/status/headers. 
   Fixes #280.
 * Fixed missing abort name import in restrict rest decorator. Fixes #281.
@@ -12,7 +24,7 @@ Pylons Changelog
   redirect_to.
 * Fixed redirect_to to not copy all headers into redirect for old _response
   usage. Fixes #268.
-* WARNING: By default, the Pylons response object now returns unicode
+* WARNING: By default, the Pylons request object now returns unicode
   parameter (pylons.GET/POST/params) values (and assumes those parameters
   were sent to Pylons as utf-8). Unicode parameters can cause major
   problems if your application is not setup to handle unicode. To disable
