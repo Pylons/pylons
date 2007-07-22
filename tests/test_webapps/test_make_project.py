@@ -56,7 +56,7 @@ def paster_create():
     
     setup = res.files_created[os.path.join('ProjectName','setup.py')]
     setup.mustcontain('0.1')
-    setup.mustcontain('projectname:make_app')
+    setup.mustcontain('projectname.config.middleware:make_app')
     setup.mustcontain('main = pylons.util:PylonsInstaller')
     setup.mustcontain("include_package_data=True")
     assert '0.1' in setup
