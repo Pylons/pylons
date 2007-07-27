@@ -73,7 +73,7 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
     def wrapper(func, self, *args, **kwargs):
         """Decorator Wrapper function"""
         request = pylons.request._current_obj()
-        pylons.c.form_errors = errors = {}
+        errors = {}
         if post_only:
             params = request.POST
         else:
@@ -108,6 +108,7 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
             log.debug("Errors found in validation, parsing form with htmlfill "
                       "for errors")
             request.environ['REQUEST_METHOD'] = 'GET'
+            pylons.c.form_errors = errors
 
             # If there's no form supplied, just continue with the current
             # function call.
