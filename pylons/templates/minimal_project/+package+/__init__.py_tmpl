@@ -1,5 +1,0 @@
-"""${package}
-
-This file loads the finished app from ${package}.wsgiapp.
-"""
-from ${package}.wsgiapp import make_app

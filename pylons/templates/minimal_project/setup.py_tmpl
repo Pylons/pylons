@@ -19,7 +19,7 @@ setup(
     package_data={'${package}': ['i18n/*/LC_MESSAGES/*.mo']},
     entry_points="""
     [paste.app_factory]
-    main = ${package}.config.middleware:make_app
+    main = ${package}.wsgiapp:make_app
     [paste.app_install]
     main = pylons.util:PylonsInstaller
     """,
