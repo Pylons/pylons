@@ -73,7 +73,7 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
     include_package_data=True,
     install_requires=[
         "Routes>=1.7", "WebHelpers>=0.3.1", "Beaker>=0.7.4",
-        "Paste>=1.4", "PasteDeploy>=1.3.1", "PasteScript>=1.3.5",
+        "Paste>=1.4", "PasteDeploy>=1.3.1", "PasteScript==dev,>=1.3.6dev-r751",
         "FormEncode>=0.7", "simplejson>=1.7.1", "decorator>=2.1.0",
         "nose>=0.9.2,<=0.9.9", "Mako>=0.1.8"
     ],
@@ -102,7 +102,7 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
             "docutils>=0.4", "elementtree>=1.2.6",
             "Pygments>=0.7", "pudge>=0.1.3",
             "buildutils>=0.1.2", "Cheetah>=1.0",
-            "TurboCheetah>=0.9.5", "kid>=0.9", "TurboKid>=0.9.",
+            "TurboCheetah>=0.9.5", "kid>=0.9", "TurboKid>=0.9.1",
         ],
     },
     entry_points="""
