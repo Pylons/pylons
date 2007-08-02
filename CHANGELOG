@@ -1,13 +1,20 @@
 Pylons Changelog
 =================
 
-0.9.6 (**svn**)
+0.9.6rc2 (**svn**)
+* Projects now include a MANIFEST.in file: it directs distutils to recursively
+  include all files in the project's public/ and templates/ dir. This fixes
+  these dirs not being included in dists unless they were checked into an RCS
+  recognized by setuptools. This is at the expense of dists now globbing all
+  files in those dirs (even those not checked into your RCS).
+* Fixed the validate decorator not setting c.form_errors in certain
+  circumstances. Thanks max. Fixes #286.
 * email_to lines commented out in development.ini and test.ini files to avoid
   emails being sent to a non-existent address by mistake. If an error occurs it 
   is logged but no email is sent unless email_to is specified.
 * [paste.app_factory] entry points changed to point to the actual make_app() 
   function to make it simpler for someone to work out how Pylons works (tests 
-  updated accordingly too)
+  updated accordingly too).
 * All use of the ez_setup module is now tested by an ImportError to make Pylons
   compatible with Buildout. Note: Tags and releases should be made using an svn
   export and an svn add to ensure a real copy of the ez_setup module is 
@@ -18,6 +25,10 @@ Pylons Changelog
   Fixes #280.
 * Fixed missing abort name import in restrict rest decorator. Fixes #281.
 * Added cheetah as a supported template language for template_engine option.
+* Fixed public/ and templates/ directories not being created with paster
+  create.
+
+0.9.6rc1 (July 15, 2007)
 * Fixed cookie header addition to use add instead of append. Thanks to 
   anonymous patcher. Fixes #268, again.
 * Added ability to pass _code option to specify the status code type for
