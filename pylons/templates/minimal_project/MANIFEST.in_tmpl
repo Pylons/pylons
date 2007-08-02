@@ -1,0 +1,2 @@
+recursive-include ${package}/public *
+recursive-include ${package}/templates *
