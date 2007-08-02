@@ -55,7 +55,7 @@ class HelloController(BaseController):
 
     def index(self):
         # Return a rendered template
-        #   return render('/some/template.html')
+        #   return render('/some/template.mako)
         # or, Return a response
         return 'Hello World'
 </pre>
@@ -71,7 +71,7 @@ class HelloController(BaseController):
    shows how to print out some request information from a
   <a href="http://www.makotemplates.org">Mako</a> template.
 </p>
-<p>Create a <tt>serverinfo.mak</tt> file in your project's <tt>${package}/templates/</tt>
+<p>Create a <tt>serverinfo.mako</tt> file in your project's <tt>${package}/templates/</tt>
   directory with the following contents:
 </p>  
 <pre>
@@ -87,7 +87,7 @@ The URL you called: $${h.url_for()}
 The name you set: $${c.name}
 &lt;/p&gt;
 
-&lt;p&gt;The server environment:&lt;br /&gt;
+&lt;p&gt;The WSGI environ:&lt;br /&gt;
 &lt;pre&gt;$${c.pretty_environ}&lt;/pre&gt;
 &lt;/p&gt;
 </pre>
@@ -99,7 +99,7 @@ Then add the following to your 'hello' controller class:
         import pprint
         c.pretty_environ = cgi.escape(pprint.pformat(request.environ))
         c.name = 'The Black Knight'
-        return render('/serverinfo.mak')
+        return render('/serverinfo.mako')
 </pre>
 
 You can now view the page at: <tt><a href="/hello/serverinfo">/hello/serverinfo</a></tt>

@@ -309,9 +309,9 @@ def render(*args, **kargs):
     
     Examples::
         
-        content = render('/my/template.mak')
+        content = render('/my/template.mako')
         print content
-        content = render('/my/template.mak', fragment=True)
+        content = render('/my/template2.myt', fragment=True)
     
     .. admonition:: Note
         
@@ -347,7 +347,7 @@ def render_response(*args, **kargs):
     .. code-block:: Python
         
         def view(self):
-            return render_response('/my/template.mak')
+            return render_response('/my/template.mako')
     """
     warnings.warn(pylons.legacy.render_response_warning,
                   PendingDeprecationWarning, 2)

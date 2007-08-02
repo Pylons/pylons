@@ -63,7 +63,7 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
         class SomeController(BaseController):
 
             def create(self, id):
-                return render('/myform.mak')
+                return render('/myform.mako')
 
             @validate(schema=model.forms.myshema(), form='create')
             def update(self, id):

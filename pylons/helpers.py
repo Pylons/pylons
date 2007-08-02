@@ -41,7 +41,7 @@ def etag_cache(key=None):
         class YourController(BaseController):
             def index(self):
                 etag_cache(key=1)
-                return render('/splash.mak')
+                return render('/splash.mako')
     
     .. Note:: 
         This works because etag_cache will raise an HTTPNotModified
