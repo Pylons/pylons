@@ -418,22 +418,9 @@ class ShellCommand(Command):
                 paste.registry.restorer.restoration_end()
         except ImportError:
             import code
-
-            class CustomShell(code.InteractiveConsole):
-                """Custom shell class to handle raw input"""
-                def raw_input(self, *args, **kw):
-                    """Capture raw input in exception wrapping"""
-                    try:
-                        return code.InteractiveConsole.raw_input(
-                            self, *args, **kw)
-                    except EOFError:
-                        # In the future, we'll put our own override as needed
-                        # to save models, TG style
-                        raise EOFError
-
             newbanner = "Pylons Interactive Shell\nPython %s\n\n" % sys.version
             banner = newbanner + banner
-            shell = CustomShell(locals=locs)
+            shell = code.InteractiveConsole(locals=locs)
             try:
                 import readline
             except ImportError:
