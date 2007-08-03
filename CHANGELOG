@@ -1,7 +1,7 @@
 Pylons Changelog
 =================
 
-0.9.6rc2 (**svn**)
+0.9.6rc2 (August 2, 2007)
 * Projects now include a MANIFEST.in file: it directs distutils to recursively
   include all files in the project's public/ and templates/ dir. This fixes
   these dirs not being included in dists unless they were checked into an RCS
