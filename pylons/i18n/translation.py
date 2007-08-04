@@ -8,9 +8,10 @@ from gettext import NullTranslations, translation
 
 import pylons
 
-__all__ = ['_', 'get_lang', 'gettext', 'gettext_noop', 'lazy_gettext',
-           'lazy_ngettext', 'lazy_ugettext', 'lazy_ungettext', 'ngettext',
-           'set_lang', 'ugettext', 'ungettext', 'LanguageError', 'N_']
+__all__ = ['_', 'add_fallback', 'get_lang', 'gettext', 'gettext_noop',
+           'lazy_gettext', 'lazy_ngettext', 'lazy_ugettext', 'lazy_ungettext',
+           'ngettext', 'set_lang', 'ugettext', 'ungettext', 'LanguageError',
+           'N_']
 
 class LanguageError(Exception):
     """Exception raised when a problem occurs with changing languages"""
