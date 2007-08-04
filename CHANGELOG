@@ -6,7 +6,8 @@ Pylons Changelog
   include all files in the project's public/ and templates/ dir. This fixes
   these dirs not being included in dists unless they were checked into an RCS
   recognized by setuptools. This is at the expense of dists now globbing all
-  files in those dirs (even those not checked into your RCS).
+  files in those dirs (even those not checked into your RCS). Thanks Christoph
+  Haas.
 * Fixed the validate decorator not setting c.form_errors in certain
   circumstances. Thanks max. Fixes #286.
 * email_to lines commented out in development.ini and test.ini files to avoid
