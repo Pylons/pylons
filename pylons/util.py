@@ -116,9 +116,16 @@ class PylonsTemplate(Template):
 
     def pre(self, command, output_dir, vars):
         """Called before template is applied."""
-        vars.setdefault('template_engine',
-                        pylons.configuration.default_template_engine)
+        template_engine = \
+            vars.setdefault('template_engine',
+                            pylons.configuration.default_template_engine)
 
+        if template_engine == 'mako':
+            # Support a Babel extractor default for Mako
+            vars['babel_templates_extractor'] = \
+                "('templates/**.mako', 'mako', None),\n%s" % (' ' * 12)
+        else:
+            vars['babel_templates_extractor'] = ''
 
 class MinimalPylonsTemplate(PylonsTemplate):
     _template_dir = 'templates/minimal_project'
