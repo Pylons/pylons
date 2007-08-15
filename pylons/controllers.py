@@ -236,6 +236,11 @@ class WSGIController(object):
             elif isinstance(response, basestring):
                 pylons.response.write(response)
                 log.debug("Set response content to returned string data")
+            else:
+                # Assume the object has a str or unicode response
+                log.debug("Object %s returned, assuming it can be output.", 
+                          repr(response))
+                pylons.response.write(response)
             response = pylons.response._current_obj()
         
         if hasattr(self, '__after__'):
