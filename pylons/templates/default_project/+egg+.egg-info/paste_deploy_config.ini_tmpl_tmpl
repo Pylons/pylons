@@ -34,7 +34,7 @@ app_instance_uuid = $${app_instance_uuid}
 set debug = false
 
 
-# Logging Setup
+# Logging configuration
 [loggers]
 keys = root
 
