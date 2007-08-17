@@ -1,6 +1,10 @@
 Pylons Changelog
 =================
 
+0.9.6 (**svn**)
+* Fixed non-basestring/generator/WSGIResponse objects returned from
+  Controllers not being set as the response content. Thanks Alex Conrad.
+
 0.9.6rc2 (August 2, 2007)
 * Projects now include a MANIFEST.in file: it directs distutils to recursively
   include all files in the project's public/ and templates/ dir. This fixes
