@@ -53,7 +53,7 @@ Add the following lines to the end of the load_environment function:
 """)
 
 g_confargs = (
-"Handling conf arguments in your app_globals __init__ function is no longer"
+"Handling conf arguments in your app_globals __init__ function is no longer "
 "required. Please update your config/app_globals.py with:"
 """
     from pylons import config
