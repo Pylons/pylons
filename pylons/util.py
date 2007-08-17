@@ -121,6 +121,12 @@ class PylonsTemplate(Template):
 
     def pre(self, command, output_dir, vars):
         """Called before template is applied."""
+        package_logger = vars['package']
+        if package_logger == 'root':
+            # Rename the app logger in the rare case a project is named 'root'
+            package_logger = 'app'
+        vars['package_logger'] = package_logger
+
         template_engine = \
             vars.setdefault('template_engine',
                             pylons.configuration.default_template_engine)

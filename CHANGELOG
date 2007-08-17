@@ -6,6 +6,8 @@ Pylons Changelog
   between controller utility functions and projects' helpers modulesx.
 * Fixed non-basestring/generator/WSGIResponse objects returned from
   Controllers not being set as the response content. Thanks Alex Conrad.
+* development.ini now configures the app's Logger level to DEBUG by default.
+  Thanks Christoph Haas
 
 0.9.6rc2 (August 2, 2007)
 * Projects now include a MANIFEST.in file: it directs distutils to recursively
