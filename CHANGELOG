@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.6 (**svn**)
+* pylons.helpers has been moved to pylons.controllers.util, to differentiate
+  between controller utility functions and projects' helpers modulesx.
 * Fixed non-basestring/generator/WSGIResponse objects returned from
   Controllers not being set as the response content. Thanks Alex Conrad.
 

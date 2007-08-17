@@ -4,7 +4,7 @@ import logging
 from decorator import decorator
 
 import pylons
-from pylons.helpers import abort
+from pylons.controllers.util import abort
 
 __all__ = ['dispatch_on', 'restrict']
 

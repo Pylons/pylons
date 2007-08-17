@@ -12,7 +12,6 @@ from paste.script.templates import Template
 
 import pylons
 import pylons.configuration
-import pylons.helpers
 import pylons.i18n
 
 __all__ = ['AttribSafeContextObj', 'ContextObj', 'Helpers',
@@ -41,9 +40,15 @@ def deprecated(func, message):
 get_lang = deprecated(pylons.i18n.get_lang, func_move('get_lang'))
 set_lang = deprecated(pylons.i18n.set_lang, func_move('set_lang'))
 _ = deprecated(pylons.i18n._, func_move('_'))
-log = deprecated(pylons.helpers.log, func_move('log',
-                                               moved_to='pylons.helpers'))
 
+# Avoid circular import and a double warning
+def log(*args, **kwargs):
+    """Deprecated: Use the logging module instead.
+
+    Log a message to the output log.
+    """
+    import pylons.helpers
+    return pylons.helpers.log(*args, **kwargs)
 
 def get_prefix(environ, warn=True):
     """Deprecated: Use environ.get('SCRIPT_NAME', '') instead"""

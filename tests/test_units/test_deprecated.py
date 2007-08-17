@@ -65,3 +65,53 @@ class TestDeprecatedJsonify(SimpleTestWSGIController):
             assert 'The pylons.jsonify function has moved to' in msg[0]
         #assert '{"iam": "deprecated"}' in resp
         #assert orig_jsonify.__doc__ in jsonify.__doc__
+
+class HelpersController(WSGIController):
+    def imports(self):
+        import pylons.helpers
+        self.helpers = pylons.helpers
+
+    def abort(self):
+        self.helpers.abort(404)
+
+    def etag_cache(self):
+        self.helpers.etag_cache('hello')
+        return 'etag cache'
+
+    def redirect_to(self):
+        self.helpers.redirect_to('/etag_cache')
+
+class TestDeprecatedHelpers(SimpleTestWSGIController):
+    wsgi_app = HelpersController()
+
+    def setUp(self):
+        warnings.simplefilter('ignore', DeprecationWarning)
+        self.wsgi_app.imports()
+        warnings.simplefilter('error', DeprecationWarning)
+    
+    def tearDown(self):
+        warnings.simplefilter('always', DeprecationWarning)
+
+    def test_abort(self):
+        try:
+            self.wsgi_app.abort()
+        except DeprecationWarning, msg:
+            assert ('The abort function has moved to pylons.controllers.util, '
+                    'please update your import statements to reflect the '
+                    'move') in msg[0], msg
+
+    def test_etag_cache(self):
+        try:
+            self.wsgi_app.etag_cache()
+        except DeprecationWarning, msg:
+            assert ('The etag_cache function has moved to '
+                    'pylons.controllers.util, please update your import '
+                    'statements to reflect the move') in msg[0], msg
+
+    def test_redirect_to(self):
+        try:
+            self.wsgi_app.redirect_to()
+        except DeprecationWarning, msg:
+            assert ('The redirect_to function has moved to '
+                    'pylons.controllers.util, please update your import '
+                    'statements to reflect the move') in msg[0], msg

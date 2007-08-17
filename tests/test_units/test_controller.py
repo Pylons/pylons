@@ -4,7 +4,7 @@ import paste.httpexceptions as httpexceptions
 
 import pylons
 from pylons.controllers import WSGIController
-from pylons.helpers import redirect_to
+from pylons.controllers.util import redirect_to
 
 from __init__ import TestWSGIController, SetupCacheGlobal, ControllerWrap
 

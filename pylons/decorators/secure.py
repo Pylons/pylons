@@ -5,7 +5,7 @@ from decorator import decorator
 from webhelpers.rails import secure_form_tag
 
 import pylons
-from pylons.helpers import abort, redirect_to
+from pylons.controllers.util import abort, redirect_to
 
 __all__ = ['authenticate_form', 'https']
 
