@@ -1,9 +1,11 @@
 Pylons Changelog
 =================
 
-0.9.6 (**svn**)
+0.9.6rc3 (**svn**)
+* Fixed controllers.core to allow responses of None (empty bodies). Logs a
+  message indicating the response was empty.
 * pylons.helpers has been moved to pylons.controllers.util, to differentiate
-  between controller utility functions and projects' helpers modulesx.
+  between controller utility functions and projects' helpers modules.
 * Fixed non-basestring/generator/WSGIResponse objects returned from
   Controllers not being set as the response content. Thanks Alex Conrad.
 * development.ini now configures the app's Logger level to DEBUG by default.
@@ -19,16 +21,16 @@ Pylons Changelog
 * Fixed the validate decorator not setting c.form_errors in certain
   circumstances. Thanks max. Fixes #286.
 * email_to lines commented out in development.ini and test.ini files to avoid
-  emails being sent to a non-existent address by mistake. If an error occurs it 
-  is logged but no email is sent unless email_to is specified.
+  emails being sent to a non-existent address by mistake. If an error occurs 
+  it is logged but no email is sent unless email_to is specified.
 * [paste.app_factory] entry points changed to point to the actual make_app() 
   function to make it simpler for someone to work out how Pylons works (tests 
   updated accordingly too).
-* All use of the ez_setup module is now tested by an ImportError to make Pylons
-  compatible with Buildout. Note: Tags and releases should be made using an svn
-  export and an svn add to ensure a real copy of the ez_setup module is 
-  included and not just an svn:external so that the module is tied to time of 
-  the release.
+* All use of the ez_setup module is now tested by an ImportError to make 
+  Pylons compatible with Buildout. Note: Tags and releases should be made
+  using an svn export and an svn add to ensure a real copy of the ez_setup
+  module is included and not just an svn:external so that the module is tied
+  to time of the release.
 * More full-featured README.txt included.
 * Updated beaker_cache to cache global response cookies/status/headers. 
   Fixes #280.
