@@ -22,7 +22,8 @@ request_defaults = dict(charset='utf-8', errors='replace',
                         decode_param_names=False, language='en-us')
 response_defaults = dict(content_type='text/html',
                          charset='utf-8', errors='strict', 
-                         headers={'Cache-Control': 'no-cache'})
+                         headers={'Cache-Control': 'no-cache', 
+                                  'Pragma': 'no-cache'})
 
 log = logging.getLogger(__name__)
 
