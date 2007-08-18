@@ -9,6 +9,12 @@ from pylons.controllers.util import redirect_to
 from __init__ import TestWSGIController, SetupCacheGlobal, ControllerWrap
 
 class BasicWSGIController(WSGIController):
+    def __before__(self):
+        pylons.response.headers['Cache-Control'] = 'private'
+    
+    def __after__(self):
+        pylons.response.set_cookie('big_message', 'goodbye')
+    
     def index(self):
         return 'hello world'
 
@@ -31,6 +37,10 @@ class BasicWSGIController(WSGIController):
     def header_check(self):
         pylons.response.headers['Content-Type'] = 'text/plain'
         return "Hello all!"
+    
+    def nothing(self):
+        return None
+
 
 class FilteredWSGIController(WSGIController):
     def __init__(self):
@@ -97,12 +107,18 @@ class TestBasicWSGI(TestWSGIController):
         resp = self.app.get('/')
         assert "Hello all!" in resp
         assert resp.response.headers['Content-Type'] == 'text/plain'
+        assert resp.response.headers['Cache-Control'] == 'private'
         assert resp.header('Content-Type') == 'text/plain'
     
     def test_redirect(self):
         self.baseenviron['pylons.routes_dict']['action'] = 'use_redirect'
         resp = self.app.get('/', status=301)
-        
+
+    def test_nothing(self):
+        self.baseenviron['pylons.routes_dict']['action'] = 'nothing'
+        resp = self.app.get('/')
+        assert '' == resp.body
+        assert resp.response.headers['Cache-Control'] == 'private'
 
 class TestFilteredWSGI(TestWSGIController):
     def __init__(self, *args, **kargs):
