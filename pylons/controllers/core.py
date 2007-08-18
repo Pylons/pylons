@@ -124,20 +124,17 @@ class WSGIController(object):
             response = pylons.response._current_obj()
             start_response_called.append(None)
             
-            # Copy the headers from the global response in if its a 2XX or
-            # 3XX status code
+            # Copy the headers from the global response
             # XXX: TODO: This should really be done with a more efficient 
             #            header merging function at some point.
-            if status.startswith('2'):
-                response.headers.update(HeaderDict.fromlist(headers))
-                headers = response.headers.headeritems()
-                log.debug("Merging headers into start_response call, "
-                          "status: %s", status)
-            if status.startswith('3') or status.startswith('2'):
-                for c in pylons.response.cookies.values():
-                    headers.append(('Set-Cookie', c.output(header='')))
-                log.debug("Merging cookies into start_response call, "
-                          "status: %s", status)
+            response.headers.update(HeaderDict.fromlist(headers))
+            headers = response.headers.headeritems()
+            log.debug("Merging headers into start_response call, "
+                      "status: %s", status)
+            for c in pylons.response.cookies.values():
+                headers.add('Set-Cookie', c.output(header=''))
+            log.debug("Merging cookies into start_response call, "
+                      "status: %s", status)
             return start_response(status, headers, exc_info)
         self.start_response = repl_start_response
         
@@ -159,18 +156,14 @@ class WSGIController(object):
             # be wrapped in the response object
             if hasattr(response, 'wsgi_response'):
                 # It's either a legacy WSGIResponse object, or an exception
-                # that got tossed. Strip headers if its anything other than a
-                # 2XX status code, and strip cookies if its anything other than
-                # a 2XX or 3XX status code.
-                if response.status_code < 300:
-                    log.debug("Merging global headers into returned response"
-                              " object")
-                    response.headers.update(pylons.response.headers)
-                if response.status_code < 400:
-                    log.debug("Merging global cookies into returned response"
-                              " object")
-                    for c in pylons.response.cookies.values():
-                        response.headers.add('Set-Cookie', c.output(header=''))
+                # that got tossed. 
+                log.debug("Merging global headers into returned response"
+                          " object")
+                response.headers.update(pylons.response.headers)
+                log.debug("Merging global cookies into returned response"
+                          " object")
+                for c in pylons.response.cookies.values():
+                    response.headers.append('Set-Cookie', c.output(header=''))
                 registry = environ['paste.registry']
                 registry.replace(pylons.response, response)
                 log.debug("Replaced global response object with returned one")
