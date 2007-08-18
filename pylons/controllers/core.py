@@ -135,7 +135,7 @@ class WSGIController(object):
                           "status: %s", status)
             if status.startswith('3') or status.startswith('2'):
                 for c in pylons.response.cookies.values():
-                    headers.add('Set-Cookie', c.output(header=''))
+                    headers.append(('Set-Cookie', c.output(header='')))
                 log.debug("Merging cookies into start_response call, "
                           "status: %s", status)
             return start_response(status, headers, exc_info)
@@ -145,13 +145,13 @@ class WSGIController(object):
         if environ['pylons.routes_dict'].get('action', '').startswith('_'):
             log.debug("Action starts with _, private action not allowed. "
                       "Returning a 404 response")
-            return WSGIResponse(code=404)(environ, start_response)
+            return WSGIResponse(code=404)(environ, self.start_response)
         
         if hasattr(self, '__before__'):
             log.debug("Calling __before__ action")
             response = self._inspect_call(self.__before__)
             if hasattr(response, '_exception'):
-                return response(environ, start_response)
+                return response(environ, self.start_response)
         
         response = self._dispatch_call()
         if not start_response_called:
@@ -191,14 +191,14 @@ class WSGIController(object):
             log.debug("Calling __after__ action")
             after = self._inspect_call(self.__after__)
             if hasattr(after, '_exception'):
-                return after(environ, start_response)
+                return after(environ, self.start_response)
         
         if hasattr(response, 'wsgi_response'):
             # Copy the response object into the testing vars if we're testing
             if 'paste.testing_variables' in environ:
                 environ['paste.testing_variables']['response'] = response
             log.debug("Calling response object to return WSGI data")
-            return response(environ, start_response)
+            return response(environ, self.start_response)
         
         log.debug("Response assumed to be WSGI content, returning un-touched")
         return response
