@@ -127,14 +127,12 @@ class WSGIController(object):
             # Copy the headers from the global response
             # XXX: TODO: This should really be done with a more efficient 
             #            header merging function at some point.
+            log.debug("Merging pylons.response headers into start_response "
+                      "call, status: %s", status)
             response.headers.update(HeaderDict.fromlist(headers))
             headers = response.headers.headeritems()
-            log.debug("Merging headers into start_response call, "
-                      "status: %s", status)
             for c in pylons.response.cookies.values():
-                headers.add('Set-Cookie', c.output(header=''))
-            log.debug("Merging cookies into start_response call, "
-                      "status: %s", status)
+                headers.append(('Set-Cookie', c.output(header='')))
             return start_response(status, headers, exc_info)
         self.start_response = repl_start_response
         
@@ -157,29 +155,22 @@ class WSGIController(object):
             if hasattr(response, 'wsgi_response'):
                 # It's either a legacy WSGIResponse object, or an exception
                 # that got tossed. 
-                log.debug("Merging global headers into returned response"
-                          " object")
+                log.debug("Controller returned a Response object, merging it "
+                          "with pylons.response")
                 response.headers.update(pylons.response.headers)
-                log.debug("Merging global cookies into returned response"
-                          " object")
                 for c in pylons.response.cookies.values():
-                    response.headers.append('Set-Cookie', c.output(header=''))
+                    response.headers.add('Set-Cookie', c.output(header=''))
                 registry = environ['paste.registry']
                 registry.replace(pylons.response, response)
-                log.debug("Replaced global response object with returned one")
             elif isinstance(response, types.GeneratorType):
+                log.debug("Controller returned a generator, setting it as the "
+                          "pylons.response content")
                 pylons.response.content = response
-                log.debug("Set response content to returned generator")
-            elif response == '' or response == None:
-                log.debug("Response was %s, returning an empty body.", 
-                          response)
-            elif isinstance(response, basestring):
-                pylons.response.write(response)
-                log.debug("Set response content to returned string data")
+            elif response is None:
+                log.debug("Controller returned None")
             else:
-                # Assume the object has a str or unicode response
-                log.debug("Object %s returned, assuming it can be output.", 
-                          repr(response))
+                log.debug("Assuming Controller returned a basestring or "
+                          "buffer, writing it to pylons.response")
                 pylons.response.write(response)
             response = pylons.response._current_obj()
         
