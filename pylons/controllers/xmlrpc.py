@@ -195,12 +195,14 @@ class XMLRPCController(WSGIController):
         # we can dispatch control to the default WSGIController
         status = []
         headers = []
-        def change_content(new_status, new_headers):
+        exc_info = []
+        def change_content(new_status, new_headers, new_exc_info=None):
             status.append(new_status)
             headers.extend(new_headers)
+            exc_info.append(new_exc_info)
         output = WSGIController.__call__(self, environ, change_content)
         replace_header(headers, 'Content-Type', 'text/xml')
-        start_response(status[0], headers)
+        start_response(status[0], headers, exc_info[0])
         return output
 
     def _dispatch_call(self):
