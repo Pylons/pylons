@@ -119,6 +119,12 @@ class WSGIController(object):
         return response
     
     def __call__(self, environ, start_response):
+        # Keep private methods private
+        if environ['pylons.routes_dict'].get('action', '').startswith('_'):
+            log.debug("Action starts with _, private action not allowed. "
+                      "Returning a 404 response")
+            return WSGIResponse(code=404)(environ, start_response)
+
         start_response_called = []
         def repl_start_response(status, headers, exc_info=None):
             response = pylons.response._current_obj()
@@ -135,12 +141,6 @@ class WSGIController(object):
                 headers.append(('Set-Cookie', c.output(header='')))
             return start_response(status, headers, exc_info)
         self.start_response = repl_start_response
-        
-        # Keep private methods private
-        if environ['pylons.routes_dict'].get('action', '').startswith('_'):
-            log.debug("Action starts with _, private action not allowed. "
-                      "Returning a 404 response")
-            return WSGIResponse(code=404)(environ, self.start_response)
         
         if hasattr(self, '__before__'):
             log.debug("Calling __before__ action")
