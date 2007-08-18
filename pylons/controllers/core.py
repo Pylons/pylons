@@ -170,6 +170,9 @@ class WSGIController(object):
             elif isinstance(response, types.GeneratorType):
                 pylons.response.content = response
                 log.debug("Set response content to returned generator")
+            elif response == '' or response == None:
+                log.debug("Response was %s, returning an empty body.", 
+                          response)
             elif isinstance(response, basestring):
                 pylons.response.write(response)
                 log.debug("Set response content to returned string data")
