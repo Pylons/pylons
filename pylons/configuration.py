@@ -254,7 +254,7 @@ class PylonsConfig(DispatchingConfig):
             Declare the default template engine to setup. Choices are kid,
             genshi, mako (the default), and pylonsmyghty.
         """
-        log.debug("Initializing configuration object")
+        log.debug("Initializing configuration, package: '%s'", package)
         conf = global_conf.copy()
         conf.update(app_conf)
         conf.update(dict(app_conf=app_conf, global_conf=global_conf))
@@ -275,13 +275,12 @@ class PylonsConfig(DispatchingConfig):
             warnings.warn(pylons.legacy.root_path, DeprecationWarning, 2)
             paths['root'] = paths['root_path']
         
+        log.debug("Pushing process configuration")
         self.push_process_config(conf)
-        log.debug("Pushed process configuration")
         self.set_defaults(template_engine)
     
     def set_defaults(self, template_engine):
         conf = self.current_conf()
-        log.debug("Loading configuration defaults")
         
         # Ensure all the keys from defaults are present, load them if not
         for key, val in copy.deepcopy(PylonsConfig.defaults).iteritems():
