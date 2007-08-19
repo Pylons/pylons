@@ -176,7 +176,7 @@ class PylonsBaseWSGIApp(object):
         __import__(full_module_name)
         module_name = controller.split('/')[-1]
         class_name = class_name_from_module_name(module_name) + 'Controller'
-        log.debug("Found controller, module: %r, class: %r", full_module_name,
+        log.debug("Found controller, module: '%s', class: '%s'", full_module_name,
                   class_name)
         return getattr(sys.modules[full_module_name], class_name)
         

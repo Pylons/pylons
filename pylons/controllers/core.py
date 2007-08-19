@@ -71,8 +71,8 @@ class WSGIController(object):
                 if name in kargs:
                     setattr(c, name, kargs[name])
                     args[name] = kargs[name]
-        log.debug("Calling %r method with keyword arguments: **%r",
-                  func.__name__, args)
+        log.debug("Calling %r method with keyword args: **%r", func.__name__,
+                  args)
         try:
             result = func(**args)
         except HTTPException, httpe:
@@ -168,7 +168,7 @@ class WSGIController(object):
             elif response is None:
                 log.debug("Controller returned None")
             else:
-                log.debug("Assuming Controller returned a basestring or "
+                log.debug("Assuming controller returned a basestring or "
                           "buffer, writing it to pylons.response")
                 pylons.response.write(response)
             response = pylons.response._current_obj()
@@ -182,7 +182,7 @@ class WSGIController(object):
             # Copy the response object into the testing vars if we're testing
             if 'paste.testing_variables' in environ:
                 environ['paste.testing_variables']['response'] = response
-            log.debug("Calling response object to return WSGI data")
+            log.debug("Calling Response object to return WSGI data")
             return response(environ, self.start_response)
         
         log.debug("Response assumed to be WSGI content, returning un-touched")

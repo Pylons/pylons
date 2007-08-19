@@ -58,8 +58,8 @@ def abort(status_code=None, detail="", headers=None, comment=None):
     in the headers attribute.
     """
     exc = httpexceptions.get_exception(status_code)(detail, headers, comment)
-    log.debug("Aborting request, status: %s, detail: %s, headers: %s, "
-                 "comment: %s", status_code, detail, headers, comment)
+    log.debug("Aborting request, status: %s, detail: %r, headers: %r, "
+              "comment: %r", status_code, detail, headers, comment)
     raise exc
 
 
@@ -77,15 +77,13 @@ def redirect_to(*args, **kargs):
     status_code = kargs.pop('_code', 302)
     exc = httpexceptions.get_exception(status_code)
     found = exc(url_for(*args, **kargs))
-    log.debug("Generating %s redirect (%s)" % (status_code,
-                                                  found.__class__.__name__))
+    log.debug("Generating %s redirect" % status_code)
     if response:
         warnings.warn(pylons.legacy.redirect_response_warning,
                       PendingDeprecationWarning, 2)
+        log.debug("Merging provided Response object into redirect")
         if str(response.status_code).startswith('3'):
             found.code = response.status_code
         for c in response.cookies.values():
             found.headers.add('Set-Cookie', c.output(header=''))
-        log.debug("Merged cookie's into provided response object for "
-                     "redirect")
     raise found
