@@ -100,7 +100,7 @@ class PylonsBaseWSGIApp(object):
             return response
         
         raise Exception("No content returned by controller (Did you remember "
-                        "to 'return' it?) in: %s" % controller.__name__)
+                        "to 'return' it?) in: %r" % controller.__name__)
     
     def setup_app_env(self, environ, start_response):
         """Setup and register all the Pylons objects with the registry"""
@@ -156,7 +156,7 @@ class PylonsBaseWSGIApp(object):
         if not controller:
             return None
         
-        log.debug("Resolved URL to controller: %s", controller)
+        log.debug("Resolved URL to controller: %r", controller)
         return self.find_controller(controller)
     
     def find_controller(self, controller):
@@ -176,8 +176,8 @@ class PylonsBaseWSGIApp(object):
         __import__(full_module_name)
         module_name = controller.split('/')[-1]
         class_name = class_name_from_module_name(module_name) + 'Controller'
-        log.debug("Looked up controller module '%s', returning the class '%s'",
-                  full_module_name, class_name)
+        log.debug("Found controller, module: %r, class: %r", full_module_name,
+                  class_name)
         return getattr(sys.modules[full_module_name], class_name)
         
     def dispatch(self, controller, environ, start_response):

@@ -71,14 +71,14 @@ class WSGIController(object):
                 if name in kargs:
                     setattr(c, name, kargs[name])
                     args[name] = kargs[name]
-        log.debug("Calling '%s' method with keyword arguments: **%s",
+        log.debug("Calling %r method with keyword arguments: **%r",
                   func.__name__, args)
         try:
             result = func(**args)
-            log.debug("'%s' method returned a response", func.__name__)
         except HTTPException, httpe:
-            log.debug("'%s' method raised HTTPException: %s (code: %s)",
-                      func.__name__, httpe.__class__.__name__, httpe.code)
+            log.debug("%r method raised HTTPException: %s (code: %s)",
+                      func.__name__, httpe.__class__.__name__, httpe.code,
+                      exc_info=True)
             result = httpe.response(pylons.request.environ)
             result._exception = True
         return result
@@ -102,7 +102,7 @@ class WSGIController(object):
         req = pylons.request._current_obj()
         action = req.environ['pylons.routes_dict'].get('action')
         action_method = action.replace('-', '_')
-        log.debug("Looking for '%s' method to handle the request", action_method)
+        log.debug("Looking for %r method to handle the request", action_method)
         func = getattr(self, action_method, None)        
         if isinstance(func, types.MethodType):
             # Store function used to handle request
@@ -110,9 +110,9 @@ class WSGIController(object):
             
             response = self._inspect_call(func)
         else:
-            log.debug("Couldn't find '%s' method to handle response", action)
+            log.debug("Couldn't find %r method to handle response", action)
             if pylons.config['debug']:
-                raise NotImplementedError('Action %s is not implemented' %
+                raise NotImplementedError('Action %r is not implemented' %
                                           action)
             else:
                 response = WSGIResponse(code=404)
@@ -143,7 +143,6 @@ class WSGIController(object):
         self.start_response = repl_start_response
         
         if hasattr(self, '__before__'):
-            log.debug("Calling __before__ action")
             response = self._inspect_call(self.__before__)
             if hasattr(response, '_exception'):
                 return response(environ, self.start_response)
@@ -175,7 +174,6 @@ class WSGIController(object):
             response = pylons.response._current_obj()
         
         if hasattr(self, '__after__'):
-            log.debug("Calling __after__ action")
             after = self._inspect_call(self.__after__)
             if hasattr(after, '_exception'):
                 return after(environ, self.start_response)
