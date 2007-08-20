@@ -110,7 +110,7 @@ and the following lines to the end of the config file:
 
 pylons_database_warning = (
 "pylons.database is deprecated, and will be removed from a future version of "
-"Pylons. SQLAlchemy users are recommended to migrate to SAContext "
+"Pylons. SQLAlchemy 0.3.x users are recommended to migrate to SAContext "
 "(http://cheeseshop.python.org/pypi/SAContext) for similar functionality")
 
 pylons_h_warning = (
