@@ -42,9 +42,8 @@ class WSGIController(object):
     __pudge_all__ = ['_inspect_call', '__call__', '_get_method_args', 
                      '_dispatch_call']
     
-    def _inspect_call(self, func, **kargs):
-        """Calls a function with as many arguments from args and kargs as
-        possible
+    def _inspect_call(self, func):
+        """Calls a function with arguments from ``_get_method_args``
         
         Given a function, inspect_call will inspect the function args and call
         it with no further keyword args than it asked for.
