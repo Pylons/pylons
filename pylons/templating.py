@@ -91,12 +91,16 @@ class Buffet(object):
             h=pylons.config.get('pylons.h') or pylons.h._current_obj(),
             render=render,
             request=pylons.request._current_obj(),
-            session=pylons.session._current_obj(),
             translator=pylons.translator,
             ungettext=pylons.i18n.ungettext,
             _=pylons.i18n._,
             N_=pylons.i18n.N_
             )
+        
+        # If the session was overriden to be None, don't populate the session
+        # var
+        if pylons.config['pylons.environ_config'].get('session', True):
+            d['session'] = pylons.session._current_obj()
         d.update(ns)
         log.debug("Updated render namespace with pylons vars: %s", d)
         return d
