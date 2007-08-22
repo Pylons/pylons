@@ -4,6 +4,8 @@ Pylons Changelog
 0.9.6 (**svn**)
 * Fixed pylons.templating to not pull session objects if there are none in use
   for the request. Thanks Bob Ippolito.
+* Catch UnicodeEncodeErrors when finding the Controller action method and fail
+  gracefully. Thanks max. Fixes #298.
 
 0.9.6rc3 (August 18, 2007)
 * Fixed controllers.core to allow responses of None (empty bodies). Logs a

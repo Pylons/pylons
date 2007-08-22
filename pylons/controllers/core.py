@@ -102,7 +102,10 @@ class WSGIController(object):
         action = req.environ['pylons.routes_dict'].get('action')
         action_method = action.replace('-', '_')
         log.debug("Looking for %r method to handle the request", action_method)
-        func = getattr(self, action_method, None)        
+        try:
+            func = getattr(self, action_method, None)
+        except UnicodeEncodeError:
+            func = None
         if isinstance(func, types.MethodType):
             # Store function used to handle request
             req.environ['pylons.action_method'] = func
