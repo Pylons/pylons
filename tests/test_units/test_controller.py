@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from paste.fixture import TestApp
 from paste.registry import RegistryManager
 import paste.httpexceptions as httpexceptions
@@ -119,6 +120,10 @@ class TestBasicWSGI(TestWSGIController):
         resp = self.app.get('/')
         assert '' == resp.body
         assert resp.response.headers['Cache-Control'] == 'private'
+
+    def test_unicode_action(self):
+        self.baseenviron['pylons.routes_dict']['action'] = u'ОбсуждениеКомпаний'
+        resp = self.app.get('/', status=404)
 
 class TestFilteredWSGI(TestWSGIController):
     def __init__(self, *args, **kargs):

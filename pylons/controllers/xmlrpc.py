@@ -153,7 +153,11 @@ class XMLRPCController(WSGIController):
 
         method = self._find_method_name(orig_method)
         log.debug("Looking for XMLRPC method called: %s", method)
-        if not hasattr(self, method):
+        try:
+            has_method = hasattr(self, method)
+        except UnicodeEncodeError:
+            has_method = False
+        if not has_method:
             log.debug("No method found, returning xmlrpc fault")
             return xmlrpc_fault(0, "No method by that name")(environ, start_response)
 

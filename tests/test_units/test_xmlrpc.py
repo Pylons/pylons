@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from paste.wsgiwrappers import WSGIRequest
 from paste.fixture import TestApp
 from paste.registry import RegistryManager
@@ -87,6 +88,11 @@ class TestXMLRPCController(TestWSGIController):
         response = self.xmlreq('uni')
         assert 'A unicode string' in response['mess']
 
+    def test_unicode_method(self):
+        data = xmlrpclib.dumps((), methodname=u'ОбсуждениеКомпаний')
+        self.response = response = self.app.post('/', params=data,
+                                                 extra_environ=dict(CONTENT_TYPE='text/xml'))
+        
     def test_badargs(self):
         self.assertRaises(xmlrpclib.Fault, self.xmlreq, 'system.methodHelp')
 
