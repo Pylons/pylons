@@ -152,16 +152,10 @@ class XMLRPCController(WSGIController):
         rpc_args, orig_method = xmlrpclib.loads(body)
 
         method = self._find_method_name(orig_method)
-        log.debug("Looking for XMLRPC method called: %s", method)
-        try:
-            has_method = hasattr(self, method)
-        except UnicodeEncodeError:
-            has_method = False
-        if not has_method:
+        func = self._find_method(method)
+        if not func:
             log.debug("No method found, returning xmlrpc fault")
             return xmlrpc_fault(0, "No method by that name")(environ, start_response)
-
-        func = getattr(self, method)
 
         # Signature checking for params
         if hasattr(func, 'signature'):
@@ -219,6 +213,16 @@ class XMLRPCController(WSGIController):
                                    allow_none=self.allow_none)
         return WSGIResponse(response)
 
+    def _find_method(self, name):
+        """Locate a method in the controller by the specified name and return
+        it
+        """
+        log.debug("Looking for XMLRPC method: %r", name)
+        try:
+            return getattr(self, name, None)
+        except UnicodeEncodeError:
+            return None
+
     def _find_method_name(self, name):
         """Locate a method in the controller by the appropriate name
         
@@ -254,9 +258,8 @@ class XMLRPCController(WSGIController):
         result is an array to indicate multiple signatures a method may be
         capable of.
         """
-        name = self._find_method_name(name)
-        if hasattr(self, name):
-            method = getattr(self, name)
+        method = self._find_method(self._find_method_name(name))
+        if method:
             if hasattr(method, 'signature'):
                 return getattr(method, 'signature')
             else:
@@ -268,9 +271,8 @@ class XMLRPCController(WSGIController):
 
     def system_methodHelp(self, name):
         """Returns the documentation for a method"""
-        name = self._find_method_name(name)
-        if hasattr(self, name):
-            method = getattr(self, name)
+        method = self._find_method(self._find_method_name(name))
+        if method:
             help = getattr(method, 'help', None) or method.__doc__
             help = trim(help)
             sig = getattr(method, 'signature', None)

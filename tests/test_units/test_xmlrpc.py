@@ -110,9 +110,17 @@ class TestXMLRPCController(TestWSGIController):
         response = self.xmlreq('system.methodSignature', ('nosig',))
         assert response == ''
     
+    def test_nosignature_unicode(self):
+        self.assertRaises(xmlrpclib.Fault, self.xmlreq, 'system.methodSignature',
+                          (u'ОбсуждениеКомпаний',))
+    
     def test_nodocs(self):
         response = self.xmlreq('system.methodHelp', ('nosig',))
         assert response == ''
+    
+    def test_nodocs_unicode(self):
+        self.assertRaises(xmlrpclib.Fault, self.xmlreq, 'system.methodHelp',
+                          (u'ОбсуждениеКомпаний',))
     
     def test_multilinedoc(self):
         response = self.xmlreq('system.methodHelp', ('longdoc',))
