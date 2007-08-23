@@ -37,33 +37,6 @@ def xmlrpc_fault(code, message):
     return WSGIResponse(xmlrpclib.dumps(fault, methodresponse=True))
 
 
-def trim(docstring):
-    """Yanked from PEP 237, strips the whitespace from Python doc strings"""
-    if not docstring:
-        return ''
-    # Convert tabs to spaces (following the normal Python rules)
-    # and split into a list of lines:
-    lines = docstring.expandtabs().splitlines()
-    # Determine minimum indentation (first line doesn't count):
-    indent = sys.maxint
-    for line in lines[1:]:
-        stripped = line.lstrip()
-        if stripped:
-            indent = min(indent, len(line) - len(stripped))
-    # Remove indentation (first line is special):
-    trimmed = [lines[0].strip()]
-    if indent < sys.maxint:
-        for line in lines[1:]:
-            trimmed.append(line[indent:].rstrip())
-    # Strip off trailing and leading blank lines:
-    while trimmed and not trimmed[-1]:
-        trimmed.pop()
-    while trimmed and not trimmed[0]:
-        trimmed.pop(0)
-    # Return a single string:
-    return '\n'.join(trimmed)
-
-
 class XMLRPCController(WSGIController):
     """XML-RPC Controller that speaks WSGI
     
@@ -272,11 +245,32 @@ class XMLRPCController(WSGIController):
         """Returns the documentation for a method"""
         method = self._find_method(self._find_method_name(name))
         if method:
-            help = getattr(method, 'help', None) or method.__doc__
-            help = trim(help)
+            help = MethodHelp.getdoc(method)
             sig = getattr(method, 'signature', None)
             if sig:
                 help += "\n\nMethod signature: %s" % sig
             return help
         return xmlrpclib.Fault(0, "No such method name")
     system_methodHelp.signature = [['string', 'string']]
+
+
+class MethodHelp(object):
+    """Wrapper for formatting doc strings from XMLRPCController methods"""
+    def __init__(self, doc):
+        self.__doc__ = doc
+
+    def getdoc(method):
+        """Return a formatted doc string, via inspect.getdoc, from the
+        specified XMLRPCController method
+
+        The method's help attribute is used if it exists, otherwise the
+        method's doc string is used.
+        """
+        help = getattr(method, 'help', None)
+        if help is None:
+            help = method.__doc__
+        doc = inspect.getdoc(MethodHelp(help))
+        if doc is None:
+            return ''
+        return doc
+    getdoc = staticmethod(getdoc)
