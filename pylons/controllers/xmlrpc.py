@@ -69,8 +69,8 @@ class XMLRPCController(WSGIController):
     
     This controller handles XML-RPC responses and complies with the 
     `XML-RPC Specification <http://www.xmlrpc.com/spec>`_ as well as the
-    `XML-RPC Introspection <http://scripts.incutio.com/xmlrpc/introspection.html>`_
-    specification.
+    `XML-RPC Introspection
+    <http://scripts.incutio.com/xmlrpc/introspection.html>`_ specification.
     
     By default, methods with names containing a dot are translated to use an
     underscore. For example, the `system.methodHelp` is handled by the method 
@@ -93,7 +93,8 @@ class XMLRPCController(WSGIController):
                 if age and age > 10:
                     response['age'] = age
                 return response
-            userinfo.signature = [ ['struct', 'string'], ['struct', 'string', 'int'] ]
+            userinfo.signature = [['struct', 'string'],
+                                  ['struct', 'string', 'int']]
     
     Since XML-RPC methods can take different sets of data, each set of valid
     arguments is its own list. The first value in the list is the type of the
@@ -154,8 +155,9 @@ class XMLRPCController(WSGIController):
         method = self._find_method_name(orig_method)
         func = self._find_method(method)
         if not func:
-            log.debug("No method found, returning xmlrpc fault")
-            return xmlrpc_fault(0, "No method by that name")(environ, start_response)
+            log.debug("Method: %r not found, returning xmlrpc fault", method)
+            return xmlrpc_fault(0, "No such method name")(environ,
+                                                          start_response)
 
         # Signature checking for params
         if hasattr(func, 'signature'):
@@ -175,8 +177,8 @@ class XMLRPCController(WSGIController):
             if not valid_args:
                 log.debug("Bad argument signature recieved, returning xmlrpc"
                           " fault")
-                msg = ("Incorrect argument signature. %s recieved does not "
-                       "match %s signature for method %s" % \
+                msg = ("Incorrect argument signature. %r recieved does not "
+                       "match %r signature for method %r" % \
                            (params, func.signature, orig_method))
                 return xmlrpc_fault(0, msg)(environ, start_response)
 
@@ -260,10 +262,7 @@ class XMLRPCController(WSGIController):
         """
         method = self._find_method(self._find_method_name(name))
         if method:
-            if hasattr(method, 'signature'):
-                return getattr(method, 'signature')
-            else:
-                return ''
+            return getattr(method, 'signature', '')
         else:
             return xmlrpclib.Fault(0, 'No such method name')
     system_methodSignature.signature = [['array', 'string'],
