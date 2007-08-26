@@ -36,7 +36,8 @@ def jsonify(func, *args, **kwargs):
 jsonify = decorator(jsonify)
 
 def validate(schema=None, validators=None, form=None, variable_decode=False,
-             dict_char='.', list_char='-', post_only=True, **htmlfill_kwargs):
+             dict_char='.', list_char='-', post_only=True, state=None,
+             **htmlfill_kwargs):
     """Validate input either for a FormEncode schema, or individual validators
 
     Given a form schema or dict of validators, validate will attempt to
@@ -90,7 +91,7 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
         if schema:
             log.debug("Validating against a schema")
             try:
-                self.form_result = schema.to_python(decoded)
+                self.form_result = schema.to_python(decoded, state)
             except formencode.Invalid, e:
                 errors = e.unpack_errors(variable_decode, dict_char, list_char)
         if validators:
@@ -101,7 +102,7 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
                 for field, validator in validators.iteritems():
                     try:
                         self.form_result[field] = \
-                            validator.to_python(decoded.get(field))
+                            validator.to_python(decoded.get(field), state)
                     except formencode.Invalid, error:
                         errors[field] = error
         if errors:
