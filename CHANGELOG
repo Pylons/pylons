@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.6 (**svn**)
+* Updated requirements for newer WebHelpers for SQLAlchemy 0.4 compatibility.
+  Fixes #300.
 * Fixed pylons.templating to not pull session objects if there are none in use
   for the request. Thanks Bob Ippolito.
 * Catch UnicodeEncodeErrors when finding the Controller action method and fail
