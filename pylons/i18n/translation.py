@@ -179,8 +179,8 @@ def get_lang():
     return getattr(pylons.translator, 'pylons_lang', None)
 
 
-def add_fallback(lang):
+def add_fallback(lang, **kwargs):
     """Add a fallback language from which words not matched in other languages
     will be translated to.
     """
-    return pylons.translator.add_fallback(_get_translator(lang))
+    return pylons.translator.add_fallback(_get_translator(lang, **kwargs))
