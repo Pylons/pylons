@@ -10,6 +10,8 @@ Pylons Changelog
   gracefully. Thanks max. Fixes #298.
 * Allow passing of a state keyword to the validate decorator for the
   to_python methods. Fixes #297.
+* paster shell now configures logging from the config file, like paster serve
+  and setup-app. Thanks Yannick Gingras.
 
 0.9.6rc3 (August 18, 2007)
 * Fixed controllers.core to allow responses of None (empty bodies). Logs a

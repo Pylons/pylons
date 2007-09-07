@@ -403,6 +403,9 @@ class ShellCommand(Command):
         banner += "  %-10s -  %s\n" % ('app',
             'paste.fixture wrapped around wsgiapp')
 
+        # Configure logging from the config file
+        self.logging_file_config(config_file)
+
         try:
             if self.options.disable_ipython:
                 raise ImportError()
