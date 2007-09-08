@@ -134,7 +134,8 @@ class PylonsTemplate(Template):
         if template_engine == 'mako':
             # Support a Babel extractor default for Mako
             vars['babel_templates_extractor'] = \
-                "('templates/**.mako', 'mako', None),\n%s" % (' ' * 12)
+                "('templates/**.mako', 'mako', None),\n%s#%s" % (' ' * 4,
+                                                                 ' ' * 8)
         else:
             vars['babel_templates_extractor'] = ''
 
