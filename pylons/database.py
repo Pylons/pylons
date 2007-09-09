@@ -1,4 +1,8 @@
-"""Provides convenient access to SQLObject-managed and/or SQLAlchemy-managed
+"""Depreacted: pylons.database will be removed from a future version of
+Pylons. SQLAlchemy 0.3.x users are recommended to migrate to SAContext
+(http://cheeseshop.python.org/pypi/SAContext) for similar functionality.
+
+Provides convenient access to SQLObject-managed and/or SQLAlchemy-managed
 databases.
 
 This module enables easy use of an SQLObject database by providing an 
