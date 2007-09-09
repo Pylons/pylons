@@ -48,7 +48,7 @@ Current Status
 Pylons %s described on this page is stable.
 
 There is also an unstable `develoment version
-<http://pylonshq.com/svn/Pylons/trunk#egg=Pylons-dev>`_ of Pylons.
+<https://www.knowledgetap.com/hg/pylons-dev/archive/tip.tar.gz#egg=Pylons-dev>`_ of Pylons.
 
 Download and Installation
 -------------------------
