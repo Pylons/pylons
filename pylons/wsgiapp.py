@@ -24,6 +24,8 @@ from pylons.i18n import set_lang
 from pylons.util import ContextObj, AttribSafeContextObj, \
     class_name_from_module_name
 
+__all__ = ['PylonsApp', 'PylonsBaseWSGIApp']
+
 log = logging.getLogger(__name__)
 
 class PylonsBaseWSGIApp(object):
