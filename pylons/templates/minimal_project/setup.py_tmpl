@@ -8,9 +8,9 @@ except ImportError:
 setup(
     name=${repr(project)|empty},
     version=${repr(version)|empty},
-    ${"description='" + description + "'"|"# description=''"},
-    ${"author='" + author + "'"|"# author=''"},
-    ${"author_email='" + author_email + "'"|"# author_email=''"},
+    ${"description='" + description + "'"|"#description=''"},
+    ${"author='" + author + "'"|"#author=''"},
+    ${"author_email='" + author_email + "'"|"#author_email=''"},
     # url='',
     install_requires=["Pylons>=0.9.6"],
     packages=find_packages(exclude=['ez_setup']),
