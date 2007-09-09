@@ -311,8 +311,10 @@ def render(*args, **kargs):
     
     Optionally takes 3 keyword arguments to use caching supplied by Buffet.
     
-    Examples::
+    Examples:
         
+    .. code-block:: Python
+
         content = render('/my/template.mako')
         print content
         content = render('/my/template2.myt', fragment=True)
