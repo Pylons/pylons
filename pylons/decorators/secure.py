@@ -52,17 +52,18 @@ def https(*redirect_args, **redirect_kwargs):
 
     .. code-block: Python
 
-    @https('/pylons') # redirect to HTTPS /pylons
-    def index(self):
-        ...
+        @https('/pylons') # redirect to HTTPS /pylons
+        def index(self):
+            #...
 
-    @https(controller='auth', action='login') # redirect to HTTPS /auth/login
-    def login(self):
-        ...
+        # redirect to HTTPS /auth/login
+        @https(controller='auth', action='login')
+        def login(self):
+            #...
 
-    @https() # redirect to HTTPS version of myself
-    def get(self):
-        ...
+        @https() # redirect to HTTPS version of myself
+        def get(self):
+            #...
     """
     def wrapper(func, *args, **kwargs):
         """Decorator Wrapper function"""

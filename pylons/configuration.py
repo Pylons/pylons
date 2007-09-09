@@ -39,7 +39,8 @@ class PylonsConfig(DispatchingConfig):
     The config object is available in your application as the Pylons global
     ``pylons.config``. An example usage:
 
-    .. code :: Python
+    .. code-block :: Python
+
         from pylons import config
 
         template_paths = config['pylons.paths']['templates']

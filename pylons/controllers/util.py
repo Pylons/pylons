@@ -68,6 +68,9 @@ def redirect_to(*args, **kargs):
     
     Optionally, a _code variable may be passed with the status code of the 
     redirect, ie:
+
+    .. code-block:: Python
+
         redirect_to('home_page', _code=303)
     
     ``Deprecated``
