@@ -1,7 +1,7 @@
 Pylons Changelog
 =================
 
-0.9.6 (**svn**)
+0.9.6 (September 8th, 2007)
 * Updated requirements for newer WebHelpers for SQLAlchemy 0.4 compatibility.
   Fixes #300.
 * Fixed pylons.templating to not pull session objects if there are none in use
