@@ -1,6 +1,9 @@
 Pylons Changelog
 =================
 
+0.9.7 **tip**
+
+
 0.9.6 (September 8th, 2007)
 * Updated requirements for newer WebHelpers for SQLAlchemy 0.4 compatibility.
   Fixes #300.
