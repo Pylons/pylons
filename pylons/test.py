@@ -11,6 +11,7 @@ from paste.deploy import loadapp
 from nose.plugins import Plugin
 
 class PylonsPlugin(Plugin):
+    
     enabled = False
     enableOpt = 'pylons_config'
     name = 'pylons'
@@ -21,8 +22,8 @@ class PylonsPlugin(Plugin):
         env_opt.replace('-', '_')
         
         parser.add_option("--with-%s" % self.name,
-                          dest=self.enableOpt, action="append",
-                          default=[],
+                          dest=self.enableOpt, type="string",
+                          default="",
                           help="Setup Pylons environment with the config file"
                           " specified by ATTR [NOSE_ATTR]")
 
@@ -31,7 +32,7 @@ class PylonsPlugin(Plugin):
         self.conf = conf
         if hasattr(options, self.enableOpt):
             self.enabled = bool(getattr(options, self.enableOpt))
-            self.config_file = getattr(options, self.enableOpt)[0]
+            self.config_file = getattr(options, self.enableOpt)
 
     def begin(self):
         self.app = loadapp('config:' + self.config_file, relative_to=os.getcwd())
