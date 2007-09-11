@@ -117,5 +117,8 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
 
     [python.templating.engines]
     pylonsmyghty = pylons.templating:MyghtyTemplatePlugin [myghty]
+    
+    [nose.plugins]
+    pylons = pylons.test:PylonsPlugin
     """,
 )
