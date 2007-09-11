@@ -131,16 +131,12 @@ uses h):
 """)
 
 redirect_response_warning = (
-"redirect_to's _response argument will be deprecated (trigger a "
-"DeprecationWarning) in Pylons 0.9.7, and support for it will be removed in a "
-"future version of Pylons. Please use pylons.response prior to redirecting "
-"instead")
+"redirect_to's _response argument is deprecated, please use pylons.response "
+"prior to redirecting instead")
 
 render_response_warning = (
-"render_response will be deprecated (trigger a DeprecationWarning) in "
-"Pylons 0.9.7, and support for it will be removed in a future version of "
-"Pylons. Please return the response content directly (via the render "
-"function) instead")
+"render_response is deprecated, please return the response content directly "
+"(via the render function) instead")
 
 root_path = (
 "paths['root_path'] has been moved to paths['root'], please update your "
@@ -189,11 +185,9 @@ class DeprecatedStackedObjectProxy(StackedObjectProxy):
 h = DeprecatedStackedObjectProxy(name="h")
 
 response_warning = (
-"Returning a Response object from a controller will be deprecated (trigger a "
-"full DeprecationWarning) in Pylons 0.9.7, and support for it will be removed "
-"in a future version of Pylons. Please return the response content directly "
-"and or use pylons.response instead")
+"Returning a Response object from a controller is deprecated, please return "
+"the response content directly and or use pylons.response instead")
 class Response(WSGIResponse):
     def __init__(self, *args, **kwargs):
-        warnings.warn(response_warning, PendingDeprecationWarning, 2)
+        warnings.warn(response_warning, DeprecationWarning, 2)
         WSGIResponse.__init__(self, *args, **kwargs)
