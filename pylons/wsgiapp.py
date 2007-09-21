@@ -58,6 +58,7 @@ class PylonsBaseWSGIApp(object):
         self.package_name = package_name
         self.request_options = config['pylons.request_options']
         self.response_options = config['pylons.response_options']
+        self.controller_classes = {}
         
         # Create the redirect function we'll use and save it
         def redirect_to(url):
@@ -168,6 +169,10 @@ class PylonsBaseWSGIApp(object):
         Override this to change how the controller object is found once the URL
         has been resolved.
         """
+        # Check to see if we've cached the class instance for this name
+        if controller in self.controller_classes:
+            return self.controller_classes[controller]
+        
         # Pull the controllers class name, import controller
         full_module_name = self.package_name + '.controllers.' \
             + controller.replace('/', '.')
@@ -180,7 +185,9 @@ class PylonsBaseWSGIApp(object):
         class_name = class_name_from_module_name(module_name) + 'Controller'
         log.debug("Found controller, module: '%s', class: '%s'", full_module_name,
                   class_name)
-        return getattr(sys.modules[full_module_name], class_name)
+        self.controller_classes[controller] = mycontroller = \
+            getattr(sys.modules[full_module_name], class_name)
+        return mycontroller
         
     def dispatch(self, controller, environ, start_response):
         """Dispatches to a controller, will instantiate the controller if
