@@ -2,6 +2,9 @@ Pylons Changelog
 =================
 
 0.9.7 (**tip**)
+* WARNING: Fixed a security hole allowing private controller methods (those
+  beginning with an underscore) to be accessed from the outside. Found by
+  Tomasz Nazar.
 * Added nose plugin '--with-pylons=test.ini' option to load the Pylons app 
   before scanning for unit tests. This enables Pylons apps to be unit tested
   with doc tests.

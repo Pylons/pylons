@@ -122,7 +122,7 @@ class WSGIController(object):
     
     def __call__(self, environ, start_response):
         # Keep private methods private
-        if environ['pylons.routes_dict'].get('action', '').startswith('_'):
+        if environ['pylons.routes_dict'].get('action', '')[:1] in ('_', '-'):
             log.debug("Action starts with _, private action not allowed. "
                       "Returning a 404 response")
             return WSGIResponse(code=404)(environ, start_response)
