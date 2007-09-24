@@ -83,7 +83,7 @@ def redirect_to(*args, **kargs):
     log.debug("Generating %s redirect" % status_code)
     if response:
         warnings.warn(pylons.legacy.redirect_response_warning,
-                      PendingDeprecationWarning, 2)
+                      DeprecationWarning, 2)
         log.debug("Merging provided Response object into redirect")
         if str(response.status_code).startswith('3'):
             found.code = response.status_code
