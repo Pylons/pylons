@@ -2,6 +2,9 @@ Pylons Changelog
 =================
 
 0.9.7 (**tip**)
+* Fixed validate decorator to resume pre-0.9.6 behavior of only validating
+  POST requests by default. Added option to validate during GET as well and
+  a recursion avoidance check to prevent validate from running more than once.
 * WARNING: Fixed a security hole allowing private controller methods (those
   beginning with an underscore) to be accessed from the outside. Found by
   Tomasz Nazar.

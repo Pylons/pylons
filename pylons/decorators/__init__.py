@@ -37,25 +37,47 @@ jsonify = decorator(jsonify)
 
 def validate(schema=None, validators=None, form=None, variable_decode=False,
              dict_char='.', list_char='-', post_only=True, state=None,
-             **htmlfill_kwargs):
+             on_get=False, **htmlfill_kwargs):
     """Validate input either for a FormEncode schema, or individual validators
 
     Given a form schema or dict of validators, validate will attempt to
     validate the schema or validator list.
 
-    If validation was succesfull, the valid result dict will be saved
+    If validation was successful, the valid result dict will be saved
     as ``self.form_result``. Otherwise, the action will be re-run as if it was
     a GET, and the output will be filled by FormEncode's htmlfill to fill in
     the form field errors.
 
-    If you'd like validate to also check GET (query) variables (**not** GET
-    requests!) during its validation, set the ``post_only`` keyword argument
-    to False.
-
-    .. warning::
-        ``post_only`` applies to *where* the arguments to be validated come
-        from. It does *not* restrict the form to only working with post, merely
-        only checking POST vars.
+    ``schema``
+        Refers to a FormEncode Schema object to use during validation.
+    ``form``
+        Method used to display the form, which will be used to get the 
+        HTML representation of the form for error filling.
+    ``variable_decode``
+        Boolean to indicate whether FormEncode's variable decode function 
+        should be run on the form input before validation.
+    ``dict_char``
+        Passed through to FormEncode. Toggles the form field naming 
+        scheme used to determine what is used to represent a dict. This
+        option is only applicable when used with variable_decode=True.
+    ``list_char``
+        Passed through to FormEncode. Toggles the form field naming
+        scheme used to determine what is used to represent a list. This
+        option is only applicable when used with variable_decode=True.
+    ``post_only``
+        Boolean that indicates whether or not GET (query) variables should
+        be included during validation.
+        
+        .. warning::
+            ``post_only`` applies to *where* the arguments to be
+            validated come from. It does *not* restrict the form to only
+            working with post, merely only checking POST vars.
+    ``state``
+        Passed through to FormEncode for use in validators that utilize
+        a state object.
+    ``on_get``
+        Whether to validate on GET requests. By default only POST requests
+        are validated.
 
     Example:
 
@@ -75,10 +97,17 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
         """Decorator Wrapper function"""
         request = pylons.request._current_obj()
         errors = {}
+        
+        # Skip the validation if on_get is False and its a GET
+        if not on_get and request.environ['REQUEST_METHOD'] == 'GET':
+            return func(self, *args, **kwargs)
+        
+        # If they want post args only, use just the post args
         if post_only:
             params = request.POST
         else:
             params = request.params
+        
         is_unicode_params = isinstance(params, UnicodeMultiDict)
         params = params.mixed()
         if variable_decode:
