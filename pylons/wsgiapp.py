@@ -59,6 +59,7 @@ class PylonsBaseWSGIApp(object):
         self.request_options = config['pylons.request_options']
         self.response_options = config['pylons.response_options']
         self.controller_classes = {}
+        self.log_debug = False
         
         # Create the redirect function we'll use and save it
         def redirect_to(url):
@@ -79,6 +80,9 @@ class PylonsBaseWSGIApp(object):
                 alias=e['alias'], **e['template_options'])
     
     def __call__(self, environ, start_response):
+        # Cache the logging level for the request
+        log_debug = self.log_debug = logging.DEBUG >= log.getEffectiveLevel()
+
         self.setup_app_env(environ, start_response)
         if 'paste.testing_variables' in environ:
             self.load_test_env(environ)
@@ -96,8 +100,9 @@ class PylonsBaseWSGIApp(object):
         
         if hasattr(response, 'wsgi_response'):
             # Transform Response objects from legacy Controller
-            log.debug("Transforming legacy Response object into WSGI "
-                      "response")
+            if log_debug:
+                log.debug("Transforming legacy Response object into WSGI "
+                          "response")
             return response(environ, start_response)
         elif response:
             return response
@@ -107,7 +112,8 @@ class PylonsBaseWSGIApp(object):
     
     def setup_app_env(self, environ, start_response):
         """Setup and register all the Pylons objects with the registry"""
-        log.debug("Setting up Pylons stacked object globals")
+        if self.log_debug:
+            log.debug("Setting up Pylons stacked object globals")
         registry = environ['paste.registry']
 
         registry.register(WSGIRequest.defaults, self.request_options)
@@ -158,8 +164,9 @@ class PylonsBaseWSGIApp(object):
         controller = match.get('controller')
         if not controller:
             return None
-        
-        log.debug("Resolved URL to controller: %r", controller)
+
+        if self.log_debug:
+            log.debug("Resolved URL to controller: %r", controller)
         return self.find_controller(controller)
     
     def find_controller(self, controller):
@@ -183,8 +190,9 @@ class PylonsBaseWSGIApp(object):
         __import__(full_module_name)
         module_name = controller.split('/')[-1]
         class_name = class_name_from_module_name(module_name) + 'Controller'
-        log.debug("Found controller, module: '%s', class: '%s'", full_module_name,
-                  class_name)
+        if self.log_debug:
+            log.debug("Found controller, module: '%s', class: '%s'",
+                      full_module_name, class_name)
         self.controller_classes[controller] = mycontroller = \
             getattr(sys.modules[full_module_name], class_name)
         return mycontroller
@@ -195,8 +203,10 @@ class PylonsBaseWSGIApp(object):
         
         Override this to change how the controller dispatch is handled.
         """
+        log_debug = self.log_debug
         if not controller:
-            log.debug("No controller found, returning 404 HTTP Not Found")
+            if log_debug:
+                log.debug("No controller found, returning 404 HTTP Not Found")
             not_found = httpexceptions.HTTPNotFound()
             return not_found.wsgi_application(environ, start_response)
 
@@ -208,23 +218,28 @@ class PylonsBaseWSGIApp(object):
                 issubclass(controller, Controller):
             controller = controller()
             controller.start_response = start_response
-            
-            log.debug("Calling older Controller subclass")
+            controller._pylons_log_debug = log_debug
+            if log_debug:
+                log.debug("Calling older Controller subclass")
             return controller(**match)
         
         # If it's a class, instantiate it
         if not hasattr(controller, '__class__') or \
             getattr(controller, '__class__') == type:
-            log.debug("Controller appears to be a class, instantiating")
+            if log_debug:
+                log.debug("Controller appears to be a class, instantiating")
             controller = controller()
+            controller._pylons_log_debug = log_debug
         
         # Controller is assumed to handle a WSGI call
-        log.debug("Calling controller class with WSGI interface")
+        if log_debug:
+            log.debug("Calling controller class with WSGI interface")
         return controller(environ, start_response)
     
     def load_test_env(self, environ):
         """Sets up our Paste testing environment"""
-        log.debug("Setting up paste testing environment variables")
+        if self.log_debug:
+            log.debug("Setting up paste testing environment variables")
         testenv = environ['paste.testing_variables']
         testenv['req'] = pylons.request._current_obj()
         testenv['c'] = pylons.c._current_obj()

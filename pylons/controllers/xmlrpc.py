@@ -109,17 +109,20 @@ class XMLRPCController(WSGIController):
         appropriate arguments"""
         # Pull out the length, return an error if there is no valid
         # length or if the length is larger than the max_body_length.
+        log_debug = self._pylons_log_debug
         length = environ.get('CONTENT_LENGTH')
         if length:
             length = int(length)
         else:
             # No valid Content-Length header found
-            log.debug("No Content-Length found, returning 411 error")
+            if log_debug:
+                log.debug("No Content-Length found, returning 411 error")
             abort(411)
         if length > self.max_body_length or length == 0:
-            log.debug("Content-Length larger than max body length. Max: %s,"
-                      " Sent: %s. Returning 413 error", self.max_body_length, 
-                      length)
+            if log_debug:
+                log.debug("Content-Length larger than max body length. Max: "
+                          "%s, Sent: %s. Returning 413 error",
+                          self.max_body_length, length)
             abort(413, "XML body too large")
 
         body = environ['wsgi.input'].read(int(environ['CONTENT_LENGTH']))
@@ -128,13 +131,16 @@ class XMLRPCController(WSGIController):
         method = self._find_method_name(orig_method)
         func = self._find_method(method)
         if not func:
-            log.debug("Method: %r not found, returning xmlrpc fault", method)
+            if log_debug:
+                log.debug("Method: %r not found, returning xmlrpc fault",
+                          method)
             return xmlrpc_fault(0, "No such method name")(environ,
                                                           start_response)
 
         # Signature checking for params
         if hasattr(func, 'signature'):
-            log.debug("Checking XMLRPC argument signature")
+            if log_debug:
+                log.debug("Checking XMLRPC argument signature")
             valid_args = False
             params = xmlrpc_sig(rpc_args)
             for sig in func.signature:
@@ -148,8 +154,9 @@ class XMLRPCController(WSGIController):
                     break
 
             if not valid_args:
-                log.debug("Bad argument signature recieved, returning xmlrpc"
-                          " fault")
+                if log_debug:
+                    log.debug("Bad argument signature recieved, returning "
+                              "xmlrpc fault")
                 msg = ("Incorrect argument signature. %r recieved does not "
                        "match %r signature for method %r" % \
                            (params, func.signature, orig_method))
@@ -192,7 +199,8 @@ class XMLRPCController(WSGIController):
         """Locate a method in the controller by the specified name and return
         it
         """
-        log.debug("Looking for XMLRPC method: %r", name)
+        if self._pylons_log_debug:
+            log.debug("Looking for XMLRPC method: %r", name)
         try:
             return getattr(self, name, None)
         except UnicodeEncodeError:

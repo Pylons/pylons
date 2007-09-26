@@ -8,6 +8,8 @@ Pylons Changelog
 * Added nose plugin '--with-pylons=test.ini' option to load the Pylons app 
   before scanning for unit tests. This enables Pylons apps to be unit tested
   with doc tests.
+* PylonsBaseWSGIApp now caches controller lookup and the effective logging
+  level for a little better performance.
 
 0.9.6 (September 8th, 2007)
 * Updated requirements for newer WebHelpers for SQLAlchemy 0.4 compatibility.
