@@ -74,6 +74,14 @@ class ValidatingController(WSGIController):
         validate(schema=HelloForm(), post_only=False, form='view_hello',
                      auto_error_formatter=custom_error_formatter)(hello_custom)
 
+    def hello_recurse(self, environ):
+        if environ['REQUEST_METHOD'] == 'GET':
+            return self.new_network()
+        else:
+            return 'Your network is: %s' % self.form_result.get('new_network')
+    hello_recurse = validate(schema=NetworkForm, form='hello_recurse')(hello_recurse)
+
+
 class TestValidateDecorator(TestWSGIController):
     def setUp(self):
         TestWSGIController.setUp(self)
@@ -91,6 +99,11 @@ class TestValidateDecorator(TestWSGIController):
         response = self.post_response(action='network', new_network='Росси́я')
         assert 'That is not a valid URL' in response
         assert 'Росси́я' in response
+
+    def test_recurse_validated(self):
+        response = self.post_response(action='hello_recurse',
+                                      new_network='http://pylonshq.com/')
+        assert 'Your network is: http://pylonshq.com/' in response
 
     def test_hello(self):
         self.environ['pylons.routes_dict']['action'] = 'hello'
@@ -139,6 +152,3 @@ def test_encode_formencode_errors():
     for i in (e['a'][0], e['b']['b2'][0], e['c'][1], e['c'][2]['c2'][0],
               e['c'][2]['c2'][1], e['c'][3][0], e['d']):
         assert isinstance(i, str)
-              
-       
-               
