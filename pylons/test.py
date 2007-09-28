@@ -1,17 +1,19 @@
-"""Nose plugin extension
-
-For use with nose to allow a project to be configured before nose proceeds
-to scan the project for doc tests and unit tests. This prevents modules from
-being loaded without a configured Pylons environment.
-
-"""
+"""Test related functionality"""
 import os
 
+import nose.plugins
 from paste.deploy import loadapp
-from nose.plugins import Plugin
 
-class PylonsPlugin(Plugin):
-    
+class PylonsPlugin(nose.plugins.Plugin):
+
+    """Nose plugin extension
+
+    For use with nose to allow a project to be configured before nose
+    proceeds to scan the project for doc tests and unit tests. This
+    prevents modules from being loaded without a configured Pylons
+    environment.
+    """
+
     enabled = False
     enableOpt = 'pylons_config'
     name = 'pylons'
@@ -20,7 +22,7 @@ class PylonsPlugin(Plugin):
         """Add command-line options for this plugin."""
         env_opt = 'NOSE_WITH_%s' % self.name.upper()
         env_opt.replace('-', '_')
-        
+
         parser.add_option("--with-%s" % self.name,
                           dest=self.enableOpt, type="string",
                           default="",
@@ -28,6 +30,7 @@ class PylonsPlugin(Plugin):
                           " specified by ATTR [NOSE_ATTR]")
 
     def configure(self, options, conf):
+        """Configure the plugin"""
         self.config_file = None
         self.conf = conf
         if hasattr(options, self.enableOpt):
@@ -35,4 +38,9 @@ class PylonsPlugin(Plugin):
             self.config_file = getattr(options, self.enableOpt)
 
     def begin(self):
-        self.app = loadapp('config:' + self.config_file, relative_to=os.getcwd())
+        """Called before any tests are collected or run.
+
+        Loads the application, and in turn its configuration.
+        """
+        self.app = loadapp('config:' + self.config_file,
+                           relative_to=os.getcwd())
