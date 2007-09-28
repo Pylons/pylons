@@ -1,7 +1,9 @@
 """Test related functionality"""
 import os
+import sys
 
 import nose.plugins
+import pkg_resources
 from paste.deploy import loadapp
 
 class PylonsPlugin(nose.plugins.Plugin):
@@ -19,7 +21,7 @@ class PylonsPlugin(nose.plugins.Plugin):
     name = 'pylons'
 
     def add_options(self, parser, env=os.environ):
-        """Add command-line options for this plugin."""
+        """Add command-line options for this plugin"""
         env_opt = 'NOSE_WITH_%s' % self.name.upper()
         env_opt.replace('-', '_')
 
@@ -38,9 +40,11 @@ class PylonsPlugin(nose.plugins.Plugin):
             self.config_file = getattr(options, self.enableOpt)
 
     def begin(self):
-        """Called before any tests are collected or run.
+        """Called before any tests are collected or run
 
         Loads the application, and in turn its configuration.
         """
-        self.app = loadapp('config:' + self.config_file,
-                           relative_to=os.getcwd())
+        path = os.getcwd()
+        sys.path.insert(0, path)
+        pkg_resources.working_set.add_entry(path)
+        self.app = loadapp('config:' + self.config_file, relative_to=path)

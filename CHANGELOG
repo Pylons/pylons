@@ -2,6 +2,10 @@ Pylons Changelog
 =================
 
 0.9.7 (**tip**)
+* The --with-pylons nose plugin no longer requires a project to have been
+  registered with setuptools to work.
+
+0.9.6.1 (September 27th, 2007)
 * WARNING: Fixed a security hole allowing private controller methods (those
   beginning with an underscore) to be accessed from the outside. Found by
   Tomasz Nazar.
