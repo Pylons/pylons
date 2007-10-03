@@ -204,7 +204,7 @@ class XMLRPCController(WSGIController):
         try:
             return getattr(self, name, None)
         except UnicodeEncodeError:
-            return None
+            return
 
     def _find_method_name(self, name):
         """Locate a method in the controller by the appropriate name

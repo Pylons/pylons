@@ -40,7 +40,7 @@ class BasicWSGIController(WSGIController):
         return "Hello all!"
     
     def nothing(self):
-        return None
+        return
 
 
 class FilteredWSGIController(WSGIController):
