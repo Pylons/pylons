@@ -58,7 +58,7 @@ def ErrorHandler(app, global_conf, **errorware):
 
 def error_mapper(code, message, environ, global_conf=None, **kw):
     if environ.get('pylons.error_call'):
-        return None
+        return
     else:
         environ['pylons.error_call'] = True
     

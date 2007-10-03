@@ -163,7 +163,7 @@ class PylonsBaseWSGIApp(object):
         environ['pylons.routes_dict'] = match
         controller = match.get('controller')
         if not controller:
-            return None
+            return
 
         if self.log_debug:
             log.debug("Resolved URL to controller: %r", controller)
