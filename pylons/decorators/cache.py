@@ -9,7 +9,7 @@ import pylons
 
 log = logging.getLogger(__name__)
 
-def beaker_cache(key="cache_default", expire="never", type="dbm",
+def beaker_cache(key="cache_default", expire="never", type=None,
     query_args=False, **b_kwargs):
     """Cache decorator utilizing Beaker. Caches action or other function that
     returns a pickle-able object as a result.
@@ -61,9 +61,11 @@ def beaker_cache(key="cache_default", expire="never", type="dbm",
                                  content=result)
             return full_response
         
+        if type:
+            b_kwargs['type'] = type
+        
         response = my_cache.get_value(cache_key, createfunc=create_func,
-                                     type=type, expiretime=cache_expire,
-                                     **b_kwargs)
+                                     expiretime=cache_expire, **b_kwargs)
         glob_response = pylons.response._current_obj()
         glob_response.headers = response['headers']
         glob_response.status_code = response['status']

@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.7 (**tip**)
+* Fixed bug with beaker_cache defaulting to dbm rather than the beaker
+  cache app-wide default.
 * The --with-pylons nose plugin no longer requires a project to have been
   registered with setuptools to work.
 
