@@ -24,7 +24,8 @@ def beaker_cache(key="cache_default", expire="never", type=None,
     expire
         Time in seconds before cache expires, defaults to never
     type
-        Type of cache to use: dbm, memory, file, memcached
+        Type of cache to use: dbm, memory, file, memcached, or None for
+        Beaker's default
     query_args
         Uses the query arguments as the key, defaults to False
 
