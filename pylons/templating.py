@@ -29,8 +29,8 @@ import pylons
 
 __all__ = ['Buffet', 'MyghtyTemplatePlugin', 'render', 'render_response']
 
-PYLONS_VARS = ['c', 'g', 'h', 'render', 'request', 'session', 'translator',
-               'ungettext', '_', 'N_']
+PYLONS_VARS = ['c', 'config', 'g', 'h', 'render', 'request', 'session',
+               'translator', 'ungettext', '_', 'N_']
 
 log = logging.getLogger(__name__)
 
@@ -87,6 +87,7 @@ class Buffet(object):
         with the ``ns`` dict."""
         d = dict(
             c=pylons.c._current_obj(),
+            config=pylons.config._current_obj(),
             g=pylons.g._current_obj(),
             h=pylons.config.get('pylons.h') or pylons.h._current_obj(),
             render=render,
