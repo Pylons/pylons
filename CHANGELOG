@@ -6,6 +6,7 @@ Pylons Changelog
   cache app-wide default.
 * The --with-pylons nose plugin no longer requires a project to have been
   registered with setuptools to work.
+* The config object is now included in the template namespace.
 
 0.9.6.1 (September 27th, 2007)
 * Fixed validate decorator to resume pre-0.9.6 behavior of only validating
