@@ -23,9 +23,9 @@ class StaticJavascripts(object):
     
     Triggered when PATH_INFO begins with '/javascripts/'.
     """
-    def __init__(self):
+    def __init__(self, **kwargs):
         self.javascripts_app = \
-            StaticURLParser(os.path.dirname(javascript_path))
+            StaticURLParser(os.path.dirname(javascript_path), **kwargs)
         
     def __call__(self, environ, start_response):
         if environ.get('PATH_INFO', '').startswith('/javascripts/'):
