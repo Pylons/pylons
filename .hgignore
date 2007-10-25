@@ -9,3 +9,4 @@ ez_setup
 container_file
 container_dbm*
 docs/html/docs
+output/ProjectName
