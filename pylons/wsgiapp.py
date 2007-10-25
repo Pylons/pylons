@@ -14,7 +14,6 @@ import paste.httpexceptions as httpexceptions
 import paste.registry
 from paste.wsgiwrappers import WSGIRequest, WSGIResponse
 from routes import request_config
-from routes.middleware import RoutesMiddleware
 
 import pylons
 import pylons.legacy
@@ -28,8 +27,8 @@ __all__ = ['PylonsApp', 'PylonsBaseWSGIApp']
 
 log = logging.getLogger(__name__)
 
-class PylonsBaseWSGIApp(object):
-    """Basic Pylons WSGI Application
+class PylonsApp(object):
+    """Pylons WSGI Application
 
     This basic WSGI app is provided should a web developer want to
     get access to the most basic Pylons web application environment
@@ -44,17 +43,17 @@ class PylonsBaseWSGIApp(object):
     Resolving the URL and dispatching can be customized by sub-classing or
     "monkey-patching" this class. Subclassing is the preferred approach.
     """
-    def __init__(self, config, globals, helpers=None):
+    def __init__(self, **kwargs):
         """Initialize a base Pylons WSGI application
         
         The base Pylons WSGI application requires several keywords, the package
         name, and the globals object. If no helpers object is provided then h
         will be None.
         """
-        self.config = config
+        self.config = config = pylons.config._current_obj()
         package_name = config['pylons.package']
-        self.helpers = helpers
-        self.globals = globals
+        self.helpers = config['pylons.h']
+        self.globals = config['pylons.g']
         self.package_name = package_name
         self.request_options = config['pylons.request_options']
         self.response_options = config['pylons.response_options']
@@ -141,11 +140,15 @@ class PylonsBaseWSGIApp(object):
         else:
             registry.register(pylons.c, AttribSafeContextObj())
         
-        econf = environ['pylons.environ_config']
+        econf = self.config['pylons.environ_config']
         if econf.get('session'):
             registry.register(pylons.session, environ[econf['session']])
+        elif 'beaker.session' in environ:
+            registry.register(pylons.session, environ['beaker.session'])
         if econf.get('cache'):
             registry.register(pylons.cache, environ[econf['cache']])
+        elif 'beaker.cache' in environ:
+            registry.register(pylons.cache, environ['beaker.cache'])
     
     def resolve(self, environ, start_response):
         """Uses dispatching information found in 
@@ -246,70 +249,12 @@ class PylonsBaseWSGIApp(object):
         testenv['g'] = pylons.g._current_obj()
         testenv['h'] = self.config['pylons.h'] or pylons.h._current_obj()
         testenv['config'] = self.config
-        econf = environ['pylons.environ_config']
+        econf = self.config['pylons.environ_config']
         if econf.get('session'):
             testenv['session'] = environ[econf['session']]
+        elif 'beaker.session' in environ:
+            testenv['session'] = environ['beaker.session']
         if econf.get('cache'):
             testenv['cache'] = environ[econf['cache']]
-
-
-class PylonsApp(object):
-    """Setup the Pylons default environment
-    
-    Pylons App sets up the basic Pylons app, and initializes the global
-    object, sessions and caching. Sessions and caching can be overridden
-    in the config object by supplying other keys to look for in the environ
-    where objects for the session/cache will be. If they're set to none,
-    then no session/cache objects will be available.
-    """
-    def __init__(self, config=None, helpers=None, g=None,
-                 use_routes=True, base_wsgi_app=None):
-        self.config = config = pylons.config._current_obj()
-
-        if helpers is not None or g is not None:
-            template_engine = config['buffet.template_engines'][0]['engine']
-            warnings.warn(pylons.legacy.helpers_and_g_warning % \
-                              dict(package=config['pylons.package'],
-                                   template_engine=template_engine),
-                          DeprecationWarning, 2)
-
-        if helpers is None:
-            helpers = config.get('pylons.h')
-        if g is None:
-            g = config.get('pylons.g')
-        else:
-            if len(inspect.getargspec(g.__init__)[0]) > 1:
-                warnings.warn(pylons.legacy.g_confargs, DeprecationWarning, 2)
-                g = g(config['global_conf'], config['app_conf'], config=config)
-            else:
-                g = g()
-
-        config['pylons.g'] = g
-        config['pylons.h'] = helpers
-        
-        # Create the base Pylons wsgi app
-        base_app = base_wsgi_app or PylonsBaseWSGIApp
-        app = base_app(config, g, helpers=helpers)
-        if use_routes:
-            app = RoutesMiddleware(app, config['routes.map'])
-        
-        # Pull user-specified environ overrides, or just setup default
-        # session and caching objects
-        self.econf = econf = config['pylons.environ_config'].copy()
-        if 'session' not in econf:
-            from beaker.middleware import SessionMiddleware
-            econf['session'] = 'beaker.session'
-            app = SessionMiddleware(app, config)
-        
-        if 'cache' not in econf:
-            from beaker.middleware import CacheMiddleware
-            econf['cache'] = 'beaker.cache'
-            app = CacheMiddleware(app, config)
-
-        # Legacy: PylonsApp.globals
-        self.globals = g
-        self.app = app
-    
-    def __call__(self, environ, start_response):
-        environ['pylons.environ_config'] = self.econf
-        return self.app(environ, start_response)
+        elif 'beaker.cache' in environ:
+            testenv['cache'] = environ['beaker.cache']

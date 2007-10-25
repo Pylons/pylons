@@ -1,57 +1,68 @@
-from paste import httpexceptions
+"""Pylons middleware initialization"""
+from beaker.middleware import CacheMiddleware, SessionMiddleware
 from paste.cascade import Cascade
-from paste.urlparser import StaticURLParser
 from paste.registry import RegistryManager
-from paste.deploy.config import ConfigMiddleware, CONFIG
+from paste.urlparser import StaticURLParser
 from paste.deploy.converters import asbool
-
-from pylons.error import error_template
 from pylons import config
-from pylons.middleware import ErrorHandler, ErrorDocuments, StaticJavascripts, error_mapper
-import pylons.wsgiapp
+from pylons.error import error_template
+from pylons.middleware import error_mapper, ErrorDocuments, ErrorHandler, \
+    StaticJavascripts
+from pylons.wsgiapp import PylonsApp
+from routes.middleware import RoutesMiddleware
 
-import projectname.lib.helpers
-import projectname.lib.app_globals as app_globals
 from projectname.config.environment import load_environment
 
 def make_app(global_conf, full_stack=True, **app_conf):
-    """Create a WSGI application and return it
-    
-    global_conf is a dict representing the Paste configuration options, the
-    paste.deploy.converters should be used when parsing Paste config options
-    to ensure they're treated properly.
-    
+    """Create a Pylons WSGI application and return it
+
+    ``global_conf``
+        The inherited configuration for this application. Normally from
+        the [DEFAULT] section of the Paste ini file.
+
+    ``full_stack``
+        Whether or not this application provides a full WSGI stack (by
+        default, meaning it handles its own exceptions and errors).
+        Disable full_stack when this application is "managed" by
+        another WSGI middleware.
+
+    ``app_conf``
+        The application's local configuration. Normally specified in the
+        [app:<name>] section of the Paste ini file (where <name>
+        defaults to main).
     """
-    # Load our Pylons configuration defaults
+    # Configure the Pylons environment
     load_environment(global_conf, app_conf)
-    
+
     # Pull the other engine and put a new one up first
     config['buffet.template_engines'].pop()
     config.add_template_engine('cheetah', 'projectname.cheetah', {})    
-        
-    # Load our default Pylons WSGI app and make g available
-    app = pylons.wsgiapp.PylonsApp(helpers=projectname.lib.helpers,
-                                   g=app_globals.Globals)
-    app = ConfigMiddleware(app, config._current_obj())
+
+    # The Pylons WSGI app
+    app = PylonsApp()
     
-    # If errror handling and exception catching will be handled by middleware
-    # for multiple apps, you will want to set full_stack = False in your config
-    # file so that it can catch the problems.
+    # CUSTOM MIDDLEWARE HERE (filtered by error handling middlewares)
+    
+    # Routing/Session/Cache Middleware
+    app = RoutesMiddleware(app, config['routes.map'])
+    app = SessionMiddleware(app, config)
+    app = CacheMiddleware(app, config)
+    
     if asbool(full_stack):
-        # Change HTTPExceptions to HTTP responses
-        app = httpexceptions.make_middleware(app, global_conf)
-    
-        # Error Handling
-        app = ErrorHandler(app, global_conf, error_template=error_template, **config['pylons.errorware'])
-    
-        # Display error documents for 401, 403, 404 status codes (if debug is disabled also
-        # intercepts 500)
+        # Handle Python exceptions
+        app = ErrorHandler(app, global_conf, error_template=error_template,
+                           **config['pylons.errorware'])
+
+        # Display error documents for 401, 403, 404 status codes (and
+        # 500 when debug is disabled)
         app = ErrorDocuments(app, global_conf, mapper=error_mapper, **app_conf)
-    
+
     # Establish the Registry for this application
     app = RegistryManager(app)
-    
-    static_app = StaticURLParser(config['pylons.paths']['static_files'])
+
+    # Static files (If running in production, and Apache or another web 
+    # server is handling this static content, remove the following 3 lines)
     javascripts_app = StaticJavascripts()
+    static_app = StaticURLParser(config['pylons.paths']['static_files'])
     app = Cascade([static_app, javascripts_app, app])
     return app

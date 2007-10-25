@@ -1,6 +1,7 @@
 """The ${project} WSGI application"""
 import os
 
+from beaker.middleware import CacheMiddleware, SessionMiddleware
 from paste.cascade import Cascade
 from paste.registry import RegistryManager
 from paste.urlparser import StaticURLParser
@@ -10,6 +11,7 @@ from pylons.error import error_template
 from pylons.middleware import error_mapper, ErrorDocuments, ErrorHandler, \
     StaticJavascripts
 from pylons.wsgiapp import PylonsApp
+from routes.middleware import RoutesMiddleware
 
 import ${package}.helpers
 from ${package}.routing import make_map
@@ -63,6 +65,11 @@ def make_app(global_conf, full_stack=True, **app_conf):
 
     # The Pylons WSGI app
     app = PylonsApp()
+
+    # Routing/Session/Cache Middleware
+    app = RoutesMiddleware(app, config['routes.map'])
+    app = SessionMiddleware(app, config)
+    app = CacheMiddleware(app, config)
 
     # CUSTOM MIDDLEWARE HERE (filtered by error handling middlewares)
 

@@ -2,6 +2,10 @@ Pylons Changelog
 =================
 
 0.9.7 (**tip**)
+* WARNING: Refactored PylonsApp to remove legacy PylonsApp, moved
+  session/cache and routes middleware into the project template. This will
+  require projects to be updated to include those 3 middleware in the projects
+  middleware.py.
 * Fixed bug with beaker_cache defaulting to dbm rather than the beaker
   cache app-wide default.
 * The --with-pylons nose plugin no longer requires a project to have been
