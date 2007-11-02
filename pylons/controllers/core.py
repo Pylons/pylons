@@ -52,7 +52,13 @@ class WSGIController(object):
         If the function has been decorated, it is assumed that the decorator
         preserved the function signature.
         """
-        argspec = inspect.getargspec(func)
+        # Cache the argspec on the function
+        try:
+            argspec = func._argspec
+        except AttributeError:
+            argspec = inspect.getargspec(func)
+            func._argspec = argspec
+        
         kargs = self._get_method_args()
         log_debug = self._pylons_log_debug
         
