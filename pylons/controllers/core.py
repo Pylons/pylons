@@ -43,6 +43,9 @@ class WSGIController(object):
                      '_dispatch_call']
     _pylons_log_debug = False
     
+    def _perform_call(self, func, args):
+        return func(**args)
+    
     def _inspect_call(self, func):
         """Calls a function with arguments from ``_get_method_args``
         
@@ -76,7 +79,7 @@ class WSGIController(object):
             log.debug("Calling %r method with keyword args: **%r",
                       func.__name__, args)
         try:
-            result = func(**args)
+            result = self._perform_call(func, args)
         except HTTPException, httpe:
             if log_debug:
                 log.debug("%r method raised HTTPException: %s (code: %s)",

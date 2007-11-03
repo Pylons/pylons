@@ -9,10 +9,11 @@ import simplejson
 from decorator import decorator
 from formencode import htmlfill
 from paste.util.multidict import UnicodeMultiDict
+from expose import expose
 
 import pylons
 
-__all__ = ['jsonify', 'validate']
+__all__ = ['jsonify', 'validate', 'expose']
 
 log = logging.getLogger(__name__)
 
