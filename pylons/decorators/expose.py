@@ -177,32 +177,3 @@ class validate(object):
         deco = Decoration.get_decoration(func)
         deco.validation = self
         return func
-
-
-#TODO: Consider depricating this in favor of pylons validate decorator
-class old_tg_validate(object):
-    """Validate regesters validator on the decorated function.
-    
-    :Parameters:
-      validator
-        Valdators
-      error_handler
-        Assign error handler
-    """
-    def __init__(self, validator=None, error_handler=None, **kw):
-        if not hasattr(validator, 'to_python') and hasattr(validator, 'validator'):
-            validator = validator.validator
-        elif kw:
-            assert validator is None, \
-                   'validator must not be specified with additional keyword arguments'
-            validator = kw
-        if not isinstance(validator, formencode.Schema):
-            validator = _schema(validator)
-        self.validator = validator
-        self.error_handler = error_handler
-
-    def __call__(self, func):
-        deco = Decoration.get_decoration(func)
-        deco.validator = self.validator
-        deco.error_handler = self.error_handler
-        return func

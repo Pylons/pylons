@@ -9,11 +9,11 @@ import simplejson
 from decorator import decorator
 from formencode import htmlfill
 from paste.util.multidict import UnicodeMultiDict
-from expose import expose, validate
+from expose import expose, validate as new_validate
 
 import pylons
 
-__all__ = ['jsonify', 'validate', 'expose']
+__all__ = ['jsonify', 'validate', 'expose', 'new_validate']
 
 log = logging.getLogger(__name__)
 
@@ -37,7 +37,7 @@ def jsonify(func, *args, **kwargs):
 jsonify = decorator(jsonify)
 
 
-def old_validate(schema=None, validators=None, form=None, variable_decode=False,
+def validate(schema=None, validators=None, form=None, variable_decode=False,
              dict_char='.', list_char='-', post_only=True, state=None,
              on_get=False, **htmlfill_kwargs):
     """Validate input either for a FormEncode schema, or individual validators

@@ -88,6 +88,8 @@ class DecoratedController(WSGIController):
         if error_handler is None:
             error_handler = controller
         
+        print pylons.c.form_errors, pylons.c.form_values, error_handler
+        
         output = error_handler(controller.im_self)
         
         return error_handler, output
