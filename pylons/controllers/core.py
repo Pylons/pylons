@@ -14,6 +14,7 @@ __all__ = ['Controller', 'WSGIController']
 
 log = logging.getLogger(__name__)
 
+
 class WSGIController(object):
     """WSGI Controller that follows WSGI spec for calling and return values
     
@@ -57,6 +58,7 @@ class WSGIController(object):
         """
         argspec = inspect.getargspec(func)
         kargs = self._get_method_args()
+                
         log_debug = self._pylons_log_debug
         
         # Hide the traceback for everything above this controller
@@ -64,6 +66,7 @@ class WSGIController(object):
         
         c = pylons.c._current_obj()
         args = None
+        
         if argspec[2]:
             for k, val in kargs.iteritems():
                 setattr(c, k, val)
