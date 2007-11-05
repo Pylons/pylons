@@ -2,6 +2,7 @@ Pylons Changelog
 =================
 
 0.9.7 (**tip**)
+* Added optional use of WebOb instead of paste.wsgiwrapper objects.
 * WARNING: Refactored PylonsApp to remove legacy PylonsApp, moved
   session/cache and routes middleware into the project template. This will
   require projects to be updated to include those 3 middleware in the projects
