@@ -9,10 +9,11 @@ import simplejson
 from decorator import decorator
 from formencode import htmlfill
 from paste.util.multidict import UnicodeMultiDict
+from expose import expose, validate as new_validate
 
 import pylons
 
-__all__ = ['jsonify', 'validate']
+__all__ = ['jsonify', 'validate', 'expose', 'new_validate']
 
 log = logging.getLogger(__name__)
 
@@ -34,6 +35,7 @@ def jsonify(func, *args, **kwargs):
     log.debug("Returning JSON wrapped action output")
     return simplejson.dumps(data)
 jsonify = decorator(jsonify)
+
 
 def validate(schema=None, validators=None, form=None, variable_decode=False,
              dict_char='.', list_char='-', post_only=True, state=None,
@@ -191,6 +193,7 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
         return func(self, *args, **kwargs)
     return decorator(wrapper)
 
+
 def determine_response_charset(response):
     """Determine the charset of the specified Response object, returning the
     default system encoding when none is set"""
@@ -199,6 +202,7 @@ def determine_response_charset(response):
         charset = sys.getdefaultencoding()
     log.debug("Determined result charset to be: %s", charset)
     return charset
+
 
 def encode_formencode_errors(errors, encoding, encoding_errors='strict'):
     """Encode any unicode values contained in a FormEncode errors dict to raw
