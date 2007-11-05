@@ -152,8 +152,8 @@ class WSGIController(object):
                 log.debug("Merging pylons.response headers into "
                           "start_response call, status: %s", status)
             if not isinstance(response, WSGIResponse):
-                pass
-                #headers.extend(response.headerlist)
+                response.headerlist.extend(headers)
+                headers = response.headerlist
             else:
                 response.headers.update(HeaderDict.fromlist(headers))
                 headers = response.headers.headeritems()
