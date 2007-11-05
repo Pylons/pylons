@@ -35,7 +35,7 @@ def make_app(global_conf, full_stack=True, **app_conf):
     load_environment(global_conf, app_conf)
 
     # The Pylons WSGI app
-    app = PylonsApp()
+    app = PylonsApp(use_webob=False)
     
     # CUSTOM MIDDLEWARE HERE (filtered by error handling middlewares)
     
