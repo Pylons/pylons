@@ -81,6 +81,17 @@ def class_name_from_module_name(module_name):
     return ''.join([w.title() for w in words])
 
 
+class PylonsContext(object):
+    """Pylons context object
+    
+    All the Pylons Stacked Object Proxies are also stored here, for use
+    in generators and async based operation where the globals can't be
+    used.
+    
+    """
+    pass
+
+
 class ContextObj(object):
     """The 'c' object, with strict attribute access (raises an Exception when
     the attribute does not exist)"""

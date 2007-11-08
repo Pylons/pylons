@@ -67,7 +67,7 @@ class WSGIController(object):
         # Hide the traceback for everything above this controller
         __traceback_hide__ = 'before_and_this'
         
-        c = self._py_c
+        c = self._py_object.c
         args = None
         
         if argspec[2]:
@@ -102,16 +102,17 @@ class WSGIController(object):
         this method to customize the arguments your controller actions are
         called with.
         """
-        req = self._py_request
+        req = self._py_object.request
         kargs = req.environ['pylons.routes_dict'].copy()
         kargs['environ'] = req.environ
         kargs['start_response'] = self.start_response
+        kargs['pylons'] = self._py_object
         return kargs
     
     def _dispatch_call(self):
         """Handles dispatching the request to the function using Routes"""
         log_debug = self._pylons_log_debug
-        req = self._py_request
+        req = self._py_object.request
         action = req.environ['pylons.routes_dict'].get('action')
         action_method = action.replace('-', '_')
         if log_debug:
@@ -140,9 +141,7 @@ class WSGIController(object):
         log_debug = self._pylons_log_debug
         
         # Keep a local reference to the req/response objects
-        self._py_request = environ['pylons.request']
-        self._py_response = environ['pylons.response']
-        self._py_c = environ['pylons.c']
+        self._py_object = environ['pylons.pylons']
 
         # Keep private methods private
         if environ['pylons.routes_dict'].get('action', '')[:1] in ('_', '-'):
@@ -153,7 +152,7 @@ class WSGIController(object):
 
         start_response_called = []
         def repl_start_response(status, headers, exc_info=None):
-            response = self._py_response
+            response = self._py_object.response
             start_response_called.append(None)
             
             # Copy the headers from the global response
@@ -180,7 +179,7 @@ class WSGIController(object):
         
         response = self._dispatch_call()
         if not start_response_called:
-            py_response = self._py_response
+            py_response = self._py_object.response
             # If its not a WSGI response, and we have content, it needs to
             # be wrapped in the response object
             if hasattr(response, 'wsgi_response'):

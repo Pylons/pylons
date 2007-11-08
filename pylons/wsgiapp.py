@@ -22,7 +22,7 @@ import pylons.templating
 from pylons.controllers import Controller, WSGIController
 from pylons.i18n import set_lang
 from pylons.util import ContextObj, AttribSafeContextObj, \
-    class_name_from_module_name
+    class_name_from_module_name, PylonsContext
 
 __all__ = ['PylonsApp', 'PylonsBaseWSGIApp']
 
@@ -113,9 +113,8 @@ class PylonsApp(object):
                             "to 'return' it?) in: %r" % controller.__name__)
         finally:
             # Help Python collect ram a bit faster by removing the reference 
-            # cycle that the request object causes
-            del environ['pylons.request']
-            del environ['pylons.response']
+            # cycle that the pylons object causes
+            del environ['pylons.pylons']
     
     def setup_app_env(self, environ, start_response):
         """Setup and register all the Pylons objects with the registry"""
@@ -148,11 +147,17 @@ class PylonsApp(object):
                           pylons.legacy.load_h(self.package_name))
         
         # Store a copy of the request/response in environ for faster access
-        environ['pylons.request'] = req
-        environ['pylons.response'] = response
+        pylons_obj = PylonsContext()
+        pylons_obj.request = req
+        pylons_obj.response = response
+        pylons_obj.g = self.globals
+        pylons_obj.h = self.helpers
+        pylons_obj.buffet = self.buffet
+        environ['pylons.pylons'] = pylons_obj
         
         # Setup the translator global object
-        registry.register(pylons.translator, gettext.NullTranslations())
+        translator = gettext.NullTranslations()
+        registry.register(pylons.translator, translator)
         lang = self.config.get('lang')
         if lang:
             set_lang(lang)
@@ -164,16 +169,20 @@ class PylonsApp(object):
             c = AttribSafeContextObj()
             registry.register(pylons.c, c)
         
-        environ['pylons.c'] = c
+        pylons_obj.c = c
         
         econf = self.config['pylons.environ_config']
         if econf.get('session'):
+            pylons_obj.session = environ[econf['session']]
             registry.register(pylons.session, environ[econf['session']])
         elif 'beaker.session' in environ:
+            pylons_obj.session = environ['beaker.session']
             registry.register(pylons.session, environ['beaker.session'])
         if econf.get('cache'):
+            pylons_obj.cache = environ[econf['cache']]
             registry.register(pylons.cache, environ[econf['cache']])
         elif 'beaker.cache' in environ:
+            pylons_obj.cache = environ['beaker.cache']
             registry.register(pylons.cache, environ['beaker.cache'])
     
     def resolve(self, environ, start_response):

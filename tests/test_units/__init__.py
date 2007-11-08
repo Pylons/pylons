@@ -4,7 +4,7 @@ from xmlrpclib import loads, dumps
 
 import pylons
 from paste.wsgiwrappers import WSGIRequest, WSGIResponse
-from pylons.util import ContextObj
+from pylons.util import ContextObj, PylonsContext
 from routes import request_config
 
 data_dir = os.path.dirname(os.path.abspath(__file__))
@@ -17,10 +17,12 @@ except:
 class TestWSGIController(TestCase):
     def setUp(self):
         c = ContextObj()
+        py_obj = PylonsContext()
+        py_obj.c = c
+        py_obj.request = py_obj.response = None
         self.environ = {'pylons.routes_dict':dict(action='index'),
                         'paste.config':dict(global_conf=dict(debug=True)),
-                        'pylons.c':c, 'pylons.request':None,
-                        'pylons.response':None}
+                        'pylons.pylons':py_obj}
         pylons.c._push_object(c)
 
     def tearDown(self):
@@ -72,23 +74,26 @@ class SetupCacheGlobal(object):
 
     def __call__(self, environ, start_response):
         registry = environ['paste.registry']
+        py_obj = PylonsContext()
         environ_config = environ.setdefault('pylons.environ_config', {})
         if self.setup_cache:
+            py_obj.cache = environ['beaker.cache']
             registry.register(pylons.cache, environ['beaker.cache'])
             environ_config['cache'] = 'beaker.cache'
         if self.setup_session:
+            py_obj.session = environ['beaker.session']
             registry.register(pylons.session, environ['beaker.session'])
             environ_config['session'] = 'beaker.session'
         if self.setup_g:
+            py_obj.g = self.g
             registry.register(pylons.g, self.g)
 
         # Update the environ
         environ.update(self.environ)
-        req = WSGIRequest(environ)
-        resp = WSGIResponse()
-        environ['pylons.request'] = req
-        environ['pylons.response'] = resp
-        environ['pylons.c'] = ContextObj()
+        py_obj.request = req = WSGIRequest(environ)
+        py_obj.response = resp = WSGIResponse()
+        py_obj.c = ContextObj()
+        environ['pylons.pylons'] = py_obj
         registry.register(pylons.request, req)
         registry.register(pylons.response, resp)
         return self.app(environ, start_response)
