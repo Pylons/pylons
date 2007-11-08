@@ -99,17 +99,23 @@ class PylonsApp(object):
                                                             'wsgi_response'):
             environ['paste.testing_variables']['response'] = response
         
-        if hasattr(response, 'wsgi_response'):
-            # Transform Response objects from legacy Controller
-            if log_debug:
-                log.debug("Transforming legacy Response object into WSGI "
-                          "response")
-            return response(environ, start_response)
-        elif response:
-            return response
+        try:
+            if hasattr(response, 'wsgi_response'):
+                # Transform Response objects from legacy Controller
+                if log_debug:
+                    log.debug("Transforming legacy Response object into WSGI "
+                              "response")
+                return response(environ, start_response)
+            elif response:
+                return response
         
-        raise Exception("No content returned by controller (Did you remember "
-                        "to 'return' it?) in: %r" % controller.__name__)
+            raise Exception("No content returned by controller (Did you remember "
+                            "to 'return' it?) in: %r" % controller.__name__)
+        finally:
+            # Help Python collect ram a bit faster by removing the reference 
+            # cycle that the request object causes
+            del environ['pylons.request']
+            del environ['pylons.response']
     
     def setup_app_env(self, environ, start_response):
         """Setup and register all the Pylons objects with the registry"""
