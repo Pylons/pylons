@@ -16,9 +16,12 @@ except:
 
 class TestWSGIController(TestCase):
     def setUp(self):
+        c = ContextObj()
         self.environ = {'pylons.routes_dict':dict(action='index'),
-                        'paste.config':dict(global_conf=dict(debug=True))}
-        pylons.c._push_object(ContextObj())
+                        'paste.config':dict(global_conf=dict(debug=True)),
+                        'pylons.c':c, 'pylons.request':None,
+                        'pylons.response':None}
+        pylons.c._push_object(c)
 
     def tearDown(self):
         pylons.c._pop_object()
@@ -81,6 +84,11 @@ class SetupCacheGlobal(object):
 
         # Update the environ
         environ.update(self.environ)
-        registry.register(pylons.request, WSGIRequest(environ))
-        registry.register(pylons.response, WSGIResponse())
+        req = WSGIRequest(environ)
+        resp = WSGIResponse()
+        environ['pylons.request'] = req
+        environ['pylons.response'] = resp
+        environ['pylons.c'] = ContextObj()
+        registry.register(pylons.request, req)
+        registry.register(pylons.response, resp)
         return self.app(environ, start_response)

@@ -120,23 +120,30 @@ class PylonsApp(object):
         # Setup the basic pylons global objects
         
         if self.use_webob:
-            registry.register(pylons.request, Request(environ))
+            req = Request(environ)
+            registry.register(pylons.request, req)
             response = Response(
                 content_type=self.response_options['content_type'],
                 charset=self.response_options['charset'])
             response.headers.update(self.response_options['headers'])
             registry.register(pylons.response, response)
         else:
+            req = WSGIRequest(environ)
+            response = WSGIResponse()
             registry.register(WSGIRequest.defaults, self.request_options)
             registry.register(WSGIResponse.defaults, self.response_options)
-            registry.register(pylons.request, WSGIRequest(environ))
-            registry.register(pylons.response, WSGIResponse())
+            registry.register(pylons.request, req)
+            registry.register(pylons.response, response)
         
         registry.register(pylons.buffet, self.buffet)
         registry.register(pylons.g, self.globals)
         registry.register(pylons.config, self.config)
         registry.register(pylons.h, self.helpers or \
                           pylons.legacy.load_h(self.package_name))
+        
+        # Store a copy of the request/response in environ for faster access
+        environ['pylons.request'] = req
+        environ['pylons.response'] = response
         
         # Setup the translator global object
         registry.register(pylons.translator, gettext.NullTranslations())
@@ -145,9 +152,13 @@ class PylonsApp(object):
             set_lang(lang)
         
         if self.config['pylons.strict_c']:
-            registry.register(pylons.c, ContextObj())
+            c = ContextObj()
+            registry.register(pylons.c, c)
         else:
-            registry.register(pylons.c, AttribSafeContextObj())
+            c = AttribSafeContextObj()
+            registry.register(pylons.c, c)
+        
+        environ['pylons.c'] = c
         
         econf = self.config['pylons.environ_config']
         if econf.get('session'):

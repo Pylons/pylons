@@ -67,7 +67,7 @@ class WSGIController(object):
         # Hide the traceback for everything above this controller
         __traceback_hide__ = 'before_and_this'
         
-        c = pylons.c._current_obj()
+        c = self._py_c
         args = None
         
         if argspec[2]:
@@ -102,7 +102,7 @@ class WSGIController(object):
         this method to customize the arguments your controller actions are
         called with.
         """
-        req = pylons.request._current_obj()
+        req = self._py_request
         kargs = req.environ['pylons.routes_dict'].copy()
         kargs['environ'] = req.environ
         kargs['start_response'] = self.start_response
@@ -111,7 +111,7 @@ class WSGIController(object):
     def _dispatch_call(self):
         """Handles dispatching the request to the function using Routes"""
         log_debug = self._pylons_log_debug
-        req = pylons.request._current_obj()
+        req = self._py_request
         action = req.environ['pylons.routes_dict'].get('action')
         action_method = action.replace('-', '_')
         if log_debug:
@@ -138,6 +138,11 @@ class WSGIController(object):
     
     def __call__(self, environ, start_response):
         log_debug = self._pylons_log_debug
+        
+        # Keep a local reference to the req/response objects
+        self._py_request = environ['pylons.request']
+        self._py_response = environ['pylons.response']
+        self._py_c = environ['pylons.c']
 
         # Keep private methods private
         if environ['pylons.routes_dict'].get('action', '')[:1] in ('_', '-'):
@@ -148,7 +153,7 @@ class WSGIController(object):
 
         start_response_called = []
         def repl_start_response(status, headers, exc_info=None):
-            response = pylons.response._current_obj()
+            response = self._py_response
             start_response_called.append(None)
             
             # Copy the headers from the global response
@@ -175,7 +180,7 @@ class WSGIController(object):
         
         response = self._dispatch_call()
         if not start_response_called:
-            py_response = pylons.response._current_obj()
+            py_response = self._py_response
             # If its not a WSGI response, and we have content, it needs to
             # be wrapped in the response object
             if hasattr(response, 'wsgi_response'):
