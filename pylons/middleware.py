@@ -7,8 +7,11 @@ from paste.deploy.converters import asbool
 from paste.errordocument import StatusBasedForward
 from paste.recursive import RecursiveMiddleware
 from paste.urlparser import StaticURLParser
-
+from weberror.evalexception import EvalException
+from weberror.exceptions.errormiddleware import ErrorMiddleware
 from webhelpers.rails.asset_tag import javascript_path
+
+from pylons.error import template_error_formatters
 
 __pudge_all__ = ['StaticJavascripts', 'ErrorHandler', 'ErrorDocuments']
 
@@ -46,10 +49,10 @@ def ErrorHandler(app, global_conf, **errorware):
     the ``errorware`` dict will be passed into it.
     """
     if asbool(global_conf.get('debug')):
-        from pylons.error import PylonsEvalException
-        app = PylonsEvalException(app, global_conf, **errorware)
+        app = EvalException(app, global_conf, 
+                            templating_formatters=template_error_formatters,
+                            **errorware)
     else:
-        from paste.exceptions.errormiddleware import ErrorMiddleware
         if 'error_template' in errorware:
             del errorware['error_template']
         app = ErrorMiddleware(app, global_conf, **errorware)
