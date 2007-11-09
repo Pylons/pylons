@@ -2,6 +2,7 @@ Pylons Changelog
 =================
 
 0.9.7 (**tip**)
+* Refactored error exceptions to use WebError.
 * WSGIController now uses the environ references to response, request, and
   the c object for higher performance.
 * Added optional use of WebOb instead of paste.wsgiwrapper objects.
