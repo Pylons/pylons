@@ -162,8 +162,9 @@ class WSGIController(object):
                 log.debug("Merging pylons.response headers into "
                           "start_response call, status: %s", status)
             if not isinstance(response, WSGIResponse):
-                response.headerlist.extend(headers)
-                headers = response.headerlist
+                for header in response.headerlist:
+                    if header[0] == 'Set-Cookie' or header[0].startswith('X-'):
+                        headers.append(header)
             else:
                 response.headers.update(HeaderDict.fromlist(headers))
                 headers = response.headers.headeritems()
