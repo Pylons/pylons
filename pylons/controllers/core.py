@@ -47,6 +47,8 @@ class WSGIController(object):
     _use_webob = False
     
     def _perform_call(self, func, args):
+        # Hide the traceback for everything above this method
+        __traceback_hide__ = 'before_and_this'
         return func(**args)
     
     def _inspect_call(self, func):
@@ -59,14 +61,9 @@ class WSGIController(object):
         preserved the function signature.
         """
         argspec = inspect.getargspec(func)
-        
         kargs = self._get_method_args()
                 
         log_debug = self._pylons_log_debug
-        
-        # Hide the traceback for everything above this controller
-        __traceback_hide__ = 'before_and_this'
-        
         c = self._py_object.c
         args = None
         
