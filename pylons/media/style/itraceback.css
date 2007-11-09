@@ -1,0 +1,14 @@
+div.credits {
+    padding: 5px 0 0 0;
+}
+
+#footer {
+    border-top: 1px solid #666666;
+    padding: 0;
+    margin: 20px 0 0 0;
+}
+
+#pylons_logo {
+    float: right;
+    margin: 5px 0 0 0;
+}

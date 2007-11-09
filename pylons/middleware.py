@@ -11,6 +11,7 @@ from weberror.evalexception import EvalException
 from weberror.exceptions.errormiddleware import ErrorMiddleware
 from webhelpers.rails.asset_tag import javascript_path
 
+import pylons
 from pylons.error import template_error_formatters
 
 __pudge_all__ = ['StaticJavascripts', 'ErrorHandler', 'ErrorDocuments']
@@ -19,6 +20,13 @@ media_path = os.path.join(os.path.dirname(__file__), 'media')
 
 log = logging.getLogger(__name__)
 
+head_html = """\
+<link rel="stylesheet" href="{{prefix}}/media/pylons/style/itraceback.css" type="text/css" media="screen" />
+"""
+footer_html ="""\
+<div id="pylons_logo"><img src="{{prefix}}/media/pylons/img/pylons-tower120.png" /></div>
+<div class="credits">Running Pylons %s.</div>
+""" % pylons.__version__
 
 class StaticJavascripts(object):
     """Middleware for intercepting requests for WebHelpers' included 
@@ -49,9 +57,11 @@ def ErrorHandler(app, global_conf, **errorware):
     the ``errorware`` dict will be passed into it.
     """
     if asbool(global_conf.get('debug')):
+        py_media = dict(pylons=media_path)
         app = EvalException(app, global_conf, 
                             templating_formatters=template_error_formatters,
-                            **errorware)
+                            media_paths=py_media, head_html=head_html, 
+                            footer_html=footer_html, **errorware)
     else:
         if 'error_template' in errorware:
             del errorware['error_template']
