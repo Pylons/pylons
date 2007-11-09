@@ -26,6 +26,8 @@ def myghty_html_data(exc_value):
 
 template_error_formatters = [myghty_html_data]
 
+error_template = None
+
 try:
     import mako.exceptions
 except ImportError:

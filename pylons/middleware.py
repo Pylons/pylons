@@ -61,7 +61,7 @@ def ErrorHandler(app, global_conf, **errorware):
         app = EvalException(app, global_conf, 
                             templating_formatters=template_error_formatters,
                             media_paths=py_media, head_html=head_html, 
-                            footer_html=footer_html, **errorware)
+                            footer_html=footer_html)
     else:
         if 'error_template' in errorware:
             del errorware['error_template']
