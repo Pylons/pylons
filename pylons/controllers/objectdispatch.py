@@ -5,14 +5,14 @@ import pylons
 from pylons.controllers.decorated import DecoratedController
 
 class ObjectDispatchController(DecoratedController):
-    
+
     def _initialize_validation_context(self):
         pylons.c.form_errors = {}
         pylons.c.form_values = {}
-    
+
     def _get_routing_info(self, url=None):
-        """Returns a tuple (controller, remainder, params) 
-        
+        """Returns a tuple (controller, remainder, params)
+
         :Parameters:
           url
             url as string
@@ -31,14 +31,14 @@ class ObjectDispatchController(DecoratedController):
             pylons.c.controller_url = url
         if remainder and remainder[-1] == '':
             remainder.pop()
-        return controller, remainder, pylons.request.params    
-    
+        return controller, remainder, pylons.request.params
+
     def _perform_call(self, func, args):
         self._initialize_validation_context()
         controller, remainder, params = self._get_routing_info(args['url'])
         return DecoratedController._perform_call(self, controller, params,
                                                  remainder=remainder)
-    
+
     def route(self, url='/', start_response=None, **kwargs):
         pass
 
@@ -85,8 +85,8 @@ def find_object(obj, remainder, notfound_handlers):
             raise httpexceptions.HTTPNotFound()
         obj = getattr(obj, remainder[0], None)
         remainder = remainder[1:]
-    
-            
+
+
 def iscontroller(obj):
     if not hasattr(obj, '__call__'):
         return False

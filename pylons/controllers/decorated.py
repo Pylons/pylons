@@ -18,14 +18,14 @@ def _configured_engines():
 
 
 class DecoratedController(WSGIController):
-    
+
     def _perform_validate(self, controller, params):
         params.update(dict(pylons.request.params))
-        
+
         validation = getattr(controller.decoration, 'validation', None)
         if validation is None:
             return params
-        
+
         if isinstance(validation.validators, dict):
             errors = {}
             for field, validator in validation.validators.iteritems():
@@ -33,16 +33,16 @@ class DecoratedController(WSGIController):
                     params[field] = validator.to_python(params.get(field))
                 except formencode.api.Invalid, inv:
                     errors[field] = inv
-            
+
             if errors:
                 raise formencode.api.Invalid(
                     formencode.schema.format_compound_error(errors),
                     params, None, error_dict=errors)
         elif isinstance(validation.validators, formencode.Schema):
             params = validation.validators.to_python(params)
-            
-        return params        
-    
+
+        return params
+
     def _render_response(self, controller, response):
         """Render response takes the dictionary returned by the
         controller calls the apropriate template engine. It uses
@@ -73,23 +73,23 @@ class DecoratedController(WSGIController):
         result = pylons.buffet.render(engine_name=engine_name,
                                       template_name=template_name,
                                       include_pylons_variables=False,
-                                      namespace=namespace)                          
+                                      namespace=namespace)
         pylons.response.headers['Content-Type'] = content_type
         return result
 
     def _handle_validation_errors(self, controller, exception):
         pylons.c.form_errors = exception.error_dict
         pylons.c.form_values = exception.value
-        
+
         error_handler = controller.decoration.validation.error_handler
         if error_handler is None:
             error_handler = controller
-        
+
         output = error_handler(controller.im_self)
-        
+
         return error_handler, output
-        
-        # TG2 OLD VALIDATION CODE 
+
+        # TG2 OLD VALIDATION CODE
         #pylons.c.form_errors = exception.error_dict
         #pylons.c.form_values = exception.value
         #error_handler = controller.decoration.error_handler
@@ -107,7 +107,7 @@ class DecoratedController(WSGIController):
         #else:
         #    output = error_handler(controller.im_self)
         #return error_handler, output
-    
+
     def _perform_call(self, func, args, remainder=None):
         if remainder is None:
             remainder = []
@@ -120,7 +120,7 @@ class DecoratedController(WSGIController):
                                             params)
             params = self._perform_validate(controller, params)
             pylons.c.form_values = params
-            
+
             # call controller method
             controller.decoration.run_hooks('before_call', remainder, params)
             output = controller(*remainder, **dict(params))

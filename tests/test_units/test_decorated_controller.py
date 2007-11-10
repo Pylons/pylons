@@ -11,7 +11,7 @@ from __init__ import TestWSGIController, SetupCacheGlobal, ControllerWrap
 
 pylons.buffet = pylons.templating.Buffet(default_engine='genshi')
 
-class MyClass(object): 
+class MyClass(object):
     pass
 
 
@@ -21,7 +21,7 @@ def jsonify_myclass(obj):
 
 
 class BasicDecoratedController(DecoratedController):
-    
+
     def json(self):
         return dict(a='hello world', b=True)
     json = expose('json')(json)
@@ -30,10 +30,10 @@ class BasicDecoratedController(DecoratedController):
         return dict(a="visible", b="invisible")
     excluded_b = expose('json', exclude_names=["b"])(excluded_b)
 
-    def custom(self): 
+    def custom(self):
         return dict(custom=MyClass())
     custom = expose('json')(custom)
-    
+
     def xml_or_json(self):
         return dict(name="John Carter", title='officer', status='missing')
     xml_or_json = expose('json')(
@@ -53,12 +53,12 @@ class TestDecoratedController(TestWSGIController):
     def setUp(self):
         TestWSGIController.setUp(self)
         self.baseenviron.update(self.environ)
-        
+
     def test_simple_jsonification(self):
         self.baseenviron['pylons.routes_dict']['action'] = 'json'
         resp = self.app.get('/json')
         assert '{"a": "hello world", "b": true}' in resp.body
-                
+
     def test_custom_jsonification(self):
         self.baseenviron['pylons.routes_dict']['action'] = 'custom'
         resp = self.app.get('/custom')
