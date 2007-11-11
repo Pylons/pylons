@@ -103,6 +103,7 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
             "Pygments>=0.7", "pudge>=0.1.3",
             "buildutils>=0.1.2", "Cheetah>=1.0",
             "TurboCheetah>=0.9.5", "kid>=0.9", "TurboKid>=0.9.1",
+            "TurboJson>=1.1.1",
         ],
     },
     entry_points="""
