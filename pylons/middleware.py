@@ -2,6 +2,7 @@
 import logging
 import os.path
 import urllib
+import warnings
 
 from paste.deploy.converters import asbool
 from paste.errordocument import StatusBasedForward
@@ -12,6 +13,7 @@ from weberror.exceptions.errormiddleware import ErrorMiddleware
 from webhelpers.rails.asset_tag import javascript_path
 
 import pylons
+import pylons.legacy
 from pylons.error import template_error_formatters
 
 __pudge_all__ = ['StaticJavascripts', 'ErrorHandler', 'ErrorDocuments']
@@ -21,12 +23,13 @@ media_path = os.path.join(os.path.dirname(__file__), 'media')
 log = logging.getLogger(__name__)
 
 head_html = """\
-<link rel="stylesheet" href="{{prefix}}/media/pylons/style/itraceback.css" type="text/css" media="screen" />
-"""
+<link rel="stylesheet" href="{{prefix}}/media/pylons/style/itraceback.css" \
+type="text/css" media="screen" />"""
+
 footer_html ="""\
-<div id="pylons_logo"><img src="{{prefix}}/media/pylons/img/pylons-tower120.png" /></div>
-<div class="credits">Running Pylons %s.</div>
-""" % pylons.__version__
+<div id="pylons_logo">\
+<img src="{{prefix}}/media/pylons/img/pylons-tower120.png" /></div>
+<div class="credits">Pylons version %s</div>""" % pylons.__version__
 
 class StaticJavascripts(object):
     """Middleware for intercepting requests for WebHelpers' included 
@@ -50,12 +53,17 @@ def ErrorHandler(app, global_conf, **errorware):
     """ErrorHandler Toggle
     
     If debug is enabled, this function will return the app wrapped in
-    our customized Paste EvalException middleware we have called the
-    ``PylonsEvalException``.
+    the WebError ``EvalException`` middleware.
     
-    Otherwise, the app will be wrapped in the Paste ErrorMiddleware, and
-    the ``errorware`` dict will be passed into it.
+    Otherwise, the app will be wrapped in the WebError
+    ``ErrorMiddleware``, and the ``errorware`` dict will be passed into
+    it.
     """
+    if 'error_template' in errorware:
+        del errorware['error_template']
+        warnings.warn(pylons.legacy.error_template_warning,
+                      DeprecationWarning, 2)
+
     if asbool(global_conf.get('debug')):
         py_media = dict(pylons=media_path)
         app = EvalException(app, global_conf, 
@@ -63,8 +71,6 @@ def ErrorHandler(app, global_conf, **errorware):
                             media_paths=py_media, head_html=head_html, 
                             footer_html=footer_html)
     else:
-        if 'error_template' in errorware:
-            del errorware['error_template']
         app = ErrorMiddleware(app, global_conf, **errorware)
     return app
 

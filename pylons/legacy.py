@@ -52,6 +52,12 @@ Add the following lines to the end of the load_environment function:
     config['pylons.response_options']['charset'] = '%(charset)s'
 """)
 
+error_template_warning = (
+"""The 'error_template' errorware argument for customizing EvalException is \
+deprecated, please remove it. To customize EvalException's HTML, setup your \
+own EvalException and ErrorMiddlewares instead of using ErrorHandler."""
+)
+
 g_confargs = (
 "Handling conf arguments in your app_globals __init__ function is no longer "
 "required. Please update your config/app_globals.py with:"

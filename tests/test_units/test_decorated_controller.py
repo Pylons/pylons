@@ -10,33 +10,35 @@ from turbojson.jsonify import jsonify
 from __init__ import TestWSGIController, SetupCacheGlobal, ControllerWrap
 
 pylons.buffet = pylons.templating.Buffet(default_engine='genshi')
-class MyClass(object): 
+
+class MyClass(object):
     pass
+
 
 @jsonify.when('isinstance(obj, MyClass)')
 def jsonify_myclass(obj):
     return {'result':'wo-hoo!'}
 
 
-
 class BasicDecoratedController(DecoratedController):
-    
-    @expose('json')
+
     def json(self):
         return dict(a='hello world', b=True)
+    json = expose('json')(json)
 
-    @expose('json', exclude_names=["b"])
     def excluded_b(self):
         return dict(a="visible", b="invisible")
-    
-    @expose('json')
-    def custom(self): 
+    excluded_b = expose('json', exclude_names=["b"])(excluded_b)
+
+    def custom(self):
         return dict(custom=MyClass())
-    
-    @expose('json')
-    @expose('xml', content_type='application/xml')
+    custom = expose('json')(custom)
+
     def xml_or_json(self):
         return dict(name="John Carter", title='officer', status='missing')
+    xml_or_json = expose('json')(
+        expose('xml', content_type='application/xml')(xml_or_json))
+
 
 class TestDecoratedController(TestWSGIController):
     def __init__(self, *args, **kargs):
@@ -51,15 +53,13 @@ class TestDecoratedController(TestWSGIController):
     def setUp(self):
         TestWSGIController.setUp(self)
         self.baseenviron.update(self.environ)
-        
+
     def test_simple_jsonification(self):
-        self.baseenviron['pylons.routes_dict']['action']= 'json'
+        self.baseenviron['pylons.routes_dict']['action'] = 'json'
         resp = self.app.get('/json')
-        print resp.body
         assert '{"a": "hello world", "b": true}' in resp.body
-                
+
     def test_custom_jsonification(self):
-        self.baseenviron['pylons.routes_dict']['action']= 'custom'
+        self.baseenviron['pylons.routes_dict']['action'] = 'custom'
         resp = self.app.get('/custom')
-        print resp.body
         assert "wo-hoo!" in resp.body

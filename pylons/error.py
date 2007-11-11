@@ -1,41 +1,34 @@
-"""Custom error middleware subclasses, used for error theme
+"""Custom EvalException support
 
-These error middleware sub-classes are used mainly to provide skinning
-for the Paste middleware. In the future this entire module will likely
-be little more than a template, as Paste will get the skinning functionality.
-
-The only additional thing besides skinning supplied, is the Template traceback
-information.
+Provides template engine HTML error formatters for the Template tab of
+EvalException.
 """
-import logging
+try:
+    import mako.exceptions
+except ImportError:
+    mako = None
 
 __all__ = []
 
-log = logging.getLogger(__name__)
-
-class InvalidTemplate(Exception):
-    pass
-
+# Legacy support for < 0.9.7 projects
+error_template = None
 
 def myghty_html_data(exc_value):
+    """Format a Myghty exception as HTML"""
     if hasattr(exc_value, 'htmlformat'):
         return exc_value.htmlformat()[333:-14]
     if hasattr(exc_value, 'mtrace'):
         return exc_value.mtrace.htmlformat()[333:-14]
 
-
 template_error_formatters = [myghty_html_data]
 
-error_template = None
 
-try:
-    import mako.exceptions
-except ImportError:
-    pass
-else:
+if mako:
     def mako_html_data(exc_value):
-        if isinstance(exc_value, (mako.exceptions.CompileException, mako.exceptions.SyntaxException)):
+        """Format a Mako exception as HTML"""
+        if isinstance(exc_value, (mako.exceptions.CompileException,
+                                  mako.exceptions.SyntaxException)):
             return mako.exceptions.html_error_template().render(full=False,
                                                                 css=False)
     
-    template_error_formatters.insert(0,mako_html_data)
+    template_error_formatters.insert(0, mako_html_data)
