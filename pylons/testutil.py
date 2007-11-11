@@ -1,4 +1,8 @@
 """Utility classes for creating workable pylons controllers for unit testing."""
+from paste.wsgiwrappers import WSGIRequest, WSGIResponse 
+
+import pylons
+from pylons.util import ContextObj, PylonsContext
 
 class ControllerWrap(object):
     def __init__(self, controller):
