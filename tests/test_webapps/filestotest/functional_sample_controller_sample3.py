@@ -9,11 +9,7 @@ class TestSample2Controller(TestController):
         response = self.app.get(url_for(controller='/sample', action='session_increment'))
         assert response.session['counter'] == 1
         assert 'session incrementer' in response
-    
-    def test_kid_default(self):
-        response = self.app.get(url_for(controller='/sample', action='test_extra_engine'))
-        assert 'Hello from Kid' in response
-    
+        
     def test_default(self):
         response = self.app.get(url_for(controller='/sample', action='test_template_caching'))
         assert 'Hi everyone!' in response
