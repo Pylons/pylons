@@ -264,7 +264,7 @@ class PylonsApp(object):
         
         # If it's a class, instantiate it
         if not hasattr(controller, '__class__') or \
-            getattr(controller, '__class__') == type:
+            isinstance(getattr(controller, '__class__'), type):
             if log_debug:
                 log.debug("Controller appears to be a class, instantiating")
             controller = controller()
