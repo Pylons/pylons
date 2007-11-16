@@ -84,6 +84,7 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: BSD License",
+        "Framework :: Pylons",
         "Programming Language :: Python",
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
