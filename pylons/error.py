@@ -30,5 +30,4 @@ if mako:
                                   mako.exceptions.SyntaxException)):
             return mako.exceptions.html_error_template().render(full=False,
                                                                 css=False)
-    
     template_error_formatters.insert(0, mako_html_data)
