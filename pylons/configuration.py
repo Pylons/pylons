@@ -94,7 +94,8 @@ class PylonsConfig(DispatchingConfig):
                          'templates': [],
                          'static_files': None},
         'pylons.db_engines': {},
-        'pylons.environ_config': {},
+        'pylons.environ_config': dict(session='beaker.session', 
+                                      cache='beaker.cache'),
         'pylons.g': None,
         'pylons.h': None,
         'pylons.request_options': request_defaults.copy(),
@@ -155,7 +156,7 @@ class PylonsConfig(DispatchingConfig):
 
         conf['routes.map'] = map
         conf['pylons.paths'] = paths or {}
-        conf['pylons.environ_config'] = environ_config or {}
+        conf['pylons.environ_config'] = environ_config
         conf['pylons.strict_c'] = strict_c
 
         if default_charset:

@@ -55,6 +55,7 @@ class PylonsApp(object):
         package_name = config['pylons.package']
         self.helpers = config['pylons.h']
         self.globals = config['pylons.g']
+        self.environ_config = config['pylons.environ_config']
         self.package_name = package_name
         self.request_options = config['pylons.request_options']
         self.response_options = config['pylons.response_options']
@@ -154,6 +155,8 @@ class PylonsApp(object):
         pylons_obj.h = self.helpers
         pylons_obj.buffet = self.buffet
         environ['pylons.pylons'] = pylons_obj
+        
+        environ['pylons.environ_config'] = self.environ_config
         
         # Setup the translator global object
         translator = gettext.NullTranslations()
