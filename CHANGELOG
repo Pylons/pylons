@@ -2,6 +2,9 @@ Pylons Changelog
 =================
 
 0.9.7 (**tip**)
+* Adding StatusCodeRedirect to handle internal redirects based on the status
+  code returned by the app. This replaces the use of ErrorDocuments in
+  projects.
 * Refactored error exceptions to use WebError.
 * WSGIController now uses the environ references to response, request, and
   the c object for higher performance.

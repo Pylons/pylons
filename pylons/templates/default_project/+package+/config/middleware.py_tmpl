@@ -6,7 +6,7 @@ from paste.urlparser import StaticURLParser
 from paste.deploy.converters import asbool
 from pylons import config
 from pylons.middleware import error_mapper, ErrorDocuments, ErrorHandler, \
-    StaticJavascripts
+    StaticJavascripts, StatusCodeRedirect
 from pylons.wsgiapp import PylonsApp
 from routes.middleware import RoutesMiddleware
 
@@ -49,7 +49,10 @@ def make_app(global_conf, full_stack=True, **app_conf):
 
         # Display error documents for 401, 403, 404 status codes (and
         # 500 when debug is disabled)
-        app = ErrorDocuments(app, global_conf, mapper=error_mapper, **app_conf)
+        if asbool(config['debug']):
+            app = StatusCodeRedirect(app)
+        else:
+            app = StatusCodeRedirect(app, [401,403,404,500])
 
     # Establish the Registry for this application
     app = RegistryManager(app)

@@ -10,6 +10,7 @@ from paste.recursive import RecursiveMiddleware
 from paste.urlparser import StaticURLParser
 from weberror.evalexception import EvalException
 from weberror.exceptions.errormiddleware import ErrorMiddleware
+from webob import Request, Response
 from webhelpers.rails.asset_tag import javascript_path
 
 import pylons
@@ -91,6 +92,49 @@ def error_mapper(code, message, environ, global_conf=None, **kw):
         url = '/error/document/?%s' % (urllib.urlencode({'message': message,
                                                          'code': code}))
         return url
+
+
+class StatusCodeRedirect(object):
+    """Internally redirects a request based on status code
+    
+    StatusCodeRedirect watches the response of the app it wraps. If the 
+    response is an error code in the errors sequence passed the request
+    will be re-run with the path URL set to the path passed in.
+    
+    This operation is non-recursive and the output of the second 
+    request will be used no matter what it is.
+    
+    Should an application wish to bypass the error response (ie, to 
+    purposely return a 401), set 
+    ``environ['pylons.status_code_redirect'] = True`` in the application.
+    
+    """
+    def __init__(self, app, errors=(401,403,404), path='/error/document'):
+        """Initialize the ErrorRedirect
+        
+        ``errors``
+            A sequence (list, tuple) of error code integers that should
+            be caught.
+        ``path``
+            The path to set for the next request down to the 
+            application. 
+        
+        """
+        self.app = app
+        self.errors = errors
+        self.error_path = path
+    
+    def __call__(self, environ, start_response):
+        req = Request(environ)
+        new_req = req.copy_get()
+        resp = req.get_response(self.app, catch_exc_info=True)
+        if resp.status_int in self.errors and \
+           'pylons.status_code_redirect' not in environ and self.error_path:
+            new_req.path_info = self.error_path
+            new_req.environ['pylons.original_response'] = resp
+            new_req.environ['pylons.original_request'] = req
+            resp = new_req.get_response(self.app, catch_exc_info=True)
+        return resp(environ, start_response)
 
 
 def ErrorDocuments(app, global_conf=None, mapper=None, **kw):
