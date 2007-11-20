@@ -109,7 +109,7 @@ class StatusCodeRedirect(object):
     ``environ['pylons.status_code_redirect'] = True`` in the application.
     
     """
-    def __init__(self, app, errors=(401,403,404), path='/error/document'):
+    def __init__(self, app, errors=(401, 403, 404), path='/error/document'):
         """Initialize the ErrorRedirect
         
         ``errors``
