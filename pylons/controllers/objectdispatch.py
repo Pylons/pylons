@@ -9,6 +9,68 @@ import formencode
 
 
 class ObjectDispatchController(DecoratedController):
+    """
+    To use Object Dispatch, create a route for *URL and point it to the 
+    route method of an ObjectDispatchController.  The controller will 
+    then thake the remainder of the URL, and do Object dispatch on it. 
+    
+    The oject dispatch controller looks through your class to find matching methods, 
+    walking down the object hierarchy untill a match is found.  A classes Index 
+    matches and the default method is called if no matching method is called.
+    
+    Like the underlying DecoratedController, controller methods can only be
+    called if you explicitly expose them to the web using an @expose decorator.  
+
+    In addition to CherryPy style Object dispatch, this controller also 
+    implements a Quxote inspired ookup method which allows you to create new objects
+    to dispatch against at any time. 
+
+    *lookup* and *default* controller methods are called in identical situations: 
+    when "normal" object traversal is not able to find an exposed method, 
+    the controller begins popping the stack of "not found" handlers.  
+    
+    If the handler is a "default" method, it is called with the rest of the 
+    path as positional parameters passed into the default method.   
+
+    The not found handler stack can also contain "lookup" methods, which
+    are different, as they are not actual controllers. 
+
+    A lookup method takes as its argument the remaining path elements and
+    returns an object (representing the next step in the traversal) and a
+    (possibly modified) list of remaining path elements.  So a blog might
+    have controllers that look something like this:
+
+    class BlogController(Controller):
+       @expose()
+       def lookup(self, year, month, day, id, *remainder):
+          dt = date(int(year), int(month), int(day))
+          return BlogEntryController(dt, int(id)), remainder
+
+    class BlogEntryController(Controller):
+       def __init__(self, dt, id):
+           self.entry = model.BlogEntry.get_by(date=dt, id=id)
+    
+       @expose(...)
+           def index(self):
+           ...
+     
+       @expose(...)
+           def edit(self):
+           ...
+           
+       @expose()
+       def update(self):
+            ....
+
+    So a URL request to .../2007/6/28/0/edit would map to
+    BlogEntryController(date(2007,6,28), 0).edit .  In other situations, 
+    you might have a several-layers-deep "lookup" chain, e.g. for 
+    editing hierarchical data (/client/1/project/2/task/3/edit).  
+
+    The benefit over "default" handlers is that you _return_ a controller 
+    and continue traversing rather than _being_ a controller and 
+    stopping traversal altogether.  Plus, it makes semi-RESTful URLs easy.
+    """
     
     def _initialize_validation_context(self):
         pylons.c.form_errors = {}
