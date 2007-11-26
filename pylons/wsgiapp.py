@@ -61,7 +61,7 @@ class PylonsApp(object):
         self.response_options = config['pylons.response_options']
         self.controller_classes = {}
         self.log_debug = False
-        self.use_webob = use_webob
+        self.use_webob = config['pylons.use_webob'] = use_webob
         
         # Create the redirect function we'll use and save it
         def redirect_to(url):

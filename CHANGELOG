@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.7 (**tip**)
+* Added beaker_cache option to avoid caching/restoring global Response values
+  that were present during the first cache operation.
 * Adding StatusCodeRedirect to handle internal redirects based on the status
   code returned by the app. This replaces the use of ErrorDocuments in
   projects.

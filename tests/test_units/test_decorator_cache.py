@@ -72,6 +72,7 @@ class TestCacheDecorator(TestWSGIController):
         self.app = app
         TestWSGIController.setUp(self)
         environ.update(self.environ)
+        pylons.config['pylons.use_webob'] = False
 
     def test_default_cache_decorator(self):
         response = self.get_response(action='test_default_cache_decorator')
