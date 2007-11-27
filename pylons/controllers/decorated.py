@@ -4,7 +4,6 @@ import logging
 import formencode
 
 import pylons
-from pylons import config
 from pylons.controllers import WSGIController
 
 log = logging.getLogger(__name__)
@@ -65,6 +64,7 @@ class DecoratedController(WSGIController):
         if template_name is None:
             return response
         if engine_name not in _configured_engines():
+            from pylons import config
             template_options = dict(config).get('buffet.template_options', {})
             pylons.buffet.prepare(engine_name, **template_options)
             _configured_engines().add(engine_name)
