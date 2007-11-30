@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.7 (**tip**)
+* Updated abort/redirect_to to use appropriate Response object when WebOb is
+  used.
 * Updated so that 404's properly return as Response objects when WebOb is in
   use instead of WSGIResponse.
 * Added beaker_cache option to avoid caching/restoring global Response values
