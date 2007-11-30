@@ -4,7 +4,6 @@ import logging
 import formencode
 
 import pylons
-from pylons import config
 from pylons.controllers import WSGIController
 
 log = logging.getLogger(__name__)
