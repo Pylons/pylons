@@ -8,6 +8,7 @@ from paste.httpexceptions import HTTPException
 from paste.response import HeaderDict
 from paste.wsgiwrappers import WSGIResponse
 from webob import Response
+from webob.exc import HTTPNotFound
 
 import pylons
 
@@ -131,7 +132,10 @@ class WSGIController(object):
                 raise NotImplementedError('Action %r is not implemented' %
                                           action)
             else:
-                response = WSGIResponse(code=404)
+                if self._use_webob:
+                    response = HTTPNotFound()
+                else:
+                    response = WSGIResponse(code=404)
         return response
     
     def __call__(self, environ, start_response):
@@ -145,7 +149,10 @@ class WSGIController(object):
             if log_debug:
                 log.debug("Action starts with _, private action not allowed. "
                           "Returning a 404 response")
-            return WSGIResponse(code=404)(environ, start_response)
+            if self._use_webob:
+                return HTTPNotFound()(environ, start_response)
+            else:
+                return WSGIResponse(code=404)(environ, start_response)
 
         start_response_called = []
         def repl_start_response(status, headers, exc_info=None):
