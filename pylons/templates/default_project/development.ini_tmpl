@@ -22,6 +22,10 @@ cache_dir = %(here)s/data
 beaker.session.key = ${package}
 beaker.session.secret = somesecret
 
+# If you'd like to change the default template engine used to render text/html
+# content in decorator style controllers, edit this line. 
+template_engine.default = genshi
+
 # If you'd like to fine-tune the individual locations of the cache data dirs
 # for the Cache data, or the Session saves, un-comment the desired settings
 # here:

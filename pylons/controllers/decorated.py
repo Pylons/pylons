@@ -4,6 +4,7 @@ import logging
 import formencode
 
 import pylons
+from pylons import config
 from pylons.controllers import WSGIController
 
 log = logging.getLogger(__name__)
@@ -45,14 +46,14 @@ class DecoratedController(WSGIController):
 
     def _render_response(self, controller, response):
         """Render response takes the dictionary returned by the
-        controller calls the apropriate template engine. It uses
+        controller calls the appropriate template engine. It uses
         information off of the decoration object to decide which engine
         and template to use, and removes anything in the exclude_names
         list from the returned dictionary.
 
-        The exclude_names funtionality allows you to pass variables to
+        The exclude_names functionality allows you to pass variables to
         some template rendering engines, but not others. This behavior
-        is particularly usefull for rendering engines like JSON or other
+        is particularly useful for rendering engines like JSON or other
         "web service" style engines which don't use and explicit
         template.
 
@@ -64,7 +65,8 @@ class DecoratedController(WSGIController):
         if template_name is None:
             return response
         if engine_name not in _configured_engines():
-            pylons.buffet.prepare(engine_name)
+            template_options = dict(config).get('buffet.template_options', {})
+            pylons.buffet.prepare(engine_name, **template_options)
             _configured_engines().add(engine_name)
         namespace = dict(context=pylons.c)
         namespace.update(response)
@@ -88,25 +90,6 @@ class DecoratedController(WSGIController):
         output = error_handler(controller.im_self)
 
         return error_handler, output
-
-        # TG2 OLD VALIDATION CODE
-        #pylons.c.form_errors = exception.error_dict
-        #pylons.c.form_values = exception.value
-        #error_handler = controller.decoration.error_handler
-        #if not error_handler: raise
-        #if isinstance(error_handler, basestring):
-        #    controller_url = pylons.c.controller_url
-        #    error_handler_absolute_url = urlparse.urljoin(controller_url,
-        #                                                  error_handler)
-        #    # TODO: fix this commented out code
-        #    #error_handler, remainder = \
-        #    #    object_dispatch(self, error_handler_absolute_url.split('/'))
-        #    #if remainder and remainder[-1] == '':
-        #    #     remainder.pop()
-        #    #output = error_handler(*remainder)
-        #else:
-        #    output = error_handler(controller.im_self)
-        #return error_handler, output
 
     def _perform_call(self, func, args, remainder=None):
         if remainder is None:

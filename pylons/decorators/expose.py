@@ -71,6 +71,10 @@ class Decoration(object):
             accept_types = request.headers.get('accept', '*/*')
         content_type = best_match(self.engines.keys(), accept_types)
         engine, template, exclude_names = self.engines[content_type]
+        
+        if 'charset' not in content_type: 
+            content_type = '%s; charset=utf-8' % content_type
+        
         return content_type, engine, template, exclude_names
 
     def register_hook(self, hook_name, func):
@@ -120,7 +124,6 @@ class after_render(_hook_decorator):
 
 
 class expose(object):
-
     """
     Registers attributes on the decorated function
 
