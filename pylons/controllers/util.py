@@ -6,8 +6,8 @@ import logging
 import warnings
 
 import paste.httpexceptions as httpexceptions
-
 from routes import url_for
+from webob.exc import status_map
 
 import pylons
 import pylons.legacy
@@ -57,7 +57,11 @@ def abort(status_code=None, detail="", headers=None, comment=None):
     attribute will be used as the Location header should one not be specified
     in the headers attribute.
     """
-    exc = httpexceptions.get_exception(status_code)(detail, headers, comment)
+    if pylons.config['pylons.use_webob']:
+        exc = status_map[status_code](detail=detail, headers=headers, 
+                                      comment=comment)
+    else:
+        exc = httpexceptions.get_exception(status_code)(detail, headers, comment)
     log.debug("Aborting request, status: %s, detail: %r, headers: %r, "
               "comment: %r", status_code, detail, headers, comment)
     raise exc
@@ -78,6 +82,11 @@ def redirect_to(*args, **kargs):
     and cookies extracted from it and added into the redirect issued."""
     response = kargs.pop('_response', None)
     status_code = kargs.pop('_code', 302)
+    if pylons.config['pylons.use_webob']:
+        exc = status_map[status_code]
+        found = exc(location=url_for(*args, **kargs))
+        log.debug("Generating %s redirect" % status_code)
+        return found
     exc = httpexceptions.get_exception(status_code)
     found = exc(url_for(*args, **kargs))
     log.debug("Generating %s redirect" % status_code)
