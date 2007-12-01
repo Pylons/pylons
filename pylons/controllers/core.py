@@ -8,7 +8,7 @@ from paste.httpexceptions import HTTPException
 from paste.response import HeaderDict
 from paste.wsgiwrappers import WSGIResponse
 from webob import Response
-from webob.exc import HTTPNotFound
+from webob.exc import HTTPNotFound, status_map
 
 import pylons
 
@@ -89,7 +89,10 @@ class WSGIController(object):
                 log.debug("%r method raised HTTPException: %s (code: %s)",
                           func.__name__, httpe.__class__.__name__, httpe.code,
                           exc_info=True)
-            result = httpe.response(pylons.request.environ)
+            if self._use_webob:
+                result = httpe
+            else:
+                result = httpe.response(pylons.request.environ)
             result._exception = True
         return result
     
@@ -133,7 +136,7 @@ class WSGIController(object):
                                           action)
             else:
                 if self._use_webob:
-                    response = HTTPNotFound()
+                    response = HTTPNotFound().response(req.environ)
                 else:
                     response = WSGIResponse(code=404)
         return response
