@@ -127,13 +127,14 @@ class StatusCodeRedirect(object):
     def __call__(self, environ, start_response):
         req = Request(environ)
         new_req = req.copy_get()
-        resp = req.get_response(self.app, catch_exc_info=True)
+        resp = orig_resp = req.get_response(self.app, catch_exc_info=True)
         if resp.status_int in self.errors and \
            'pylons.status_code_redirect' not in environ and self.error_path:
             new_req.path_info = self.error_path
             new_req.environ['pylons.original_response'] = resp
             new_req.environ['pylons.original_request'] = req
             resp = new_req.get_response(self.app, catch_exc_info=True)
+            resp.status = orig_resp.status
         return resp(environ, start_response)
 
 
