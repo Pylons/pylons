@@ -6,11 +6,11 @@ from paste.registry import RegistryManager
 from pylons import request, Response
 from pylons.controllers import WSGIController
 from pylons.decorators.secure import authenticate_form, csrf_detected_message
+from pylons.testutil import ControllerWrap, SetupCacheGlobal
 from routes import request_config
 from webhelpers.rails import secure_form_tag
 
-from __init__ import data_dir, ControllerWrap, SetupCacheGlobal, \
-    TestWSGIController
+from __init__ import data_dir, TestWSGIController
 
 session_dir = os.path.join(data_dir, 'session')
 

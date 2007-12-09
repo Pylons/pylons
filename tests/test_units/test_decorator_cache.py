@@ -12,9 +12,9 @@ from pylons import Response
 from pylons.decorators.cache import beaker_cache
 
 from pylons.controllers import Controller, WSGIController, XMLRPCController
+from pylons.testutil import SetupCacheGlobal, ControllerWrap
 
-from __init__ import data_dir, TestWSGIController, SetupCacheGlobal, \
-    ControllerWrap
+from __init__ import data_dir, TestWSGIController
 
 class CacheController(WSGIController):
     def test_default_cache_decorator(self):

@@ -30,6 +30,7 @@ class SetupCacheGlobal(object):
         self.setup_g = setup_g
 
     def __call__(self, environ, start_response):
+        pylons.config['pylons.use_webob'] = False
         registry = environ['paste.registry']
         py_obj = PylonsContext()
         environ_config = environ.setdefault('pylons.environ_config', {})

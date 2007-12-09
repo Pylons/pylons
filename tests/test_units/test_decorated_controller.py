@@ -5,9 +5,10 @@ from paste.registry import RegistryManager
 import pylons
 from pylons.controllers import DecoratedController
 from pylons.decorators import expose
+from pylons.testutil import ControllerWrap, SetupCacheGlobal
 from turbojson.jsonify import jsonify
 
-from __init__ import TestWSGIController, SetupCacheGlobal, ControllerWrap
+from __init__ import TestWSGIController
 
 pylons.buffet = pylons.templating.Buffet(default_engine='genshi')
 
