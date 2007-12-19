@@ -2,6 +2,9 @@ Pylons Changelog
 =================
 
 0.9.7 (**tip**)
+* Added SQLAlchemy option to template, which adds SQLAlchemy setup to the 
+  project template.
+* Switched project templating to use Tempita.
 * Updated abort/redirect_to to use appropriate Response object when WebOb is
   used.
 * Updated so that 404's properly return as Response objects when WebOb is in

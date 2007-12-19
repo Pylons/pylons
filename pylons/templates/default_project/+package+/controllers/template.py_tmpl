@@ -1,4 +1,4 @@
-from ${package}.lib.base import *
+from {{package}}.lib.base import *
 
 class TemplateController(BaseController):
 

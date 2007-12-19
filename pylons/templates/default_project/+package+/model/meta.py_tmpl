@@ -1,0 +1,20 @@
+{{if sqlalchemy}}
+"""SQLAlchemy Metadata and Session object"""
+from sqlalchemy import MetaData
+from sqlalchemy.orm import scoped_session, sessionmaker
+
+import pylons
+
+__all__ = ['Session', 'metadata']
+
+# Global session manager.  Session() returns the session object appropriate for
+# the current web request.
+Session = scoped_session(sessionmaker(autoflush=True, transactional=True, 
+                         bind=pylons.config['pylons.g'].sa_engine))
+
+# Global metadata. If you have multiple databases with overlapping table 
+# names, you'll need a metadata for each database.
+metadata = MetaData()
+{{else}}
+{{skip_template()}}
+{{endif}}

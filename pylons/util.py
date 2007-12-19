@@ -7,8 +7,10 @@ provides a more minimal template with less additional directories and layout.
 import logging
 import warnings
 
+from paste.deploy.converters import asbool
 from paste.script.appinstall import Installer
-from paste.script.templates import Template
+from paste.script.templates import Template, var
+from tempita import paste_script_template_renderer
 
 import pylons
 import pylons.configuration
@@ -127,9 +129,19 @@ class AttribSafeContextObj(ContextObj):
 
 class PylonsTemplate(Template):
     _template_dir = 'templates/default_project'
+    template_renderer = staticmethod(paste_script_template_renderer)
     summary = 'Pylons application template'
     egg_plugins = ['Pylons', 'WebHelpers']
-
+    vars = [
+        var('version', 'Version (like 0.1)', default='0.1'),
+        var('sqlalchemy', 'True/False: Include SQLAlchemy 0.4 configuration',
+            default=False),
+        var('template_engine', 'mako/genshi/etc: Template language', 
+            default='mako'),
+        var('zip_safe', 'True/False: if the package can be distributed as a '
+            '.zip file', default=False),
+    ]
+    
     def pre(self, command, output_dir, vars):
         """Called before template is applied."""
         package_logger = vars['package']
@@ -149,6 +161,7 @@ class PylonsTemplate(Template):
                                                                  ' ' * 8)
         else:
             vars['babel_templates_extractor'] = ''
+        vars['sqlalchemy'] = asbool(vars['sqlalchemy'])
 
 class MinimalPylonsTemplate(PylonsTemplate):
     _template_dir = 'templates/minimal_project'
