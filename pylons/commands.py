@@ -128,9 +128,9 @@ class ControllerCommand(Command):
 
             # Determine the module's import statement
             if is_minimal_template(base_package):
-                importstatement = "from %s.controllers import *" % base_package
+                importstatement = "from %s.controllers import BaseController" % base_package
             else:
-                importstatement = "from %s.lib.base import *" % base_package
+                importstatement = "from %s.lib.base import BaseController" % base_package
 
             # Setup the controller
             fullname = os.path.join(directory, name)
