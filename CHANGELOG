@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.7 (**tip**)
+* XMLRPCController now properly includes the Content-Length of the response.
+  Fixes #310, thanks Nicholas.
 * Added SQLAlchemy option to template, which adds SQLAlchemy setup to the 
   project template.
 * Switched project templating to use Tempita.

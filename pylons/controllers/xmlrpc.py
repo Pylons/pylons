@@ -181,6 +181,8 @@ class XMLRPCController(WSGIController):
             headers.extend(new_headers)
             exc_info.append(new_exc_info)
         output = WSGIController.__call__(self, environ, change_content)
+        output = list(output)
+        headers.append(('Content-Length', str(len(output[0]))))
         replace_header(headers, 'Content-Type', 'text/xml')
         start_response(status[0], headers, exc_info[0])
         return output
