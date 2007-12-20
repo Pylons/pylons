@@ -35,7 +35,7 @@ def deprecated(func, message):
         deprecated_method.__name__ = func.__name__
     except TypeError: # Python < 2.4
         pass
-    deprecated_method.__doc__ = message + "\n\n" + func.__doc__
+    deprecated_method.__doc__ = "%s\n\n%s" % (message, func.__doc__)
     return deprecated_method
 
 
