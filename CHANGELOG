@@ -2,6 +2,7 @@ Pylons Changelog
 =================
 
 0.9.7 (**tip**)
+* E-tag cache no longer returns Content-Type in the headers. Fixes #323.
 * XMLRPCController now properly includes the Content-Length of the response.
   Fixes #310, thanks Nicholas.
 * Added SQLAlchemy option to template, which adds SQLAlchemy setup to the 
