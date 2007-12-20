@@ -1,0 +1,69 @@
+{{if sqlalchemy}}
+import sqlalchemy as sa
+from sqlalchemy import orm
+
+from {{package}}.model import meta
+
+def init_model(engine):
+    """Call me before using any of the tables or classes in the model."""
+
+    # Reflected tables must be defined and mapped here.
+    #
+    #global t_reflected
+    #t_reflected = sa.Table("Reflected", meta.metadata,
+    #    autoload=True, autoload_with=engine)
+    #orm.mapper(Reflected, t_reflected)
+
+    # For multiple databases, pass in all engines as arguments, and replace
+    # sessionmaker's 'bind' argument with something like:
+    # binds={"table1": engine1, "table2": engine2}
+
+    sm = orm.sessionmaker(autoflush=True, transactional=True, bind=engine)
+
+    meta.engine = engine
+    meta.Session = orm.scoped_session(sm)
+
+
+# Non-reflected tables may be defined and mapped at module level.
+#
+#t_foo = sa.Table("Foo", meta.metadata,
+#    sa.Column("id", sa.types.Integer, primary_key=True),
+#    sa.Column("bar", sa.types.String(255), nullable=False),
+#    )
+#
+#class Foo(object):
+#
+#    # Optional methods showing frequently-used constructs.
+#
+#    def __init__(self, id, bar):
+#        """Create a new record for the database."""
+#        self.id = id
+#        self.bar = bar
+#
+#    def __repr__(self):
+#        return "<Foo #%d bar=%s>" % (self.id, self.bar)
+#
+#    @classmethod
+#    def get(class_, id):
+#        """Fetch a record by ID."""
+#        return meta.Session.query(class_).get(id)
+#
+#    @classmethod
+#    def latest(class_):
+#        """Return a Query for all records with most recent first.
+#
+#           Caller can call methods like .all(), .first(), .count(), etc.
+#        """
+#        order_by = [Foo.some_column.desc()]
+#        return meta.Session.query(Reflected).order_by(order_by)
+#
+#orm.mapper(Foo, t_foo)
+
+# Classes for reflected tables may be defined here, but the table and
+# mapping itself must be done in the init_model function.
+#
+#t_reflected = None    # Updated by init_model().
+#
+#class Reflected(object):
+#    pass
+{{endif}}

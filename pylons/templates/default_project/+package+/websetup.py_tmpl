@@ -15,10 +15,9 @@ def setup_config(command, filename, section, vars):
     {{if sqlalchemy}}
     
     # Load the models
-    from {{package}}.model.meta import metadata
-    import pylons
-    metadata.bind = pylons.config['pylons.g'].sa_engine
+    from {{package}}.model import meta
+    meta.metadata.bind = meta.engine
     
     # Create the tables if they aren't there already
-    metadata.create_all()
+    meta.metadata.create_all(checkfirst=True)
     {{endif}}
