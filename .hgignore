@@ -8,5 +8,8 @@ syntax:glob
 ez_setup
 container_file
 container_dbm*
+*~
+build/
+dist/
 docs/html/docs
 output/ProjectName
