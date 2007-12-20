@@ -20,6 +20,19 @@ def init_model(engine):
     meta.Session = orm.scoped_session(sm)
 
 
+# Non-reflected tables may be defined and mapped at module level.
+#
+#t_foo = sa.Table("Foo", meta.metadata,
+#    sa.Column("id", sa.types.Integer, primary_key=True),
+#    sa.Column("bar", sa.types.String(255), nullable=False),
+#    )
+#
+#class Foo(object):
+#    pass
+#
+#orm.mapper(Foo, t_foo)
+
+
 # Classes for reflected tables may be defined here, but the table and
 # mapping itself must be done in the init_model function.
 #
