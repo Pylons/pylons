@@ -161,6 +161,7 @@ class PylonsTemplate(Template):
                                                                  ' ' * 8)
         else:
             vars['babel_templates_extractor'] = ''
+        vars['zip_safe'] = asbool(vars['zip_safe'])
         vars['sqlalchemy'] = asbool(vars['sqlalchemy'])
 
 class MinimalPylonsTemplate(PylonsTemplate):
