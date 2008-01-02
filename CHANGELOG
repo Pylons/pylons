@@ -26,6 +26,8 @@ Pylons Changelog
 * The config object is now included in the template namespace.
 * StaticJavascripts now accepts keyword arguments for StaticURLParser.
   Suggested by Marcin Kasperski.
+* Fix pylons.database.AutoConnectHub's doInTransaction not automatically
+  connecting when necessary. Fixes #327.
 
 0.9.6.1 (September 27th, 2007)
 * Fixed validate decorator to resume pre-0.9.6 behavior of only validating
