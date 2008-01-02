@@ -128,9 +128,9 @@ class ControllerCommand(Command):
 
             # Determine the module's import statement
             if is_minimal_template(base_package):
-                importstatement = "from %s.controllers import *" % base_package
+                importstatement = "from %s.controllers import BaseController" % base_package
             else:
-                importstatement = "from %s.lib.base import *" % base_package
+                importstatement = "from %s.lib.base import BaseController" % base_package
 
             # Setup the controller
             fullname = os.path.join(directory, name)
@@ -142,6 +142,7 @@ class ControllerCommand(Command):
             file_op.template_vars.update(
                 {'name': controller_name,
                  'fname': os.path.join(directory, name),
+                 'package':base_package,
                  'importstatement': importstatement})
             file_op.copy_file(template='controller.py_tmpl',
                          dest=os.path.join('controllers', directory),

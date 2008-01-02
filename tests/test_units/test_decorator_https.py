@@ -6,8 +6,9 @@ from routes.middleware import RoutesMiddleware
 from pylons.decorators.secure import https
 
 from pylons.controllers import WSGIController
+from pylons.testutil import ControllerWrap, SetupCacheGlobal
 
-from __init__ import ControllerWrap, SetupCacheGlobal, TestWSGIController
+from __init__ import TestWSGIController
 
 class HttpsController(WSGIController):
     def index(self):
@@ -27,8 +28,10 @@ class TestHttpsDecorator(TestWSGIController):
         TestWSGIController.setUp(self)
         from routes import Mapper
         map = Mapper()
+        map.connect('/:action')
         map.connect('/:action/:id')
         map.connect('/:controller/:action/:id')
+        map.connect('/:controller/:action')
         app = ControllerWrap(HttpsController)
         app = SetupCacheGlobal(app, self.environ, setup_cache=False)
         app = RoutesMiddleware(app, map)

@@ -4,8 +4,8 @@ from paste.registry import StackedObjectProxy
 from pylons.config import config
 from pylons.legacy import h, jsonify, Controller, Response
 
-__all__ = ['c', 'g', 'cache', 'request', 'response', 'session', 'jsonify',
-           'Controller', 'Response']
+__all__ = ['app_globals', 'c', 'g', 'cache', 'request', 'response', 'session',
+           'tmpl_context', 'jsonify', 'Controller', 'Response']
 
 def __figure_version():
     try:
@@ -23,13 +23,12 @@ def __figure_version():
         
 __version__ = __figure_version()
 
-c = StackedObjectProxy(name="C")
-g = StackedObjectProxy(name="G")
-
+app_globals = g = StackedObjectProxy(name="G")
 cache = StackedObjectProxy(name="Cache")
 request = StackedObjectProxy(name="Request")
 response = StackedObjectProxy(name="Response")
 session = StackedObjectProxy(name="Session")
+tmpl_context = c = StackedObjectProxy(name="C")
 
 buffet = StackedObjectProxy(name="Buffet")
 translator = StackedObjectProxy(name="Translator")
