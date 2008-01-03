@@ -65,6 +65,11 @@ class DecoratedController(WSGIController):
         #Set content type regardless of what is needed.     
         pylons.response.headers['Content-Type'] = content_type 
         
+        # If we are in a test request put the namespace where it can be accessed directly
+        if request.environ.get('paste.testing'):
+            request.environ['paste.testing_variables']['namespace'] = namespace
+            request.environ['paste.testing_variables']['template_name'] = template_name
+            request.environ['paste.testing_variables']['exclude_names'] = exclude_names
         
         if template_name is None:
             return response
@@ -81,6 +86,7 @@ class DecoratedController(WSGIController):
         # has marked to be excluded.
         namespace = dict(context=pylons.c)
         namespace.update(response)
+        
         for name in exclude_names:
             namespace.pop(name)
         
