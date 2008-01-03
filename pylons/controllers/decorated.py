@@ -60,16 +60,12 @@ class DecoratedController(WSGIController):
         expose decorator.
         """
         content_type, engine_name, template_name, exclude_names = \
-            controller.decoration.lookup_template_engine(pylons.request
-            
-        #Set content type regardless of what is needed.     
+            controller.decoration.lookup_template_engine(pylons.request)
+        
+        # Always set content type
         pylons.response.headers['Content-Type'] = content_type 
         
-        # If we are in a test request put the namespace where it can be accessed directly
-        if request.environ.get('paste.testing'):
-            request.environ['paste.testing_variables']['namespace'] = namespace
-            request.environ['paste.testing_variables']['template_name'] = template_name
-            request.environ['paste.testing_variables']['exclude_names'] = exclude_names
+        req = pylons.request
         
         if template_name is None:
             return response
@@ -89,6 +85,12 @@ class DecoratedController(WSGIController):
         
         for name in exclude_names:
             namespace.pop(name)
+        
+        # If we are in a test request put the namespace where it can be accessed directly
+        if req.environ.get('paste.testing'):
+            req.environ['paste.testing_variables']['namespace'] = namespace
+            req.environ['paste.testing_variables']['template_name'] = template_name
+            req.environ['paste.testing_variables']['exclude_names'] = exclude_names
         
         # Render the result.
         result = pylons.buffet.render(engine_name=engine_name,
