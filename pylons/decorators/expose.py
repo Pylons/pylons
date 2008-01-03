@@ -50,6 +50,7 @@ class Decoration(object):
         from JSONification, and other 'automatic' engines which don't
         require a template.
         """
+        
         # TODO: Are there some other things like lookup paths which need
         # to be setup here?
         if content_type is None:
@@ -91,7 +92,7 @@ class Decoration(object):
 
 class _hook_decorator(object):
 
-    # must be overridden
+    # must be overridden by a particular hook
     hook_name = None
 
     def __init__(self, hook_func):
