@@ -64,7 +64,8 @@ class DecoratedController(WSGIController):
         if template_name is None:
             return response
         if engine_name not in _configured_engines():
-            template_options = dict(pylons.config).get('buffet.template_options', {})
+            from pylons import config
+            template_options = dict(config).get('buffet.template_options', {})
             pylons.buffet.prepare(engine_name, **template_options)
             _configured_engines().add(engine_name)
         namespace = dict(context=pylons.c)
