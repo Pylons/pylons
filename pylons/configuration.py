@@ -154,9 +154,11 @@ class PylonsConfig(DispatchingConfig):
         if response_settings:
             conf['pylons.response_options'].update(response_settings)
 
+        if environ_config is not None:
+            conf['pylons.environ_config'] = environ_config
+
         conf['routes.map'] = map
         conf['pylons.paths'] = paths or {}
-        conf['pylons.environ_config'] = environ_config
         conf['pylons.strict_c'] = strict_c
 
         if default_charset:

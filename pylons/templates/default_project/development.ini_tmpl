@@ -16,15 +16,11 @@ host = 0.0.0.0
 port = 5000
 
 [app:main]
-use = egg:${project}
+use = egg:{{project}}
 full_stack = true
 cache_dir = %(here)s/data
-beaker.session.key = ${package}
+beaker.session.key = {{package}}
 beaker.session.secret = somesecret
-
-# If you'd like to change the default template engine used to render text/html
-# content in decorator style controllers, edit this line. 
-template_engine.default = genshi
 
 # If you'd like to fine-tune the individual locations of the cache data dirs
 # for the Cache data, or the Session saves, un-comment the desired settings
@@ -32,6 +28,12 @@ template_engine.default = genshi
 #beaker.cache.data_dir = %(here)s/data/cache
 #beaker.session.data_dir = %(here)s/data/sessions
 
+{{if sqlalchemy}}
+
+# SQLAlchemy database URL
+sqlalchemy.url = sqlite:///%(here)s/development.db
+
+{{endif}}
 # WARNING: *THE LINE BELOW MUST BE UNCOMMENTED ON A PRODUCTION ENVIRONMENT*
 # Debug mode will enable the interactive debugging tool, allowing ANYONE to
 # execute malicious code after an exception is raised.
@@ -40,7 +42,7 @@ template_engine.default = genshi
 
 # Logging configuration
 [loggers]
-keys = root, ${package_logger}
+keys = root, {{package_logger}}, sqlalchemy
 
 [handlers]
 keys = console
@@ -52,10 +54,18 @@ keys = generic
 level = INFO
 handlers = console
 
-[logger_${package_logger}]
+[logger_{{package_logger}}]
 level = DEBUG
 handlers =
-qualname = ${package_logger}
+qualname = {{package_logger}}
+
+[logger_sqlalchemy]
+level = INFO
+handlers =
+qualname = sqlalchemy.engine
+# "level = INFO" logs SQL queries.
+# "level = DEBUG" logs SQL queries and results.
+# "level = WARN" logs neither.  (Recommended for production systems.)
 
 [handler_console]
 class = StreamHandler

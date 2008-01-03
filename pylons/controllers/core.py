@@ -91,8 +91,11 @@ class WSGIController(object):
                           exc_info=True)
             if self._use_webob:
                 result = httpe
+                if result.status_int == 304:
+                    result.headers.pop('Content-Type', None)
             else:
                 result = httpe.response(pylons.request.environ)
+                result.headers.pop('Content-Type')
             result._exception = True
         return result
     

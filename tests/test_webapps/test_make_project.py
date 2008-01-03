@@ -41,6 +41,9 @@ def paster_create():
                       '--template=pylons',
                       'ProjectName',
                       'version=0.1',
+                      'sqlalchemy=False',
+                      'zip_safe=False',
+                      'template_engine=mako',
                       )
     expect_fn = ['projectname', 'development.ini', 'setup.cfg', 'README.txt',
                  'setup.py', 'ProjectName.egg-info',

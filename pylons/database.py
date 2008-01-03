@@ -195,6 +195,12 @@ class AutoConnectHub(ConnectionHub):
                 raise AttributeError(
                     "No connection has been defined for this thread "
                     "or process")
+
+    def doInTransaction(self, func, *args, **kw):
+        """Run a function in a transaction"""
+        if not hasattr(self.threadingLocal, "connection"):
+            self.getConnection()
+        return ConnectionHub.doInTransaction(self, func, *args, **kw)
     
     def begin(self):
         """Starts a transaction."""
