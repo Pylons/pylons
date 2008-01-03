@@ -60,23 +60,35 @@ class DecoratedController(WSGIController):
         expose decorator.
         """
         content_type, engine_name, template_name, exclude_names = \
-            controller.decoration.lookup_template_engine(pylons.request)
+            controller.decoration.lookup_template_engine(pylons.request
+            
+        #Set content type regardless of what is needed.     
+        pylons.response.headers['Content-Type'] = content_type 
+        
+        
         if template_name is None:
             return response
+        
+        #Prepare the engine, if it's not already been prepared.
+        
         if engine_name not in _configured_engines():
             from pylons import config
             template_options = dict(config).get('buffet.template_options', {})
             pylons.buffet.prepare(engine_name, **template_options)
             _configured_engines().add(engine_name)
+        
+        # Setup the template namespace, removing anything that the user
+        # has marked to be excluded.
         namespace = dict(context=pylons.c)
         namespace.update(response)
         for name in exclude_names:
             namespace.pop(name)
+        
+        # Render the result.
         result = pylons.buffet.render(engine_name=engine_name,
                                       template_name=template_name,
                                       include_pylons_variables=False,
                                       namespace=namespace)
-        pylons.response.headers['Content-Type'] = content_type
         return result
 
     def _handle_validation_errors(self, controller, exception):
