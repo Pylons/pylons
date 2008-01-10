@@ -20,8 +20,6 @@ def _configured_engines():
 class DecoratedController(WSGIController):
 
     def _perform_validate(self, controller, params):
-        params.update(dict(pylons.request.params))
-
         validation = getattr(controller.decoration, 'validation', None)
         if validation is None:
             return params
@@ -40,6 +38,9 @@ class DecoratedController(WSGIController):
                     params, None, error_dict=errors)
         elif isinstance(validation.validators, formencode.Schema):
             params = validation.validators.to_python(params)
+        elif hasattr(validation.validators, 'validate'):
+            params = validation.validators.validate(params)
+
 
         return params
 
