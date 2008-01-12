@@ -5,8 +5,8 @@ from pylons import tmpl_context as c
 from pylons.controllers.util import abort, redirect_to, url_for
 from pylons.templating import render
 
-${importstatement}
-# import ${package}.model as model
+from {{package}}.lib.base import BaseController
+# import {{package}}.model as model
 
 log = logging.getLogger(__name__)
 
