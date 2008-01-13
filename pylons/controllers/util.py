@@ -83,9 +83,9 @@ def etag_cache(key=None):
     pylons.response.headers['ETag'] = key
     if str(key) == if_none_match:
         log.debug("ETag match, returning 304 HTTP Not Modified Response")
-        pylons.response.headers.pop('Content-Type')
-        pylons.response.headers.pop('Cache-Control')
-        pylons.response.headers.pop('Pragma')
+        pylons.response.headers.pop('Content-Type', None)
+        pylons.response.headers.pop('Cache-Control', None)
+        pylons.response.headers.pop('Pragma', None)
         raise status_map[304]()
     else:
         log.debug("ETag didn't match, returning response object")
