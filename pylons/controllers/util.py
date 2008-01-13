@@ -19,6 +19,13 @@ __all__ = ['abort', 'etag_cache', 'redirect_to', 'Request', 'Response']
 log = logging.getLogger(__name__)
 
 class Request(WebObRequest):
+    """WebOb Request subclass
+    
+    The WebOb Request has no charset, or other defaults. This subclass
+    adds defaults, along with several methods for backwards 
+    compatibility with paste.wsgiwrappers.WSGIRequest.
+    
+    """
     charset = 'utf-8'
     unicode_errors = 'replace'
     language = 'en-us'
@@ -35,6 +42,13 @@ class Request(WebObRequest):
 
 
 class Response(WebObResponse):
+    """WebOb Response subclass
+    
+    The WebOb Response has no default content type, or error defaults.
+    This subclass adds defaults, along with several methods for 
+    backwards compatibility with paste.wsgiwrappers.WSGIResponse.
+    
+    """
     default_content_type = 'text/html'
     errors = 'strict'
     content = WebObResponse.body
