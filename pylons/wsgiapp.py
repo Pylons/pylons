@@ -17,7 +17,7 @@ from routes import request_config
 import pylons
 import pylons.legacy
 import pylons.templating
-from pylons.controllers import Controller, WSGIController
+from pylons.controllers import WSGIController
 from pylons.controllers.util import Request, Response
 from pylons.i18n import set_lang
 from pylons.util import ContextObj, AttribSafeContextObj, \
@@ -242,17 +242,6 @@ class PylonsApp(object):
             return not_found.wsgi_application(environ, start_response)
 
         match = environ['pylons.routes_dict']
-        
-        # Older subclass of Controller
-        if inspect.isclass(controller) and \
-                not issubclass(controller, WSGIController) and \
-                issubclass(controller, Controller):
-            controller = controller()
-            controller.start_response = start_response
-            controller._pylons_log_debug = log_debug
-            if log_debug:
-                log.debug("Calling older Controller subclass")
-            return controller(**match)
         
         # If it's a class, instantiate it
         if inspect.isclass(controller):

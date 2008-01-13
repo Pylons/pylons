@@ -1,6 +1,6 @@
 from projectname.lib.base import *
 import projectname.lib.helpers as h
-from pylons import h as deprecated_h, Response
+from pylons import h as deprecated_h
 from pylons import request, response, session
 from pylons import tmpl_context as c
 from pylons import app_globals as g
@@ -11,27 +11,27 @@ from pylons.controllers.util import abort, redirect_to, url_for
 
 class SampleController(BaseController):
     def index(self):
-        return Response('basic index page')
+        return 'basic index page'
     
     def session_increment(self):
         session.setdefault('counter', -1)
         session['counter'] += 1
         session.save()
-        return Response('session incrementer')
+        return 'session incrementer'
     
     def globalup(self):
-        return Response(g.message)
+        return g.message
     
     def global_store(self, id):
         if id:
             g.counter += int(id)
-        return Response(str(g.counter))
+        return str(g.counter)
     
     def myself(self):
-        return Response(h.url_for())
+        return h.url_for()
     
     def myparams(self):
-        return Response(str(request.params))
+        return str(request.params)
     
     def testdefault(self):
         c.test = "This is in c var"
@@ -41,15 +41,15 @@ class SampleController(BaseController):
         return render_response('/test_mako.html', cache_expire='never')
     
     def test_only_post(self):
-        return Response('It was a post!')
+        return 'It was a post!'
     test_only_post = rest.dispatch_on(GET='test_only_get')(rest.restrict('POST')(test_only_post))
     
     def test_only_get(self):
-        return Response('It was a get!')
+        return 'It was a get!'
     test_only_get = rest.restrict('GET')(test_only_get)
     
     def impossible(self):
-        return Response('This should never be shown')
+        return 'This should never be shown'
     impossible = rest.restrict('POST')(rest.dispatch_on(POST='test_only_post')(impossible))
 
     def testcheetah(self):
@@ -66,21 +66,19 @@ class SampleController(BaseController):
             session['lang'] = lang
             session.save()
             resp_unicode = _('Set language to "%(lang)s"') % {'lang': lang}
-        return Response(resp_unicode)
+        return resp_unicode
 
     def i18n_index(self):
         locale_list = request.languages
         set_lang(request.languages)
-        return Response(unicode(_('basic index page')))
+        return unicode(_('basic index page'))
 
     def no_lang(self):
-        resp = Response()
         set_lang(None)
-        resp.write(_('No language'))
+        response.write(_('No language'))
         set_lang([])
-        resp.write(_('No languages'))
-        return resp
+        response.write(_('No languages'))
+        return ''
         
     def deprecated_h(self):
-        return Response('%s is %s' % \
-                            (h.url_for(), deprecated_h.url_for()))
+        return '%s is %s' % (h.url_for(), deprecated_h.url_for())

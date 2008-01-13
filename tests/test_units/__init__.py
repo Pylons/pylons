@@ -3,7 +3,6 @@ from unittest import TestCase
 from xmlrpclib import loads, dumps
 
 import pylons
-from paste.wsgiwrappers import WSGIRequest, WSGIResponse
 from pylons.util import ContextObj, PylonsContext
 from pylons.testutil import ControllerWrap, SetupCacheGlobal
 from routes import request_config

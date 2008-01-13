@@ -3,34 +3,14 @@ from unittest import TestCase
 
 from paste.fixture import TestApp
 from paste.registry import RegistryManager
-from paste.wsgiwrappers import WSGIRequest
 
 import pylons
-from pylons import jsonify, Controller
+from pylons import jsonify
 from pylons.controllers import WSGIController
 from pylons.decorators import jsonify as orig_jsonify
 from pylons.util import ContextObj
 
 from __init__ import ControllerWrap, SetupCacheGlobal, TestWSGIController
-
-class OldController(Controller):
-    def index(self):
-        return 'old'
-
-class TestDeprecatedControllerImport(TestCase):
-    def tearDown(self):
-        warnings.simplefilter('always', DeprecationWarning)
-    
-    def test_index(self):
-        warnings.simplefilter('error', DeprecationWarning)
-        self.environ = {'pylons.routes_dict':dict(action='index'),
-                        'paste.config':dict(global_conf=dict(debug=True))}
-        pylons.request._push_object(WSGIRequest(self.environ))
-        pylons.c._push_object(ContextObj())
-        try:
-            self.controller = OldController()
-        except DeprecationWarning, msg:
-            assert 'pylons.Controller has been moved' in msg[0]
 
 class SimpleTestWSGIController(TestWSGIController):
     wsgi_app = None

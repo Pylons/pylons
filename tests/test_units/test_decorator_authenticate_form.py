@@ -3,7 +3,7 @@ import os
 from beaker.middleware import SessionMiddleware
 from paste.fixture import TestApp
 from paste.registry import RegistryManager
-from pylons import request, Response
+from pylons import request
 from pylons.controllers import WSGIController
 from pylons.decorators.secure import authenticate_form, csrf_detected_message
 from pylons.testutil import ControllerWrap, SetupCacheGlobal

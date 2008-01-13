@@ -2,10 +2,10 @@
 from paste.registry import StackedObjectProxy
 
 from pylons.config import config
-from pylons.legacy import h, jsonify, Controller, Response
+from pylons.legacy import h, jsonify
 
 __all__ = ['app_globals', 'c', 'g', 'cache', 'request', 'response', 'session',
-           'tmpl_context', 'jsonify', 'Controller', 'Response']
+           'tmpl_context', 'jsonify']
 
 def __figure_version():
     try:

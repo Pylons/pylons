@@ -4,11 +4,9 @@ import types
 import warnings
 
 from paste.registry import StackedObjectProxy
-from paste.wsgiwrappers import WSGIResponse
 
 import pylons
 import pylons.decorators
-from pylons.controllers import Controller as OrigController
 from pylons.util import deprecated, func_move
 
 __all__ = ['load_h']
@@ -173,27 +171,8 @@ jsonify = deprecated(pylons.decorators.jsonify,
                      func_move('pylons.jsonify',
                                moved_to='pylons.decorators.jsonify'))
 
-controller_warning = ('pylons.Controller has been moved to '
-                      'pylons.controllers.Controller.')
-class Controller(OrigController):
-    def __init__(self, *args, **kwargs):
-        warnings.warn(controller_warning, DeprecationWarning, 2)
-        OrigController.__init__(self, *args, **kwargs)
-
-    def __call__(self, *args, **kwargs):
-        warnings.warn(controller_warning, DeprecationWarning, 2)
-        return OrigController.__call__(self, *args, **kwargs)
-
 class DeprecatedStackedObjectProxy(StackedObjectProxy):
     def _current_obj(*args, **kwargs):
         warnings.warn(pylons_h_warning, DeprecationWarning, 3)
         return StackedObjectProxy._current_obj(*args, **kwargs)
 h = DeprecatedStackedObjectProxy(name="h")
-
-response_warning = (
-"Returning a Response object from a controller is deprecated, please return "
-"the response content directly and or use pylons.response instead")
-class Response(WSGIResponse):
-    def __init__(self, *args, **kwargs):
-        warnings.warn(response_warning, DeprecationWarning, 2)
-        WSGIResponse.__init__(self, *args, **kwargs)

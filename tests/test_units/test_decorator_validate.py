@@ -109,6 +109,7 @@ class TestValidateDecorator(TestWSGIController):
         self.environ['pylons.routes_dict']['action'] = 'hello'
         response = self.app.post('/hello?hello=1&hello=2&hello=3',
                                  extra_environ=self.environ)
+        print response.body
         assert "{'hello': [1, 2, 3]}" in response
                                       
     def test_hello_failed(self):

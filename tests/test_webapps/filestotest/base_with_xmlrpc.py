@@ -1,4 +1,4 @@
-from pylons import Response, c, g, cache, request, session
+from pylons import c, g, cache, request, session
 from pylons.controllers import WSGIController, XMLRPCController
 from pylons.controllers.util import abort, redirect_to, etag_cache
 from pylons.decorators import jsonify, validate

@@ -5,10 +5,9 @@ import sys
 import xmlrpclib
 
 from paste.response import replace_header
-from paste.wsgiwrappers import WSGIResponse
 
 from pylons.controllers import WSGIController
-from pylons.controllers.util import abort
+from pylons.controllers.util import abort, Response
 
 __all__ = ['XMLRPCController']
 
@@ -34,7 +33,7 @@ def xmlrpc_sig(args):
 def xmlrpc_fault(code, message):
     """Convienence method to return a Pylons response XMLRPC Fault"""
     fault = xmlrpclib.Fault(code, message)
-    return WSGIResponse(xmlrpclib.dumps(fault, methodresponse=True))
+    return Response(body=xmlrpclib.dumps(fault, methodresponse=True))
 
 
 class XMLRPCController(WSGIController):
@@ -195,7 +194,7 @@ class XMLRPCController(WSGIController):
 
         response = xmlrpclib.dumps(raw_response, methodresponse=True,
                                    allow_none=self.allow_none)
-        return WSGIResponse(response)
+        return response
 
     def _find_method(self, name):
         """Locate a method in the controller by the specified name and return

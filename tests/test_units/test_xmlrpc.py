@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from paste.wsgiwrappers import WSGIRequest
 from paste.fixture import TestApp
 from paste.registry import RegistryManager
 

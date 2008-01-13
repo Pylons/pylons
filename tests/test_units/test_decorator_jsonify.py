@@ -4,9 +4,8 @@ from paste.fixture import TestApp
 from paste.registry import RegistryManager
 
 import pylons
-from pylons import Response
 from pylons.decorators import jsonify
-from pylons.controllers import Controller, WSGIController, XMLRPCController
+from pylons.controllers import WSGIController, XMLRPCController
 
 from __init__ import TestWSGIController, SetupCacheGlobal, ControllerWrap
 

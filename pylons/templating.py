@@ -364,10 +364,9 @@ def render_response(*args, **kargs):
     encoding_errors = kargs.get('encoding_errors')
     if output_encoding:
         response.headers['Content-Type'] = '%s; charset=%s' % \
-            (pylons.Response.defaults.get('content_type',
-                                          'text/html'), output_encoding)
+            (pylons.response.default_content_type, output_encoding)
     if encoding_errors:
         response.encoding_errors = encoding_errors
-    return response
+    return ''
 render_response.__doc__ = 'Deprecated: %s.\n\n%s' % \
     (pylons.legacy.render_response_warning, render_response.__doc__)
