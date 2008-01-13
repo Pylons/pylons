@@ -26,9 +26,10 @@ class DecoratedController(WSGIController):
 
         if isinstance(validation.validators, dict):
             errors = {}
+            new_params = {}
             for field, validator in validation.validators.iteritems():
                 try:
-                    params[field] = validator.to_python(params.get(field))
+                    new_params[field] = validator.to_python(params.get(field))
                 except formencode.api.Invalid, inv:
                     errors[field] = inv
 
@@ -36,13 +37,13 @@ class DecoratedController(WSGIController):
                 raise formencode.api.Invalid(
                     formencode.schema.format_compound_error(errors),
                     params, None, error_dict=errors)
-        elif isinstance(validation.validators, formencode.Schema):
-            params = validation.validators.to_python(params)
+        elif isinstance(vnew_alidation.validators, formencode.Schema):
+            new_params = validation.validators.to_python(params)
         elif hasattr(validation.validators, 'validate'):
             params = validation.validators.validate(params)
 
 
-        return params
+        return new_params
 
     def _render_response(self, controller, response):
         """Render response takes the dictionary returned by the
@@ -62,37 +63,37 @@ class DecoratedController(WSGIController):
         """
         content_type, engine_name, template_name, exclude_names = \
             controller.decoration.lookup_template_engine(pylons.request)
-        
+
         # Always set content type
         pylons.response.headers['Content-Type'] = content_type 
-        
+
         req = pylons.request
-        
+
         if template_name is None:
             return response
-        
+
         #Prepare the engine, if it's not already been prepared.
-        
+
         if engine_name not in _configured_engines():
             from pylons import config
             template_options = dict(config).get('buffet.template_options', {})
             pylons.buffet.prepare(engine_name, **template_options)
             _configured_engines().add(engine_name)
-        
+
         # Setup the template namespace, removing anything that the user
         # has marked to be excluded.
         namespace = dict(context=pylons.c)
         namespace.update(response)
-        
+
         for name in exclude_names:
             namespace.pop(name)
-        
+
         # If we are in a test request put the namespace where it can be accessed directly
         if req.environ.get('paste.testing'):
             req.environ['paste.testing_variables']['namespace'] = namespace
             req.environ['paste.testing_variables']['template_name'] = template_name
             req.environ['paste.testing_variables']['exclude_names'] = exclude_names
-        
+
         # Render the result.
         result = pylons.buffet.render(engine_name=engine_name,
                                       template_name=template_name,
@@ -117,7 +118,7 @@ class DecoratedController(WSGIController):
             remainder = []
         try:
             controller, params = func, args
-            pylons.request.headers['tg_format'] = params.pop('tg_format', None)
+            pylons.request.headers['tg_format'] = params.get('tg_format', None)
 
             # Validate user input
             controller.decoration.run_hooks('before_validate', remainder,
