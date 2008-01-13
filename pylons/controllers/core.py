@@ -4,13 +4,12 @@ import logging
 import types
 import warnings
 
-from paste.wsgiwrappers import WSGIResponse
 from webob.exc import HTTPException, HTTPNotFound, status_map
 
 import pylons
 from pylons.controllers.util import Response
 
-__all__ = ['Controller', 'WSGIController']
+__all__ = ['WSGIController']
 
 log = logging.getLogger(__name__)
 
@@ -220,56 +219,4 @@ class WSGIController(object):
         
         if log_debug:
             log.debug("Response assumed to be WSGI content, returning un-touched")
-        return response
-
-
-class Controller(WSGIController):
-    """Deprecated Pylons Controller for Web Requests
-    
-    All Pylons projects should use the WSGIController.
-    """
-    def __init__(self, *args, **kwargs):
-        warnings.warn("Controller class is deprecated, switch to using the"
-                      "WSGIController class", DeprecationWarning, 2)
-        WSGIController.__init__(self, *args, **kwargs)
-    
-    def __call__(self, *args, **kargs):
-        """Makes our controller a callable to handle requests
-        
-        This is called when dispatched to as the Controller class docs explain
-        more fully.
-        """
-        req = pylons.request._current_obj()
-        
-        # Keep private methods private
-        if req.environ['pylons.routes_dict'].get('action', '').startswith('_'):
-            return WSGIResponse(code=404)
-        
-        if hasattr(self, '__before__'):
-            self._inspect_call(self.__before__, **kargs)
-        response = self._dispatch_call()
-        
-        # If its not a WSGI response, and we have content, it needs to
-        # be wrapped in the response object
-        if hasattr(response, 'wsgi_response'):
-            # It's either a legacy WSGIResponse object, or an exception
-            # that got tossed. Strip headers if its anything other than a
-            # 2XX status code, and strip cookies if its anything other than
-            # a 2XX or 3XX status code.
-            if response.status_code < 300:
-                response.headers.update(pylons.response.headers)
-            if response.status_code < 400:
-                for c in pylons.response.cookies.values():
-                    response.headers.add('Set-Cookie', c.output(header=''))
-            registry = req.environ['paste.registry']
-            registry.replace(pylons.response, response)
-        elif isinstance(response, types.GeneratorType):
-            pylons.response.content = response
-        elif isinstance(response, basestring):
-            pylons.response.write(response)
-        response = pylons.response._current_obj()
-        
-        if hasattr(self, '__after__'):
-            self._inspect_call(self.__after__)
-        
         return response
