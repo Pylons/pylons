@@ -53,5 +53,6 @@ class SetupCacheGlobal(object):
         environ['pylons.pylons'] = py_obj
         registry.register(pylons.request, req)
         registry.register(pylons.response, resp)
+        resp.content_type = 'text/html'
         resp.charset = 'utf-8'
         return self.app(environ, start_response)
