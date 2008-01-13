@@ -2,6 +2,9 @@ Pylons Changelog
 =================
 
 0.9.7 (**tip**)
+* Removed use of WSGIRequest/WSGIResponse and replaced with WebOb subclasses
+  that implement methods to make it backwards compatible with the Paste
+  wsgiwrappers.
 * Fixed missing import in template controller.
 * Deprecated function uses string substitution to avoid Nonetype error when
   Python optimization is on. Fixes #334.

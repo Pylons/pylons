@@ -7,15 +7,54 @@ import warnings
 
 import paste.httpexceptions as httpexceptions
 from routes import url_for
+from webob import Request as WebObRequest
+from webob import Response as WebObResponse
 from webob.exc import status_map
 
 import pylons
 import pylons.legacy
 
-__all__ = ['abort', 'etag_cache', 'redirect_to']
+__all__ = ['abort', 'etag_cache', 'redirect_to', 'Request', 'Response']
 
 log = logging.getLogger(__name__)
 
+class Request(WebObRequest):
+    charset = 'utf-8'
+    unicode_errors = 'replace'
+    language = 'en-us'
+    
+    def determine_browser_charset(self):
+        return self.accept_charset
+    
+    def languages(self):
+        return self.accept_language.best_matches(self.language)
+    languages = property(languages)
+    
+    def match_accept(self, mimetypes):
+        return self.accept.first_match(mimetypes)
+
+
+class Response(WebObResponse):
+    default_content_type = 'text/html'
+    errors = 'strict'
+    content = WebObResponse.body
+    
+    def determine_charset(self):
+        return self.charset
+    
+    def has_header(self, header):
+        return header in self.headers
+    
+    def get_content(self):
+        return self.body
+    
+    def write(self, content):
+        self.body_file.write(content)
+    
+    def wsgi_response(self):
+        return self.status, self.headers, self.body
+
+    
 def etag_cache(key=None):
     """Use the HTTP Entity Tag cache for Browser side caching
     
@@ -44,15 +83,10 @@ def etag_cache(key=None):
     pylons.response.headers['ETag'] = key
     if str(key) == if_none_match:
         log.debug("ETag match, returning 304 HTTP Not Modified Response")
-        if pylons.config['pylons.use_webob']:
-            pylons.response.headers.pop('Content-Type')
-            pylons.response.headers.pop('Cache-Control')
-            pylons.response.headers.pop('Pragma')
-            raise status_map[304]()
-        else:
-            pylons.response.headers.pop('Content-Type')
-            pylons.response.headers.pop('Cache-Control')
-            raise httpexceptions.HTTPNotModified()
+        pylons.response.headers.pop('Content-Type')
+        pylons.response.headers.pop('Cache-Control')
+        pylons.response.headers.pop('Pragma')
+        raise status_map[304]()
     else:
         log.debug("ETag didn't match, returning response object")
         return pylons.response
@@ -65,11 +99,8 @@ def abort(status_code=None, detail="", headers=None, comment=None):
     attribute will be used as the Location header should one not be specified
     in the headers attribute.
     """
-    if pylons.config['pylons.use_webob']:
-        exc = status_map[status_code](detail=detail, headers=headers, 
-                                      comment=comment)
-    else:
-        exc = httpexceptions.get_exception(status_code)(detail, headers, comment)
+    exc = status_map[status_code](detail=detail, headers=headers, 
+                                  comment=comment)
     log.debug("Aborting request, status: %s, detail: %r, headers: %r, "
               "comment: %r", status_code, detail, headers, comment)
     raise exc
@@ -85,25 +116,10 @@ def redirect_to(*args, **kargs):
 
         redirect_to('home_page', _code=303)
     
-    ``Deprecated``
-    A Response object can be passed in as _response which will have the headers
-    and cookies extracted from it and added into the redirect issued."""
+    """
     response = kargs.pop('_response', None)
     status_code = kargs.pop('_code', 302)
-    if pylons.config['pylons.use_webob']:
-        exc = status_map[status_code]
-        found = exc(location=url_for(*args, **kargs))
-        log.debug("Generating %s redirect" % status_code)
-        return found
-    exc = httpexceptions.get_exception(status_code)
-    found = exc(url_for(*args, **kargs))
+    exc = status_map[status_code]
+    found = exc(location=url_for(*args, **kargs))
     log.debug("Generating %s redirect" % status_code)
-    if response:
-        warnings.warn(pylons.legacy.redirect_response_warning,
-                      DeprecationWarning, 2)
-        log.debug("Merging provided Response object into redirect")
-        if str(response.status_code).startswith('3'):
-            found.code = response.status_code
-        for c in response.cookies.values():
-            found.headers.add('Set-Cookie', c.output(header=''))
     raise found

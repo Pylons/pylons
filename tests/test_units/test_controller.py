@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from paste.fixture import TestApp
 from paste.registry import RegistryManager
-import paste.httpexceptions as httpexceptions
+from webob.exc import status_map
 
 import pylons
 from pylons.controllers import WSGIController
@@ -32,7 +32,7 @@ class BasicWSGIController(WSGIController):
     
     def use_redirect(self):
         pylons.response.set_cookie('message', 'Hello World')
-        exc = httpexceptions.get_exception(301)
+        exc = status_map[301]
         raise exc('/elsewhere')
     
     def header_check(self):

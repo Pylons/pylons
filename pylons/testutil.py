@@ -1,5 +1,5 @@
 """Utility classes for creating workable pylons controllers for unit testing."""
-from paste.wsgiwrappers import WSGIRequest, WSGIResponse 
+from pylons.controllers.util import Request, Response
 
 import pylons
 from pylons.util import ContextObj, PylonsContext
@@ -30,7 +30,6 @@ class SetupCacheGlobal(object):
         self.setup_g = setup_g
 
     def __call__(self, environ, start_response):
-        pylons.config['pylons.use_webob'] = False
         registry = environ['paste.registry']
         py_obj = PylonsContext()
         environ_config = environ.setdefault('pylons.environ_config', {})
@@ -48,10 +47,11 @@ class SetupCacheGlobal(object):
 
         # Update the environ
         environ.update(self.environ)
-        py_obj.request = req = WSGIRequest(environ)
-        py_obj.response = resp = WSGIResponse()
+        py_obj.request = req = Request(environ)
+        py_obj.response = resp = Response()
         py_obj.c = ContextObj()
         environ['pylons.pylons'] = py_obj
         registry.register(pylons.request, req)
         registry.register(pylons.response, resp)
+        resp.charset = 'utf-8'
         return self.app(environ, start_response)

@@ -61,14 +61,9 @@ def beaker_cache(key="cache_default", expire="never", type=None,
                       cache_key, type)
             result = func(*args, **kwargs)
             glob_response = pylons.response._current_obj()
-            if pylons.config['pylons.use_webob']:
-                headers = glob_response.headerlist
-                status = glob_response.status
-                cookies=None
-            else:
-                headers = glob_response.headers
-                status = glob_response.status_code
-                cookies = glob_response.cookies
+            headers = glob_response.headerlist
+            status = glob_response.status
+            cookies=None
             full_response = dict(headers=headers, status=status,
                                  cookies=cookies, content=result)
             return full_response
@@ -80,13 +75,8 @@ def beaker_cache(key="cache_default", expire="never", type=None,
                                      expiretime=cache_expire, **b_kwargs)
         if response:
             glob_response = pylons.response._current_obj()
-            if pylons.config['pylons.use_webob']:
-                glob_response.headerlist = response['headers']
-                glob_response.status = response['status']
-            else:
-                glob_response.headers = response['headers']
-                glob_response.status_code = response['status']
-                glob_response.cookies = response['cookies']
+            glob_response.headerlist = response['headers']
+            glob_response.status = response['status']
         return response['content']
     return decorator(wrapper)
 
