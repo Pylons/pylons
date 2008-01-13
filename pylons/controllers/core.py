@@ -37,8 +37,8 @@ class WSGIController(object):
     In the event that an action is not found to handle the request, the
     Controller will raise an "Action Not Found" error if in debug mode,
     otherwise a ``404 Not Found`` error will be returned.
-    """
     
+    """
     __pudge_all__ = ['_inspect_call', '__call__', '_get_method_args', 
                      '_dispatch_call']
     _pylons_log_debug = False
