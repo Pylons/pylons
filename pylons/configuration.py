@@ -15,6 +15,7 @@ from paste.deploy.converters import asbool
 
 import pylons.legacy
 import pylons.templating
+from pylons.controllers.util import MIMETypes
 
 
 default_template_engine = 'mako'
@@ -285,6 +286,9 @@ class PylonsConfig(DispatchingConfig):
     
     def set_defaults(self, template_engine):
         conf = self.current_conf()
+        
+        # Load the MIMETypes with its default types
+        MIMETypes.load_defaults()
         
         # Ensure all the keys from defaults are present, load them if not
         for key, val in copy.deepcopy(PylonsConfig.defaults).iteritems():
