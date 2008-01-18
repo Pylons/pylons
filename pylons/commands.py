@@ -258,6 +258,7 @@ class RestControllerCommand(Command):
                  'singularname': singularname,
                  'name': controller_name,
                  'nameprefix': nameprefix,
+                 'package':base_package,
                  'resource_command': command.replace('\n\t', '\n%s#%s' % \
                                                          (' '*4, ' '*9)),
                  'fname': os.path.join(pluraldirectory, pluralname),
