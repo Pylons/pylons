@@ -243,7 +243,7 @@ def abort(status_code=None, detail="", headers=None, comment=None):
                                   comment=comment)
     log.debug("Aborting request, status: %s, detail: %r, headers: %r, "
               "comment: %r", status_code, detail, headers, comment)
-    raise exc
+    raise exc.exception
 
 
 def redirect_to(*args, **kargs):
@@ -262,4 +262,4 @@ def redirect_to(*args, **kargs):
     exc = status_map[status_code]
     found = exc(location=url_for(*args, **kargs))
     log.debug("Generating %s redirect" % status_code)
-    raise found
+    raise found.exception
