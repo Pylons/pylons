@@ -66,7 +66,6 @@ class DecoratedController(WSGIController):
 
         # Always set content type
         pylons.response.headers['Content-Type'] = content_type 
-
         req = pylons.request
 
         if template_name is None:

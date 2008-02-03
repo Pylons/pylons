@@ -1,5 +1,5 @@
 """Object Dispatch Controller"""
-from paste import httpexceptions
+from webob.exc import HTTPNotFound, HTTPException
 
 import pylons
 from pylons.controllers.decorated import DecoratedController
@@ -50,9 +50,9 @@ def object_dispatch(obj, url_path):
         try:
             obj, remainder = find_object(obj, remainder, notfound_handlers)
             return obj, remainder
-        except httpexceptions.HTTPNotFound:
+        except HTTPException:
             if not notfound_handlers:
-                raise
+                raise HTTPNotFound().exception
             name, obj, remainder = notfound_handlers.pop()
             if name == 'default':
                 return obj, remainder
@@ -64,7 +64,7 @@ def object_dispatch(obj, url_path):
 def find_object(obj, remainder, notfound_handlers):
     while True:
         if obj is None:
-            raise httpexceptions.HTTPNotFound()
+            raise HTTPNotFound().exception
         if iscontroller(obj):
             return obj, remainder
 
@@ -82,7 +82,7 @@ def find_object(obj, remainder, notfound_handlers):
             notfound_handlers.append(('lookup', lookup, remainder))
 
         if not remainder:
-            raise httpexceptions.HTTPNotFound()
+            raise HTTPNotFound().exception
         obj = getattr(obj, remainder[0], None)
         remainder = remainder[1:]
 

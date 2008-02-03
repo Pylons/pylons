@@ -59,7 +59,6 @@ class BasicDispatchController(ObjectDispatchController):
 
     sub = SubController()
 
-
 class TestTGController(TestWSGIController):
     def __init__(self, *args, **kargs):
         TestWSGIController.__init__(self, *args, **kargs)
@@ -75,10 +74,10 @@ class TestTGController(TestWSGIController):
 
     def test_tg_style_default(self):
         self.baseenviron['pylons.routes_dict']['action'] = 'route'
-        # Do TG dispatch
         self.baseenviron['pylons.routes_dict']['url'] = 'sdfaswdfsdfa'
         # random string should be caught by the default route
         resp = self.app.get('/sdfaswdfsdfa')
+        print resp
         assert 'Default' in resp.body
 
     def test_tg_style_index(self):

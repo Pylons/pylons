@@ -83,13 +83,13 @@ class WSGIController(object):
         except HTTPException, httpe:
             if log_debug:
                 log.debug("%r method raised HTTPException: %s (code: %s)",
-                          func.__name__, httpe.__class__.__name__, httpe.code,
+                          func.__name__, httpe.__class__.__name__, httpe.wsgi_repsonse.code,
                           exc_info=True)
             result = httpe
             
             # 304 Not Modified's shouldn't have a content-type set
-            if result.status_int == 304:
-                result.headers.pop('Content-Type', None)
+            if result.wsgi_response.status_int == 304:
+                result.wsgi_response.headers.pop('Content-Type', None)
             result._exception = True
         return result
     
@@ -130,9 +130,9 @@ class WSGIController(object):
                 log.debug("Couldn't find %r method to handle response", action)
             if pylons.config['debug']:
                 raise NotImplementedError('Action %r is not implemented' %
-                                          action)
+                                          action).exception
             else:
-                response = HTTPNotFound()
+                response = HTTPNotFound().exception
         return response
     
     def __call__(self, environ, start_response):
