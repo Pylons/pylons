@@ -153,7 +153,7 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
             response = self._dispatch_call()
             # XXX: Legacy WSGIResponse support
             legacy_response = False
-            if hasattr(response, 'wsgi_response'):
+            if hasattr(response, 'content'):
                 form_content = ''.join(response.content)
                 legacy_response = True
             else:
@@ -199,7 +199,7 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
 def determine_response_charset(response):
     """Determine the charset of the specified Response object, returning the
     default system encoding when none is set"""
-    charset = response.determine_charset()
+    charset = response.charset
     if charset is None:
         charset = sys.getdefaultencoding()
     log.debug("Determined result charset to be: %s", charset)
