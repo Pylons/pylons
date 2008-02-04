@@ -116,7 +116,7 @@ class TestValidateDecorator(TestWSGIController):
         response = self.app.post('/hello?hello=1&hello=2&hello=hi',
                                  extra_environ=self.environ)
         assert 'Bad Hello!&nbsp;' in response
-        assert "[None, None, 'Please enter an integer value']" in response
+        assert "[None, None, u'Please enter an integer value']" in response
 
     def test_hello_custom_failed(self):
         self.environ['pylons.routes_dict']['action'] = 'hello_custom'
@@ -124,8 +124,8 @@ class TestValidateDecorator(TestWSGIController):
             self.app.post('/hello_custom?hello=1&hello=2&hello=hi',
                           extra_environ=self.environ)
         assert 'Bad Hello!&nbsp;' in response
-        assert "[None, None, 'Please enter an integer value']" in response
-        assert ("""<p><span class="pylons-error">[None, None, 'Please enter """
+        assert "[None, None, u'Please enter an integer value']" in response
+        assert ("""<p><span class="pylons-error">[None, None, u'Please enter """
                 """an integer value']</span></p>""") in response
 
 def test_encode_formencode_errors():
