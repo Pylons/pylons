@@ -9,7 +9,6 @@ import simplejson
 from decorator import decorator
 from expose import expose, validate as new_validate
 from formencode import htmlfill
-from paste.util.multidict import UnicodeMultiDict as LegacyUnicodeMultiDict
 from webob import UnicodeMultiDict
 
 import pylons
@@ -111,8 +110,7 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
         else:
             params = request.params
         
-        is_unicode_params = isinstance(params, (UnicodeMultiDict,
-                                                LegacyUnicodeMultiDict))
+        is_unicode_params = isinstance(params, UnicodeMultiDict)
         params = params.mixed()
         if variable_decode:
             log.debug("Running variable_decode on params")
