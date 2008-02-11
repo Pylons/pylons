@@ -130,7 +130,7 @@ class WSGIController(object):
                 log.debug("Couldn't find %r method to handle response", action)
             if pylons.config['debug']:
                 raise NotImplementedError('Action %r is not implemented' %
-                                          action).exception
+                                          action)
             else:
                 response = HTTPNotFound().exception
         return response
