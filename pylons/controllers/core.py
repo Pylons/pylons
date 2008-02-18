@@ -83,7 +83,7 @@ class WSGIController(object):
         except HTTPException, httpe:
             if log_debug:
                 log.debug("%r method raised HTTPException: %s (code: %s)",
-                          func.__name__, httpe.__class__.__name__, httpe.wsgi_repsonse.code,
+                          func.__name__, httpe.__class__.__name__, httpe.wsgi_response.code,
                           exc_info=True)
             result = httpe
             
