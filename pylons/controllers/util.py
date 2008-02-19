@@ -151,8 +151,18 @@ def mimetype(extension):
     """Check the Routes match and client HTTP Accept to attempt to use
     the appropriate mime-type
     
+    When a content-type is matched, the appropriate response content
+    type is set as well.
+    
     This works best with Routes ``map.resource`` which sets up routes
-    that can accept matches with a specific extension.
+    that can accept matches with a specific extension. If you would
+    like to write your own routes that are compatible with the mimetype
+    extension checking, designate the extension portion of the URL as
+    the 'format' path variable.
+    
+    Since browsers generally allow for any content-type, but should be
+    sent HTML when possible, the html mimetype check should always come
+    first, as shown in the example below.
     
     Example:
         def somaction(self):
@@ -183,12 +193,12 @@ def mimetype(extension):
         mime_type = MIMETypes.extension_mapping[route_format]
         resolved_extension = MIMETypes.type_mapping[mime_type]
         if resolved_extension == extension:
-            pylons.response.headers['Content-Type'] = mime_type
+            pylons.response.content_type = mime_type
             return True
     
     # Check to see if this matches in the Request accept
-    if return_type in request.accept_language:
-        pylons.response.headers['Content-Type'] = return_type
+    if return_type in request.accept:
+        pylons.response.content_type = return_type
         return True
     
     # Didn't match the route format or the Request accept, don't match
