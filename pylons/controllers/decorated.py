@@ -23,10 +23,11 @@ class DecoratedController(WSGIController):
         validation = getattr(controller.decoration, 'validation', None)
         if validation is None:
             return params
-
+        
+        new_params = None
         if isinstance(validation.validators, dict):
             errors = {}
-            new_params = {}
+            #new_params = {}
             for field, validator in validation.validators.iteritems():
                 try:
                     new_params[field] = validator.to_python(params.get(field))
@@ -37,12 +38,13 @@ class DecoratedController(WSGIController):
                 raise formencode.api.Invalid(
                     formencode.schema.format_compound_error(errors),
                     params, None, error_dict=errors)
-        elif isinstance(vnew_alidation.validators, formencode.Schema):
+        elif isinstance(validation.validators, formencode.Schema):
             new_params = validation.validators.to_python(params)
         elif hasattr(validation.validators, 'validate'):
-            params = validation.validators.validate(params)
+            new_params = validation.validators.validate(params)
 
-
+        if new_params is None:
+            return params
         return new_params
 
     def _render_response(self, controller, response):
