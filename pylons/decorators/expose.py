@@ -203,6 +203,9 @@ class validate(object):
         self.validators = validators
         self.error_handler = error_handler
 
+    def _before_validate(self, controller, params):
+        pass
+    
     def __call__(self, func):
         deco = Decoration.get_decoration(func)
         deco.validation = self
