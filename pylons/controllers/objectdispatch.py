@@ -17,8 +17,9 @@ class ObjectDispatchController(DecoratedController):
           url
             url as string
         """
+
         if url is None:
-            url_path = pylons.request.path_info.split('/')[1:]
+            url_path = pylons.request.path.split('/')[1:]
         else:
             url_path = url.split('/')
 
@@ -35,7 +36,7 @@ class ObjectDispatchController(DecoratedController):
 
     def _perform_call(self, func, args):
         self._initialize_validation_context()
-        controller, remainder, params = self._get_routing_info(args['url'])
+        controller, remainder, params = self._get_routing_info(args.get['url'])
         return DecoratedController._perform_call(self, controller, params,
                                                  remainder=remainder)
 
@@ -45,6 +46,9 @@ class ObjectDispatchController(DecoratedController):
 
 def object_dispatch(obj, url_path):
     remainder = url_path
+    from pdb import set_trace
+    set_trace()
+
     notfound_handlers = []
     while True:
         try:

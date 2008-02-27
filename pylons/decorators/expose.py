@@ -51,8 +51,6 @@ class Decoration(object):
         require a template.
         """
         
-        # TODO: Are there some other things like lookup paths which need
-        # to be setup here?
         if content_type is None:
             content_type = '*/*'
         self.engines[content_type] = engine, template, exclude_names
@@ -199,8 +197,11 @@ class expose(object):
 
 class validate(object):
 
-    def __init__(self, validators=None, error_handler=None):
-        self.validators = validators
+    def __init__(self, validators=None, error_handler=None, form=None):
+        if form:
+            self.validators = form
+        if validators:    
+            self.validators = validators
         self.error_handler = error_handler
 
     def _before_validate(self, controller, params):
