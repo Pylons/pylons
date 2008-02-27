@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.7 (**tip**)
+* Fixed paster shell command to no longer search for egg_info dir. Allows
+  usage of paster shell with installed packages. Suggested by Gavin Carothers.
 * Added mimetype function and MIMETypes class for registering mimetypes.
 * WARNING: Removed pylons.Response, so do not attempt to import it or use it
   as it's no longer there. If you must return a new Response object, import

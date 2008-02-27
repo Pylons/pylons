@@ -19,6 +19,7 @@ from paste.script.filemaker import FileOp
 from paste.script.pluginlib import find_egg_info_dir
 
 import pylons.util as util
+import pylons
 
 __all__ = ['ControllerCommand', 'RestControllerCommand', 'ShellCommand']
 
@@ -365,27 +366,20 @@ class ShellCommand(Command):
         # Restore the state of the Pylons special objects
         # (StackedObjectProxies)
         paste.registry.restorer.restoration_begin(request_id)
-
-        # Determine the package name from the .egg-info top_level.txt.
-        egg_info = find_egg_info_dir(here_dir)
-        f = open(os.path.join(egg_info, 'top_level.txt'))
-        packages = [l.strip() for l in f.readlines()
-                    if l.strip() and not l.strip().startswith('#')]
-        f.close()
+                
+        # Determine the package name from the pylons.config object
+        pkg_name = pylons.config['pylons.package']
 
         # Start the rest of our imports now that the app is loaded
         found_base = False
-        for pkg_name in packages:
-            # Import all objects from the base module
-            base_module = pkg_name + '.lib.base'
+        
+        # Import all objects from the base module
+        base_module = pkg_name + '.lib.base'
+        found_base = can_import(base_module)
+        if not found_base:
+            # Minimal template
+            base_module = pkg_name + '.controllers'
             found_base = can_import(base_module)
-            if not found_base:
-                # Minimal template
-                base_module = pkg_name + '.controllers'
-                found_base = can_import(base_module)
-
-            if found_base:
-                break
 
         if not found_base:
             raise ImportError("Could not import base module. Are you sure "
