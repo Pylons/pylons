@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.7 (**tip**)
+* Fixed @validate decorator to no longer catch exceptions should they be
+  raised in the action that is supposed to display a form. Fixes #374.
 * Fixed paster shell command to no longer search for egg_info dir. Allows
   usage of paster shell with installed packages. Suggested by Gavin Carothers.
 * Added mimetype function and MIMETypes class for registering mimetypes.

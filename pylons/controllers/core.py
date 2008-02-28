@@ -81,6 +81,9 @@ class WSGIController(object):
         try:
             result = self._perform_call(func, args)
         except HTTPException, httpe:
+            if not self._catch_dispatch_exception:
+                raise
+            
             if log_debug:
                 log.debug("%r method raised HTTPException: %s (code: %s)",
                           func.__name__, httpe.__class__.__name__, httpe.wsgi_response.code,
@@ -136,6 +139,9 @@ class WSGIController(object):
         return response
     
     def __call__(self, environ, start_response):
+        # Turn on action exception catching
+        self._catch_dispatch_exception = True
+        
         log_debug = self._pylons_log_debug
         
         # Keep a local reference to the req/response objects
