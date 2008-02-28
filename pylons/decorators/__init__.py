@@ -160,7 +160,11 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
             else:
                 form_content = response
                 response = pylons.response._current_obj()
-
+            
+            # If the form_content is an exception response, return it
+            if hasattr(form_content, '_exception'):
+                return form_content
+            
             # Ensure htmlfill can safely combine the form_content, params and
             # errors variables (that they're all of the same string type)
             if not is_unicode_params:
