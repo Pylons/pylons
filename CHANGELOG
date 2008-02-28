@@ -2,6 +2,7 @@ Pylons Changelog
 =================
 
 0.9.7 (**tip**)
+* Fixed minimal template not replacing variables properly. Fixes #377.
 * Fixed @validate decorator to no longer catch exceptions should they be
   raised in the action that is supposed to display a form. Fixes #374.
 * Fixed paster shell command to no longer search for egg_info dir. Allows
