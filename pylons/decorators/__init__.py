@@ -24,7 +24,7 @@ def jsonify(func, *args, **kwargs):
     turn the result into JSON, with a content-type of 'text/javascript'
     and output it.
     """
-    pylons.response.headers['Content-Type'] = 'text/javascript'
+    pylons.response.headers['Content-Type'] = 'application/json'
     data = func(*args, **kwargs)
     if isinstance(data, list):
         msg = "JSON responses with Array envelopes are susceptible to " \
