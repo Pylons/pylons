@@ -2,6 +2,7 @@ Pylons Changelog
 =================
 
 0.9.7 (**tip**)
+* Added default input encoding for Mako to utf-8. Suggested in #348.
 * Fixed paster controller to raise an error if the controller for it already
   exists. Fixes #279.
 * Added __init__.py to template dir in project template if the template engine
