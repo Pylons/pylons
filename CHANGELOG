@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.7 (**tip**)
+* Fixed paster controller to raise an error if the controller for it already
+  exists. Fixes #279.
 * Added __init__.py to template dir in project template if the template engine
   is genshi or kid. Fixes #353.
 * Fixed jsonify to use application/json as its the proper mime-type and now
