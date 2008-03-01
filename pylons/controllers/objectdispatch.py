@@ -31,7 +31,7 @@ class ObjectDispatchController(DecoratedController):
             pylons.c.controller_url = url
         if remainder and remainder[-1] == '':
             remainder.pop()
-        return controller, remainder, pylons.request.params
+        return controller, remainder, pylons.request.str_params
 
     def _perform_call(self, func, args):
         self._initialize_validation_context()
