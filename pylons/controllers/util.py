@@ -242,6 +242,21 @@ def etag_cache(key=None):
         return pylons.response
 
 
+def forward(wsgi_app):
+    """Forward the request to a WSGI application
+    
+    .. code-block:: Python
+    
+        return forward(FileApp('filename'))
+    
+    """
+    environ = pylons.request.environ
+    controller = environ.get('pylons.controller')
+    assert controller
+    assert hasattr(controller, 'start_response')
+    return wsgi_app(environ, controller.start_response)
+
+
 def abort(status_code=None, detail="", headers=None, comment=None):
     """Aborts the request immediately by returning an HTTP exception
     

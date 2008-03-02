@@ -250,6 +250,9 @@ class PylonsApp(object):
             controller = controller()
             controller._pylons_log_debug = log_debug
         
+        # Add a reference to the controller app located
+        environ['pylons.controller'] = controller
+        
         # Controller is assumed to handle a WSGI call
         if log_debug:
             log.debug("Calling controller class with WSGI interface")
