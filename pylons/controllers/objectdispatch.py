@@ -36,7 +36,7 @@ class ObjectDispatchController(DecoratedController):
 
     def _perform_call(self, func, args):
         self._initialize_validation_context()
-        controller, remainder, params = self._get_routing_info(args.get['url'])
+        controller, remainder, params = self._get_routing_info(args.get('url'))
         return DecoratedController._perform_call(self, controller, params,
                                                  remainder=remainder)
 
@@ -46,8 +46,6 @@ class ObjectDispatchController(DecoratedController):
 
 def object_dispatch(obj, url_path):
     remainder = url_path
-    from pdb import set_trace
-    set_trace()
 
     notfound_handlers = []
     while True:

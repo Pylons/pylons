@@ -19,6 +19,7 @@ from paste.script.filemaker import FileOp
 from paste.script.pluginlib import find_egg_info_dir
 
 import pylons.util as util
+import pylons
 
 __all__ = ['ControllerCommand', 'RestControllerCommand', 'ShellCommand']
 
@@ -68,6 +69,13 @@ def validate_name(name):
             "    map.connect('%s', controller='my_%s')" \
             % (name, name, name, name))
     return True
+
+
+def check_controller_existance(base_package, name): 
+    """Check if given controller already exists in project.""" 
+    filename = os.path.join(base_package, 'controllers', name + '.py') 
+    if os.path.exists(filename): 
+        raise BadCommand('Controller %s already exists.' % name)
 
 
 class ControllerCommand(Command):
@@ -139,6 +147,8 @@ class ControllerCommand(Command):
             if not fullname.startswith(os.sep):
                 fullname = os.sep + fullname
             testname = fullname.replace(os.sep, '_')[1:]
+            check_controller_existance(base_package, name)
+            
             file_op.template_vars.update(
                 {'name': controller_name,
                  'fname': os.path.join(directory, name),
@@ -230,7 +240,9 @@ class RestControllerCommand(Command):
                 importstatement = "from %s.controllers import *" % base_package
             else:
                 importstatement = "from %s.lib.base import *" % base_package
-
+            
+            check_controller_existance(base_package, name)
+            
             # Setup the controller
             fullname = os.path.join(pluraldirectory, pluralname)
             controller_name = util.class_name_from_module_name(
@@ -365,27 +377,20 @@ class ShellCommand(Command):
         # Restore the state of the Pylons special objects
         # (StackedObjectProxies)
         paste.registry.restorer.restoration_begin(request_id)
-
-        # Determine the package name from the .egg-info top_level.txt.
-        egg_info = find_egg_info_dir(here_dir)
-        f = open(os.path.join(egg_info, 'top_level.txt'))
-        packages = [l.strip() for l in f.readlines()
-                    if l.strip() and not l.strip().startswith('#')]
-        f.close()
+                
+        # Determine the package name from the pylons.config object
+        pkg_name = pylons.config['pylons.package']
 
         # Start the rest of our imports now that the app is loaded
         found_base = False
-        for pkg_name in packages:
-            # Import all objects from the base module
-            base_module = pkg_name + '.lib.base'
+        
+        # Import all objects from the base module
+        base_module = pkg_name + '.lib.base'
+        found_base = can_import(base_module)
+        if not found_base:
+            # Minimal template
+            base_module = pkg_name + '.controllers'
             found_base = can_import(base_module)
-            if not found_base:
-                # Minimal template
-                base_module = pkg_name + '.controllers'
-                found_base = can_import(base_module)
-
-            if found_base:
-                break
 
         if not found_base:
             raise ImportError("Could not import base module. Are you sure "

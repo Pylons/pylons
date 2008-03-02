@@ -2,6 +2,18 @@ Pylons Changelog
 =================
 
 0.9.7 (**tip**)
+* Added default input encoding for Mako to utf-8. Suggested in #348.
+* Fixed paster controller to raise an error if the controller for it already
+  exists. Fixes #279.
+* Added __init__.py to template dir in project template if the template engine
+  is genshi or kid. Fixes #353.
+* Fixed jsonify to use application/json as its the proper mime-type and now
+  used all over the net.
+* Fixed minimal template not replacing variables properly. Fixes #377.
+* Fixed @validate decorator to no longer catch exceptions should they be
+  raised in the action that is supposed to display a form. Fixes #374.
+* Fixed paster shell command to no longer search for egg_info dir. Allows
+  usage of paster shell with installed packages. Suggested by Gavin Carothers.
 * Added mimetype function and MIMETypes class for registering mimetypes.
 * WARNING: Removed pylons.Response, so do not attempt to import it or use it
   as it's no longer there. If you must return a new Response object, import

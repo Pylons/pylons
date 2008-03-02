@@ -24,7 +24,7 @@ def jsonify(func, *args, **kwargs):
     turn the result into JSON, with a content-type of 'text/javascript'
     and output it.
     """
-    pylons.response.headers['Content-Type'] = 'text/javascript'
+    pylons.response.headers['Content-Type'] = 'application/json'
     data = func(*args, **kwargs)
     if isinstance(data, list):
         msg = "JSON responses with Array envelopes are susceptible to " \
@@ -137,6 +137,9 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
                     except formencode.Invalid, error:
                         errors[field] = error
         if errors:
+            # Turn off exception catching in dispatch_call
+            self._catch_dispatch_exception = False
+            
             log.debug("Errors found in validation, parsing form with htmlfill "
                       "for errors")
             request.environ['REQUEST_METHOD'] = 'GET'
@@ -157,7 +160,11 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
             else:
                 form_content = response
                 response = pylons.response._current_obj()
-
+            
+            # If the form_content is an exception response, return it
+            if hasattr(form_content, '_exception'):
+                return form_content
+            
             # Ensure htmlfill can safely combine the form_content, params and
             # errors variables (that they're all of the same string type)
             if not is_unicode_params:
