@@ -27,12 +27,167 @@ import pkg_resources
 
 import pylons
 
-__all__ = ['Buffet', 'MyghtyTemplatePlugin', 'render', 'render_response']
+__all__ = ['Buffet', 'MyghtyTemplatePlugin', 'mako_render', 'render', 
+           'render_response']
 
 PYLONS_VARS = ['c', 'config', 'g', 'h', 'render', 'request', 'session',
                'translator', 'ungettext', '_', 'N_']
 
 log = logging.getLogger(__name__)
+
+def pylons_globals():
+    """Create and return a dictionary of global Pylons variables
+    
+    Render functions should call this to retrieve a list of global
+    Pylons variables that should be included in the global template
+    namespace if possible.
+    
+    Pylons variables that are returned in the dictionary:
+        c, g, h, _, N_, config, request, response, translator,
+        ungettext
+    
+    """
+    conf = pylons.config._current_obj()
+    pylons_vars = dict(
+        c=pylons.c._current_obj(),
+        config=conf,
+        g=conf['pylons.g'],
+        h=conf.get('pylons.h') or pylons.h._current_obj(),
+        request=pylons.request._current_obj(),
+        response=pylons.response._current_obj(),
+        translator=pylons.translator._current_obj(),
+        ungettext=pylons.i18n.ungettext,
+        _=pylons.i18n._,
+        N_=pylons.i18n.N_
+    )
+    
+    # If the session was overriden to be None, don't populate the session
+    # var
+    if pylons.config['pylons.environ_config'].get('session', True):
+        pylons_vars['session'] = pylons.session._current_obj()
+    log.debug("Created render namespace with pylons vars: %s", pylons_vars)
+    return pylons_vars
+
+
+def cached_template(template_name, render_func, ns_options=(),
+                    cache_key=None, cache_type=None, cache_expire=None,
+                    **kwargs):
+    """Cache and render a template
+    
+    Cache a template to the namespace ``template_name``, along with a
+    specific key if provided.
+    
+    Basic Options
+    
+    ``template_name``
+        Name of the template, which is used as the template namespace.
+    ``render_func``
+        Function used to generate the template should it no longer be
+        valid or doesn't exist in the cache.
+    ``ns_options``
+        Tuple of strings, that should correspond to keys likely to be
+        in the ``kwargs`` that should be used to construct the
+        namespace used for the cache. For example, if the template
+        language supports the 'fragment' option, the namespace should
+        include it so that the cached copy for a template is not the
+        same as the fragment version of it.
+    
+    Caching options (uses Beaker caching middleware)
+    
+    ``cache_key``
+        Key to cache this copy of the template under.
+    ``cache_type``
+        Valid options are ``dbm``, ``file``, ``memory``, ``database``,
+        or ``memcached``.
+    ``cache_expire``
+        Time in seconds to cache this template with this ``cache_key`` for.
+        Or use 'never' to designate that the cache should never expire.
+    
+    The minimum key required to trigger caching is ``cache_expire='never'``
+    which will cache the template forever seconds with no key.
+    
+    """
+    # If one of them is not None then the user did set something
+    if cache_key is not None or cache_expire is not None or cache_type \
+        is not None:
+        if not cache_type:
+            cache_type = 'dbm'
+        if not cache_key:
+            cache_key = 'default'     
+        if cache_expire == 'never':
+            cache_expire = None
+        namespace = template_name
+        for name in ns_options:
+            namespace += str(kwargs.get(name))
+        cache = pylons.cache.get_cache(namespace)
+        content = cache.get_value(cache_key, createfunc=render_func, 
+            type=cache_type, expiretime=cache_expire)
+        return content
+    else:
+        return render_func()
+
+
+def mako_render(template_name, **kwargs):
+    """Render a template with Mako
+    
+    Accepts the cache options ``cache_key``, ``cache_type``, and
+    ``cache_expire`` in addition to other keyword arguments that should
+    be passed into Mako's ``Template.render`` function.
+    
+    """
+    # First, get the globals
+    globs = pylons_globals()
+    
+    # Try and grab a template reference
+    try:
+        template = globs['g'].mako_lookup.get_template(template_name)
+    except AttributeError:
+        from mako.lookup import TemplateLookup
+        # Make the Mako TemplateLookup instance since it wasn't there
+        globs['g'].mako_lookup =  TemplateLookup(
+            directories=globs['config']['pylons.paths']['templates'])
+        template = globs['g'].mako_lookup.get_template(template_name)
+    
+    # Update the template variables with the Pylons globals
+    kwargs.update(globs)
+    
+    def render_template():
+        return template.render(**kwargs)
+    
+    return cached_template(template_name, render_template, 
+                           ns_options=('fragment',), **kwargs)
+
+
+def genshi_render(template_name, **kwargs):
+    """Render a template with Genshi
+    
+    Accepts the cache options ``cache_key``, ``cache_type``, and
+    ``cache_expire`` in addition to other keyword arguments that should
+    be passed into Mako's ``Template.render`` function.
+    
+    
+    """
+    # First, get the globals
+    globs = pylons_globals()
+    
+    # Try and grab a template reference
+    try:
+        template = globs['g'].genshi_loader.load(template_name)
+    except AttributeError:
+        from genshi.template import TemplateLoader
+        # Make the Genshi TemplateLoader instance since it wasn't there
+        globs['g'].genshi_loader =  TemplateLoader(
+            globs['config']['pylons.paths']['templates'])
+        template = globs['g'].genshi_loader.load(template_name)
+    
+    # Update the template variables with the Pylons globals
+    kwargs.update(globs)
+    
+    def render_template():
+        return template.generate(**kwargs).render()
+    
+    return cached_template(template_name, render_template, 
+                           ns_options=('fragment', 'format'), **kwargs)
 
 class BuffetError(Exception):
     """Buffet Exception"""
@@ -81,31 +236,7 @@ class Buffet(object):
                  root=template_root)
         log.debug("Adding %s template language for use with Buffet", 
                   engine_name)
-    
-    def _update_names(self, ns):
-        """Return a dict of Pylons vars and their respective objects updated
-        with the ``ns`` dict."""
-        d = dict(
-            c=pylons.c._current_obj(),
-            config=pylons.config._current_obj(),
-            g=pylons.g._current_obj(),
-            h=pylons.config.get('pylons.h') or pylons.h._current_obj(),
-            render=render,
-            request=pylons.request._current_obj(),
-            translator=pylons.translator,
-            ungettext=pylons.i18n.ungettext,
-            _=pylons.i18n._,
-            N_=pylons.i18n.N_
-            )
         
-        # If the session was overriden to be None, don't populate the session
-        # var
-        if pylons.config['pylons.environ_config'].get('session', True):
-            d['session'] = pylons.session._current_obj()
-        d.update(ns)
-        log.debug("Updated render namespace with pylons vars: %s", d)
-        return d
-    
     def render(self, engine_name=None, template_name=None,
                include_pylons_variables=True, namespace=None, 
                cache_key=None, cache_expire=None, cache_type=None, **options):
@@ -168,7 +299,7 @@ class Buffet(object):
                     options[key] = namespace.pop(key)
 
             if include_pylons_variables:
-                namespace['_global_args'] = self._update_names({})
+                namespace['_global_args'] = pylons_globals()
             else:
                 namespace['_global_args'] = {}
             
@@ -185,9 +316,9 @@ class Buffet(object):
                     raise BuffetError('You must specify ``namespace`` when '
                                       '``include_pylons_variables`` is False')
                 else:
-                    namespace = self._update_names({})
+                    namespace = pylons_globals()
             elif include_pylons_variables:
-                namespace = self._update_names(namespace)
+                namespace = namespace.update(pylons_globals())
             
             if not full_path.startswith(os.path.sep) and not \
                     engine_name.startswith('pylons') and not \
@@ -299,7 +430,6 @@ for entry_point in \
         if not isinstance(sys.exc_info()[1], DistributionNotFound) or \
                 entry_point.name != 'pylonsmyghty':
             import traceback
-            import warnings
             tb = StringIO()
             traceback.print_exc(file=tb)
             warnings.warn("Unable to load template engine entry point: '%s': "
