@@ -118,9 +118,6 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
     pylons = pylons.util:PylonsTemplate
     pylons_minimal = pylons.util:MinimalPylonsTemplate
 
-    [python.templating.engines]
-    pylonsmyghty = pylons.templating:MyghtyTemplatePlugin [myghty]
-    
     [nose.plugins]
     pylons = pylons.test:PylonsPlugin
     """,
