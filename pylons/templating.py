@@ -27,8 +27,8 @@ import pkg_resources
 
 import pylons
 
-__all__ = ['Buffet', 'MyghtyTemplatePlugin', 'mako_render', 'render', 
-           'render_response']
+__all__ = ['Buffet', 'MyghtyTemplatePlugin', 'render', 'render_genshi', 
+           'render_mako', 'render_response']
 
 PYLONS_VARS = ['c', 'config', 'g', 'h', 'render', 'request', 'session',
                'translator', 'ungettext', '_', 'N_']
@@ -127,7 +127,7 @@ def cached_template(template_name, render_func, ns_options=(),
         return render_func()
 
 
-def mako_render(template_name, **kwargs):
+def render_mako(template_name, **kwargs):
     """Render a template with Mako
     
     Accepts the cache options ``cache_key``, ``cache_type``, and
@@ -158,7 +158,7 @@ def mako_render(template_name, **kwargs):
                            ns_options=('fragment',), **kwargs)
 
 
-def genshi_render(template_name, **kwargs):
+def render_genshi(template_name, **kwargs):
     """Render a template with Genshi
     
     Accepts the cache options ``cache_key``, ``cache_type``, and
@@ -318,7 +318,9 @@ class Buffet(object):
                 else:
                     namespace = pylons_globals()
             elif include_pylons_variables:
-                namespace = namespace.update(pylons_globals())
+                globs = pylons_globals()
+                globs.update(namespace)
+                namespace = globs
             
             if not full_path.startswith(os.path.sep) and not \
                     engine_name.startswith('pylons') and not \
