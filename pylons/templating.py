@@ -6,7 +6,7 @@ Render functions and helpers
 ``pylons.templating`` includes several basic render functions, 
 ``render_mako`` and ``render_genshi`` that render templates from the
 file-system with the assumption that variables intended for the 
-template will be attached to ``tmpl_context`` (hereaftr referred to
+template will be attached to ``tmpl_context`` (hereafter referred to
 by its short name of ``c`` which it is commonly imported as).
 
 The default render functions work with the template language loader
