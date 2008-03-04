@@ -1,4 +1,126 @@
-"""Buffet templating plugin and render functions
+"""Render functions and helpers, including legacy Buffet implementation
+
+Render functions and helpers
+============================
+
+``pylons.templating`` includes several basic render functions, 
+``render_mako`` and ``render_genshi`` that render templates from the
+file-system with the assumption that variables intended for the 
+template will be attached to ``tmpl_context`` (hereaftr referred to
+by its short name of ``c`` which it is commonly imported as).
+
+The default render functions work with the template language loader
+object that is setup on the ``g`` globals object in the project's
+``config/environment.py``.
+
+Usage
+-----
+
+Generally, one of the render functions will be imported in the 
+controller. Variables intended for the template are attached to the
+``c`` object.
+
+.. tip ::
+``tmpl_context`` (template context) is abbreviated to ``c`` instead of
+its full name since it will likely be used extensively and it's much
+faster to use ``c``. Of course, for users that can't tolerate 
+one-letter variables, feel free to not import ``tmpl_context`` as 
+``c`` as both names are available in templates as well.
+
+Example of rendering a template with some variables:
+
+.. sourcecode:: python
+    from pylons import tmpl_context as c
+    from pylons.templating import render_mako as render
+
+    from sampleproject.lib.base import BaseController
+
+
+    class SampleController(BaseController):
+
+        def index(self):
+            c.first_name = "Joe"
+            c.last_name = "Smith"
+            return render('/some/template.html')
+
+And the accompanying Mako template:
+
+.. sourcecode:: mako
+    Hello ${c.first name}, I see your lastname is ${c.last_name}!
+
+Your controller will have additional default imports for commonly used
+functions.
+
+Template Globals
+----------------
+
+Templates rendered in Pylons should include the default Pylons globals
+as the ``render_mako`` and ``render_genshi`` functions. The full list
+of Pylons globals that are included the template's namespace are:
+
+- c -- Template context object
+- tmpl_context -- Template context object
+- config -- Pylons configuration object (acts as a dict)
+- g -- Project application globals object
+- h -- Project helpers module reference
+- request -- Pylons request object for this request
+- response -- Pylons response object for this request
+- translator -- Gettext translator object configured for current locale
+- ungettext -- Unicode capable version of gettext's ngettext function
+  (handles plural translations)
+- _ -- Unicode capable gettext translate function
+- N_ -- gettext no-op function to mark a string for translation, but
+  doesn't actually translate
+
+Writing your own render function
+--------------------------------
+
+The default render function doesn't fully expose template language
+capabilities as various template languages have different sets of
+functionality. If you need to use specific features in Genshi, or
+another template language entirely, a custom render function should
+be made.
+
+Two helper functions for use with the render function make it easy to
+include the common Pylons globals that are useful in a template as well
+as enabling easy use of cache capabilities. The ``pylons_globals`` and
+``cached_template`` functions can be used if desired.
+
+Generally, the custom render function should reside in your project's
+``lib/`` directory, probably in ``base.py``.
+
+Here's a sample Genshi render function as it would look in a project's
+``lib/base.py`` that doesn't fully render the result to a string, and
+rather than use ``c`` assumes that a dict is passed in to be used in
+the templates global namespace. It also returns a Genshi stream instead
+of the rendered string.
+
+.. sourcecode:: python
+    from pylons.templating import pylons_globals
+    
+    def render(template_name, tmpl_vars):
+        # First, get the globals
+        globs = pylons_globals()
+
+        # Update the passed in vars with the globals
+        tmpl_vars.update(globs)
+        
+        # Grab a template reference
+        template = globs['g'].genshi_loader.load(template_name)
+        
+        # Render the template
+        return template.generate(**tmpl_vars)
+
+In 6 short lines of Python code, you have a custom render function that
+makes it easy to get to the features of the template language you need.
+
+.. note::
+    Importing the Pylons globals also makes it easy to get to ``g`` 
+    which is where your template language's persistent template loader
+    should be (if that applies to your chosen template language).
+
+Legacy Buffet templating plugin and render functions
+====================================================
 
 The Buffet object is styled after the original Buffet module that implements
 template language neutral rendering for CherryPy. This version of Buffet also
@@ -48,8 +170,10 @@ def pylons_globals():
     
     """
     conf = pylons.config._current_obj()
+    c = pylons.tmpl_context._current_obj()
     pylons_vars = dict(
-        c=pylons.c._current_obj(),
+        c=c,
+        tmpl_context=c,
         config=conf,
         g=conf['pylons.g'],
         h=conf.get('pylons.h') or pylons.h._current_obj(),
@@ -127,7 +251,8 @@ def cached_template(template_name, render_func, ns_options=(),
         return render_func()
 
 
-def render_mako(template_name, **kwargs):
+def render_mako(template_name, cache_key=None, cache_type=None, 
+                cache_expire=None):
     """Render a template with Mako
     
     Accepts the cache options ``cache_key``, ``cache_type``, and
@@ -138,27 +263,20 @@ def render_mako(template_name, **kwargs):
     # First, get the globals
     globs = pylons_globals()
     
-    # Try and grab a template reference
-    try:
-        template = globs['g'].mako_lookup.get_template(template_name)
-    except AttributeError:
-        from mako.lookup import TemplateLookup
-        # Make the Mako TemplateLookup instance since it wasn't there
-        globs['g'].mako_lookup =  TemplateLookup(
-            directories=globs['config']['pylons.paths']['templates'])
-        template = globs['g'].mako_lookup.get_template(template_name)
+    # Grab a template reference
+    template = globs['g'].mako_lookup.get_template(template_name)
     
-    # Update the template variables with the Pylons globals
-    kwargs.update(globs)
-    
+    # Create a render callable for the cache function
     def render_template():
-        return template.render(**kwargs)
+        return template.render(**globs)
     
-    return cached_template(template_name, render_template, 
-                           ns_options=('fragment',), **kwargs)
+    return cached_template(template_name, render_template, cache_key=cache_key, 
+                           cache_type=cache_type, cache_expire=cache_expire,
+                           ns_options=('fragment',))
 
 
-def render_genshi(template_name, **kwargs):
+def render_genshi(template_name, cache_key=None, cache_type=None, 
+                  cache_expire=None):
     """Render a template with Genshi
     
     Accepts the cache options ``cache_key``, ``cache_type``, and
@@ -170,24 +288,16 @@ def render_genshi(template_name, **kwargs):
     # First, get the globals
     globs = pylons_globals()
     
-    # Try and grab a template reference
-    try:
-        template = globs['g'].genshi_loader.load(template_name)
-    except AttributeError:
-        from genshi.template import TemplateLoader
-        # Make the Genshi TemplateLoader instance since it wasn't there
-        globs['g'].genshi_loader =  TemplateLoader(
-            globs['config']['pylons.paths']['templates'])
-        template = globs['g'].genshi_loader.load(template_name)
+    # Grab a template reference
+    template = globs['g'].genshi_loader.load(template_name)
     
-    # Update the template variables with the Pylons globals
-    kwargs.update(globs)
-    
+    # Create a render callable for the cache function
     def render_template():
-        return template.generate(**kwargs).render()
+        return template.generate(**globs).render()
     
-    return cached_template(template_name, render_template, 
-                           ns_options=('fragment', 'format'), **kwargs)
+    return cached_template(template_name, render_template, cache_key=cache_key, 
+                           cache_type=cache_type, cache_expire=cache_expire,
+                           ns_options=('fragment', 'format'))
 
 class BuffetError(Exception):
     """Buffet Exception"""
@@ -357,7 +467,8 @@ class Buffet(object):
                 type=cache_type, expiretime=cache_expire)
             return content
         
-        log.debug("Rendering template %s with engine %s", full_path, engine_name)
+        log.debug("Rendering template %s with engine %s", full_path, 
+                  engine_name)
         return engine_config['engine'].render(namespace, template=full_path, 
             **options)
 

@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.7 (**tip**)
+* Added documentation for render functions in pylons.templating.
+* Adding specific render functions that don't require Buffet.
 * Added forward controller.util function for forwarding the request to WSGI
   apps. Fixes #355.
 * Added default input encoding for Mako to utf-8. Suggested in #348.
