@@ -258,15 +258,15 @@ def render_mako(template_name, cache_key=None, cache_type=None,
     Accepts the cache options ``cache_key``, ``cache_type``, and
     ``cache_expire``.
     
-    """
-    # First, get the globals
-    globs = pylons_globals()
-    
-    # Grab a template reference
-    template = globs['g'].mako_lookup.get_template(template_name)
-    
+    """    
     # Create a render callable for the cache function
     def render_template():
+        # First, get the globals
+        globs = pylons_globals()
+
+        # Grab a template reference
+        template = globs['g'].mako_lookup.get_template(template_name)
+        
         return template.render(**globs)
     
     return cached_template(template_name, render_template, cache_key=cache_key, 
@@ -281,15 +281,15 @@ def render_genshi(template_name, cache_key=None, cache_type=None,
     ``cache_expire`` in addition to fragment and format which are
     passed to Genshi's render function.
     
-    """
-    # First, get the globals
-    globs = pylons_globals()
-    
-    # Grab a template reference
-    template = globs['g'].genshi_loader.load(template_name)
-    
+    """    
     # Create a render callable for the cache function
     def render_template():
+        # First, get the globals
+        globs = pylons_globals()
+
+        # Grab a template reference
+        template = globs['g'].genshi_loader.load(template_name)
+        
         return template.generate(**globs).render()
     
     return cached_template(template_name, render_template, cache_key=cache_key, 
