@@ -256,8 +256,7 @@ def render_mako(template_name, cache_key=None, cache_type=None,
     """Render a template with Mako
     
     Accepts the cache options ``cache_key``, ``cache_type``, and
-    ``cache_expire`` in addition to other keyword arguments that should
-    be passed into Mako's ``Template.render`` function.
+    ``cache_expire``.
     
     """
     # First, get the globals
@@ -271,8 +270,7 @@ def render_mako(template_name, cache_key=None, cache_type=None,
         return template.render(**globs)
     
     return cached_template(template_name, render_template, cache_key=cache_key, 
-                           cache_type=cache_type, cache_expire=cache_expire,
-                           ns_options=('fragment',))
+                           cache_type=cache_type, cache_expire=cache_expire)
 
 
 def render_genshi(template_name, cache_key=None, cache_type=None, 
