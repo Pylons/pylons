@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.7 (**tip**)
+* Updated project template to setup appropriate template loader and controller
+  template to doc how to import render.
 * Added documentation for render functions in pylons.templating.
 * Adding specific render functions that don't require Buffet.
 * Added forward controller.util function for forwarding the request to WSGI

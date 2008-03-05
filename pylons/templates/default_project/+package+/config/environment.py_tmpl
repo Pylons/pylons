@@ -1,6 +1,11 @@
 """Pylons environment configuration"""
 import os
 
+{{if template_engine == 'mako'}}
+from mako.lookup import TemplateLookup
+{{elif template_engine == 'genshi'}}
+from genshi.template import TemplateLoader
+{{endif}}
 from pylons import config
 {{if sqlalchemy}}
 from sqlalchemy import engine_from_config
@@ -37,10 +42,18 @@ def load_environment(global_conf, app_conf):
     engine = engine_from_config(config, 'sqlalchemy.')
     init_model(engine)
     {{endif}}
-
-    # Customize templating options via this variable
-    tmpl_options = config['buffet.template_options']
-    tmpl_options['mako.input_encoding'] = 'utf-8'
-
+    
+    {{if template_engine == 'mako'}}
+    # Create the Mako TemplateLookup
+    config['pylons.g'].mako_lookup = TemplateLookup(
+        directories=paths['templates'], input_encoding='utf-8', 
+        output_encoding='utf-8', module_directory=os.path.join(
+            app_conf['cache_dir'], 'templates'),
+    )
+    {{elif template_engine == 'genshi'}}
+    # Create the Genshi TemplateLoader
+    config['pylons.g'].genshi_loader = TemplateLoader(paths['templates'])
+    {{endif}}
+    
     # CONFIGURATION OPTIONS HERE (note: all config options will override
     # any Pylons config options)

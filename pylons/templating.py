@@ -25,7 +25,7 @@ controller. Variables intended for the template are attached to the
 its full name since it will likely be used extensively and it's much
 faster to use ``c``. Of course, for users that can't tolerate 
 one-letter variables, feel free to not import ``tmpl_context`` as 
-``c`` as both names are available in templates as well.
+``c`` since both names are available in templates as well.
 
 Example of rendering a template with some variables:
 
