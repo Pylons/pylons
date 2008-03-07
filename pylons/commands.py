@@ -24,17 +24,17 @@ Example usage:
 
 .. admonition:: How it Works
 
-``paster`` is a command line script (from the PasteScript package) that
-allows the creation of context sensitive commands. ``paster`` looks in
-the current directory for a ``.egg-info`` directory, then loads the
-``paster_plugins.txt`` file.
+    ``paster`` is a command line script (from the PasteScript package)
+    that allows the creation of context sensitive commands. ``paster``
+    looks in the current directory for a ``.egg-info`` directory, then
+    loads the ``paster_plugins.txt`` file.
 
-Using setuptools entry points, ``paster`` looks for functions registered
-with setuptools as ``paste.paster_command``. These are defined in the
-entry_points block in each packages setup.py module.
+    Using setuptools entry points, ``paster`` looks for functions
+    registered with setuptools as ``paste.paster_command``. These are
+    defined in the entry_points block in each packages setup.py module.
 
-This same system is used when running ``paster create`` to determine
-what templates are available when creating new projects.
+    This same system is used when running ``paster create`` to
+    determine what templates are available when creating new projects.
 
 """
 import os
