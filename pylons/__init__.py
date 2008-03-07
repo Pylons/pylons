@@ -12,7 +12,8 @@ def __figure_version():
         from pkg_resources import require
         import os
         # NOTE: this only works when the package is either installed,
-        # or has an .egg-info directory present (i.e. wont work with raw SVN checkout)
+        # or has an .egg-info directory present (i.e. wont work with raw
+        # SVN checkout)
         info = require('pylons')[0]
         if os.path.dirname(os.path.dirname(__file__)) == info.location:
             return info.version

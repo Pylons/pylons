@@ -4,6 +4,7 @@ middleware
 This module supplies PylonsConfig which handles setting up defaults
 for templating systems, Paste errorware, and prefixing Routes if
 necessary.
+
 """
 import copy
 import logging
@@ -32,13 +33,14 @@ log = logging.getLogger(__name__)
 class PylonsConfig(DispatchingConfig):
     """Pylons configuration object
 
-    The Pylons configuration object is a per-application instance object
-    that retains the information regarding the global and app conf's as
-    well as per-application instance specific data such as the mapper, the
-    paths for this instance, and the myghty configuration.
+    The Pylons configuration object is a per-application instance
+    object that retains the information regarding the global and app
+    conf's as well as per-application instance specific data such as
+    the mapper, the paths for this instance, and the myghty
+    configuration.
 
-    The config object is available in your application as the Pylons global
-    ``pylons.config``. An example usage:
+    The config object is available in your application as the Pylons
+    global ``pylons.config``. An example usage:
 
     .. code-block :: Python
 
@@ -46,13 +48,13 @@ class PylonsConfig(DispatchingConfig):
 
         template_paths = config['pylons.paths']['templates']
 
-    There's several useful keys of the config object most people will be
-    interested in:
+    There's several useful keys of the config object most people will
+    be interested in:
 
     ``pylons.template_options``
-        Full dict of template options that any TG compatible plugin should
-        be able to parse. Comes with basic config needed for Myghty, Kid,
-        and Mako.
+        Full dict of template options that any TG compatible plugin
+        should be able to parse. Comes with basic config needed for
+        Genshi, Mako, Myghty, and Kid.
     ``pylons.paths``
         A dict of absolute paths that were defined in the applications
         ``config/environment.py`` module.
@@ -62,30 +64,35 @@ class PylonsConfig(DispatchingConfig):
         PylonsApp will use them from environ rather than using default
         middleware from Beaker. Valid keys are: ``session, cache``
     ``pylons.template_engines``
-        List of template engines to configure. The first one in the list will
-        be configured as the default template engine. Each item in the list is
-        a dict indicating how to configure the template engine with keys:
-        ``engine``, ``template_root``, ``template_options``, and ``alias``
+        List of template engines to configure. The first one in the
+        list will be configured as the default template engine. Each
+        item in the list is a dict indicating how to configure the
+        template engine with keys:
+            ``engine``, ``template_root``, ``template_options``, and 
+            ``alias``
     ``pylons.default_charset``
         Deprecated: Use the response_settings dict instead.
         Default character encoding specified to the browser via the
         'charset' parameter of the HTTP response's Content-Type header.
     ``pylons.strict_c``
-        Whether or not the ``c`` object should throw an attribute error when
-        access is attempted to an attribute that doesn't exist.
+        Whether or not the ``c`` object should throw an attribute error
+        when access is attempted to an attribute that doesn't exist.
     ``pylons.request_options``
-        A dict of Content-Type related default settings for new instances of
-        ``paste.wsgiwrappers.WSGIRequest``. May contain the values ``charset``
-        and ``errors`` and ``decode_param_names``. Overrides the Pylons default
-        values specified by the ``request_defaults`` dict.
+        A dict of Content-Type related default settings for new
+        instances of ``paste.wsgiwrappers.WSGIRequest``. May contain
+        the values ``charset`` and ``errors`` and 
+        ``decode_param_names``. Overrides the Pylons default values
+        specified by the ``request_defaults`` dict.
     ``pylons.response_options``
-        A dict of Content-Type related default settings for new instances of
-        ``pylons.Response``. May contain the values ``content_type``,
-        ``charset`` and ``errors``. Overrides the Pylons default values
-        specified by the ``response_defaults`` dict.
+        A dict of Content-Type related default settings for new 
+        instances of ``pylons.Response``. May contain the values
+        ``content_type``, ``charset`` and ``errors``. Overrides the
+        Pylons default values specified by the ``response_defaults``
+        dict.
     ``routes.map``
-        Mapper object used for Routing. Yes, it is possible to add routes
-        after your application has started running.
+        Mapper object used for Routing. Yes, it is possible to add
+        routes after your application has started running.
+    
     """
     defaults = {
         'debug': False,
@@ -120,13 +127,13 @@ class PylonsConfig(DispatchingConfig):
         else:
             conf_dict = self.current_conf()
 
-            # Backwards compat for when the option is now in the dict, and
-            # access was attempted via attribute
+            # Backwards compat for when the option is now in the dict, 
+            # and access was attempted via attribute
             for prefix in ('', 'pylons.', 'buffet.', 'routes.'):
                 full_name = prefix + name
                 if full_name in conf_dict:
                     warnings.warn(pylons.legacy.config_attr_moved % \
-                                      (name, full_name), DeprecationWarning, 3)
+                                   (name, full_name), DeprecationWarning, 3)
                     return conf_dict[full_name]
             if name == 'request_defaults':
                 return request_defaults
@@ -170,8 +177,8 @@ class PylonsConfig(DispatchingConfig):
         self['environment_load'] = conf
 
     def add_template_engine(self, engine, root, options=None, alias=None):
-        """Add additional template engines for configuration on Pylons WSGI
-        init.
+        """Add additional template engines for configuration on Pylons
+        WSGI init.
 
         ``engine``
             The name of the template engine
@@ -180,13 +187,14 @@ class PylonsConfig(DispatchingConfig):
             Template root for the engine
 
         ``options``
-            Dict of additional options used during engine initialization, if
-            not provided, default to using the template_options dict.
+            Dict of additional options used during engine
+            initialization, if not provided, default to using the
+            template_options dict.
 
         ``alias``
-            Name engine should respond to when actually used. This allows for
-            multiple configurations of the same engine and lets you alias the
-            additional ones to other names.
+            Name engine should respond to when actually used. This
+            allows for multiple configurations of the same engine and
+            lets you alias the additional ones to other names.
 
         Example of Kid addition:
 
@@ -197,8 +205,10 @@ class PylonsConfig(DispatchingConfig):
             config.init_app(global_conf, app_conf, package='yourproj')
 
             # Load additional template engines
-            kidopts = {'kid.assume_encoding':'utf-8', 'kid.encoding':'utf-8'}
-            config.add_template_engine('kid', 'yourproj.kidtemplates', kidopts)
+            kidopts = {'kid.assume_encoding':'utf-8', 
+                       'kid.encoding':'utf-8'}
+            config.add_template_engine('kid', 'yourproj.kidtemplates', 
+                                       kidopts)
 
         Example of changing the default template engine:
 
@@ -212,8 +222,10 @@ class PylonsConfig(DispatchingConfig):
             old_default = config.template_engines.pop()
 
             # Load additional template engines
-            kidopts = {'kid.assume_encoding':'utf-8', 'kid.encoding':'utf-8'}
-            config.add_template_engine('kid', 'yourproj.kidtemplates', kidopts)
+            kidopts = {'kid.assume_encoding':'utf-8', 
+                       'kid.encoding':'utf-8'}
+            config.add_template_engine('kid', 'yourproj.kidtemplates', 
+                                       kidopts)
 
             # Add old default as additional engine
             config.template_engines.append(old_default)
@@ -231,33 +243,37 @@ class PylonsConfig(DispatchingConfig):
         """Initialize configuration for the application
         
         .. note
-            This *must* be called at least once, as soon as possible tosetup 
-            all the configuration options.
+            This *must* be called at least once, as soon as possible 
+            tosetup all the configuration options.
         
         ``global_config``
             Several options are expected to be set for a Pylons web
-            application. They will be loaded from the global_config which has
-            the main Paste options. If ``debug`` is not enabled as a global
-            config option, the following option *must* be set:
+            application. They will be loaded from the global_config 
+            which has the main Paste options. If ``debug`` is not 
+            enabled as a global config option, the following option
+            *must* be set:
 
             * error_to - The email address to send the debug error to
 
             The optional config options in this case are:
 
-            * smtp_server - The SMTP server to use, defaults to 'localhost'
+            * smtp_server - The SMTP server to use, defaults to 
+              'localhost'
             * error_log - A logfile to write the error to
-            * error_subject_prefix - The prefix of the error email subject
+            * error_subject_prefix - The prefix of the error email
+              subject
             * from_address - Whom the error email should be from
         ``app_conf``
             Defaults supplied via the [app:main] section from the Paste
-            config file. ``load_config`` only cares about whether a 'prefix'
-            option is set, if so it will update Routes to ensure URL's take
-            that into account.
+            config file. ``load_config`` only cares about whether a 
+            'prefix' option is set, if so it will update Routes to
+            ensure URL's take that into account.
         ``package``
-            The name of the application package, to be stored in the app_conf.
+            The name of the application package, to be stored in the 
+            app_conf.
         ``template_engine``
-            Declare the default template engine to setup. Choices are kid,
-            genshi, mako (the default), and pylonsmyghty.
+            Declare the default template engine to setup. Choices are
+            kid, genshi, mako (the default), and pylonsmyghty.
         """
         log.debug("Initializing configuration, package: '%s'", package)
         conf = global_conf.copy()
@@ -405,7 +421,8 @@ class PylonsConfig(DispatchingConfig):
             self.add_template_engine(template_engine, '%s.templates' % 
                                      conf['pylons.package'])
         
-        log.debug("Loaded %s template engine as the default template renderer", template_engine)
+        log.debug("Loaded %s template engine as the default template "
+                  "renderer", template_engine)
         
         conf['pylons.cache_dir'] = conf.pop('cache_dir', 
                                             conf['app_conf'].get('cache_dir'))
