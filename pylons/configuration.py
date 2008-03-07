@@ -1,9 +1,14 @@
-"""Configuration setup for templating systems and Paste error
-middleware
+"""Configuration object and defaults setup
 
-This module supplies PylonsConfig which handles setting up defaults
-for templating systems, Paste errorware, and prefixing Routes if
-necessary.
+The PylonsConfig object is initialized in pylons projects inside the
+``config/environment.py`` module. Importing the ``config`` object from
+this module causes the PylonsConfig object to be created, and setup in
+an app-safe manner so that multiple apps being setup avoid conflicts.
+
+After importing ``config``, the project should then call ``init_app``
+with the appropriate options to setup the configuration. In addition
+to the config data passed with ``init_app``, various defaults are set
+for use with Paste and Routes.
 
 """
 import copy
