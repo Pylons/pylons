@@ -1,11 +1,41 @@
 """Paster Commands, for use with paster in your project
 
-The command(s) listed here are for use with Paste to enable easy creation of
-various core Pylons templates.
+The following commands are made available via paster utilizing setuptools
+entry points discovery. These can be used from the command line when the
+current directory is the Pylons project.
 
-Currently available commands are::
+Commands available:
 
-    controller, restcontroller, shell
+``controller``
+    Create a Controller and accompanying functional test
+``restcontroller``
+    Create a REST Controller and accompanying functional test
+``shell``
+    Open an interactive shell with the Pylons app loaded
+
+Example usage:
+
+.. sourcecode:: shell
+    
+    ~/sample$ paster controller account
+    Creating /Users/ben/sample/sample/controllers/account.py
+    Creating /Users/ben/sample/sample/tests/functional/test_account.py
+    ~/sample$
+
+.. admonition:: How it Works
+
+``paster`` is a command line script (from the PasteScript package) that
+allows the creation of context sensitive commands. ``paster`` looks in
+the current directory for a ``.egg-info`` directory, then loads the
+``paster_plugins.txt`` file.
+
+Using setuptools entry points, ``paster`` looks for functions registered
+with setuptools as ``paste.paster_command``. These are defined in the
+entry_points block in each packages setup.py module.
+
+This same system is used when running ``paster create`` to determine
+what templates are available when creating new projects.
+
 """
 import os
 import sys
