@@ -65,6 +65,7 @@ of Pylons globals that are included the template's namespace are:
 - h -- Project helpers module reference
 - request -- Pylons request object for this request
 - response -- Pylons response object for this request
+- session -- Pylons session object (unless Sessions are removed)
 - translator -- Gettext translator object configured for current locale
 - ungettext -- Unicode capable version of gettext's ngettext function
   (handles plural translations)
@@ -167,6 +168,9 @@ def pylons_globals():
     Pylons variables that are returned in the dictionary:
         c, g, h, _, N_, config, request, response, translator,
         ungettext
+    
+    If SessionMiddleware is being used, ``session`` will also be
+    available in the template namespace.
     
     """
     conf = pylons.config._current_obj()
