@@ -2,9 +2,17 @@
 
 ``etag_cache``, ``redirect_to``, and ``abort``.
 """
+import base64
+import hmac
 import logging
 import mimetypes
+import sha
 import warnings
+
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
 
 import paste.httpexceptions as httpexceptions
 from routes import url_for
@@ -39,6 +47,28 @@ class Request(WebObRequest):
     
     def match_accept(self, mimetypes):
         return self.accept.first_match(mimetypes)
+    
+    def signed_cookie(self, name, secret):
+        """Extract a signed cookie of ``name`` from the request
+        
+        The cookie is expected to have been created with
+        ``Response.signed_cookie``, and the ``secret`` should be the
+        same as the one used to sign it.
+        
+        """
+        cookie = self.str_cookies.get(name)
+        if not cookie:
+            return None
+        try:
+            encoded_data = base64.decodestring(cookie)
+        except:
+            # Badly formed data can make base64 die
+            return None
+        sig, pickled = encoded_data[:40], encoded_data[40:]
+        if hmac.new(secret, pickled, sha).hexdigest() == sig:
+            return pickle.loads(pickled)
+        else:
+            return None
 
 
 class Response(WebObResponse):
@@ -67,6 +97,19 @@ class Response(WebObResponse):
     
     def wsgi_response(self):
         return self.status, self.headers, self.body
+    
+    def signed_cookie(self, name, data, secret=None, **kwargs):
+        """Save a signed cookie with ``secret`` signature
+        
+        Saves a signed cookie of the pickled data. All other keyword
+        arguments that ``WebOb.set_cookie`` accepts are usable and
+        passed to the WebOb set_cookie method after creating the signed
+        cookie value.
+        
+        """
+        pickled = pickle.dumps(data, pickle.HIGHEST_PROTOCOL)
+        sig = hmac.new(secret, pickled, sha).hexdigest()
+        self.set_cookie(name, base64.encodestring(sig + pickled), **kwargs)
 
 
 class MIMETypes(object):
