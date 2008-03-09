@@ -55,16 +55,18 @@ class Request(WebObRequest):
         ``Response.signed_cookie``, and the ``secret`` should be the
         same as the one used to sign it.
         
+        Any failure in the signature of the data will result in None
+        being returned.
+        
         """
         cookie = self.str_cookies.get(name)
         if not cookie:
             return None
         try:
-            encoded_data = base64.decodestring(cookie)
+            sig, pickled = cookie[:40], base64.decodestring(cookie[40:])
         except:
             # Badly formed data can make base64 die
             return None
-        sig, pickled = encoded_data[:40], encoded_data[40:]
         if hmac.new(secret, pickled, sha).hexdigest() == sig:
             return pickle.loads(pickled)
         else:
@@ -109,7 +111,7 @@ class Response(WebObResponse):
         """
         pickled = pickle.dumps(data, pickle.HIGHEST_PROTOCOL)
         sig = hmac.new(secret, pickled, sha).hexdigest()
-        self.set_cookie(name, base64.encodestring(sig + pickled), **kwargs)
+        self.set_cookie(name, sig + base64.encodestring(pickled), **kwargs)
 
 
 class MIMETypes(object):
