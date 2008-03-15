@@ -175,11 +175,13 @@ def pylons_globals():
     """
     conf = pylons.config._current_obj()
     c = pylons.tmpl_context._current_obj()
+    g=conf.get('pylons.app_globals') or conf['pylons.g']
     pylons_vars = dict(
         c=c,
         tmpl_context=c,
         config=conf,
-        g=conf['pylons.g'],
+        app_globals=g,
+        g=g,
         h=conf.get('pylons.h') or pylons.h._current_obj(),
         request=pylons.request._current_obj(),
         response=pylons.response._current_obj(),

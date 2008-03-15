@@ -53,7 +53,7 @@ class PylonsApp(object):
         self.config = config = pylons.config._current_obj()
         package_name = config['pylons.package']
         self.helpers = config['pylons.h']
-        self.globals = config['pylons.g']
+        self.globals = config.get('pylons.app_globals') or config['pylons.g']
         self.environ_config = config['pylons.environ_config']
         self.package_name = package_name
         self.request_options = config['pylons.request_options']
@@ -132,7 +132,7 @@ class PylonsApp(object):
         registry.register(pylons.response, response)
         
         registry.register(pylons.buffet, self.buffet)
-        registry.register(pylons.g, self.globals)
+        registry.register(pylons.app_globals, self.globals)
         registry.register(pylons.config, self.config)
         registry.register(pylons.h, self.helpers or \
                           pylons.legacy.load_h(self.package_name))
@@ -141,7 +141,7 @@ class PylonsApp(object):
         pylons_obj = PylonsContext()
         pylons_obj.request = req
         pylons_obj.response = response
-        pylons_obj.g = self.globals
+        pylons_obj.g = pylons_obj.app_globals = self.globals
         pylons_obj.h = self.helpers
         pylons_obj.buffet = self.buffet
         environ['pylons.pylons'] = pylons_obj
