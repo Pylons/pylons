@@ -264,8 +264,8 @@ class PylonsApp(object):
             log.debug("Setting up paste testing environment variables")
         testenv = environ['paste.testing_variables']
         testenv['req'] = pylons.request._current_obj()
-        testenv['c'] = pylons.c._current_obj()
-        testenv['g'] = pylons.g._current_obj()
+        testenv['tmpl_context'] = testenv['c'] = pylons.c._current_obj()
+        testenv['app_globals'] = testenv['g'] = pylons.g._current_obj()
         testenv['h'] = self.config['pylons.h'] or pylons.h._current_obj()
         testenv['config'] = self.config
         econf = self.config['pylons.environ_config']
