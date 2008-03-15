@@ -30,8 +30,7 @@ def load_environment(global_conf, app_conf):
                  templates=[os.path.join(root, 'templates')])
 
     # Initialize config with the basic options
-    config.init_app(global_conf, app_conf, package='{{package}}',
-                    template_engine='{{template_engine}}', paths=paths)
+    config.init_app(global_conf, app_conf, package='{{package}}', paths=paths)
 
     config['routes.map'] = make_map()
     config['pylons.g'] = app_globals.Globals()
