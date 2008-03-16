@@ -73,6 +73,20 @@ of Pylons globals that are included the template's namespace are:
 - N_ -- gettext no-op function to mark a string for translation, but
   doesn't actually translate
 
+Configuring the template language
+---------------------------------
+
+The template engine is created in the projects 
+``config/environment.py`` and attached to the ``app_globals`` (g)
+instance. Configuration options can be directly passed into the
+template engine, and are used by the render functions.
+
+.. warning::
+    Don't change the variable name on ``app_globals`` that the template
+    loader is attached to if you want to use the render_* functions
+    that ``pylons.templating`` comes with. The render_* functions look
+    for the template loader to render the template.
+
 Writing your own render function
 --------------------------------
 
