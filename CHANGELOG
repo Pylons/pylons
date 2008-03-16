@@ -2,6 +2,9 @@ Pylons Changelog
 =================
 
 0.9.7 (**tip**)
+* Fixed template for Session.remove inclusion when using SA. Fixed 
+  render_genshi to properly use fragment/format options. Thanks Antonin 
+  Enfrun.
 * Remove template engine from load_environment call.
 * Removing template controller from projects. Fixes #383.
 * Added signed_cookie method to WebOb Request/Response sub-classes.
