@@ -43,11 +43,12 @@ def load_environment(global_conf, app_conf):
     {{endif}}
     
     {{if template_engine == 'mako'}}
-    # Create the Mako TemplateLookup
+    # Create the Mako TemplateLookup, with the default auto-escaping
     config['pylons.app_globals'].mako_lookup = TemplateLookup(
-        directories=paths['templates'], input_encoding='utf-8', 
-        output_encoding='utf-8', module_directory=os.path.join(
-            app_conf['cache_dir'], 'templates'),
+        directories=paths['templates'], input_encoding='utf-8',
+        imports=['from webhelpers.html import escape'],
+        default_filters=['unicode', 'escape'], output_encoding='utf-8',
+        module_directory=os.path.join(app_conf['cache_dir'], 'templates'),
     )
     {{elif template_engine == 'genshi'}}
     # Create the Genshi TemplateLoader

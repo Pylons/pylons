@@ -104,6 +104,7 @@ def do_pytest():
 
 def do_knowntest():
     copydict = {
+        'helpers_sample.py':'projectname/lib/helpers.py',
         'controller_sample.py':'projectname/controllers/sample.py',
         'app_globals.py':'projectname/lib/app_globals.py',
         'functional_sample_controller_sample1.py':'projectname/tests/functional/test_sample.py',
