@@ -1,8 +1,19 @@
 """Object Dispatch Controller"""
+import datetime
+import warnings
+
 from webob.exc import HTTPNotFound, HTTPException
 
 import pylons
 from pylons.controllers.decorated import DecoratedController
+
+expire = datetime.datetime(year=2008, month=3, day=24)
+here = __name__
+tdiff = expire - datetime.datetime.now()
+warnings.warn('%s is being removed in T-minus %s days, %s minutes and'
+              ' %s seconds. OMGWTF!!' % (here, tdiff.days, tdiff.seconds/60,
+                                         tdiff.seconds%60), DeprecationWarning,
+                                         2)
 
 class ObjectDispatchController(DecoratedController):
 

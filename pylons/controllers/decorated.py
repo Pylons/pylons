@@ -1,5 +1,7 @@
 """Decorated Controller"""
+import datetime
 import logging
+import warnings
 
 import formencode
 
@@ -7,6 +9,14 @@ import pylons
 from pylons.controllers import WSGIController
 
 log = logging.getLogger(__name__)
+
+expire = datetime.datetime(year=2008, month=3, day=24)
+here = __name__
+tdiff = expire - datetime.datetime.now()
+warnings.warn('%s is being removed in T-minus %s days, %s minutes and'
+              ' %s seconds. OMGWTF!!' % (here, tdiff.days, tdiff.seconds/60,
+                                         tdiff.seconds%60), DeprecationWarning,
+                                         2)
 
 def _configured_engines():
     """Returns set with the currently configured template engine's names

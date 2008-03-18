@@ -1,6 +1,17 @@
 """The expose decorator"""
+import datetime
+import warnings
+
 import formencode
 from paste.util.mimeparse import best_match
+
+expire = datetime.datetime(year=2008, month=3, day=24)
+here = __name__
+tdiff = expire - datetime.datetime.now()
+warnings.warn('%s is being removed in T-minus %s days, %s minutes and'
+              ' %s seconds. OMGWTF!!' % (here, tdiff.days, tdiff.seconds/60,
+                                         tdiff.seconds%60), DeprecationWarning,
+                                         2)
 
 def _schema(d=None, **kw):
     dd = {}
