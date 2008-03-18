@@ -621,7 +621,11 @@ def render_response(*args, **kargs):
     warnings.warn(pylons.legacy.render_response_warning, DeprecationWarning, 2)
 
     response = pylons.response._current_obj()
-    response.content = render(*args, **kargs)
+    content = render(*args, **kargs)
+    if isinstance(content, unicode):
+        response.unicode_body = content
+    else:
+        response.content = content
     output_encoding = kargs.get('output_encoding')
     encoding_errors = kargs.get('encoding_errors')
     if output_encoding:
