@@ -2,6 +2,7 @@ Pylons Changelog
 =================
 
 0.9.7 (**tip**)
+* Added default Mako filter of escape for all template rendering.
 * Fixed template for Session.remove inclusion when using SA. Fixed 
   render_genshi to properly use fragment/format options. Thanks Antonin 
   Enfrun.
