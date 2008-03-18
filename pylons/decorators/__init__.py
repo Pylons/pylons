@@ -7,7 +7,6 @@ import formencode
 import formencode.variabledecode as variabledecode
 import simplejson
 from decorator import decorator
-from expose import expose, validate as new_validate
 from formencode import htmlfill
 from webob import UnicodeMultiDict
 
