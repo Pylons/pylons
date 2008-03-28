@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.7 (**tip**)
+* Fixed websetup to parse location config file properly when the section
+  isn't 'main'. Fixes #399.
 * Added default Mako filter of escape for all template rendering.
 * Fixed template for Session.remove inclusion when using SA. Fixed 
   render_genshi to properly use fragment/format options. Thanks Antonin 
