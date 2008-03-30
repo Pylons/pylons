@@ -294,12 +294,12 @@ def render_mako(template_name, cache_key=None, cache_type=None,
 
 
 def render_genshi(template_name, cache_key=None, cache_type=None, 
-                  cache_expire=None, format=None):
+                  cache_expire=None, method=None):
     """Render a template with Genshi
     
     Accepts the cache options ``cache_key``, ``cache_type``, and
-    ``cache_expire`` in addition to fragment and format which are
-    passed to Genshi's render function.
+    ``cache_expire`` in addition to method which are passed to Genshi's
+    render function.
     
     """
     # Create a render callable for the cache function
@@ -310,11 +310,11 @@ def render_genshi(template_name, cache_key=None, cache_type=None,
         # Grab a template reference
         template = globs['g'].genshi_loader.load(template_name)
         
-        return template.generate(**globs).render(format=format)
+        return template.generate(**globs).render(method=method)
     
     return cached_template(template_name, render_template, cache_key=cache_key, 
                            cache_type=cache_type, cache_expire=cache_expire,
-                           ns_options=('format'), format=format)
+                           ns_options=('method'), method=method)
 
 class BuffetError(Exception):
     """Buffet Exception"""
