@@ -294,7 +294,7 @@ def render_mako(template_name, cache_key=None, cache_type=None,
 
 
 def render_genshi(template_name, cache_key=None, cache_type=None, 
-                  cache_expire=None, fragment=False, format=None):
+                  cache_expire=None, format=None):
     """Render a template with Genshi
     
     Accepts the cache options ``cache_key``, ``cache_type``, and
@@ -310,13 +310,11 @@ def render_genshi(template_name, cache_key=None, cache_type=None,
         # Grab a template reference
         template = globs['g'].genshi_loader.load(template_name)
         
-        return template.generate(**globs).render(fragment=fragment,
-                                                 format=format)
+        return template.generate(**globs).render(format=format)
     
     return cached_template(template_name, render_template, cache_key=cache_key, 
                            cache_type=cache_type, cache_expire=cache_expire,
-                           ns_options=('fragment', 'format'), 
-                           fragment=fragment, format=format)
+                           ns_options=('format'), format=format)
 
 class BuffetError(Exception):
     """Buffet Exception"""
