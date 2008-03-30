@@ -294,7 +294,7 @@ def render_mako(template_name, cache_key=None, cache_type=None,
 
 
 def render_genshi(template_name, cache_key=None, cache_type=None, 
-                  cache_expire=None, method=None):
+                  cache_expire=None, method='xhtml'):
     """Render a template with Genshi
     
     Accepts the cache options ``cache_key``, ``cache_type``, and
