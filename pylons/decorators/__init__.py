@@ -12,7 +12,7 @@ from webob import UnicodeMultiDict
 
 import pylons
 
-__all__ = ['jsonify', 'validate', 'expose', 'new_validate']
+__all__ = ['jsonify', 'validate']
 
 log = logging.getLogger(__name__)
 
