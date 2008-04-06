@@ -10,8 +10,6 @@ from decorator import decorator
 from formencode import htmlfill
 from webob import UnicodeMultiDict
 
-import pylons
-
 __all__ = ['jsonify', 'validate']
 
 log = logging.getLogger(__name__)
@@ -23,7 +21,8 @@ def jsonify(func, *args, **kwargs):
     turn the result into JSON, with a content-type of 'text/javascript'
     and output it.
     """
-    pylons.response.headers['Content-Type'] = 'application/json'
+    self = args[0]
+    self._py_object.response.headers['Content-Type'] = 'application/json'
     data = func(*args, **kwargs)
     if isinstance(data, list):
         msg = "JSON responses with Array envelopes are susceptible to " \
@@ -96,7 +95,7 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
     """
     def wrapper(func, self, *args, **kwargs):
         """Decorator Wrapper function"""
-        request = pylons.request._current_obj()
+        request = self._py_object.request
         errors = {}
         
         # Skip the validation if on_get is False and its a GET
@@ -142,7 +141,7 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
             log.debug("Errors found in validation, parsing form with htmlfill "
                       "for errors")
             request.environ['REQUEST_METHOD'] = 'GET'
-            pylons.c.form_errors = errors
+            self._py_object.c.form_errors = errors
 
             # If there's no form supplied, just continue with the current
             # function call.
@@ -158,7 +157,7 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
                 legacy_response = True
             else:
                 form_content = response
-                response = pylons.response._current_obj()
+                response = self._py_object.response
             
             # If the form_content is an exception response, return it
             if hasattr(form_content, '_exception'):

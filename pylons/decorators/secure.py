@@ -4,7 +4,6 @@ import logging
 from decorator import decorator
 from webhelpers.rails import secure_form_tag
 
-import pylons
 from pylons.controllers.util import abort, redirect_to
 
 __all__ = ['authenticate_form', 'https']
@@ -30,7 +29,8 @@ def authenticate_form(func, *args, **kwargs):
 
     For use with the ``webhelpers.rails.secure_form_tag`` helper functions.
     """
-    request = pylons.request._current_obj()
+    self = args[0]
+    request = self._py_object.request
     if authenticated_form(request.POST):
         del request.POST[secure_form_tag.token_key]
         return func(*args, **kwargs)
@@ -67,7 +67,8 @@ def https(*redirect_args, **redirect_kwargs):
     """
     def wrapper(func, *args, **kwargs):
         """Decorator Wrapper function"""
-        request = pylons.request._current_obj()
+        self = args[0]
+        request = self._py_object.request
         if request.scheme.lower() == 'https':
             return func(*args, **kwargs)
         else:

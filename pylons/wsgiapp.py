@@ -139,6 +139,7 @@ class PylonsApp(object):
         
         # Store a copy of the request/response in environ for faster access
         pylons_obj = PylonsContext()
+        pylons_obj.config = self.config
         pylons_obj.request = req
         pylons_obj.response = response
         pylons_obj.g = pylons_obj.app_globals = self.globals

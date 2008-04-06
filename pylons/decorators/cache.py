@@ -5,8 +5,6 @@ import logging
 from decorator import decorator
 from paste.deploy.converters import asbool
 
-import pylons
-
 log = logging.getLogger(__name__)
 
 def beaker_cache(key="cache_default", expire="never", type=None,
@@ -39,15 +37,16 @@ def beaker_cache(key="cache_default", expire="never", type=None,
     """
     def wrapper(func, *args, **kwargs):
         """Decorator wrapper"""
+        self = args[0]
         log.debug("Wrapped with key: %s, expire: %s, type: %s, query_args: %s",
                   key, expire, type, query_args)
-        enabled = pylons.config.get("cache_enabled", "True")
+        enabled = self._py_object.config.get("cache_enabled", "True")
         if not asbool(enabled):
             log.debug("Caching disabled, skipping cache lookup")
             return func(*args, **kwargs)
 
-        my_cache = pylons.cache.get_cache('%s.%s' % (func.__module__,
-                                                     func.__name__))
+        my_cache = self._py_object.cache.get_cache('%s.%s' % (func.__module__,
+                                                              func.__name__))
         cache_key = _make_key(func, key, args, kwargs, query_args)
 
         if expire == "never":
@@ -60,7 +59,7 @@ def beaker_cache(key="cache_default", expire="never", type=None,
             log.debug("Creating new cache copy with key: %s, type: %s",
                       cache_key, type)
             result = func(*args, **kwargs)
-            glob_response = pylons.response._current_obj()
+            glob_response = self._py_object.response
             headers = glob_response.headerlist
             status = glob_response.status
             cookies=None
@@ -74,7 +73,7 @@ def beaker_cache(key="cache_default", expire="never", type=None,
         response = my_cache.get_value(cache_key, createfunc=create_func,
                                      expiretime=cache_expire, **b_kwargs)
         if response:
-            glob_response = pylons.response._current_obj()
+            glob_response = self._py_object.response
             glob_response.headerlist = response['headers']
             glob_response.status = response['status']
         return response['content']
@@ -82,9 +81,10 @@ def beaker_cache(key="cache_default", expire="never", type=None,
 
 def _make_key(func, key, args, kwargs, query_args):
     """Helps make unique key from largs, kwargs and request.GET"""
+    self = args[0]
     if key == "cache_default":
         if query_args:
-            cache_key = repr(dict(pylons.request.GET))
+            cache_key = repr(dict(self._py_object.request.GET))
         else:
             cache_key = repr(kwargs.items())
             largs_keys = _make_dict_from_args(func, args)
@@ -93,7 +93,7 @@ def _make_key(func, key, args, kwargs, query_args):
         cache_key = func.__name__
     else:
         if query_args:
-            dic = pylons.request.GET
+            dic = self._py_object.request.GET
         else:
             largs_keys = _make_dict_from_args(func, args)
             dic = kwargs.copy()

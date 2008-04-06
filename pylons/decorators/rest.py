@@ -3,7 +3,6 @@ import logging
 
 from decorator import decorator
 
-import pylons
 from pylons.controllers.util import abort
 
 __all__ = ['dispatch_on', 'restrict']
@@ -26,7 +25,8 @@ def restrict(*methods):
     """
     def check_methods(func, *args, **kwargs):
         """Wrapper for restrict"""
-        if pylons.request.method not in methods:
+        self = args[0]
+        if self._py_object.request.method not in methods:
             log.debug("Method not allowed by restrict")
             abort(405, headers=[('Allow', ','.join(methods))])
         return func(*args, **kwargs)
@@ -57,7 +57,7 @@ def dispatch_on(**method_map):
     """
     def dispatcher(func, self, *args, **kwargs):
         """Wrapper for dispatch_on"""
-        alt_method = method_map.get(pylons.request.method)
+        alt_method = method_map.get(self._py_object.request.method)
         if alt_method:
             alt_method = getattr(self, alt_method)
             log.debug("Dispatching to %s instead", alt_method)

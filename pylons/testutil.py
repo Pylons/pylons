@@ -47,6 +47,7 @@ class SetupCacheGlobal(object):
 
         # Update the environ
         environ.update(self.environ)
+        py_obj.config = pylons.config._current_obj()
         py_obj.request = req = Request(environ)
         py_obj.response = resp = Response()
         py_obj.c = ContextObj()
