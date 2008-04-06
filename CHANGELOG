@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.7 (**tip**)
+* Updated minimal template to work with Tempita and other new templating
+  changes.
 * Fixed websetup to parse location config file properly when the section
   isn't 'main'. Fixes #399.
 * Added default Mako filter of escape for all template rendering.

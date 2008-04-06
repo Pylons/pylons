@@ -1,6 +1,11 @@
 """The {{project}} WSGI application"""
 import os
 
+{{if template_engine == 'mako'}}
+from mako.lookup import TemplateLookup
+{{elif template_engine == 'genshi'}}
+from genshi.template import TemplateLoader
+{{endif}}
 from beaker.middleware import CacheMiddleware, SessionMiddleware
 from paste.cascade import Cascade
 from paste.registry import RegistryManager
@@ -31,11 +36,22 @@ def load_environment(global_conf, app_conf):
                     template_engine='{{template_engine}}', paths=paths)
 
     config['routes.map'] = make_map()
-    config['pylons.g'] = Globals()
+    config['pylons.app_globals'] = Globals()
     config['pylons.h'] = {{package}}.helpers
 
-    # Customize templating options via this variable
-    tmpl_options = config['buffet.template_options']
+    {{if template_engine == 'mako'}}
+    # Create the Mako TemplateLookup, with the default auto-escaping
+    config['pylons.app_globals'].mako_lookup = TemplateLookup(
+        directories=paths['templates'], input_encoding='utf-8',
+        imports=['from webhelpers.html import escape'],
+        default_filters=['escape'], output_encoding='utf-8',
+        module_directory=os.path.join(app_conf['cache_dir'], 'templates'),
+    )
+    {{elif template_engine == 'genshi'}}
+    # Create the Genshi TemplateLoader
+    config['pylons.app_globals'].genshi_loader = TemplateLoader(
+        paths['templates'], auto_reload=True)
+    {{endif}}
 
     # CONFIGURATION OPTIONS HERE (note: all config options will override
     # any Pylons config options)

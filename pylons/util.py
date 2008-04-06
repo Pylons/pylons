@@ -162,11 +162,18 @@ class PylonsTemplate(Template):
         else:
             vars['babel_templates_extractor'] = ''
         vars['zip_safe'] = asbool(vars['zip_safe'])
-        vars['sqlalchemy'] = asbool(vars['sqlalchemy'])
+        vars['sqlalchemy'] = asbool(vars.get('sqlalchemy', 'false'))
 
 class MinimalPylonsTemplate(PylonsTemplate):
     _template_dir = 'templates/minimal_project'
     summary = 'Pylons minimal application template'
+    vars = [
+        var('version', 'Version (like 0.1)', default='0.1'),
+        var('template_engine', 'mako/genshi/etc: Template language', 
+            default='mako'),
+        var('zip_safe', 'True/False: if the package can be distributed as a '
+            '.zip file', default=False),
+    ]
 
 
 class PylonsInstaller(Installer):
