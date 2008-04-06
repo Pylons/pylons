@@ -52,7 +52,8 @@ def load_environment(global_conf, app_conf):
     )
     {{elif template_engine == 'genshi'}}
     # Create the Genshi TemplateLoader
-    config['pylons.app_globals'].genshi_loader = TemplateLoader(paths['templates'])
+    config['pylons.app_globals'].genshi_loader = TemplateLoader(
+        paths['templates'], auto_reload=True)
     {{endif}}
     
     # CONFIGURATION OPTIONS HERE (note: all config options will override
