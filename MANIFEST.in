@@ -1,0 +1,2 @@
+recursive-include pylons/templates *
+recursive-include pylons/media *
