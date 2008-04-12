@@ -131,7 +131,6 @@ class PylonsApp(object):
         registry.register(pylons.response, pylons_obj.response)
         registry.register(pylons.request, pylons_obj.request)
         
-        registry.register(pylons.buffet, self.buffet)
         registry.register(pylons.app_globals, self.globals)
         registry.register(pylons.config, self.config)
         registry.register(pylons.h, self.helpers or \
@@ -139,6 +138,8 @@ class PylonsApp(object):
         registry.register(pylons.c, pylons_obj.c)
         registry.register(pylons.translator, pylons_obj.translator)
         
+        if hasattr(pylons_obj, 'buffet'):
+            registry.register(pylons.buffet, self.buffet)
         if hasattr(pylons_obj, 'session'):
             registry.register(pylons.session, pylons_obj.session)
         if hasattr(pylons_obj, 'cache'):
@@ -165,7 +166,10 @@ class PylonsApp(object):
         pylons_obj.response = response
         pylons_obj.g = pylons_obj.app_globals = self.globals
         pylons_obj.h = self.helpers
-        pylons_obj.buffet = self.buffet
+        
+        if hasattr(self, 'buffet'):
+            pylons_obj.buffet = self.buffet
+        
         environ['pylons.pylons'] = pylons_obj
         
         environ['pylons.environ_config'] = self.environ_config
