@@ -189,11 +189,11 @@ class PylonsApp(object):
         pylons_obj.c = c
         
         econf = self.config['pylons.environ_config']
-        if econf.get('session'):
+        if econf.get('session') and econf['session'] in environ:
             pylons_obj.session = environ[econf['session']]
         elif 'beaker.session' in environ:
             pylons_obj.session = environ['beaker.session']
-        if econf.get('cache'):
+        if econf.get('cache') and econf['cache'] in environ:
             pylons_obj.cache = environ[econf['cache']]
         elif 'beaker.cache' in environ:
             pylons_obj.cache = environ['beaker.cache']
