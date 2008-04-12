@@ -69,15 +69,16 @@ class PylonsApp(object):
         
         # Initialize Buffet and all our template engines, default engine is the
         # first in the template_engines list
-        def_eng = config['buffet.template_engines'][0]
-        self.buffet = pylons.templating.Buffet(
-            def_eng['engine'], 
-            template_root=def_eng['template_root'],
-            **def_eng['template_options'])
-        for e in config['buffet.template_engines'][1:]:
-            log.debug("Initializing additional template engine: %s", e['engine'])
-            self.buffet.prepare(e['engine'], template_root=e['template_root'], 
-                alias=e['alias'], **e['template_options'])
+        if config.get('buffet.template_engines'):
+            def_eng = config['buffet.template_engines'][0]
+            self.buffet = pylons.templating.Buffet(
+                def_eng['engine'], 
+                template_root=def_eng['template_root'],
+                **def_eng['template_options'])
+            for e in config['buffet.template_engines'][1:]:
+                log.debug("Initializing additional template engine: %s", e['engine'])
+                self.buffet.prepare(e['engine'], template_root=e['template_root'], 
+                    alias=e['alias'], **e['template_options'])
     
     def __call__(self, environ, start_response):
         # Cache the logging level for the request
