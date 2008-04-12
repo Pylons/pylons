@@ -133,13 +133,10 @@ class PylonsTemplate(Template):
     summary = 'Pylons application template'
     egg_plugins = ['Pylons', 'WebHelpers']
     vars = [
-        var('version', 'Version (like 0.1)', default='0.1'),
         var('sqlalchemy', 'True/False: Include SQLAlchemy 0.4 configuration',
             default=False),
         var('template_engine', 'mako/genshi/etc: Template language', 
             default='mako'),
-        var('zip_safe', 'True/False: if the package can be distributed as a '
-            '.zip file', default=False),
     ]
     
     def pre(self, command, output_dir, vars):
@@ -161,18 +158,16 @@ class PylonsTemplate(Template):
                                                                  ' ' * 8)
         else:
             vars['babel_templates_extractor'] = ''
-        vars['zip_safe'] = asbool(vars['zip_safe'])
+        vars['version'] = vars.get('version', '0.1')
+        vars['zip_safe'] = asbool(vars.get('zip_safe', 'false'))
         vars['sqlalchemy'] = asbool(vars.get('sqlalchemy', 'false'))
 
 class MinimalPylonsTemplate(PylonsTemplate):
     _template_dir = 'templates/minimal_project'
     summary = 'Pylons minimal application template'
     vars = [
-        var('version', 'Version (like 0.1)', default='0.1'),
         var('template_engine', 'mako/genshi/etc: Template language', 
             default='mako'),
-        var('zip_safe', 'True/False: if the package can be distributed as a '
-            '.zip file', default=False),
     ]
 
 
