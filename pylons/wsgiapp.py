@@ -115,27 +115,47 @@ class PylonsApp(object):
             # cycle that the pylons object causes
             del environ['pylons.pylons']
     
-    def setup_app_env(self, environ, start_response):
-        """Setup and register all the Pylons objects with the registry"""
-        if self.log_debug:
-            log.debug("Setting up Pylons stacked object globals")
-        registry = environ['paste.registry']
+    def register_globals(self, environ):
+        """Registers globals in the environment, called from
+        setup_app_env
         
-        # Setup the basic pylons global objects
-        req = Request(environ)
-        req.language = self.request_options['language']
-        registry.register(pylons.request, req)
-        response = Response(
-            content_type=self.response_options['content_type'],
-            charset=self.response_options['charset'])
-        response.headers.update(self.response_options['headers'])
-        registry.register(pylons.response, response)
+        Override this to control how the Pylons API is setup. Note that
+        a custom render function will need to be used if the 
+        ``pylons.app_globals`` global is not available.
+        
+        """
+        pylons_obj = environ['pylons.pylons']
+        
+        registry = environ['paste.registry']
+        registry.register(pylons.response, pylons_obj.response)
+        registry.register(pylons.request, pylons_obj.request)
         
         registry.register(pylons.buffet, self.buffet)
         registry.register(pylons.app_globals, self.globals)
         registry.register(pylons.config, self.config)
         registry.register(pylons.h, self.helpers or \
                           pylons.legacy.load_h(self.package_name))
+        registry.register(pylons.c, pylons_obj.c)
+        registry.register(pylons.translator, pylons_obj.translator)
+        
+        if hasattr(pylons_obj, 'session'):
+            registry.register(pylons.session, pylons_obj.session)
+        if hasattr(pylons_obj, 'cache'):
+            registry.register(pylons.cache, pylons_obj.cache)
+    
+    def setup_app_env(self, environ, start_response):
+        """Setup and register all the Pylons objects with the registry"""
+        if self.log_debug:
+            log.debug("Setting up Pylons stacked object globals")
+        
+        # Setup the basic pylons global objects
+        req = Request(environ)
+        req.language = self.request_options['language']
+        
+        response = Response(
+            content_type=self.response_options['content_type'],
+            charset=self.response_options['charset'])
+        response.headers.update(self.response_options['headers'])
         
         # Store a copy of the request/response in environ for faster access
         pylons_obj = PylonsContext()
@@ -151,33 +171,31 @@ class PylonsApp(object):
         
         # Setup the translator global object
         translator = gettext.NullTranslations()
-        registry.register(pylons.translator, translator)
+        pylons_obj.translator = translator
         lang = self.config.get('lang')
         if lang:
             set_lang(lang)
         
         if self.config['pylons.strict_c']:
             c = ContextObj()
-            registry.register(pylons.c, c)
         else:
             c = AttribSafeContextObj()
-            registry.register(pylons.c, c)
         
         pylons_obj.c = c
         
         econf = self.config['pylons.environ_config']
         if econf.get('session'):
             pylons_obj.session = environ[econf['session']]
-            registry.register(pylons.session, environ[econf['session']])
         elif 'beaker.session' in environ:
             pylons_obj.session = environ['beaker.session']
-            registry.register(pylons.session, environ['beaker.session'])
         if econf.get('cache'):
             pylons_obj.cache = environ[econf['cache']]
-            registry.register(pylons.cache, environ[econf['cache']])
         elif 'beaker.cache' in environ:
             pylons_obj.cache = environ['beaker.cache']
-            registry.register(pylons.cache, environ['beaker.cache'])
+        
+        # Load the globals with the registry if around
+        if 'paste.registry' in environ:
+            self.register_globals(environ)
     
     def resolve(self, environ, start_response):
         """Uses dispatching information found in 
