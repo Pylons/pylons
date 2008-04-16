@@ -133,10 +133,10 @@ class PylonsTemplate(Template):
     summary = 'Pylons application template'
     egg_plugins = ['Pylons', 'WebHelpers']
     vars = [
-        var('sqlalchemy', 'True/False: Include SQLAlchemy 0.4 configuration',
-            default=False),
         var('template_engine', 'mako/genshi/etc: Template language', 
             default='mako'),
+        var('sqlalchemy', 'True/False: Include SQLAlchemy 0.4 configuration',
+            default=False),
     ]
     
     def pre(self, command, output_dir, vars):
