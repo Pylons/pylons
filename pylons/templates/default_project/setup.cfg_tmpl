@@ -36,6 +36,9 @@ settings = no_about=true
 doc-dir=docs/html
 make-dirs=1
 
+[nosetests]
+with-pylons=test.ini
+
 # Babel configuration
 [compile_catalog]
 domain = {{package}}
