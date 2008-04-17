@@ -1,7 +1,11 @@
-import urllib
+"""Tests against full Pylons projects created from scratch"""
 import os
-from paste.fixture import *
+import sys
+import urllib
+
 import pkg_resources
+from paste.fixture import *
+
 for spec in ['PasteScript', 'Paste', 'PasteDeploy', 'pylons']:
     pkg_resources.require(spec)
 
@@ -99,7 +103,7 @@ def _do_proj_test(copydict, emptyfiles=None):
                       expect_stderr=True,
                       cwd=os.path.join(testenv.cwd, 'ProjectName').replace('\\','/'))
 
-def do_pytest():
+def do_nosetests():
     _do_proj_test({'development.ini':'development.ini'})
 
 def do_knowntest():
@@ -213,7 +217,7 @@ def test_project():
     #yield svn_repos_setup
     yield (paster_create,)
     yield (make_controller,)
-    yield (do_pytest,)
+    yield (do_nosetests,)
     yield (do_knowntest,)
     yield (do_i18ntest,)
     yield (do_kid_default,)
