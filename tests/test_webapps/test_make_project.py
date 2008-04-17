@@ -1,6 +1,7 @@
 """Tests against full Pylons projects created from scratch"""
 import os
 import sys
+import time
 import urllib
 
 import pkg_resources
@@ -93,6 +94,11 @@ def _do_proj_test(copydict, emptyfiles=None):
     """Given a dict of files, where the key is a filename in filestotest, the value is
     the destination in the new projects dir. emptyfiles is a list of files that should
     be created and empty."""
+    if sys.platform.startswith('java'):
+        # Hack for Jython .py/bytecode mtime handling:
+        # http://bugs.jython.org/issue1024 (the issue actually describes
+        # this test)
+        time.sleep(1)
     if not emptyfiles:
         emptyfiles = []
     for original, newfile in copydict.iteritems():
