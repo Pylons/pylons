@@ -2,6 +2,7 @@ import warnings
 from unittest import TestCase
 
 from paste.fixture import TestApp
+from paste.httpexceptions import HTTPMovedPermanently
 from paste.registry import RegistryManager
 
 import pylons
@@ -79,6 +80,8 @@ class TestDeprecatedHelpers(SimpleTestWSGIController):
             assert ('The abort function has moved to pylons.controllers.util, '
                     'please update your import statements to reflect the '
                     'move') in msg[0], msg
+        else:
+            assert False, 'Expected a DeprecationWarning'
 
     def test_etag_cache(self):
         try:
@@ -87,6 +90,8 @@ class TestDeprecatedHelpers(SimpleTestWSGIController):
             assert ('The etag_cache function has moved to '
                     'pylons.controllers.util, please update your import '
                     'statements to reflect the move') in msg[0], msg
+        else:
+            assert False, 'Expected a DeprecationWarning'
 
     def test_redirect_to(self):
         try:
@@ -95,3 +100,41 @@ class TestDeprecatedHelpers(SimpleTestWSGIController):
             assert ('The redirect_to function has moved to '
                     'pylons.controllers.util, please update your import '
                     'statements to reflect the move') in msg[0], msg
+        else:
+            assert False, 'Expected a DeprecationWarning'
+
+
+class LegacyHTTPExceptionController(WSGIController):
+
+    def legacy_httpexception(self):
+        raise HTTPMovedPermanently('/elsewhere')
+
+
+class TestLegacyHTTPException(SimpleTestWSGIController):
+    wsgi_app = LegacyHTTPExceptionController
+
+    def setUp(self):
+        SimpleTestWSGIController.setUp(self)
+        warnings.simplefilter('error', DeprecationWarning)
+
+    def tearDown(self):
+        SimpleTestWSGIController.tearDown(self)
+        warnings.simplefilter('always', DeprecationWarning)
+
+    def test_legacy_httpexception(self):
+        self.baseenviron['pylons.routes_dict']['action'] = \
+            'legacy_httpexception'
+        try:
+            self.app.get('/')
+        except DeprecationWarning, msg:
+            assert ('Raising a paste.httpexceptions.HTTPException is '
+                    'deprecated, use webob.exc.HTTPException instead') \
+                    in msg[0], msg
+        else:
+            assert False, 'Expected a DeprecationWarning'
+
+    def test_legacy_httpexception_to_response(self):
+        self.baseenviron['pylons.routes_dict']['action'] = \
+            'legacy_httpexception'
+        warnings.simplefilter('always', DeprecationWarning)
+        self.app.get('/', status=301)
