@@ -1,4 +1,4 @@
-"""Setup the ${project} application"""
+"""Setup the {{project}} application"""
 import logging
 
 from paste.deploy import appconfig
