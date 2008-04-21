@@ -1,5 +1,4 @@
 {{if template_engine in ['genshi', 'kid']}}
-#
 {{else}}
 {{skip_template()}}
 {{endif}}
