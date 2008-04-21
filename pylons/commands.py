@@ -376,6 +376,10 @@ class ShellCommand(Command):
         here_dir = os.getcwd()
         locs = dict(__name__="pylons-admin")
 
+        if not self.options.quiet:
+            # Configure logging from the config file
+            self.logging_file_config(config_file)
+        
         # XXX: Note, initializing CONFIG here is Legacy support. pylons.config
         # will automatically be initialized and restored via the registry
         # restorer along with the other StackedObjectProxys
@@ -446,10 +450,6 @@ class ShellCommand(Command):
         banner += "  %-10s -  %s\n" % ('app',
             'paste.fixture wrapped around wsgiapp')
 
-        if not self.options.quiet:
-            # Configure logging from the config file
-            self.logging_file_config(config_file)
-        
         try:
             if self.options.disable_ipython:
                 raise ImportError()

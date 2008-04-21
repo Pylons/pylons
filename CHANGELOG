@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.7 (**tip**)
+* Fixed SQLAlchemy logging not working in paster shell. Fixes #363. Thanks
+  Christoph Haas.
 * Added optionally engine initialization, to prevent Buffet from loading
   if there's no 'buffet.template_engines' in the config.
 * Updated minimal template to work with Tempita and other new templating
