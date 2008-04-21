@@ -1,7 +1,8 @@
 """Utility classes for creating workable pylons controllers for unit testing."""
-from pylons.controllers.util import Request, Response
+import gettext
 
 import pylons
+from pylons.controllers.util import Request, Response
 from pylons.util import ContextObj, PylonsContext
 
 class ControllerWrap(object):
@@ -44,6 +45,9 @@ class SetupCacheGlobal(object):
         if self.setup_g:
             py_obj.g = self.g
             registry.register(pylons.g, self.g)
+        translator = gettext.NullTranslations()
+        py_obj.translator = translator
+        registry.register(pylons.translator, translator)
 
         # Update the environ
         environ.update(self.environ)

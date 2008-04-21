@@ -10,6 +10,9 @@ from decorator import decorator
 from formencode import htmlfill
 from webob import UnicodeMultiDict
 
+from pylons.i18n import _ as pylons_gettext
+from formencode.api import _stdtrans as formencode_gettext
+
 __all__ = ['jsonify', 'validate']
 
 log = logging.getLogger(__name__)
@@ -93,6 +96,8 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
                 # Do something with self.form_result
                 pass
     """
+    if state is None:
+        state = PylonsFormEncodeState
     def wrapper(func, self, *args, **kwargs):
         """Decorator Wrapper function"""
         request = self._py_object.request
@@ -226,3 +231,37 @@ def encode_formencode_errors(errors, encoding, encoding_errors='strict'):
         errors = [encode_formencode_errors(error, encoding, encoding_errors) \
                       for error in errors]
     return errors
+
+
+def pylons_formencode_gettext(value):
+    """Translates a string ``value`` using pylons gettext first and if
+    that fails, formencode gettext.
+    
+    This allows to "merge" localized error messages from built-in
+    FormEncode's validators with application-specific validators.
+    """
+    trans = pylons_gettext(value)
+    if trans == value:
+        # translation failed, try formencode
+        trans = formencode_gettext(value)
+    return trans
+
+
+class PylonsFormEncodeState(object):
+    """A ``state`` for FormEncode validate API that includes smart ``_``
+    hook.
+
+    The FormEncode library used by validate() decorator has some
+    provision for localizing error messages. In particular, it looks for
+    attribute ``_`` in the application-specific state object that gets
+    passed to every ``.to_python()`` call. If it is found, the ``_`` is
+    assumed to be a gettext-like function and is called to localize
+    error messages.
+
+    One complication is that FormEncode ships with localized error
+    messages for standard validators so the user may want to re-use them
+    instead of gathering and translating everything from scratch. To
+    allow this, we pass as ``_`` a function which looks up translation
+    both in application and formencode message catalogs.
+    """
+    _ = staticmethod(pylons_formencode_gettext)

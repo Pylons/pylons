@@ -2,6 +2,9 @@ Pylons Changelog
 =================
 
 0.9.7 (**tip**)
+* @validate now defaults to translating FormEncode error messages via
+  Pylons' gettext catalog, then falls back to FormEncode's. fixes #296.
+  Thanks Max Ischenko.
 * Fixed SQLAlchemy logging not working in paster shell. Fixes #363. Thanks
   Christoph Haas.
 * Added optionally engine initialization, to prevent Buffet from loading
