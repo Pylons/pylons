@@ -7,16 +7,20 @@ import pylons
 __all__ = ['WSGIErrorsHandler']
 
 class WSGIErrorsHandler(logging.Handler):
-    """A handler class that writes logging records to environ['wsgi.errors'].
+    """A handler class that writes logging records to
+    environ['wsgi.errors'].
 
-    This code is derived from CherryPy's cherrypy._cplogging.WSGIErrorHandler.
+    This code is derived from CherryPy's 
+    :class:`cherrypy._cplogging.WSGIErrorHandler`.
+    
     """
-
     def __init__(self, cache=True, *args, **kwargs):
-        """
+        """Handle initialization
+        
         ``cache``
-            Whether or not the wsgi.errors stream is cached (instead of looked
-            up via pylons.request.environ for logged message)
+            Whether or not the wsgi.errors stream is cached (instead of
+            looked up via pylons.request.environ for logged message)
+        
         """
         logging.Handler.__init__(self, *args, **kwargs)
         self.cache = cache
@@ -25,8 +29,9 @@ class WSGIErrorsHandler(logging.Handler):
     def get_wsgierrors(self):
         """Return the wsgi.errors stream
 
-        Raises a TypeError when outside of a web request (pylons.request is not
-        setup)
+        Raises a TypeError when outside of a web request
+        (pylons.request is not setup)
+        
         """
         if not self.cache:
             return pylons.request.environ.get('wsgi.errors')

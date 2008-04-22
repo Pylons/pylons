@@ -2,6 +2,7 @@
 
 Provides template engine HTML error formatters for the Template tab of
 EvalException.
+
 """
 try:
     import mako.exceptions
