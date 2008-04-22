@@ -1,4 +1,4 @@
-"""Caching decorators"""
+"""Caching decorator"""
 import inspect
 import logging
 
@@ -9,31 +9,32 @@ log = logging.getLogger(__name__)
 
 def beaker_cache(key="cache_default", expire="never", type=None,
     query_args=False, response=False, **b_kwargs):
-    """Cache decorator utilizing Beaker. Caches action or other function that
-    returns a pickle-able object as a result.
+    """Cache decorator utilizing Beaker. Caches action or other
+    function that returns a pickle-able object as a result.
 
     Optional arguments:
 
-    key
+    ``key``
         None - No variable key, uses function name as key
         "cache_default" - Uses all function arguments as the key
         string - Use kwargs[key] as key
         list - Joins the arguments in the list
-    expire
+    ``expire``
         Time in seconds before cache expires, defaults to never
-    type
+    ``type``
         Type of cache to use: dbm, memory, file, memcached, or None for
         Beaker's default
-    query_args
+    ``query_args``
         Uses the query arguments as the key, defaults to False
-    response
+    ``response``
         Whether or not the response status/headers/cookies present at 
         the time the cache is generated should be restored. This is
         ideal for caching controller actions, but shouldn't be used
         for caching non-action functions. Defaults to False.
 
-    If cache_enabled is set to False in the .ini file, then cache is disabled
-    globally.
+    If cache_enabled is set to False in the .ini file, then cache is
+    disabled globally.
+    
     """
     def wrapper(func, *args, **kwargs):
         """Decorator wrapper"""

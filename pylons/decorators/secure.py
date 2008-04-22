@@ -21,13 +21,17 @@ def authenticated_form(params):
         submitted_token == secure_form_tag.authentication_token()
 
 def authenticate_form(func, *args, **kwargs):
-    """Decorator for authenticating a form according to an authorization token
-    stored in the client's session. For prevention of certain Cross-site
-    request forgery (CSRF) attacks (See
+    """Decorator for authenticating a form
+    
+    This decorator uses an authorization token stored in the client's
+    session for prevention of certain Cross-site request forgery (CSRF)
+    attacks (See
     http://en.wikipedia.org/wiki/Cross-site_request_forgery for more
     information).
 
-    For use with the ``webhelpers.rails.secure_form_tag`` helper functions.
+    For use with the ``webhelpers.rails.secure_form_tag`` helper
+    functions.
+    
     """
     self = args[0]
     request = self._py_object.request
@@ -49,8 +53,8 @@ def https(*redirect_args, **redirect_kwargs):
     Non-https POST requests are aborted (405 response code) by this decorator.
 
     Example:
-
-    .. code-block: Python
+    
+    .. code-block:: python
 
         @https('/pylons') # redirect to HTTPS /pylons
         def index(self):
@@ -64,6 +68,7 @@ def https(*redirect_args, **redirect_kwargs):
         @https() # redirect to HTTPS version of myself
         def get(self):
             #...
+
     """
     def wrapper(func, *args, **kwargs):
         """Decorator Wrapper function"""

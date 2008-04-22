@@ -14,7 +14,7 @@ def restrict(*methods):
 
     Example:
 
-    .. code-block:: Python
+    .. code-block:: python
 
         from pylons.decorators import rest
 
@@ -22,6 +22,7 @@ def restrict(*methods):
 
             @rest.restrict('GET')
             def comment(self, id):
+    
     """
     def check_methods(func, *args, **kwargs):
         """Wrapper for restrict"""
@@ -35,14 +36,14 @@ def restrict(*methods):
 def dispatch_on(**method_map):
     """Dispatches to alternate controller methods based on HTTP method
 
-    Multiple keyword arguments should be passed, with the keyword corresponding
-    to the HTTP method to dispatch on (DELETE, POST, GET, etc.) and the
-    value being the function to call. The value should be a string indicating
-    the name of the function to dispatch to.
+    Multiple keyword arguments should be passed, with the keyword
+    corresponding to the HTTP method to dispatch on (DELETE, POST, GET,
+    etc.) and the value being the function to call. The value should be
+    a string indicating the name of the function to dispatch to.
 
     Example:
 
-    .. code-block:: Python
+    .. code-block:: python
 
         from pylons.decorators import rest
 
@@ -54,6 +55,7 @@ def dispatch_on(**method_map):
 
             def create_comment(self, id):
                 # Do something if its a post to comment
+    
     """
     def dispatcher(func, self, *args, **kwargs):
         """Wrapper for dispatch_on"""

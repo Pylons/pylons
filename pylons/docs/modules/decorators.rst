@@ -1,5 +1,5 @@
-:mod:`pylons.decorators` -- Controller Utility functions
-======================================================================
+:mod:`pylons.decorators` -- Decorators
+======================================
 
 .. automodule:: pylons.decorators
 

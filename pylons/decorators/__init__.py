@@ -1,4 +1,11 @@
-"""Pylons Decorators: ``jsonify``, ``validate``"""
+"""Pylons Decorators
+
+Common decorators intended for use in controllers. Additional
+decorators for use with controllers are in the
+:mod:`~pylons.decorators.cache`, :mod:`~pylons.decorators.rest` and
+:mod:`~pylons.decorators.secure` modules.
+
+"""
 import logging
 import sys
 import warnings
