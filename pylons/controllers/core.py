@@ -16,24 +16,33 @@ log = logging.getLogger(__name__)
 
 
 class WSGIController(object):
-    """WSGI Controller that follows WSGI spec for calling and return values
+    """WSGI Controller that follows WSGI spec for calling and return
+    values
     
     The Pylons WSGI Controller handles incoming web requests that are 
-    dispatched from the PylonsBaseWSGIApp. These requests result in a new 
-    instance of the WSGIController being created, which is then called with the
-    dict options from the Routes match. The standard WSGI response is then
-    returned with start_response called as per the WSGI spec.
+    dispatched from the PylonsBaseWSGIApp. These requests result in a
+    new instance of the WSGIController being created, which is then
+    called with the dict options from the Routes match. The standard
+    WSGI response is then returned with start_response called as per
+    the WSGI spec.
     
-    By default, the WSGIController will search and attempt to call a 
-    ``__before__`` method before calling the action, and will try to call a
-    ``__after__`` method after the action was called. These two methods can act
-    as filters controlling access to the action, setup variables/objects for 
-    use with a set of actions, etc.
+    Special WSGIController methods you may define:
     
-    Each action to be called is inspected with ``_inspect_call`` so that it is
-    only passed the arguments in the Routes match dict that it asks for. The
-    arguments passed into the action can be customized by overriding the 
-    ``_get_method_args`` function which is expected to return a dict.
+    ``__before__``
+        This method will be run before your action is, and should be
+        used for setting up variables/objects, restricting access to
+        other actions, or other tasks which should be executed before
+        the action is called.
+    ``__after__``
+        Method to run after the action is run. This method will
+        *always* be run after your method, even if it raises an
+        Exception or redirects.
+        
+    Each action to be called is inspected with :meth:`_inspect_call` so
+    that it is only passed the arguments in the Routes match dict that
+    it asks for. The arguments passed into the action can be customized
+    by overriding the :meth:`_get_method_args` function which is
+    expected to return a dict.
     
     In the event that an action is not found to handle the request, the
     Controller will raise an "Action Not Found" error if in debug mode,
