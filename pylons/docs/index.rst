@@ -1,4 +1,4 @@
-.. Pylons documentation master file, created by sphinx-quickstart.py on Fri Mar 21 18:10:56 2008.
+.. Pylons documentation master file, created by sphinx-quickstart on Mon Apr 21 20:41:33 2008.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
@@ -9,6 +9,9 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
+   
+   gettingstarted
+   
 
 Indices and tables
 ==================
@@ -16,4 +19,4 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
+* :ref:`glossary`
