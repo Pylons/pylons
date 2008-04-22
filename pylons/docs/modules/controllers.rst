@@ -5,4 +5,4 @@
 
 This module makes available the
 :class:`~pylons.controllers.core.WSGIController` and
-:class:`~pylons.controllers.core.XMLRPCController` for easier importing.
+:class:`~pylons.controllers.xmlrpc.XMLRPCController` for easier importing.

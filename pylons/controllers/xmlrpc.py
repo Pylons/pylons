@@ -40,17 +40,18 @@ class XMLRPCController(WSGIController):
     """XML-RPC Controller that speaks WSGI
     
     This controller handles XML-RPC responses and complies with the 
-    `XML-RPC Specification <http://www.xmlrpc.com/spec>`_ as well as the
-    `XML-RPC Introspection
-    <http://scripts.incutio.com/xmlrpc/introspection.html>`_ specification.
+    `XML-RPC Specification <http://www.xmlrpc.com/spec>`_ as well as
+    the `XML-RPC Introspection
+    <http://scripts.incutio.com/xmlrpc/introspection.html>`_ 
+    specification.
     
-    By default, methods with names containing a dot are translated to use an
-    underscore. For example, the `system.methodHelp` is handled by the method 
-    `system_methodHelp`.
+    By default, methods with names containing a dot are translated to
+    use an underscore. For example, the `system.methodHelp` is handled
+    by the method :meth:`system_methodHelp`.
     
-    Methods in the XML-RPC controller will be called with the method given in 
-    the XMLRPC body. Methods may be annotated with a signature attribute to 
-    declare the valid arguments and return types.
+    Methods in the XML-RPC controller will be called with the method
+    given in the XMLRPC body. Methods may be annotated with a signature
+    attribute to declare the valid arguments and return types.
     
     For example::
         
@@ -68,17 +69,17 @@ class XMLRPCController(WSGIController):
             userinfo.signature = [['struct', 'string'],
                                   ['struct', 'string', 'int']]
     
-    Since XML-RPC methods can take different sets of data, each set of valid
-    arguments is its own list. The first value in the list is the type of the
-    return argument. The rest of the arguments are the types of the data that
-    must be passed in.
+    Since XML-RPC methods can take different sets of data, each set of
+    valid arguments is its own list. The first value in the list is the
+    type of the return argument. The rest of the arguments are the
+    types of the data that must be passed in.
     
-    In the last method in the example above, since the method can optionally 
-    take an integer value both sets of valid parameter lists should be
-    provided.
+    In the last method in the example above, since the method can
+    optionally take an integer value both sets of valid parameter lists
+    should be provided.
     
-    Valid types that can be checked in the signature and their corresponding
-    Python types::
+    Valid types that can be checked in the signature and their
+    corresponding Python types::
 
         'string' - str
         'array' - list
@@ -89,13 +90,14 @@ class XMLRPCController(WSGIController):
         'dateTime.iso8601' - xmlrpclib.DateTime
         'base64' - xmlrpclib.Binary
     
-    The class variable ``allow_none`` is passed to xmlrpclib.dumps; enabling it
-    allows translating ``None`` to XML (an extension to the XML-RPC
-    specification)
+    The class variable ``allow_none`` is passed to xmlrpclib.dumps;
+    enabling it allows translating ``None`` to XML (an extension to the
+    XML-RPC specification)
 
-    Note::
+    .. note::
 
         Requiring a signature is optional.
+    
     """
     allow_none = False
     max_body_length = 4194304
@@ -104,7 +106,7 @@ class XMLRPCController(WSGIController):
         return self.rpc_kargs
 
     def __call__(self, environ, start_response):
-        """Parse an XMLRPC body for the method, and call it with the 
+        """Parse an XMLRPC body for the method, and call it with the
         appropriate arguments"""
         # Pull out the length, return an error if there is no valid
         # length or if the length is larger than the max_body_length.
@@ -197,9 +199,8 @@ class XMLRPCController(WSGIController):
         return response
 
     def _find_method(self, name):
-        """Locate a method in the controller by the specified name and return
-        it
-        """
+        """Locate a method in the controller by the specified name and
+        return it"""
         if self._pylons_log_debug:
             log.debug("Looking for XMLRPC method: %r", name)
         try:
@@ -210,16 +211,18 @@ class XMLRPCController(WSGIController):
     def _find_method_name(self, name):
         """Locate a method in the controller by the appropriate name
         
-        By default, this translates method names like 'system.methodHelp' into
-        'system_methodHelp'.
+        By default, this translates method names like 
+        'system.methodHelp' into 'system_methodHelp'.
+        
         """
         return name.replace('.', '_')
 
     def _publish_method_name(self, name):
         """Translate an internal method name to a publicly viewable one
         
-        By default, this translates internal method names like 'blog_view' into
-        'blog.view'.
+        By default, this translates internal method names like
+        'blog_view' into 'blog.view'.
+        
         """
         return name.replace('_', '.')
 
@@ -236,11 +239,13 @@ class XMLRPCController(WSGIController):
     system_listMethods.signature = [['array']]
 
     def system_methodSignature(self, name):
-        """Returns an array of array's for the valid signatures for a method.
+        """Returns an array of array's for the valid signatures for a
+        method.
 
-        The first value of each array is the return value of the method. The
-        result is an array to indicate multiple signatures a method may be
-        capable of.
+        The first value of each array is the return value of the
+        method. The result is an array to indicate multiple signatures
+        a method may be capable of.
+        
         """
         method = self._find_method(self._find_method_name(name))
         if method:
@@ -264,7 +269,8 @@ class XMLRPCController(WSGIController):
 
 
 class MethodHelp(object):
-    """Wrapper for formatting doc strings from XMLRPCController methods"""
+    """Wrapper for formatting doc strings from XMLRPCController
+    methods"""
     def __init__(self, doc):
         self.__doc__ = doc
 
