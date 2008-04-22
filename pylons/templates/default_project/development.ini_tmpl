@@ -34,6 +34,7 @@ beaker.session.secret = somesecret
 sqlalchemy.url = sqlite:///%(here)s/development.db
 
 {{endif}}
+
 # WARNING: *THE LINE BELOW MUST BE UNCOMMENTED ON A PRODUCTION ENVIRONMENT*
 # Debug mode will enable the interactive debugging tool, allowing ANYONE to
 # execute malicious code after an exception is raised.

@@ -35,6 +35,7 @@ sqlalchemy.url = sqlite:///production.db
 sqlalchemy.echo = False
 
 {{endif}}
+
 # WARNING: *THE LINE BELOW MUST BE UNCOMMENTED ON A PRODUCTION ENVIRONMENT*
 # Debug mode will enable the interactive debugging tool, allowing ANYONE to
 # execute malicious code after an exception is raised.
