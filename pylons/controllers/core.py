@@ -40,22 +40,23 @@ class WSGIController(object):
     otherwise a ``404 Not Found`` error will be returned.
     
     """
-
     _pylons_log_debug = False
 
     def _perform_call(self, func, args):
-        # Hide the traceback for everything above this method
+        """Hide the traceback for everything above this method"""
         __traceback_hide__ = 'before_and_this'
         return func(**args)
     
     def _inspect_call(self, func):
-        """Calls a function with arguments from ``_get_method_args``
+        """Calls a function with arguments from
+        :meth:`_get_method_args`
         
-        Given a function, inspect_call will inspect the function args and call
-        it with no further keyword args than it asked for.
+        Given a function, inspect_call will inspect the function args
+        and call it with no further keyword args than it asked for.
         
-        If the function has been decorated, it is assumed that the decorator
-        preserved the function signature.
+        If the function has been decorated, it is assumed that the
+        decorator preserved the function signature.
+        
         """
         argspec = inspect.getargspec(func)
         kargs = self._get_method_args()
@@ -108,9 +109,12 @@ class WSGIController(object):
     def _get_method_args(self):
         """Retrieve the method arguments to use with inspect call
         
-        By default, this uses Routes to retrieve the arguments, override
-        this method to customize the arguments your controller actions are
-        called with.
+        By default, this uses Routes to retrieve the arguments,
+        override this method to customize the arguments your controller
+        actions are called with.
+        
+        This method should return a dict.
+        
         """
         req = self._py_object.request
         kargs = req.environ['pylons.routes_dict'].copy()
@@ -120,7 +124,8 @@ class WSGIController(object):
         return kargs
     
     def _dispatch_call(self):
-        """Handles dispatching the request to the function using Routes"""
+        """Handles dispatching the request to the function using
+        Routes"""
         log_debug = self._pylons_log_debug
         req = self._py_object.request
         action = req.environ['pylons.routes_dict'].get('action')
@@ -148,6 +153,7 @@ class WSGIController(object):
         return response
     
     def __call__(self, environ, start_response):
+        """The main call handler that is called to return a response"""
         log_debug = self._pylons_log_debug
         
         # Keep a local reference to the req/response objects

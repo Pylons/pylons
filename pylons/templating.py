@@ -3,30 +3,31 @@
 Render functions and helpers
 ============================
 
-``pylons.templating`` includes several basic render functions, 
-``render_mako`` and ``render_genshi`` that render templates from the
-file-system with the assumption that variables intended for the 
-template will be attached to ``tmpl_context`` (hereafter referred to
-by its short name of ``c`` which it is commonly imported as).
+:mod:`pylons.templating` includes several basic render functions, 
+:func:`render_mako` and :func:`render_genshi` that render templates
+from the file-system with the assumption that variables intended for
+the  will be attached to :data:`tmpl_context` (hereafter referred to
+by its short name of :data:`c` which it is commonly imported as).
 
 The default render functions work with the template language loader
-object that is setup on the ``g`` globals object in the project's
-``config/environment.py``.
+object that is setup on the :data:`app_globals` object in the project's
+:file:`config/environment.py`.
 
 Usage
 -----
 
 Generally, one of the render functions will be imported in the 
 controller. Variables intended for the template are attached to the
-``c`` object.
+:data:`c` object.
 
 .. admonition :: Tip
     
-    ``tmpl_context`` (template context) is abbreviated to ``c`` instead of
-    its full name since it will likely be used extensively and it's much
-    faster to use ``c``. Of course, for users that can't tolerate 
-    one-letter variables, feel free to not import ``tmpl_context`` as 
-    ``c`` since both names are available in templates as well.
+    :data:`tmpl_context` (template context) is abbreviated to :data:`c`
+    instead of its full name since it will likely be used extensively
+    and it's much faster to use :data:`c`. Of course, for users that
+    can't tolerate one-letter variables, feel free to not import 
+    :data:`tmpl_context` as :data:`c` since both names are available in
+    templates as well.
 
 Example of rendering a template with some variables::
 
@@ -59,19 +60,20 @@ Templates rendered in Pylons should include the default Pylons globals
 as the ``render_mako`` and ``render_genshi`` functions. The full list
 of Pylons globals that are included in the template's namespace are:
 
-- c -- Template context object
-- tmpl_context -- Template context object
-- config -- Pylons configuration object (acts as a dict)
-- g -- Project application globals object
-- h -- Project helpers module reference
-- request -- Pylons request object for this request
-- response -- Pylons response object for this request
-- session -- Pylons session object (unless Sessions are removed)
-- translator -- Gettext translator object configured for current locale
-- ungettext -- Unicode capable version of gettext's ngettext function
+- :data:`c` -- Template context object
+- :data:`tmpl_context` -- Template context object
+- :data:`config` -- Pylons configuration object (acts as a dict)
+- :data:`g` -- Project application globals object
+- :data:`app_globals` -- Project application globals object
+- :data:`h` -- Project helpers module reference
+- :class:`request` -- Pylons request object for this request
+- :class:`response` -- Pylons response object for this request
+- :class:`session` -- Pylons session object (unless Sessions are removed)
+- :class:`translator` -- Gettext translator object configured for current locale
+- :func:`ungettext` -- Unicode capable version of gettext's ngettext function
   (handles plural translations)
-- _ -- Unicode capable gettext translate function
-- N_ -- gettext no-op function to mark a string for translation, but
+- :func:`_` -- Unicode capable gettext translate function
+- :func:`N_` -- gettext no-op function to mark a string for translation, but
   doesn't actually translate
 
 Configuring the template language
@@ -84,10 +86,12 @@ template engine, and are used by the render functions.
 
 .. warning::
 
-    Don't change the variable name on ``app_globals`` that the template
-    loader is attached to if you want to use the render_* functions
-    that ``pylons.templating`` comes with. The render_* functions look
-    for the template loader to render the template.
+    Don't change the variable name on :data:`app_globals` that the
+    template loader is attached to if you want to use the render_*
+    functions that :mod:`pylons.templating` comes with. The render_*
+    functions look for the template loader to render the template.
+
+.. _custom-render:
 
 Writing your own render function
 --------------------------------
@@ -100,17 +104,17 @@ be made.
 
 Two helper functions for use with the render function make it easy to
 include the common Pylons globals that are useful in a template as well
-as enabling easy use of cache capabilities. The ``pylons_globals`` and
-``cached_template`` functions can be used if desired.
+as enabling easy use of cache capabilities. The :func:`pylons_globals`
+and :func:`cached_template` functions can be used if desired.
 
 Generally, the custom render function should reside in your project's
-``lib/`` directory, probably in ``base.py``.
+``lib/`` directory, probably in :file:`base.py`.
 
 Here's a sample Genshi render function as it would look in a project's
 ``lib/base.py`` that doesn't fully render the result to a string, and
-rather than use ``c`` assumes that a dict is passed in to be used in
-the templates global namespace. It also returns a Genshi stream instead
-of the rendered string.
+rather than use :data:`c` assumes that a dict is passed in to be used
+in the templates global namespace. It also returns a Genshi stream
+instead the rendered string.
 
 .. code-block:: python
     
@@ -124,7 +128,7 @@ of the rendered string.
         tmpl_vars.update(globs)
         
         # Grab a template reference
-        template = globs['g'].genshi_loader.load(template_name)
+        template = globs['app_globals'].genshi_loader.load(template_name)
         
         # Render the template
         return template.generate(**tmpl_vars)
@@ -289,7 +293,7 @@ def render_mako(template_name, cache_key=None, cache_type=None,
         globs = pylons_globals()
 
         # Grab a template reference
-        template = globs['g'].mako_lookup.get_template(template_name)
+        template = globs['app_globals'].mako_lookup.get_template(template_name)
         
         return template.render(**globs)
     
@@ -312,7 +316,7 @@ def render_genshi(template_name, cache_key=None, cache_type=None,
         globs = pylons_globals()
 
         # Grab a template reference
-        template = globs['g'].genshi_loader.load(template_name)
+        template = globs['app_globals'].genshi_loader.load(template_name)
         
         return template.generate(**globs).render(method=method)
     

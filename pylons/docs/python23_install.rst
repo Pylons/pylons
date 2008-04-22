@@ -3,7 +3,7 @@
 Python 2.3 Installation Instructions
 ====================================
 
-First, please note that Python 2.3 users on Windows will need to install `subprocess.exe <http://www.pylonshq.com/download/subprocess-0.1-20041012.win32-py2.3.exe>`_ before beginning the installation (whereas Python 2.4 users on Windows do not). All windows users also should read the section `Post install tweaks for Windows <Windows+Notes>`_ after installation. Users of Ubuntu/debian will also likely need to install the python-dev package.
+First, please note that Python 2.3 users on Windows will need to install `subprocess.exe <http://www.pylonshq.com/download/subprocess-0.1-20041012.win32-py2.3.exe>`_ before beginning the installation (whereas Python 2.4 users on Windows do not). All windows users also should read the section :ref:`windows-notes` after installation. Users of Ubuntu/debian will also likely need to install the python-dev package.
 
 System-wide Install
 -------------------
@@ -14,7 +14,7 @@ If you already have easy install:
 
 .. code-block:: bash
 
-    $ easy_install Pylons==0.9.6.1
+    $ easy_install Pylons==0.9.7
 
 .. note::
     On rare occasions, the python.org Cheeseshop goes down. It is still 

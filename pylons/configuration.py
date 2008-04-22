@@ -1,14 +1,16 @@
 """Configuration object and defaults setup
 
 The PylonsConfig object is initialized in pylons projects inside the
-``config/environment.py`` module. Importing the ``config`` object from
-this module causes the PylonsConfig object to be created, and setup in
-an app-safe manner so that multiple apps being setup avoid conflicts.
+:file:`config/environment.py` module. Importing the :data:`config`
+object from module causes the PylonsConfig object to be created, and
+setup in  app-safe manner so that multiple apps being setup avoid
+conflicts.
 
-After importing ``config``, the project should then call ``init_app``
-with the appropriate options to setup the configuration. In addition
-to the config data passed with ``init_app``, various defaults are set
-for use with Paste and Routes.
+After importing :data:`config`, the project should then call
+:meth:`~PylonsConfig.init_app` with the appropriate options to setup
+the configuration. In the config data passed with
+:meth:`~PylonsConfig.init_app`, various defaults are set use with Paste
+and Routes.
 
 """
 import copy
@@ -41,13 +43,10 @@ class PylonsConfig(DispatchingConfig):
     The Pylons configuration object is a per-application instance
     object that retains the information regarding the global and app
     conf's as well as per-application instance specific data such as
-    the mapper, the paths for this instance, and the myghty
-    configuration.
+    the mapper, and the paths for this instance.
 
     The config object is available in your application as the Pylons
-    global ``pylons.config``. An example usage:
-
-    .. code-block :: Python
+    global :data:`pylons.config`. For example::
 
         from pylons import config
 
@@ -73,8 +72,9 @@ class PylonsConfig(DispatchingConfig):
         list will be configured as the default template engine. Each
         item in the list is a dict indicating how to configure the
         template engine with keys:
-            ``engine``, ``template_root``, ``template_options``, and 
-            ``alias``
+        
+        ``engine``, ``template_root``, ``template_options``, and 
+        ``alias``
     ``pylons.default_charset``
         Deprecated: Use the response_settings dict instead.
         Default character encoding specified to the browser via the
@@ -84,16 +84,16 @@ class PylonsConfig(DispatchingConfig):
         when access is attempted to an attribute that doesn't exist.
     ``pylons.request_options``
         A dict of Content-Type related default settings for new
-        instances of ``paste.wsgiwrappers.WSGIRequest``. May contain
-        the values ``charset`` and ``errors`` and 
+        instances of :class:`~pylons.controllers.util.Request`. May
+        contain the values ``charset`` and ``errors`` and 
         ``decode_param_names``. Overrides the Pylons default values
         specified by the ``request_defaults`` dict.
     ``pylons.response_options``
         A dict of Content-Type related default settings for new 
-        instances of ``pylons.Response``. May contain the values
-        ``content_type``, ``charset`` and ``errors``. Overrides the
-        Pylons default values specified by the ``response_defaults``
-        dict.
+        instances of :class:`~pylons.controllers.util.Response`. May
+        contain the values ``content_type``, ``charset`` and
+        ``errors``. Overrides the Pylons default values specified by
+        the ``response_defaults`` dict.
     ``routes.map``
         Mapper object used for Routing. Yes, it is possible to add
         routes after your application has started running.
@@ -203,7 +203,7 @@ class PylonsConfig(DispatchingConfig):
 
         Example of Kid addition:
 
-        .. code-block:: Python
+        .. code-block:: python
 
             # In yourproj/middleware.py
             # ...
@@ -217,7 +217,7 @@ class PylonsConfig(DispatchingConfig):
 
         Example of changing the default template engine:
 
-        .. code-block:: Python
+        .. code-block:: python
 
             # In yourproj/middleware.py
             # ...
@@ -234,6 +234,7 @@ class PylonsConfig(DispatchingConfig):
 
             # Add old default as additional engine
             config.template_engines.append(old_default)
+        
         """
         if not options:
             options = self['buffet.template_options']
@@ -251,7 +252,7 @@ class PylonsConfig(DispatchingConfig):
             This *must* be called at least once, as soon as possible 
             tosetup all the configuration options.
         
-        ``global_config``
+        ``global_conf``
             Several options are expected to be set for a Pylons web
             application. They will be loaded from the global_config 
             which has the main Paste options. If ``debug`` is not 
@@ -276,9 +277,15 @@ class PylonsConfig(DispatchingConfig):
         ``package``
             The name of the application package, to be stored in the 
             app_conf.
+        
+        .. versionchanged:: 0.9.7
+            ``template_engine`` is no longer required, and can be set
+            to :data:`None` to avoid loading the default one.
+        
         ``template_engine``
             Declare the default template engine to setup. Choices are
             kid, genshi, mako (the default), and pylonsmyghty.
+        
         """
         log.debug("Initializing configuration, package: '%s'", package)
         conf = global_conf.copy()
