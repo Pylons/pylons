@@ -45,9 +45,7 @@ class PylonsConfig(DispatchingConfig):
     the mapper, and the paths for this instance.
 
     The config object is available in your application as the Pylons
-    global :data:`pylons.config`. An example usage:
-
-    .. code-block:: python
+    global :data:`pylons.config`. For example::
 
         from pylons import config
 
