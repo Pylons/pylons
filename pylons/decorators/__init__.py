@@ -1,4 +1,4 @@
-"""Pylons Decorators: ``jsonify``, ``validate``, REST, and Cache decorators"""
+"""Pylons Decorators: ``jsonify``, ``validate``"""
 import logging
 import sys
 import warnings
@@ -23,6 +23,7 @@ def jsonify(func, *args, **kwargs):
     Given a function that will return content, this decorator will
     turn the result into JSON, with a content-type of 'text/javascript'
     and output it.
+    
     """
     self = args[0]
     self._py_object.response.headers['Content-Type'] = 'application/json'
@@ -41,15 +42,16 @@ jsonify = decorator(jsonify)
 def validate(schema=None, validators=None, form=None, variable_decode=False,
              dict_char='.', list_char='-', post_only=True, state=None,
              on_get=False, **htmlfill_kwargs):
-    """Validate input either for a FormEncode schema, or individual validators
+    """Validate input either for a FormEncode schema, or individual
+    validators
 
     Given a form schema or dict of validators, validate will attempt to
     validate the schema or validator list.
 
     If validation was successful, the valid result dict will be saved
-    as ``self.form_result``. Otherwise, the action will be re-run as if it was
-    a GET, and the output will be filled by FormEncode's htmlfill to fill in
-    the form field errors.
+    as ``self.form_result``. Otherwise, the action will be re-run as if
+    it was a GET, and the output will be filled by FormEncode's
+    htmlfill to fill in the form field errors.
 
     ``schema``
         Refers to a FormEncode Schema object to use during validation.
@@ -57,8 +59,8 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
         Method used to display the form, which will be used to get the 
         HTML representation of the form for error filling.
     ``variable_decode``
-        Boolean to indicate whether FormEncode's variable decode function 
-        should be run on the form input before validation.
+        Boolean to indicate whether FormEncode's variable decode
+        function should be run on the form input before validation.
     ``dict_char``
         Passed through to FormEncode. Toggles the form field naming 
         scheme used to determine what is used to represent a dict. This
@@ -68,23 +70,21 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
         scheme used to determine what is used to represent a list. This
         option is only applicable when used with variable_decode=True.
     ``post_only``
-        Boolean that indicates whether or not GET (query) variables should
-        be included during validation.
+        Boolean that indicates whether or not GET (query) variables
+        should be included during validation.
         
         .. warning::
             ``post_only`` applies to *where* the arguments to be
-            validated come from. It does *not* restrict the form to only
-            working with post, merely only checking POST vars.
+            validated come from. It does *not* restrict the form to
+            only working with post, merely only checking POST vars.
     ``state``
         Passed through to FormEncode for use in validators that utilize
         a state object.
     ``on_get``
-        Whether to validate on GET requests. By default only POST requests
-        are validated.
+        Whether to validate on GET requests. By default only POST
+        requests are validated.
 
-    Example:
-
-    .. code-block:: Python
+    Example::
 
         class SomeController(BaseController):
 
@@ -95,6 +95,7 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
             def update(self, id):
                 # Do something with self.form_result
                 pass
+
     """
     if state is None:
         state = PylonsFormEncodeState
@@ -205,8 +206,8 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
 
 
 def determine_response_charset(response):
-    """Determine the charset of the specified Response object, returning the
-    default system encoding when none is set"""
+    """Determine the charset of the specified Response object,
+    returning the default system encoding when none is set"""
     charset = response.charset
     if charset is None:
         charset = sys.getdefaultencoding()
@@ -215,8 +216,8 @@ def determine_response_charset(response):
 
 
 def encode_formencode_errors(errors, encoding, encoding_errors='strict'):
-    """Encode any unicode values contained in a FormEncode errors dict to raw
-    strings of the specified encoding"""
+    """Encode any unicode values contained in a FormEncode errors dict
+    to raw strings of the specified encoding"""
     if errors is None or isinstance(errors, str):
         # None or Just incase this is FormEncode<=0.7
         pass
@@ -239,6 +240,7 @@ def pylons_formencode_gettext(value):
     
     This allows to "merge" localized error messages from built-in
     FormEncode's validators with application-specific validators.
+
     """
     trans = pylons_gettext(value)
     if trans == value:
@@ -248,20 +250,21 @@ def pylons_formencode_gettext(value):
 
 
 class PylonsFormEncodeState(object):
-    """A ``state`` for FormEncode validate API that includes smart ``_``
-    hook.
+    """A ``state`` for FormEncode validate API that includes smart
+    ``_`` hook.
 
     The FormEncode library used by validate() decorator has some
-    provision for localizing error messages. In particular, it looks for
-    attribute ``_`` in the application-specific state object that gets
-    passed to every ``.to_python()`` call. If it is found, the ``_`` is
-    assumed to be a gettext-like function and is called to localize
-    error messages.
+    provision for localizing error messages. In particular, it looks
+    for attribute ``_`` in the application-specific state object that
+    gets passed to every ``.to_python()`` call. If it is found, the
+    ``_`` is assumed to be a gettext-like function and is called to
+    localize error messages.
 
     One complication is that FormEncode ships with localized error
-    messages for standard validators so the user may want to re-use them
-    instead of gathering and translating everything from scratch. To
-    allow this, we pass as ``_`` a function which looks up translation
-    both in application and formencode message catalogs.
+    messages for standard validators so the user may want to re-use
+    them instead of gathering and translating everything from scratch.
+    To allow this, we pass as ``_`` a function which looks up
+    translation both in application and formencode message catalogs.
+    
     """
     _ = staticmethod(pylons_formencode_gettext)
