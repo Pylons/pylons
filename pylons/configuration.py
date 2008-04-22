@@ -42,11 +42,10 @@ class PylonsConfig(DispatchingConfig):
     The Pylons configuration object is a per-application instance
     object that retains the information regarding the global and app
     conf's as well as per-application instance specific data such as
-    the mapper, the paths for this instance, and the myghty
-    configuration.
+    the mapper, and the paths for this instance.
 
     The config object is available in your application as the Pylons
-    global ``pylons.config``. An example usage:
+    global :data:`pylons.config`. An example usage:
 
     .. code-block:: python
 
