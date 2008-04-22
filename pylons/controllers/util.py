@@ -1,6 +1,6 @@
 """Utility functions available for use by Controllers
 
-``etag_cache``, ``redirect_to``, and ``abort``.
+:meth:`etag_cache`, :meth:`redirect_to`, and :meth:`abort`.
 """
 import base64
 import hmac
@@ -175,7 +175,8 @@ class MIMETypes(object):
         should be treated as equivilant to the desired extension, along
         with alias mimetypes can also be registered.
         
-        Example:
+        Example::
+        
             # Register text/plain as the text extension, or txt
             MIMETypes.register('text/plain', 'text', ext_aliases=('txt',))
         
@@ -209,7 +210,8 @@ def mimetype(extension):
     sent HTML when possible, the html mimetype check should always come
     first, as shown in the example below.
     
-    Example:
+    Example::
+    
         def somaction(self):
             # prepare a bunch of data
             # ......
@@ -261,7 +263,7 @@ def etag_cache(key=None):
     
     Suggested use is within a Controller Action like so:
     
-    .. code-block:: Python
+    .. code-block:: python
     
         import pylons
         
@@ -290,7 +292,7 @@ def etag_cache(key=None):
 def forward(wsgi_app):
     """Forward the request to a WSGI application
     
-    .. code-block:: Python
+    .. code-block:: python
     
         return forward(FileApp('filename'))
     
@@ -322,7 +324,7 @@ def redirect_to(*args, **kargs):
     Optionally, a _code variable may be passed with the status code of the 
     redirect, ie:
 
-    .. code-block:: Python
+    .. code-block:: python
 
         redirect_to('home_page', _code=303)
     

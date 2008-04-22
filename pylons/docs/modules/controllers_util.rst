@@ -6,5 +6,14 @@
 Module Contents
 ---------------
 
-.. autoclass:: PylonsConfig
-    :members: init_app
+.. autoclass:: Request
+    :members:
+.. autoclass:: Response
+    :members:
+.. autoclass:: MIMETypes
+    :members:
+.. autofunction:: mimetype
+.. autofunction:: etag_cache
+.. autofunction:: forward
+.. autofunction:: abort
+.. autofunction:: redirect_to
