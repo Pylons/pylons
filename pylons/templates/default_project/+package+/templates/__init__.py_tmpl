@@ -1,4 +1,3 @@
-{{if template_engine in ['genshi', 'kid']}}
-{{else}}
+{{if template_engine not in ['genshi', 'kid']}}
 {{skip_template()}}
 {{endif}}
