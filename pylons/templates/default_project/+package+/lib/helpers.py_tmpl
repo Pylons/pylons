@@ -3,7 +3,9 @@
 Consists of functions to typically be used within templates, but also
 available to Controllers. This module is available to both as 'h'.
 """
-{{if template_engine == 'genshi'}}from genshi.core import Markup{{endif}}
+{{if template_engine == 'genshi'}}
+from genshi.core import Markup
+{{endif}}
 from webhelpers import *
 {{if template_engine == 'genshi'}}
 
