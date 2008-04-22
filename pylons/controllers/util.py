@@ -1,6 +1,17 @@
-"""Utility functions available for use by Controllers
+"""Utility functions and classes available for use by Controllers
 
-:meth:`etag_cache`, :meth:`redirect_to`, and :meth:`abort`.
+Pylons subclasses the `WebOb <http://pythonpaste.org/webob/>`_
+:class:`webob.Request` and :class:`webob.Response` classes to provide
+backwards compatible functions for earlier versions of Pylons as well
+as add a few helper functions to assist with signed cookies.
+
+For reference use, refer to the :class:`Request` and :class:`Response`
+below.
+
+Functions available:
+
+:func:`abort`, :func:`forward`, :func:`etag_cache`, 
+:func:`mimetype`, and :func:`redirect_to`
 """
 import base64
 import hmac
@@ -29,7 +40,7 @@ log = logging.getLogger(__name__)
 class Request(WebObRequest):
     """WebOb Request subclass
     
-    The WebOb Request has no charset, or other defaults. This subclass
+    The WebOb :class:`webob.Request` has no charset, or other defaults. This subclass
     adds defaults, along with several methods for backwards 
     compatibility with paste.wsgiwrappers.WSGIRequest.
     
@@ -39,6 +50,8 @@ class Request(WebObRequest):
     language = 'en-us'
     
     def determine_browser_charset(self):
+        """Legacy method to return the
+        :attr:`webob.Request.accept_charset`"""
         return self.accept_charset
     
     def languages(self):
@@ -200,11 +213,11 @@ def mimetype(extension):
     When a content-type is matched, the appropriate response content
     type is set as well.
     
-    This works best with Routes ``map.resource`` which sets up routes
-    that can accept matches with a specific extension. If you would
-    like to write your own routes that are compatible with the mimetype
-    extension checking, designate the extension portion of the URL as
-    the 'format' path variable.
+    This works best with Routes :meth:`~routes.base.Mapper.resource`
+    which sets up routes that can accept matches with a specific
+    extension. If you would like to write your own routes that are
+    compatible with the mimetype extension checking, designate the
+    extension portion of the URL as the 'format' path variable.
     
     Since browsers generally allow for any content-type, but should be
     sent HTML when possible, the html mimetype check should always come
@@ -255,9 +268,9 @@ def mimetype(extension):
 def etag_cache(key=None):
     """Use the HTTP Entity Tag cache for Browser side caching
     
-    If a "If-None-Match" header is found, and equivilant to ``key``, then
-    a ``304`` HTTP message will be returned with the ETag to tell the browser
-    that it should use its current cache of the page.
+    If a "If-None-Match" header is found, and equivilant to ``key``,
+    then a ``304`` HTTP message will be returned with the ETag to tell
+    the browser that it should use its current cache of the page.
     
     Otherwise, the ETag header will be added to the response headers.
     
@@ -272,9 +285,10 @@ def etag_cache(key=None):
                 etag_cache(key=1)
                 return render('/splash.mako')
     
-    .. Note:: 
+    .. note::
         This works because etag_cache will raise an HTTPNotModified
         exception if the ETag recieved matches the key provided.
+    
     """
     if_none_match = pylons.request.environ.get('HTTP_IF_NONE_MATCH', None)
     pylons.response.headers['ETag'] = key
@@ -307,9 +321,10 @@ def forward(wsgi_app):
 def abort(status_code=None, detail="", headers=None, comment=None):
     """Aborts the request immediately by returning an HTTP exception
     
-    In the event that the status_code is a 300 series error, the detail 
-    attribute will be used as the Location header should one not be specified
-    in the headers attribute.
+    In the event that the status_code is a 300 series error, the detail
+    attribute will be used as the Location header should one not be
+    specified in the headers attribute.
+    
     """
     exc = status_map[status_code](detail=detail, headers=headers, 
                                   comment=comment)
@@ -321,10 +336,8 @@ def abort(status_code=None, detail="", headers=None, comment=None):
 def redirect_to(*args, **kargs):
     """Raises a redirect exception
     
-    Optionally, a _code variable may be passed with the status code of the 
-    redirect, ie:
-
-    .. code-block:: python
+    Optionally, a _code variable may be passed with the status code of
+    the redirect, ie::
 
         redirect_to('home_page', _code=303)
     

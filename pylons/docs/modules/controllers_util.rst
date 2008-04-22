@@ -7,13 +7,13 @@ Module Contents
 ---------------
 
 .. autoclass:: Request
-    :members:
+    :members:    
 .. autoclass:: Response
     :members:
 .. autoclass:: MIMETypes
     :members:
-.. autofunction:: mimetype
+.. autofunction:: abort
 .. autofunction:: etag_cache
 .. autofunction:: forward
-.. autofunction:: abort
+.. autofunction:: mimetype
 .. autofunction:: redirect_to
