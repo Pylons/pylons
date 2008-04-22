@@ -57,15 +57,21 @@ class SampleController(BaseController):
         return render_response('testcheetah')
 
     def set_lang(self):
+        return self._set_lang(_)
+
+    def set_lang_pylonscontext(self, pylons):
+        return self._set_lang(lambda *args: pylons.translator.ugettext(*args))
+
+    def _set_lang(self, gettext):
         lang = request.GET['lang']
         try:
             set_lang(lang)
         except (LanguageError, IOError), e:
-            resp_unicode = _('Could not set language to "%(lang)s"') % {'lang': lang}
+            resp_unicode = gettext('Could not set language to "%(lang)s"') % {'lang': lang}
         else:
             session['lang'] = lang
             session.save()
-            resp_unicode = _('Set language to "%(lang)s"') % {'lang': lang}
+            resp_unicode = gettext('Set language to "%(lang)s"') % {'lang': lang}
         return resp_unicode
 
     def i18n_index(self):

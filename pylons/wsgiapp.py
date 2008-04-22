@@ -19,7 +19,7 @@ import pylons.legacy
 import pylons.templating
 from pylons.controllers import WSGIController
 from pylons.controllers.util import Request, Response
-from pylons.i18n import set_lang
+from pylons.i18n.translation import _get_translator
 from pylons.util import ContextObj, AttribSafeContextObj, \
     class_name_from_module_name, PylonsContext
 
@@ -174,18 +174,13 @@ class PylonsApp(object):
         
         environ['pylons.environ_config'] = self.environ_config
         
-        # Setup the translator global object
-        translator = gettext.NullTranslations()
-        pylons_obj.translator = translator
-        lang = self.config.get('lang')
-        if lang:
-            set_lang(lang)
+        # Setup the translator object
+        pylons_obj.translator = _get_translator(self.config.get('lang'))
         
         if self.config['pylons.strict_c']:
             c = ContextObj()
         else:
             c = AttribSafeContextObj()
-        
         pylons_obj.c = c
         
         econf = self.config['pylons.environ_config']

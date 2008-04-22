@@ -148,6 +148,8 @@ lazy_ungettext = lazify(ungettext)
 
 def _get_translator(lang, **kwargs):
     """Utility method to get a valid translator object from a language name"""
+    if not lang:
+        return NullTranslations()
     conf = pylons.config.current_conf()
     # XXX: root_path is deprecated
     rootdir = conf['pylons.paths'].get('root',
@@ -166,12 +168,11 @@ def _get_translator(lang, **kwargs):
 
 def set_lang(lang, **kwargs):
     """Set the i18n language used"""
-    registry = pylons.request.environ['paste.registry']
-    if not lang:
-        registry.replace(pylons.translator, NullTranslations())
-    else:
-        translator = _get_translator(lang, **kwargs)
-        registry.replace(pylons.translator, translator)
+    translator = _get_translator(lang, **kwargs)
+    environ = pylons.request.environ
+    environ['pylons.pylons'].translator = translator
+    if 'paste.registry' in environ:
+        environ['paste.registry'].replace(pylons.translator, translator)
 
 
 def get_lang():
