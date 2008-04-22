@@ -16,47 +16,55 @@ log = logging.getLogger(__name__)
 
 
 class WSGIController(object):
-    """WSGI Controller that follows WSGI spec for calling and return values
+    """WSGI Controller that follows WSGI spec for calling and return
+    values
     
     The Pylons WSGI Controller handles incoming web requests that are 
-    dispatched from the PylonsBaseWSGIApp. These requests result in a new 
-    instance of the WSGIController being created, which is then called with the
-    dict options from the Routes match. The standard WSGI response is then
-    returned with start_response called as per the WSGI spec.
+    dispatched from the PylonsBaseWSGIApp. These requests result in a
+    new instance of the WSGIController being created, which is then
+    called with the dict options from the Routes match. The standard
+    WSGI response is then returned with start_response called as per
+    the WSGI spec.
     
-    By default, the WSGIController will search and attempt to call a 
-    ``__before__`` method before calling the action, and will try to call a
-    ``__after__`` method after the action was called. These two methods can act
-    as filters controlling access to the action, setup variables/objects for 
-    use with a set of actions, etc.
+    Special methods that may be defined in a subclass (Your
+    controller):
     
-    Each action to be called is inspected with ``_inspect_call`` so that it is
-    only passed the arguments in the Routes match dict that it asks for. The
-    arguments passed into the action can be customized by overriding the 
-    ``_get_method_args`` function which is expected to return a dict.
+    ``__before__``
+        Called before any other methods in the controller. This
+        method is commonly used to setup class-wide defaults or
+        restrict access to the class and/or its methods.
+    ``__after__``
+        Called after the method returned. This method is *always*
+        called regardless of what the method does (redirect, etc.)
+    
+    Each action to be called is inspected with :meth:`_inspect_call` so
+    that it is only passed the arguments in the Routes match dict that
+    it asks for. The arguments passed into the action can be customized
+    by overriding the :meth:`_get_method_args` function which is
+    expected to return a dict.
     
     In the event that an action is not found to handle the request, the
     Controller will raise an "Action Not Found" error if in debug mode,
     otherwise a ``404 Not Found`` error will be returned.
     
     """
-    __pudge_all__ = ['_inspect_call', '__call__', '_get_method_args', 
-                     '_dispatch_call']
     _pylons_log_debug = False
     
     def _perform_call(self, func, args):
-        # Hide the traceback for everything above this method
+        """Hide the traceback for everything above this method"""
         __traceback_hide__ = 'before_and_this'
         return func(**args)
     
     def _inspect_call(self, func):
-        """Calls a function with arguments from ``_get_method_args``
+        """Calls a function with arguments from
+        :meth:`_get_method_args`
         
-        Given a function, inspect_call will inspect the function args and call
-        it with no further keyword args than it asked for.
+        Given a function, inspect_call will inspect the function args
+        and call it with no further keyword args than it asked for.
         
-        If the function has been decorated, it is assumed that the decorator
-        preserved the function signature.
+        If the function has been decorated, it is assumed that the
+        decorator preserved the function signature.
+        
         """
         argspec = inspect.getargspec(func)
         kargs = self._get_method_args()
@@ -109,9 +117,12 @@ class WSGIController(object):
     def _get_method_args(self):
         """Retrieve the method arguments to use with inspect call
         
-        By default, this uses Routes to retrieve the arguments, override
-        this method to customize the arguments your controller actions are
-        called with.
+        By default, this uses Routes to retrieve the arguments,
+        override this method to customize the arguments your controller
+        actions are called with.
+        
+        This method should return a dict.
+        
         """
         req = self._py_object.request
         kargs = req.environ['pylons.routes_dict'].copy()
@@ -121,7 +132,8 @@ class WSGIController(object):
         return kargs
     
     def _dispatch_call(self):
-        """Handles dispatching the request to the function using Routes"""
+        """Handles dispatching the request to the function using
+        Routes"""
         log_debug = self._pylons_log_debug
         req = self._py_object.request
         action = req.environ['pylons.routes_dict'].get('action')
@@ -149,6 +161,7 @@ class WSGIController(object):
         return response
     
     def __call__(self, environ, start_response):
+        """The main call handler that is called to return a response"""
         log_debug = self._pylons_log_debug
         
         # Keep a local reference to the req/response objects
