@@ -1,21 +1,22 @@
 """Paster Commands, for use with paster in your project
 
-The following commands are made available via paster utilizing setuptools
-entry points discovery. These can be used from the command line when the
-current directory is the Pylons project.
+.. highlight:: bash
+
+The following commands are made available via paster utilizing
+setuptools points discovery. These can be used from the command line
+when the directory is the Pylons project.
 
 Commands available:
 
 ``controller``
     Create a Controller and accompanying functional test
+
 ``restcontroller``
     Create a REST Controller and accompanying functional test
 ``shell``
     Open an interactive shell with the Pylons app loaded
 
-Example usage:
-
-.. sourcecode:: shell
+Example usage::
     
     ~/sample$ paster controller account
     Creating /Users/ben/sample/sample/controllers/account.py
@@ -24,16 +25,18 @@ Example usage:
 
 .. admonition:: How it Works
 
-    ``paster`` is a command line script (from the PasteScript package)
-    that allows the creation of context sensitive commands. ``paster``
-    looks in the current directory for a ``.egg-info`` directory, then
-    loads the ``paster_plugins.txt`` file.
+    :command:`paster` is a command line script (from the PasteScript
+    package) that allows the creation of context sensitive commands.
+    :command:`paster` looks in the current directory for a 
+    ``.egg-info`` directory, then loads the ``paster_plugins.txt``
+    file.
 
-    Using setuptools entry points, ``paster`` looks for functions
-    registered with setuptools as ``paste.paster_command``. These are
-    defined in the entry_points block in each packages setup.py module.
+    Using setuptools entry points, :command:`paster` looks for
+    functions registered with setuptools as 
+    :func:`paste.paster_command`. These are defined in the entry_points
+    block in each packages :file:`setup.py` module.
 
-    This same system is used when running ``paster create`` to
+    This same system is used when running :command:`paster create` to
     determine what templates are available when creating new projects.
 
 """
@@ -112,7 +115,8 @@ class ControllerCommand(Command):
     """Create a Controller and accompanying functional test
 
     The Controller command will create the standard controller template
-    file and associated functional test to speed creation of controllers.
+    file and associated functional test to speed creation of
+    controllers.
 
     Example usage::
 
@@ -120,9 +124,9 @@ class ControllerCommand(Command):
         Creating yourproj/yourproj/controllers/comments.py
         Creating yourproj/yourproj/tests/functional/test_comments.py
 
-    If you'd like to have controllers underneath a directory, just include
-    the path as the controller name and the necessary directories will be
-    created for you::
+    If you'd like to have controllers underneath a directory, just
+    include the path as the controller name and the necessary
+    directories will be created for you::
 
         yourproj% paster controller admin/trackback
         Creating yourproj/controllers/admin
@@ -201,15 +205,17 @@ class ControllerCommand(Command):
 class RestControllerCommand(Command):
     """Create a REST Controller and accompanying functional test
 
-    The RestController command will create a REST-based Controller file for use
-    with the map.resource REST-based dispatching. This template includes the
-    methods that map.resource dispatches to in addition to doc strings for
-    clarification on when the methods will be called.
+    The RestController command will create a REST-based Controller file
+    for use with the :meth:`~routes.base.Mapper.resource`
+    REST-based dispatching. This template includes the methods that
+    :meth:`~routes.base.Mapper.resource` dispatches to in
+    addition to doc strings for clarification on when the methods will
+    be called.
 
-    The first argument should be the singular form of the REST resource. The
-    second argument is the plural form of the word. If its a nested controller,
-    put the directory information in front as shown in the second example
-    below.
+    The first argument should be the singular form of the REST
+    resource. The second argument is the plural form of the word. If
+    its a nested controller, put the directory information in front as
+    shown in the second example below.
 
     Example usage::
 
@@ -217,9 +223,9 @@ class RestControllerCommand(Command):
         Creating yourproj/yourproj/controllers/comments.py
         Creating yourproj/yourproj/tests/functional/test_comments.py
 
-    If you'd like to have controllers underneath a directory, just include
-    the path as the controller name and the necessary directories will be
-    created for you::
+    If you'd like to have controllers underneath a directory, just
+    include the path as the controller name and the necessary
+    directories will be created for you::
 
         yourproj% paster restcontroller admin/tracback admin/trackbacks
         Creating yourproj/controllers/admin
