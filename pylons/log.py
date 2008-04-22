@@ -1,4 +1,9 @@
-"""Logging related functionality"""
+"""Logging related functionality
+
+This logging Handler logs to ``environ['wsgi.errors']`` as designated
+in :pep:`333`.
+
+"""
 import logging
 import types
 
