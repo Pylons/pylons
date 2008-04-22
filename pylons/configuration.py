@@ -7,9 +7,10 @@ setup in  app-safe manner so that multiple apps being setup avoid
 conflicts.
 
 After importing :data:`config`, the project should then call
-:meth:`init_app` with the appropriate options to setup the
-configuration. In the config data passed with :meth:`init_app`, various
-defaults are set use with Paste and Routes.
+:meth:`~PylonsConfig.init_app` with the appropriate options to setup
+the configuration. In the config data passed with
+:meth:`~PylonsConfig.init_app`, various defaults are set use with Paste
+and Routes.
 
 """
 import copy
