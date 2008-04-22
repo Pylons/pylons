@@ -17,11 +17,13 @@ import pylons
 import pylons.legacy
 from pylons.error import template_error_formatters
 
-__pudge_all__ = ['StaticJavascripts', 'ErrorHandler', 'ErrorDocuments']
-
-media_path = os.path.join(os.path.dirname(__file__), 'media')
+__all__ = ['ErrorDocuments', 'ErrorHandler', 'StaticJavascripts',
+           'error_document_template', 'error_mapper', 'footer_html',
+           'head_html', 'media_path']
 
 log = logging.getLogger(__name__)
+
+media_path = os.path.join(os.path.dirname(__file__), 'media')
 
 head_html = """\
 <link rel="stylesheet" href="{{prefix}}/media/pylons/style/itraceback.css" \

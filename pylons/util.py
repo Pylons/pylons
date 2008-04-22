@@ -16,9 +16,8 @@ import pylons
 import pylons.configuration
 import pylons.i18n
 
-__all__ = ['AttribSafeContextObj', 'ContextObj', 'Helpers',
-           'class_name_from_module_name', 'log', '_', 'set_lang', 'get_lang']
-__pudge_all__ = __all__ + ['MinimalPylonsTemplate', 'PylonsTemplate']
+__all__ = ['AttribSafeContextObj', 'ContextObj', 'PylonsContext',
+           'class_name_from_module_name']
 
 pylons_log = logging.getLogger(__name__)
 

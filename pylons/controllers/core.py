@@ -40,10 +40,9 @@ class WSGIController(object):
     otherwise a ``404 Not Found`` error will be returned.
     
     """
-    __pudge_all__ = ['_inspect_call', '__call__', '_get_method_args', 
-                     '_dispatch_call']
+
     _pylons_log_debug = False
-    
+
     def _perform_call(self, func, args):
         # Hide the traceback for everything above this method
         __traceback_hide__ = 'before_and_this'
