@@ -20,16 +20,16 @@ Generally, one of the render functions will be imported in the
 controller. Variables intended for the template are attached to the
 ``c`` object.
 
-.. tip ::
-``tmpl_context`` (template context) is abbreviated to ``c`` instead of
-its full name since it will likely be used extensively and it's much
-faster to use ``c``. Of course, for users that can't tolerate 
-one-letter variables, feel free to not import ``tmpl_context`` as 
-``c`` since both names are available in templates as well.
+.. admonition :: Tip
+    
+    ``tmpl_context`` (template context) is abbreviated to ``c`` instead of
+    its full name since it will likely be used extensively and it's much
+    faster to use ``c``. Of course, for users that can't tolerate 
+    one-letter variables, feel free to not import ``tmpl_context`` as 
+    ``c`` since both names are available in templates as well.
 
-Example of rendering a template with some variables:
+Example of rendering a template with some variables::
 
-.. sourcecode:: python
     from pylons import tmpl_context as c
     from pylons.templating import render_mako as render
 
@@ -45,7 +45,8 @@ Example of rendering a template with some variables:
 
 And the accompanying Mako template:
 
-.. sourcecode:: mako
+.. code-block:: mako
+    
     Hello ${c.first name}, I see your lastname is ${c.last_name}!
 
 Your controller will have additional default imports for commonly used
@@ -56,7 +57,7 @@ Template Globals
 
 Templates rendered in Pylons should include the default Pylons globals
 as the ``render_mako`` and ``render_genshi`` functions. The full list
-of Pylons globals that are included the template's namespace are:
+of Pylons globals that are included in the template's namespace are:
 
 - c -- Template context object
 - tmpl_context -- Template context object
@@ -82,6 +83,7 @@ instance. Configuration options can be directly passed into the
 template engine, and are used by the render functions.
 
 .. warning::
+
     Don't change the variable name on ``app_globals`` that the template
     loader is attached to if you want to use the render_* functions
     that ``pylons.templating`` comes with. The render_* functions look
@@ -110,7 +112,8 @@ rather than use ``c`` assumes that a dict is passed in to be used in
 the templates global namespace. It also returns a Genshi stream instead
 of the rendered string.
 
-.. sourcecode:: python
+.. code-block:: python
+    
     from pylons.templating import pylons_globals
     
     def render(template_name, tmpl_vars):
@@ -130,6 +133,7 @@ In 6 short lines of Python code, you have a custom render function that
 makes it easy to get to the features of the template language you need.
 
 .. note::
+    
     Importing the Pylons globals also makes it easy to get to ``g`` 
     which is where your template language's persistent template loader
     should be (if that applies to your chosen template language).
@@ -327,6 +331,7 @@ class Buffet(object):
     Buffet implements template language plug-in support modeled highly on the
     `Buffet Project <http://projects.dowski.com/projects/buffet>`_ from which
     this class inherits its name.
+    
     """
     def __init__(self, default_engine=None, template_root=None,
         default_options=None, **config):
@@ -350,6 +355,7 @@ class Buffet(object):
         can also be aliased if you wish to use multiplate configurations of the
         same template engines, or prefer a shorter name when rendering a
         template with the engine of your choice.
+        
         """
         Engine = available_engines.get(engine_name, None)
         if not Engine:
@@ -405,6 +411,7 @@ class Buffet(object):
         
         All other keyword options are passed directly to the template engine
         used.
+        
         """
         if not engine_name and self.default_engine:
             engine_name = self.default_engine
@@ -501,6 +508,7 @@ class MyghtyTemplatePlugin(object):
     This Myghty Template Plugin varies from the official BuffetMyghty in that 
     it will properly populate all the default Myghty variables needed and 
     render fragments.
+    
     """
     extension = "myt"
 
@@ -574,7 +582,7 @@ def render(*args, **kargs):
     
     Examples:
         
-    .. code-block:: Python
+    .. code-block:: python
 
         content = render('/my/template.mako')
         print content
@@ -609,9 +617,7 @@ def render_response(*args, **kargs):
     
     See ``render`` for information on rendering.
     
-    Example:
-    
-    .. code-block:: Python
+    Example::
         
         def view(self):
             return render_response('/my/template.mako')
