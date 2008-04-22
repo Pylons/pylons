@@ -11,6 +11,10 @@ Contents:
    :maxdepth: 2
    
    gettingstarted
+   controllers
+   templates
+   models
+   deployment
    
 
 Indices and tables

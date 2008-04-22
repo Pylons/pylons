@@ -21,13 +21,17 @@ If you already have easy install:
     possible to install Pylons and its dependencies however by specifying our
     local package directory for installation with:
     
-        ``easy_install -f http://pylonshq.com/download/ Pylons==0.9.7``
+    .. code-block:: bash
+    
+        $ easy_install -f http://pylonshq.com/download/ Pylons==0.9.7
     
     Which will use the packages necessary for the latest release. If you're 
     using an older version of Pylons, you can get the packages that went with
     it by specifying the version desired:
     
-        ``easy_install -f http://pylonshq.com/download/0.9.7/ Pylons==0.9.7``
+    .. code-block:: bash
+    
+        $ easy_install -f http://pylonshq.com/download/0.9.7/ Pylons==0.9.7
 
 Otherwise: 
 
