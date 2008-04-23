@@ -13,6 +13,7 @@ setup(
     author_email='',
     #url='',
     install_requires=["Pylons>=0.9.6"],
+    setup_requires=["PasteScript==dev,>=1.6.3dev-r7326"],
     packages=find_packages(exclude=['ez_setup']),
     include_package_data=True,
     test_suite='nose.collector',
@@ -21,6 +22,7 @@ setup(
     #        ('**.py', 'python', None),
     #        {{babel_templates_extractor}}('public/**', 'ignore', None)]},
     zip_safe={{zip_safe}},
+    paster_plugins={{egg_plugins}},
     entry_points="""
     [paste.app_factory]
     main = {{package}}.config.middleware:make_app

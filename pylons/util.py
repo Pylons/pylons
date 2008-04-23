@@ -147,7 +147,7 @@ class PylonsTemplate(Template):
     _template_dir = 'templates/default_project'
     template_renderer = staticmethod(paste_script_template_renderer)
     summary = 'Pylons application template'
-    egg_plugins = ['Pylons', 'WebHelpers']
+    egg_plugins = ['PasteScript', 'Pylons']
     vars = [
         var('template_engine', 'mako/genshi/etc: Template language', 
             default='mako'),

@@ -2,6 +2,9 @@ Pylons Changelog
 =================
 
 0.9.7 (**tip**)
+* setup.py egg_info now restores projects' paster_plugins.txt,
+  allowing paster shell to work again after the egg-info directory was
+  lost. fixes #282. Thanks sevkin.
 * Project's default test fixtures no longer hardcode test.ini; the ini
   file used can now be specified via the nosetests --with-pylons
   argument (defaults to test.ini in setup.cfg). fixes #400.
