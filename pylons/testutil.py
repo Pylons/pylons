@@ -1,4 +1,10 @@
-"""Utility classes for creating workable pylons controllers for unit testing."""
+"""Utility classes for creating workable pylons controllers for unit
+testing.
+
+These classes are used solely by Pylons for unit testing controller
+functionality.
+
+"""
 import gettext
 
 import pylons
