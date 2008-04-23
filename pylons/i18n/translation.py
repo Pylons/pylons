@@ -1,7 +1,9 @@
 """Translation/Localization functions.
 
-Provides ``gettext`` translation functions via an app's ``pylons.translator``
-and get/set_lang for changing the language translated to.
+Provides :mod:`gettext` translation functions via an app's
+``pylons.translator`` and get/set_lang for changing the language
+translated to.
+
 """
 import os
 from gettext import NullTranslations, translation
@@ -19,12 +21,12 @@ class LanguageError(Exception):
 
 
 class LazyString(object):
-    """Has a number of lazily evaluated functions replicating a string. Just
-    override the eval() method to produce the actual value.
+    """Has a number of lazily evaluated functions replicating a 
+    string. Just override the eval() method to produce the actual value.
 
     This method copied from TurboGears.
+    
     """
-
     def __init__(self, func, *args, **kwargs):
         self.func = func
         self.args = args
@@ -57,11 +59,10 @@ def lazify(func):
 
 
 def gettext_noop(value):
-    """Mark a string for translation without translating it. Returns value.
+    """Mark a string for translation without translating it. Returns
+    value.
 
-    Used for global strings, e.g.:
-
-    .. code-block:: Python
+    Used for global strings, e.g.::
 
         foo = N_('Hello')
 
@@ -74,33 +75,33 @@ def gettext_noop(value):
         h.set_lang('es')
         assert Bar().local_foo == 'Hola'
         assert foo == 'Hello'
+
     """
     return value
 N_ = gettext_noop
 
 
 def gettext(value):
-    """Mark a string for translation. Returns the localized string of value.
+    """Mark a string for translation. Returns the localized string of
+    value.
 
-    Mark a string to be localized as follows:
-
-    .. code-block:: Python
+    Mark a string to be localized as follows::
 
         gettext('This should be in lots of languages')
+
     """
     return pylons.translator.gettext(value)
 lazy_gettext = lazify(gettext)
 
 
 def ugettext(value):
-    """Mark a string for translation. Returns the localized unicode string of
-    value.
+    """Mark a string for translation. Returns the localized unicode
+    string of value.
 
-    Mark a string to be localized as follows:
-
-    .. code-block:: Python
+    Mark a string to be localized as follows::
 
         _('This should be in lots of languages')
+    
     """
     return pylons.translator.ugettext(value)
 _ = ugettext
@@ -108,46 +109,46 @@ lazy_ugettext = lazify(ugettext)
 
 
 def ngettext(singular, plural, n):
-    """Mark a string for translation. Returns the localized string of the
-    pluralized value.
+    """Mark a string for translation. Returns the localized string of
+    the pluralized value.
 
-    This does a plural-forms lookup of a message id. ``singular`` is used as
-    the message id for purposes of lookup in the catalog, while ``n`` is used
-    to determine which plural form to use. The returned message is a string.
+    This does a plural-forms lookup of a message id. ``singular`` is
+    used as the message id for purposes of lookup in the catalog, while
+    ``n`` is used to determine which plural form to use. The returned
+    message is a string.
 
-    Mark a string to be localized as follows:
-
-    .. code-block:: Python
+    Mark a string to be localized as follows::
 
         ngettext('There is %(num)d file here', 'There are %(num)d files here',
                  n) % {'num': n}
+
     """
     return pylons.translator.ngettext(singular, plural, n)
 lazy_ngettext = lazify(ngettext)
 
 
 def ungettext(singular, plural, n):
-    """Mark a string for translation. Returns the localized unicode string of
-    the pluralized value.
+    """Mark a string for translation. Returns the localized unicode
+    string of the pluralized value.
 
-    This does a plural-forms lookup of a message id. ``singular`` is used as
-    the message id for purposes of lookup in the catalog, while ``n`` is used
-    to determine which plural form to use. The returned message is a Unicode
-    string.
+    This does a plural-forms lookup of a message id. ``singular`` is
+    used as the message id for purposes of lookup in the catalog, while
+    ``n`` is used to determine which plural form to use. The returned
+    message is a Unicode string.
 
-    Mark a string to be localized as follows:
-
-    .. code-block:: Python
+    Mark a string to be localized as follows::
 
         ungettext('There is %(num)d file here', 'There are %(num)d files here',
                   n) % {'num': n}
+
     """
     return pylons.translator.ungettext(singular, plural, n)
 lazy_ungettext = lazify(ungettext)
 
 
 def _get_translator(lang, **kwargs):
-    """Utility method to get a valid translator object from a language name"""
+    """Utility method to get a valid translator object from a language
+    name"""
     if not lang:
         return NullTranslations()
     conf = pylons.config.current_conf()
@@ -181,7 +182,6 @@ def get_lang():
 
 
 def add_fallback(lang, **kwargs):
-    """Add a fallback language from which words not matched in other languages
-    will be translated to.
-    """
+    """Add a fallback language from which words not matched in other
+    languages will be translated to."""
     return pylons.translator.add_fallback(_get_translator(lang, **kwargs))
