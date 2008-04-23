@@ -8,3 +8,5 @@ Module Contents
 
 .. autoclass:: PylonsApp
     :members:
+    
+    .. automethod:: PylonsApp.__call__

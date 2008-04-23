@@ -39,18 +39,22 @@ class PylonsApp(object):
     request object, and the globals object.
     
     Additional functionality like sessions, and caching can be setup by
-    altering the ``environ['pylons.environ_config']`` setting to indicate
-    what key the ``session`` and ``cache`` functionality should come from.
+    altering the ``environ['pylons.environ_config']`` setting to
+    indicate what key the ``session`` and ``cache`` functionality
+    should come from.
     
-    Resolving the URL and dispatching can be customized by sub-classing or
-    "monkey-patching" this class. Subclassing is the preferred approach.
+    Resolving the URL and dispatching can be customized by sub-classing
+    or "monkey-patching" this class. Subclassing is the preferred
+    approach.
+    
     """
     def __init__(self, **kwargs):
         """Initialize a base Pylons WSGI application
         
-        The base Pylons WSGI application requires several keywords, the package
-        name, and the globals object. If no helpers object is provided then h
-        will be None.
+        The base Pylons WSGI application requires several keywords, the
+        package name, and the globals object. If no helpers object is
+        provided then h will be None.
+        
         """
         self.config = config = pylons.config._current_obj()
         package_name = config['pylons.package']
@@ -83,6 +87,24 @@ class PylonsApp(object):
                     alias=e['alias'], **e['template_options'])
     
     def __call__(self, environ, start_response):
+        """Setup and handle a web request
+        
+        PylonsApp splits its functionality into several methods to
+        make it easier to subclass and customize core functionality.
+        
+        The methods are called in the following order:
+        
+        1. :meth:`~PylonsApp.setup_app_env`
+        2. :meth:`~PylonsApp.load_test_env` (Only if operating in
+           testing mode)
+        3. :meth:`~PylonsApp.resolve`
+        4. :meth:`~PylonsApp.dispatch`
+        
+        The response from :meth:`~PylonsApp.dispatch` is expected to be
+        an iterable (valid :pep:`333` WSGI response), which is then
+        sent back as the response.
+        
+        """
         # Cache the logging level for the request
         log_debug = self.log_debug = logging.DEBUG >= log.getEffectiveLevel()
 
@@ -120,7 +142,7 @@ class PylonsApp(object):
     
     def register_globals(self, environ):
         """Registers globals in the environment, called from
-        setup_app_env
+        :meth:`~PylonsApp.setup_app_env`
         
         Override this to control how the Pylons API is setup. Note that
         a custom render function will need to be used if the 
@@ -148,7 +170,13 @@ class PylonsApp(object):
             registry.register(pylons.cache, pylons_obj.cache)
     
     def setup_app_env(self, environ, start_response):
-        """Setup and register all the Pylons objects with the registry"""
+        """Setup and register all the Pylons objects with the registry
+        
+        After creating all the global objects for use in the request,
+        :meth:`~PylonsApp.register_globals` is called to register them
+        in the environment.
+        
+        """
         if self.log_debug:
             log.debug("Setting up Pylons stacked object globals")
         
@@ -201,11 +229,13 @@ class PylonsApp(object):
     
     def resolve(self, environ, start_response):
         """Uses dispatching information found in 
-        ``environ['wsgiorg.routing_args']`` to retrieve a controller name and
-        return the controller instance from the appropriate controller 
-        module.
+        ``environ['wsgiorg.routing_args']`` to retrieve a controller
+        name and return the controller instance from the appropriate
+        controller module.
         
-        Override this to change how the controller name is found and returned.
+        Override this to change how the controller name is found and
+        returned.
+        
         """
         # Update the Routes config object in case we're using Routes
         config = request_config()
@@ -222,11 +252,12 @@ class PylonsApp(object):
         return self.find_controller(controller)
     
     def find_controller(self, controller):
-        """Locates a controller by attempting to import it then grab the 
-        SomeController instance from the imported module.
+        """Locates a controller by attempting to import it then grab
+        the SomeController instance from the imported module.
         
-        Override this to change how the controller object is found once the URL
-        has been resolved.
+        Override this to change how the controller object is found once
+        the URL has been resolved.
+        
         """
         # Check to see if we've cached the class instance for this name
         if controller in self.controller_classes:
@@ -250,10 +281,11 @@ class PylonsApp(object):
         return mycontroller
         
     def dispatch(self, controller, environ, start_response):
-        """Dispatches to a controller, will instantiate the controller if
-        necessary.
+        """Dispatches to a controller, will instantiate the controller
+        if necessary.
         
         Override this to change how the controller dispatch is handled.
+        
         """
         log_debug = self.log_debug
         if not controller:
