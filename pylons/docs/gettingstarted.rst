@@ -3,18 +3,22 @@
 Getting Started
 ===============
 
+This section is intended to get you up and running with Pylons as fast as
+possible, and provide a quick overview of a project. Links are provided
+throughout to encourage your exploration of the various aspects of Pylons.
+
+
+About
+-----
+
 Pylons is a MVC (Model-View-Controller) based approach to writing Python web
 applications. While Pylons encourages and allows for a wide variety of popular
 Python libraries, the documentation and recommendations by the Pylons 
 developers covers 'best of breed' components chosen with the goal of
 expressiveness, efficiency, and performance.
 
-The two components people will care the most about are the templating
-language and the database object relational mapper. While Pylons doesn't need
-either to function, the following choices are recommended for new users:
-
-* Models: `SQLAlchemy <http://www.sqlalchemy.org/>`_
-* Templating: `Mako <http://www.makotemplates.org/>`_
+Created in 2005 by Ben Bangert and James Gardner, Pylons has since grown to
+be one of the most popular Python web frameworks. 
 
 
 Requirements
@@ -28,22 +32,21 @@ Installing
 
 .. warning::
     
-    These instructions require the use of Python 2.4+. For installing on
-    Python 2.3, please see :ref:`python2.3-installation`.
+    These instructions require Python 2.4+. For installing with
+    Python 2.3, see :ref:`python2.3-installation`.
 
 To avoid conflicts with system-installed Python libraries, Pylons comes with a
 boot-strap Python script that sets up a `virtual environment <http://http://pypi.python.org/pypi/virtualenv>`_. Pylons will then be
-installed under the virtual environment and ask if you'd like to create a new
-Pylons project.
+installed under the virtual environment.
 
 .. admonition:: By The Way
     
-    virtualenv is a handy tool to create isolated Python environments. In 
+    virtualenv is a useful tool to create isolated Python environments. In 
     addition to isolating packages from possible system conflicts, it makes
     it easy to install Python libraries using `easy_install <http://peak.telecommunity.com/DevCenter/EasyInstall>`_ without dumping lots
     of packages into the system-wide Python.
     
-    The other great benefit, is that no root access is required since all
+    The other great benefit is that no root access is required since all
     modules are kept under a directory of your choosing. This makes it easy
     to setup a working Pylons install on shared hosting providers and other
     systems where you might not have system-wide access.
@@ -113,14 +116,20 @@ The created directory structure with links to more information:
     - ez_setup.py
     - helloworld
         - __init__.py
-        - config - :ref:`app-config`
+        - config
+            - environment.py - :ref:`environment-config`
+            - middleware.py - :ref:`middleware-config`
+            - routing.py - :ref:`url-config`
         - controllers - :ref:`controllers`
         - lib
+            - app_globals.py - :term:`app_globals`
+            - base.py
+            - helpers.py - :ref:`helpers`
         - model - :ref:`models`
         - public
         - templates - :ref:`templates`
-        - tests
-        - websetup.py
+        - tests - :ref:`testing`
+        - websetup.py - :ref:`run-config`
     - helloworld.egg-info
     - setup.cfg
     - setup.py - :ref:`setup-config`
@@ -131,7 +140,7 @@ Running the application
 -----------------------
 
 We can now run the web application like this:
-    
+
 .. code-block:: bash
 
     $ cd helloworld
@@ -139,58 +148,26 @@ We can now run the web application like this:
     
 The command loads our project server configuration file in :file:`development.ini` and serves the Pylons application.
 
-The ``--reload`` option ensures that the server is automatically reloaded if
-you make any changes to Python files or the :file:`development.ini` 
-config file. This is very useful during development. To stop the server you
-can press :command:`Ctrl+c` or your platform's equivalent.
-
-If you visit http://127.0.0.1:5000/ when the server is running you will see the
-welcome page (``127.0.0.1`` is a special IP address that references your own
-computer but you can change the hostname by editing the
-:file:`development.ini` file).
-
-Try creating a new file named :file:`test.html` in the ``helloworld/public`` directory with the following content:
-
-.. code-block:: html
-
-    <html>
-        <body>
-            Hello World!
-        </body>
-    </html>
+.. note::
     
-If you visit http://127.0.0.1:5000/test.html you will see the message ``Hello World!``. Any files in the ``public`` directory are served in the same way they would be by any webserver, but with built-in caching, and if Pylons has a choice of whether to serve a file from the ``public`` directory or from code in a controller it will always choose the file in ``public``. This behavior can be changed by altering the order of the ``Cascade`` in ``config/middleware.py``.
+    The ``--reload`` option ensures that the server is automatically reloaded
+    if you make any changes to Python files or the :file:`development.ini` 
+    config file. This is very useful during development. To stop the server
+    you can press :command:`Ctrl+c` or your platform's equivalent.
 
-
-Interactive Debugger
---------------------
-
-The interactive debugger is a powerful tool for use during application development. It is enabled by default in the development environment's ``development.ini``. When enabled, it allows debugging of the application through a web page after an exception is raised. On production environments the debugger poses a major security risk; so production ini files generated from the ``paster make-config`` command will have debugging disabled.
-
-To disable debugging, uncomment the following line in the ``[app:main]`` section of your ``development.ini``:
-
-.. code-block:: ini
-
-    #set debug = false
-    
-to:
-
-.. code-block:: ini
-
-    set debug = false
-
-Again; debug must be set to false on production environments as the interactive debugger poses a MAJOR SECURITY RISK.
-
-More information is available in the `Interactive Debugger <Interactive+Application+Debugging>`_ documentation.
-
+If you visit http://127.0.0.1:5000/ when the server is running you will see
+the welcome page.
 
 
 Hello World
 -----------
 
+To create the basic hello world application, we'll first create a
+:term:`controller` in the project to handle requests:
+
+.. code-block:: bash
+
+    $ paster controller hello
 
 
-
-Rendering a Template
---------------------
 

@@ -14,7 +14,10 @@ Contents:
    configuration
    controllers
    templates
+   helpers
    models
+   testing
+   debugging
    deployment
    
 
