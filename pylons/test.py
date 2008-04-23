@@ -1,4 +1,20 @@
-"""Test related functionality"""
+"""Test related functionality
+
+Adds a Pylons plugin to `nose <http://www.somethingaboutorange.com/mrl/projects/nose/>`_
+that loads the Pylons app *before* scanning for doc tests.
+
+This can be configured in the projects :file:`setup.cfg` under a
+``[nosetests]`` block:
+
+.. code-block:: ini
+    
+    [nosetests]
+    with-pylons=development.ini
+
+Alternate ini files may be specified if the app should be loaded using
+a different configuration.
+
+"""
 import os
 import sys
 
@@ -7,15 +23,14 @@ import pkg_resources
 from paste.deploy import loadapp
 
 class PylonsPlugin(nose.plugins.Plugin):
-
     """Nose plugin extension
 
     For use with nose to allow a project to be configured before nose
     proceeds to scan the project for doc tests and unit tests. This
     prevents modules from being loaded without a configured Pylons
     environment.
+    
     """
-
     enabled = False
     enableOpt = 'pylons_config'
     name = 'pylons'
@@ -43,6 +58,7 @@ class PylonsPlugin(nose.plugins.Plugin):
         """Called before any tests are collected or run
 
         Loads the application, and in turn its configuration.
+        
         """
         path = os.getcwd()
         sys.path.insert(0, path)
