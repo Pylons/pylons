@@ -1,8 +1,10 @@
 """WSGI App Creator
 
-This module is responsible for creating the basic Pylons WSGI application.
-It's generally assumed that it will be called by Paste, though any WSGI 
-application server could create and call the WSGI app as well.
+This module is responsible for creating the basic Pylons WSGI
+application (PylonsApp). It's generally assumed that it will be called
+by Paste, though any WSGI server could create and call the WSGI app as
+well.
+
 """
 import gettext
 import inspect
