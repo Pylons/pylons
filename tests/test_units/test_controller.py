@@ -150,3 +150,7 @@ class TestFilteredWSGI(TestWSGIController):
     def test_after_string_response(self):
         resp = self.get_response(action='after_string_response')
         assert 'hello from __after__' in resp
+
+    def test_start_response(self):
+        self.baseenviron['pylons.routes_dict']['action'] = 'start_response'
+        self.app.get('/', status=404)
