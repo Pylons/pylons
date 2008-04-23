@@ -1,8 +1,13 @@
 """Paste Template and Pylons utility functions
 
 PylonsTemplate is a Paste Template sub-class that configures the source
-directory and default plug-ins for a new Pylons project. The minimal template
-provides a more minimal template with less additional directories and layout.
+directory and default plug-ins for a new Pylons project. The minimal
+template a more minimal template with less additional directories and
+layout.
+
+The functions used in this module are to assist Pylons in creating new
+projects, and handling deprecation warnings for moved Pylons functions.
+
 """
 import logging
 import warnings
@@ -65,9 +70,11 @@ def get_prefix(environ, warn=True):
 
 
 def class_name_from_module_name(module_name):
-    """Takes a module name and returns the name of the class it defines.
+    """Takes a module name and returns the name of the class it
+    defines.
 
-    If the module name contains dashes, they are replaced with underscores.
+    If the module name contains dashes, they are replaced with
+    underscores.
 
     Example::
 
@@ -77,6 +84,7 @@ def class_name_from_module_name(module_name):
         'WithUnderscores'
         >>> class_name_from_module_name('oneword')
         'Oneword'
+
     """
     words = module_name.replace('-', '_').split('_')
     return ''.join([w.title() for w in words])
@@ -89,13 +97,22 @@ class PylonsContext(object):
     in generators and async based operation where the globals can't be
     used.
     
+    This object is attached in
+    :class:`~pylons.controllers.core.WSGIController` instances as
+    :attr:`~WSGIController._py_object`. For example::
+
+        class MyController(WSGIController):
+            def index(self):
+                pyobj = self._py_object
+                return "Environ is %s" % pyobj.request.environ
+    
     """
     pass
 
 
 class ContextObj(object):
-    """The 'c' object, with strict attribute access (raises an Exception when
-    the attribute does not exist)"""
+    """The :term:`tmpl_context` object, with strict attribute access
+    (raises an Exception when the attribute does not exist)"""
     def __repr__(self):
         attrs = [(name, value)
                  for name, value in self.__dict__.items()
@@ -115,8 +132,8 @@ class ContextObj(object):
 
 
 class AttribSafeContextObj(ContextObj):
-    """The 'c' object, with lax attribute access (returns '' when the attribute
-    does not exist)"""
+    """The :term:`tmpl_context` object, with lax attribute access (
+    returns '' when the attribute does not exist)"""
     def __getattr__(self, name):
         try:
             return object.__getattribute__(self, name)
