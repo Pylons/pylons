@@ -39,6 +39,7 @@ class StaticJavascripts(object):
     javascript files.
     
     Triggered when PATH_INFO begins with '/javascripts/'.
+    
     """
     def __init__(self, **kwargs):
         self.javascripts_app = \
@@ -56,11 +57,14 @@ def ErrorHandler(app, global_conf, **errorware):
     """ErrorHandler Toggle
     
     If debug is enabled, this function will return the app wrapped in
-    the WebError ``EvalException`` middleware.
+    the WebError ``EvalException`` middleware which displays
+    interactive debugging sessions when a traceback occurs.
     
     Otherwise, the app will be wrapped in the WebError
     ``ErrorMiddleware``, and the ``errorware`` dict will be passed into
-    it.
+    it. The ``ErrorMiddleware`` handles sending an email to the address
+    listed in the .ini file, under ``email_to``.
+    
     """
     if 'error_template' in errorware:
         del errorware['error_template']
@@ -79,6 +83,8 @@ def ErrorHandler(app, global_conf, **errorware):
 
 
 def error_mapper(code, message, environ, global_conf=None, **kw):
+    """Legacy function used with ErrorDocuments to provide a mapping
+    of error codes to handle"""
     if environ.get('pylons.error_call'):
         return
     else:
