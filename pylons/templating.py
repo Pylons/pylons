@@ -57,17 +57,21 @@ Template Globals
 ----------------
 
 Templates rendered in Pylons should include the default Pylons globals
-as the ``render_mako`` and ``render_genshi`` functions. The full list
-of Pylons globals that are included in the template's namespace are:
+as the :func:`render_mako` and :func:`render_genshi` functions. The 
+full list of Pylons globals that are included in the template's
+namespace are:
 
-- :data:`c` -- Template context object
-- :data:`tmpl_context` -- Template context object
-- :data:`config` -- Pylons configuration object (acts as a dict)
-- :data:`g` -- Project application globals object
-- :data:`app_globals` -- Project application globals object
-- :data:`h` -- Project helpers module reference
-- :class:`request` -- Pylons request object for this request
-- :class:`response` -- Pylons response object for this request
+- :term:`c` -- Template context object
+- :term:`tmpl_context` -- Template context object
+- :data:`config` -- Pylons :class:`~pylons.configuration.PylonsConfig`
+  object (acts as a dict)
+- :term:`g` -- Project application globals object
+- :term:`app_globals` -- Project application globals object
+- :term:`h` -- Project helpers module reference
+- :data:`request` -- Pylons :class:`~pylons.controllers.util.Request`
+  object for this request
+- :data:`response` -- Pylons :class:`~pylons.controllers.util.Response`
+  object for this request
 - :class:`session` -- Pylons session object (unless Sessions are removed)
 - :class:`translator` -- Gettext translator object configured for current locale
 - :func:`ungettext` -- Unicode capable version of gettext's ngettext function
