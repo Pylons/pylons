@@ -2,6 +2,7 @@
 import inspect
 import logging
 import sys
+import types
 import xmlrpclib
 
 from paste.response import replace_header
@@ -201,12 +202,20 @@ class XMLRPCController(WSGIController):
     def _find_method(self, name):
         """Locate a method in the controller by the specified name and
         return it"""
+        # Keep private methods private
+        if name.startswith('_'):
+            if self._pylons_log_debug:
+                log.debug("Action starts with _, private action not allowed")
+            return
+
         if self._pylons_log_debug:
             log.debug("Looking for XMLRPC method: %r", name)
         try:
-            return getattr(self, name, None)
+            func = getattr(self, name, None)
         except UnicodeEncodeError:
             return
+        if isinstance(func, types.MethodType):
+            return func
 
     def _find_method_name(self, name):
         """Locate a method in the controller by the appropriate name
@@ -232,8 +241,7 @@ class XMLRPCController(WSGIController):
         for method in dir(self):
             meth = getattr(self, method)
 
-            # Only methods have this attribute
-            if not method.startswith('_') and hasattr(meth, 'im_self'):
+            if not method.startswith('_') and isinstance(meth, types.MethodType):
                 methods.append(self._publish_method_name(method))
         return methods
     system_listMethods.signature = [['array']]

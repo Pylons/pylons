@@ -10,6 +10,8 @@ import xmlrpclib
 from __init__ import TestWSGIController, SetupCacheGlobal, ControllerWrap
 
 class BaseXMLRPCController(XMLRPCController):
+    foo = 'bar'
+
     def userstatus(self):
         return 'basic string'
     userstatus.signature = [ ['string'] ]
@@ -45,6 +47,9 @@ class BaseXMLRPCController(XMLRPCController):
         in it"""
         return "hi all"
 
+    def _private(self):
+        return 'private method'
+        
 class TestXMLRPCController(TestWSGIController):
     def __init__(self, *args, **kargs):
         TestWSGIController.__init__(self, *args, **kargs)
@@ -128,3 +133,12 @@ class TestXMLRPCController(TestWSGIController):
     def test_contenttype(self):
         response = self.xmlreq('system.methodHelp', ('longdoc',))
         assert self.response.header('Content-Type') == 'text/xml'
+
+    def test_start_response(self):
+        self.assertRaises(xmlrpclib.Fault, self.xmlreq, 'start_response')
+
+    def test_private_func(self):
+        self.assertRaises(xmlrpclib.Fault, self.xmlreq, '_private')
+
+    def test_var(self):
+        self.assertRaises(xmlrpclib.Fault, self.xmlreq, 'foo')
