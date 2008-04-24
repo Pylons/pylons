@@ -169,5 +169,70 @@ To create the basic hello world application, we'll first create a
 
     $ paster controller hello
 
+If you open the :file:`helloworld/controllers/hello.py` module it created, you
+can see that it will return just the string 'Hello World', and looks like
+this::
 
+    import logging
 
+    from pylons import request, response, session
+    from pylons import tmpl_context as c
+    from pylons.controllers.util import abort, redirect_to, url_for
+
+    from helloworld.lib.base import BaseController, render
+    # import helloworld.model as model
+
+    log = logging.getLogger(__name__)
+    
+    class HelloController(BaseController):
+
+        def index(self):
+            # Return a rendered template
+            #   return render('/template.mako')
+            # or, Return a response
+            return 'Hello World'
+
+At the top are some imports of common objects you will frequently want to use
+in your controllers.
+
+Then navigate to http://127.0.0.1:5000/hello, where you should be greeted by
+short text saying "Hello World" like so (start up your app if needed):
+
+.. image:: _static/helloworld.png
+
+.. admonition:: How'd that get to /hello?
+    
+    :ref:`url-config` explains how URL's get mapped to controllers and
+    their methods.
+
+Let's add a template to render some of the information thats in the 
+:term:`environ` back out.
+
+First, create a :file:`hello.mako` file in your :file:`helloworld/templates`
+directory with the following contents:
+
+.. code-block:: mako
+
+    Hello World, your environ variable looks like: <br />
+    
+    ${request.environ}
+
+You'll see that we're using the :term:`request` variable in our template to
+get information about the current request. There are a variety of other
+`template globals <modules/templating.html#template-globals>`_ available as
+well.
+
+Next, update the :file:`helloworld/controllers/hello.py` module so that the
+index method is as follows::
+
+    class HelloController(BaseController):
+
+        def index(self):
+            return render('/hello.mako')
+
+Refreshing the page in the browser will now look similar to this:
+
+.. image:: _static/hellotemplate.png
+
+That's it! You now know how to create new controllers, add templates, and
+render them back to the browser.

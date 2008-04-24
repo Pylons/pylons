@@ -27,6 +27,11 @@ Glossary
         logic to prepare data for display, then renders a template with
         the data and returns it to the user. See :ref:`controllers`.
     
+    environ
+        environ is a dictionary passed into all :term:`WSGI` application. It
+        generally contains unparsed header information, CGI style variables
+        and other objects inserted by :term:`WSGI Middleware`.
+    
     g
         Alias used in prior versions of Pylons for :term:`app_globals`.
     
@@ -38,6 +43,11 @@ Glossary
     
     Pylons
         A Python-based WSGI oriented web framework.
+    
+    request
+        Refers to the current request being processed. Available to import
+        from :mod:`pylons` and is available for use in templates by the
+        same name. See :class:`~pylons.controllers.util.Request`.
     
     SQLAlchemy
         One of the most popular Python database object-relation mappers
@@ -56,4 +66,9 @@ Glossary
 
     WSGI
         The `WSGI Specification <http://www.python.org/dev/peps/pep-0333/>`_,
-        also commonly referred to as PEP 333 and described by :pep:`333`.    
+        also commonly referred to as PEP 333 and described by :pep:`333`.
+    
+    WSGI Middleware
+        :term:`WSGI` Middleware refers to the ability of WSGI applications
+        to modify the environ, and/or the content of other WSGI applications
+        by being placed in between the request and the other WSGI application.
