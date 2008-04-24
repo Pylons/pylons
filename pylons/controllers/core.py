@@ -93,8 +93,8 @@ class WSGIController(object):
         except HTTPException, httpe:
             if log_debug:
                 log.debug("%r method raised HTTPException: %s (code: %s)",
-                          func.__name__, httpe.__class__.__name__, httpe.wsgi_response.code,
-                          exc_info=True)
+                          func.__name__, httpe.__class__.__name__,
+                          httpe.wsgi_response.code, exc_info=True)
             result = httpe
             
             # 304 Not Modified's shouldn't have a content-type set
@@ -226,7 +226,8 @@ class WSGIController(object):
                 if isinstance(response, str):
                     py_response.body = py_response.body + response
                 elif isinstance(response, unicode):
-                    py_response.unicode_body = py_response.unicode_body + response
+                    py_response.unicode_body = py_response.unicode_body + \
+                        response
                 else:
                     py_response.body = response
             response = py_response
@@ -245,5 +246,6 @@ class WSGIController(object):
             return response(environ, self.start_response)
         
         if log_debug:
-            log.debug("Response assumed to be WSGI content, returning un-touched")
+            log.debug("Response assumed to be WSGI content, returning "
+                      "un-touched")
         return response
