@@ -10,7 +10,7 @@ from paste.recursive import RecursiveMiddleware
 from paste.urlparser import StaticURLParser
 from weberror.evalexception import EvalException
 from weberror.exceptions.errormiddleware import ErrorMiddleware
-from webob import Request, Response
+from webob import Request
 from webhelpers.rails.asset_tag import javascript_path
 
 import pylons

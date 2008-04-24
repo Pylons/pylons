@@ -6,11 +6,9 @@ by Paste, though any WSGI server could create and call the WSGI app as
 well.
 
 """
-import gettext
 import inspect
 import logging
 import sys
-import warnings
 
 import paste.registry
 from routes import request_config
@@ -19,11 +17,10 @@ from webob.exc import HTTPFound, HTTPNotFound
 import pylons
 import pylons.legacy
 import pylons.templating
-from pylons.controllers import WSGIController
 from pylons.controllers.util import Request, Response
 from pylons.i18n.translation import _get_translator
-from pylons.util import ContextObj, AttribSafeContextObj, \
-    class_name_from_module_name, PylonsContext
+from pylons.util import AttribSafeContextObj, ContextObj, PylonsContext, \
+    class_name_from_module_name
 
 __all__ = ['PylonsApp']
 
