@@ -50,6 +50,7 @@ from paste.deploy import loadapp, appconfig
 from paste.script.command import Command, BadCommand
 from paste.script.filemaker import FileOp
 from paste.script.pluginlib import find_egg_info_dir
+from tempita import paste_script_template_renderer
 
 import pylons.util as util
 import pylons
@@ -204,12 +205,15 @@ class ControllerCommand(Command):
                  'package':base_package,
                  'importstatement': importstatement})
             file_op.copy_file(template='controller.py_tmpl',
-                         dest=os.path.join('controllers', directory),
-                         filename=name)
+                              dest=os.path.join('controllers', directory),
+                              filename=name,
+                              template_renderer=paste_script_template_renderer)
             if not self.options.no_test:
-                file_op.copy_file(template='test_controller.py_tmpl',
-                             dest=os.path.join('tests', 'functional'),
-                             filename='test_'+testname)
+                file_op.copy_file(
+                    template='test_controller.py_tmpl',
+                    dest=os.path.join('tests', 'functional'),
+                    filename='test_' + testname,
+                    template_renderer=paste_script_template_renderer)
         except BadCommand, e:
             raise BadCommand('An error occurred. %s' % e)
         except:
@@ -335,12 +339,15 @@ class RestControllerCommand(Command):
                                  "this:\n\n")
             resource_command += command
             file_op.copy_file(template='restcontroller.py_tmpl',
-                         dest=os.path.join('controllers', pluraldirectory),
-                         filename=pluralname)
+                              dest=os.path.join('controllers', pluraldirectory),
+                              filename=pluralname,
+                              template_renderer=paste_script_template_renderer)
             if not self.options.no_test:
-                file_op.copy_file(template='test_controller.py_tmpl',
-                             dest=os.path.join('tests', 'functional'),
-                             filename='test_'+testname)
+                file_op.copy_file(
+                    template='test_controller.py_tmpl',
+                    dest=os.path.join('tests', 'functional'),
+                    filename='test_' + testname,
+                    template_renderer=paste_script_template_renderer)
             print resource_command
         except BadCommand, e:
             raise BadCommand('An error occurred. %s' % e)
