@@ -4,10 +4,11 @@ Render functions and helpers
 ============================
 
 :mod:`pylons.templating` includes several basic render functions, 
-:func:`render_mako` and :func:`render_genshi` that render templates
-from the file-system with the assumption that variables intended for
-the  will be attached to :data:`tmpl_context` (hereafter referred to
-by its short name of :data:`c` which it is commonly imported as).
+:func:`render_mako`, :func:`render_genshi` and :func:`render_jinja` that
+render templates from the file-system with the assumption that variables
+intended for the will be attached to :data:`tmpl_context` (hereafter
+referred to by its short name of :data:`c` which it is commonly imported
+as).
 
 The default render functions work with the template language loader
 object that is setup on the :data:`app_globals` object in the project's
@@ -57,9 +58,9 @@ Template Globals
 ----------------
 
 Templates rendered in Pylons should include the default Pylons globals
-as the :func:`render_mako` and :func:`render_genshi` functions. The 
-full list of Pylons globals that are included in the template's
-namespace are:
+as the :func:`render_mako`, :func:`render_genshi` and
+:func:`render_jinja` functions. The full list of Pylons globals that are
+included in the template's namespace are:
 
 - :term:`c` -- Template context object
 - :term:`tmpl_context` -- Template context object
@@ -177,7 +178,7 @@ import pkg_resources
 import pylons
 
 __all__ = ['Buffet', 'MyghtyTemplatePlugin', 'render', 'render_genshi', 
-           'render_mako', 'render_response']
+           'render_jinja', 'render_mako', 'render_response']
 
 PYLONS_VARS = ['c', 'config', 'g', 'h', 'render', 'request', 'session',
                'translator', 'ungettext', '_', 'N_']
@@ -301,7 +302,7 @@ def render_mako(template_name, cache_key=None, cache_type=None,
         
         return template.render(**globs)
     
-    return cached_template(template_name, render_template, cache_key=cache_key, 
+    return cached_template(template_name, render_template, cache_key=cache_key,
                            cache_type=cache_type, cache_expire=cache_expire)
 
 
@@ -324,9 +325,33 @@ def render_genshi(template_name, cache_key=None, cache_type=None,
         
         return template.generate(**globs).render(method=method)
     
-    return cached_template(template_name, render_template, cache_key=cache_key, 
+    return cached_template(template_name, render_template, cache_key=cache_key,
                            cache_type=cache_type, cache_expire=cache_expire,
                            ns_options=('method'), method=method)
+
+
+def render_jinja(template_name, cache_key=None, cache_type=None,
+                 cache_expire=None):
+    """Render a template with Jinja
+
+    Accepts the cache options ``cache_key``, ``cache_type``, and
+    ``cache_expire``.
+
+    """    
+    # Create a render callable for the cache function
+    def render_template():
+        # First, get the globals
+        globs = pylons_globals()
+
+        # Grab a template reference
+        template = \
+            globs['app_globals'].jinja_env.get_template(template_name)
+
+        return template.render(**globs)
+
+    return cached_template(template_name, render_template, cache_key=cache_key,
+                           cache_type=cache_type, cache_expire=cache_expire)
+
 
 class BuffetError(Exception):
     """Buffet Exception"""
