@@ -173,7 +173,8 @@ class MIMETypes(object):
         MIMETypes.register('application/x-yaml', 'yaml',
                            type_aliases=('text/yaml',))
         MIMETypes.register('multipart/form-data', 'multipart_form')
-        MIMETypes.register('application/x-www-form-urlencoded', 'url_encoded_form')
+        MIMETypes.register('application/x-www-form-urlencoded',
+                           'url_encoded_form')
         MIMETypes.register('application/json', 'json', 
                            type_aliases=('text/x-json',))
     load_defaults = classmethod(load_defaults)
