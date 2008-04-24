@@ -12,9 +12,9 @@ import logging
 import sys
 import warnings
 
-import paste.httpexceptions as httpexceptions
 import paste.registry
 from routes import request_config
+from webob.exc import HTTPFound, HTTPNotFound
 
 import pylons
 import pylons.legacy
@@ -70,7 +70,7 @@ class PylonsApp(object):
         # Create the redirect function we'll use and save it
         def redirect_to(url):
             log.debug("Raising redirect to %s", url)
-            raise httpexceptions.HTTPFound(url)
+            raise HTTPFound(location=url)
         self.redirect_to = redirect_to
         
         # Initialize Buffet and all our template engines, default engine is the
@@ -291,8 +291,7 @@ class PylonsApp(object):
         if not controller:
             if log_debug:
                 log.debug("No controller found, returning 404 HTTP Not Found")
-            not_found = httpexceptions.HTTPNotFound()
-            return not_found.wsgi_application(environ, start_response)
+            return HTTPNotFound()(environ, start_response)
 
         match = environ['pylons.routes_dict']
         
