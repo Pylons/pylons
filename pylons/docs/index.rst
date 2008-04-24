@@ -1,8 +1,4 @@
-.. Pylons documentation master file, created by sphinx-quickstart on Mon Apr 21 20:41:33 2008.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-Welcome to Pylons's documentation!
+Welcome to Pylons' documentation!
 ==================================
 
 Contents:
