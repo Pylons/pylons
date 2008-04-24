@@ -290,7 +290,9 @@ class RestControllerCommand(Command):
             if is_minimal_template(base_package):
                 importstatement = "from %s.controllers import BaseController" % base_package
             else:
-                importstatement = "from %s.lib.base import BaseController, render" % base_package
+                importstatement = "from %s.lib.base import BaseController" % base_package
+            if defines_render(base_package):
+                importstatement += ', render'
             
             check_controller_existance(base_package, name)
             
