@@ -18,14 +18,12 @@ import hmac
 import logging
 import mimetypes
 import sha
-import warnings
 
 try:
     import cPickle as pickle
 except ImportError:
     import pickle
 
-import paste.httpexceptions as httpexceptions
 from routes import url_for
 from webob import Request as WebObRequest
 from webob import Response as WebObResponse
@@ -334,7 +332,8 @@ def abort(status_code=None, detail="", headers=None, comment=None):
 
 
 def redirect_to(*args, **kargs):
-    """Raises a redirect exception
+    """Raises a redirect exception to the URL resolved by Routes'
+    url_for function
     
     Optionally, a _code variable may be passed with the status code of
     the redirect, ie::
@@ -342,7 +341,6 @@ def redirect_to(*args, **kargs):
         redirect_to('home_page', _code=303)
     
     """
-    response = kargs.pop('_response', None)
     status_code = kargs.pop('_code', 302)
     exc = status_map[status_code]
     found = exc(location=url_for(*args, **kargs))
