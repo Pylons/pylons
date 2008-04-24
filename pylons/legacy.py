@@ -56,45 +56,6 @@ deprecated, please remove it. To customize EvalException's HTML, setup your \
 own EvalException and ErrorMiddlewares instead of using ErrorHandler."""
 )
 
-g_confargs = (
-"Handling conf arguments in your app_globals __init__ function is no longer "
-"required. Please update your config/app_globals.py with:"
-"""
-    from pylons import config
-
-    class Globals(object):
-        def __init__(self):
-            pass
-
-And use the config object in your Globals instance.
-""")
-
-helpers_and_g_warning = (
-"Pylons 0.9.6 and above projects must explicitly initialize the helpers and g "
-"objects in their config/environment.py. Please no longer specify the helpers "
-"and g keyword arguments to PylonsApp in your config/middleware.py: instead, "
-"update your config/environment.py with:"
-"""
-
-    from pylons import config
-
-    import %(package)s.lib.app_globals as app_globals
-    import %(package)s.lib.helpers
-
-And add the following lines to the load_environment function:
-
-    # Initialize config with the basic options
-    config.init_app(global_conf, app_conf, package='%(package)s',
-                    template_engine='%(template_engine)s', paths=paths)
-
-    config['pylons.g'] = app_globals.Globals()
-    config['pylons.h'] = %(package)s.lib.helpers
-    config['routes.map'] = make_map()
-
-See the default config/environment.py created via the "paster create -t pylons"
-command for a full example.
-""")
-
 log_warning = (
 'The log function is deprecated. Use the logging module instead')
 
@@ -133,10 +94,6 @@ uses h):
 
     from pylons import h
 """)
-
-redirect_response_warning = (
-"redirect_to's _response argument is deprecated, please use pylons.response "
-"prior to redirecting instead")
 
 render_response_warning = (
 "render_response is deprecated, please return the response content directly "
