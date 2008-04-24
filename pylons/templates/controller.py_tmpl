@@ -12,9 +12,7 @@ log = logging.getLogger(__name__)
 class ${name}Controller(BaseController):
 
     def index(self):
-        # Return a rendered template, first import the render function
-        #    from pylons.templating import render_mako as render
-        # Then
-        #   return render('/some/template.mako')
+        # Return a rendered template
+        #   return render('/template.mako')
         # or, Return a response
         return 'Hello World'

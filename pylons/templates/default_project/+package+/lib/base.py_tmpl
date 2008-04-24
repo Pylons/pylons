@@ -3,6 +3,12 @@
 Provides the BaseController class for subclassing.
 """
 from pylons.controllers import WSGIController
+{{if template_engine == 'mako'}}
+from pylons.templating import render_mako as render
+{{elif template_engine == 'genshi'}}
+from pylons.templating import render_genshi as render
+{{endif}}
+
 {{if sqlalchemy}}
 from {{package}}.model import meta
 {{endif}}
