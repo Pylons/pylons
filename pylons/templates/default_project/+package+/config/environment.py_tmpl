@@ -1,6 +1,7 @@
 """Pylons environment configuration"""
 import os
 
+
 {{if template_engine == 'mako'}}
 from mako.lookup import TemplateLookup
 {{elif template_engine == 'genshi'}}
@@ -35,25 +36,25 @@ def load_environment(global_conf, app_conf):
     config['routes.map'] = make_map()
     config['pylons.app_globals'] = app_globals.Globals()
     config['pylons.h'] = {{package}}.lib.helpers
-    {{if sqlalchemy}}
-    
-    # Setup SQLAlchemy database engine
-    engine = engine_from_config(config, 'sqlalchemy.')
-    init_model(engine)
-    {{endif}}
-    
     {{if template_engine == 'mako'}}
+
     # Create the Mako TemplateLookup, with the default auto-escaping
     config['pylons.app_globals'].mako_lookup = TemplateLookup(
-        directories=paths['templates'], input_encoding='utf-8',
-        imports=['from webhelpers.html import escape'],
-        default_filters=['escape'], output_encoding='utf-8',
+        directories=paths['templates'],
         module_directory=os.path.join(app_conf['cache_dir'], 'templates'),
-    )
+        input_encoding='utf-8', output_encoding='utf-8',
+        imports=['from webhelpers.html import escape'],
+        default_filters=['escape'])
     {{elif template_engine == 'genshi'}}
+
     # Create the Genshi TemplateLoader
     config['pylons.app_globals'].genshi_loader = TemplateLoader(
         paths['templates'], auto_reload=True)
+    {{endif}}
+    {{if sqlalchemy}}
+    # Setup SQLAlchemy database engine
+    engine = engine_from_config(config, 'sqlalchemy.')
+    init_model(engine)
     {{endif}}
     
     # CONFIGURATION OPTIONS HERE (note: all config options will override
