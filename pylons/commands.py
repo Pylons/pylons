@@ -82,6 +82,19 @@ def is_minimal_template(package):
     return minimal_template
 
 
+def defines_render(package):
+    """Determine if the specified Pylons project (package) defines a
+    render callable in their base module
+    """
+    base_module = (is_minimal_template(package) and package + '.controllers' or
+                   package + '.lib.base')
+    try:
+        base = __import__(base_module, globals(), locals(), ['__doc__'])
+    except:
+        return False
+    return callable(getattr(base, 'render', None))
+
+
 def validate_name(name):
     """Validate that the name for the controller isn't present on the
     path already"""
@@ -172,7 +185,9 @@ class ControllerCommand(Command):
             if is_minimal_template(base_package):
                 importstatement = "from %s.controllers import BaseController" % base_package
             else:
-                importstatement = "from %s.lib.base import BaseController, render" % base_package
+                importstatement = "from %s.lib.base import BaseController" % base_package
+            if defines_render(base_package):
+                importstatement += ', render'
 
             # Setup the controller
             fullname = os.path.join(directory, name)
