@@ -2,7 +2,7 @@ import logging
 
 from pylons import request, response, session
 from pylons import tmpl_context as c
-from pylons.controllers.util import abort, redirect_to, url_for
+from pylons.controllers.util import abort, redirect_to
 
 {{importstatement}}
 #import {{package}}.model as model
