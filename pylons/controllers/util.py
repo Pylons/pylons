@@ -303,7 +303,7 @@ def etag_cache(key=None):
 
 
 def forward(wsgi_app):
-    """Forward the request to a WSGI application
+    """Forward the request to a WSGI application. Returns its response.
     
     .. code-block:: python
     
@@ -312,8 +312,9 @@ def forward(wsgi_app):
     """
     environ = pylons.request.environ
     controller = environ.get('pylons.controller')
-    assert controller
-    assert hasattr(controller, 'start_response')
+    if not controller or not hasattr(controller, 'start_response'):
+        raise RuntimeError("Unable to forward: environ['pylons.controller'] "
+                           "is not a valid Pylons controller")
     return wsgi_app(environ, controller.start_response)
 
 
