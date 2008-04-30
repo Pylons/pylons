@@ -319,7 +319,6 @@ class PylonsApp(object):
         testenv['app_globals'] = testenv['g'] = pylons_obj.app_globals
         testenv['h'] = self.config['pylons.h'] or pylons_obj.h
         testenv['config'] = self.config
-        econf = self.config['pylons.environ_config']
         if hasattr(pylons_obj, 'session'):
             testenv['session'] = pylons_obj.session
         if hasattr(pylons_obj, 'cache'):
