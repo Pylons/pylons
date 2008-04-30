@@ -312,17 +312,15 @@ class PylonsApp(object):
         if self.log_debug:
             log.debug("Setting up paste testing environment variables")
         testenv = environ['paste.testing_variables']
-        testenv['req'] = pylons.request._current_obj()
-        testenv['tmpl_context'] = testenv['c'] = pylons.c._current_obj()
-        testenv['app_globals'] = testenv['g'] = pylons.g._current_obj()
-        testenv['h'] = self.config['pylons.h'] or pylons.h._current_obj()
+        pylons_obj = environ['pylons.pylons']
+        testenv['req'] = pylons_obj.request
+        testenv['response'] = pylons_obj.response
+        testenv['tmpl_context'] = testenv['c'] = pylons_obj.c
+        testenv['app_globals'] = testenv['g'] = pylons_obj.app_globals
+        testenv['h'] = self.config['pylons.h'] or pylons_obj.h
         testenv['config'] = self.config
         econf = self.config['pylons.environ_config']
-        if econf.get('session'):
-            testenv['session'] = environ[econf['session']]
-        elif 'beaker.session' in environ:
-            testenv['session'] = environ['beaker.session']
-        if econf.get('cache'):
-            testenv['cache'] = environ[econf['cache']]
-        elif 'beaker.cache' in environ:
-            testenv['cache'] = environ['beaker.cache']
+        if hasattr(pylons_obj, 'session'):
+            testenv['session'] = pylons_obj.session
+        if hasattr(pylons_obj, 'cache'):
+            testenv['cache'] = pylons_obj.cache

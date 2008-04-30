@@ -11,6 +11,7 @@ from paste.urlparser import StaticURLParser
 from weberror.evalexception import EvalException
 from weberror.exceptions.errormiddleware import ErrorMiddleware
 from webob import Request
+from webhelpers.html import literal
 from webhelpers.rails.asset_tag import javascript_path
 
 import pylons
@@ -161,7 +162,7 @@ def ErrorDocuments(app, global_conf=None, mapper=None, **kw):
                                                   mapper=mapper, **kw))
 
 
-error_document_template = """\
+error_document_template = literal("""\
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
@@ -295,4 +296,4 @@ a.switch_source:hover {
     </div>
 </body>
 </html>
-"""
+""")
