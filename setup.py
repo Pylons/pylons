@@ -70,11 +70,11 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
     zip_safe=False,
     include_package_data=True,
     install_requires=[
-        "Routes>=1.8", "WebHelpers>=0.6dev-20080410", "Beaker>=0.9.3",
+        "Routes>=1.8", "WebHelpers>=0.6dev-20080410", "Beaker>=0.9.4",
         "Paste>=1.6", "PasteDeploy>=1.3.1", "PasteScript==dev,>=1.6.3dev-r7327",
         "FormEncode>=1.0.1", "simplejson>=1.8.1", "decorator>=2.2.0",
-        "nose>=0.10.1", "Mako>=0.1.10", "WebOb>=0.9", "WebError>=0.8a",
-        "Tempita>=0.1",
+        "nose>=0.10.1", "Mako>=0.1.10", "WebOb>=0.9.1", "WebError>=0.8a",
+        "Tempita>=0.2",
     ],
     dependency_links=[
         "http://www.pylonshq.com/download/0.9.7"
