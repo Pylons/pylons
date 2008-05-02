@@ -27,7 +27,7 @@ for the entire application should either be setup here, or in the
 :file:`lib/app_globals` :meth:`__init__.py` method.
 
 It also calls the :ref:`url-config` function to setup how the URL's will
-be matched up to your :ref:`controllers`, creates your :term:`app-globals`
+be matched up to your :ref:`controllers`, creates your :term:`app_globals`
 object, configures which module will be referred to as :term:`h`, and is
 where the template engine is setup.
 
