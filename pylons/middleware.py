@@ -31,6 +31,10 @@ head_html = """\
 type="text/css" media="screen" />"""
 
 footer_html ="""\
+<script src="{{prefix}}/media/pylons/javascripts/traceback.js"></script>
+<script>
+ERRPREFIX = "{{prefix}}"
+</script>
 <div id="pylons_logo">\
 <img src="{{prefix}}/media/pylons/img/pylons-tower120.png" /></div>
 <div class="credits">Pylons version %s</div>""" % pylons.__version__
