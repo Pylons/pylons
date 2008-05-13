@@ -1,3 +1,5 @@
+/* @override http://localhost:5000/_debug/media/pylons/style/itraceback.css */
+
 div.credits {
     padding: 5px 0 0 0;
 }
@@ -11,4 +13,23 @@ div.credits {
 #pylons_logo {
     float: right;
     margin: 5px 0 0 0;
+}
+
+div.widget_layout {
+    margin: 30px 0 0 0;
+}
+div.feature-highlight {
+	float: right;
+	width: 400px;
+	margin: 0;
+    padding: 0;
+}
+
+div.feature-highlight button {
+    margin: 15px 0 0 20px;
+}
+
+div.service_widget {
+    width: 450px;
+    border: none;
 }

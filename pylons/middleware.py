@@ -31,9 +31,24 @@ head_html = """\
 type="text/css" media="screen" />"""
 
 footer_html ="""\
+<script src="{{prefix}}/media/pylons/javascripts/traceback.js"></script>
+<script>
+var TRACEBACK = {
+    uri: "{{prefix}}",
+    host: %s,
+    traceback: "/bugtracks"
+}
+</script>
+<div id="service_widget">
+<h4>Online Assistance</h4>
+<div class="widget_nav"><a class="active" href="#">Traceback</a> &nbsp;<a href="#">Search Mail Lists</a></div>
+<div class="results">
+    <a href="#" class="submit_traceback">Post traceback to PylonsHQ</a>
+</div>
+</div>
 <div id="pylons_logo">\
 <img src="{{prefix}}/media/pylons/img/pylons-tower120.png" /></div>
-<div class="credits">Pylons version %s</div>""" % pylons.__version__
+<div class="credits">Pylons version %s</div>"""
 
 class StaticJavascripts(object):
     """Middleware for intercepting requests for WebHelpers' included 
@@ -73,11 +88,14 @@ def ErrorHandler(app, global_conf, **errorware):
                       DeprecationWarning, 2)
 
     if asbool(global_conf.get('debug')):
+        footer = footer_html % (pylons.config.get('traceback_host', 
+                                                'pylonshq.com'),
+                                pylons.__version__)
         py_media = dict(pylons=media_path)
         app = EvalException(app, global_conf, 
                             templating_formatters=template_error_formatters,
                             media_paths=py_media, head_html=head_html, 
-                            footer_html=footer_html)
+                            footer_html=footer)
     else:
         app = ErrorMiddleware(app, global_conf, **errorware)
     return app
