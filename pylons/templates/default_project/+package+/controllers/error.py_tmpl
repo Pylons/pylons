@@ -1,6 +1,6 @@
 import os.path
 
-import paste.fileapp
+from paste.urlparser import StaticURLParser
 from pylons import request
 from pylons.controllers.util import forward
 from pylons.middleware import error_document_template, media_path
@@ -28,14 +28,16 @@ class ErrorController(BaseController):
 
     def img(self, id):
         """Serve Pylons' stock images"""
-        return self._serve_file(os.path.join(media_path, 'img', id))
+        return self._serve_file(os.path.join(media_path, 'img'), id)
 
     def style(self, id):
         """Serve Pylons' stock stylesheets"""
-        return self._serve_file(os.path.join(media_path, 'style', id))
+        return self._serve_file(os.path.join(media_path, 'style'), id)
 
-    def _serve_file(self, path):
+    def _serve_file(self, root, path):
         """Call Paste's FileApp (a WSGI application) to serve the file
         at the specified path
         """
-        return forward(paste.fileapp.FileApp(path))
+        static = StaticURLParser(root)
+        request.environ['PATH_INFO'] = '/%s' % path
+        return static(request.environ, self.start_response)

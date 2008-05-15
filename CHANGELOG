@@ -2,6 +2,8 @@ Pylons Changelog
 =================
 
 0.9.7 (**tip**)
+* WARNING: Fixed a security hole in the default project template to use the
+  StaticURLParser to ensure arbitrary files can't be sent.
 * setup.py egg_info now restores projects' paster_plugins.txt,
   allowing paster shell to work again after the egg-info directory was
   lost. fixes #282. Thanks sevkin.
