@@ -136,8 +136,8 @@ class XMLRPCController(WSGIController):
             if log_debug:
                 log.debug("Method: %r not found, returning xmlrpc fault",
                           method)
-            return xmlrpc_fault(0, "No such method name")(environ,
-                                                          start_response)
+            return xmlrpc_fault(0, "No such method name %r" %
+                                method)(environ, start_response)
 
         # Signature checking for params
         if hasattr(func, 'signature'):
