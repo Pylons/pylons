@@ -5,7 +5,7 @@ except ImportError:
     use_setuptools()
     from setuptools import setup, find_packages
 
-version = '0.9.7beta4'
+version = '0.9.7beta5'
 
 setup(
     name="Pylons",
