@@ -35,7 +35,7 @@ footer_html ="""\
 <script>
 var TRACEBACK = {
     uri: "{{prefix}}",
-    host: %s,
+    host: "%s",
     traceback: "/bugtracks"
 }
 </script>
