@@ -1,3 +1,4 @@
+import cgi
 import os.path
 
 from paste.urlparser import StaticURLParser
@@ -22,8 +23,8 @@ class ErrorController(BaseController):
         resp = request.environ.get('pylons.original_response')
         page = error_document_template % \
             dict(prefix=request.environ.get('SCRIPT_NAME', ''),
-                 code=request.params.get('code', resp.status_int),
-                 message=request.params.get('message', resp.body))
+                 code=cgi.escape(request.params.get('code', resp.status_int)),
+                 message=cgi.escape(request.params.get('message', resp.body)))
         return page
 
     def img(self, id):
