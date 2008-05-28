@@ -286,7 +286,7 @@ class RestControllerCommand(Command):
                     'Your controller name should not be the same as '
                     'the package name %r.'% base_package)
             # Validate the name
-            for name in [singularname, pluralname]:
+            for name in [pluralname]:
                 name = name.replace('-', '_')
                 validate_name(name)
 
