@@ -23,8 +23,8 @@ class ErrorController(BaseController):
         resp = request.environ.get('pylons.original_response')
         page = error_document_template % \
             dict(prefix=request.environ.get('SCRIPT_NAME', ''),
-                 code=cgi.escape(request.params.get('code', resp.status_int)),
-                 message=cgi.escape(request.params.get('message', resp.body)))
+                 code=cgi.escape(request.GET.get('code', resp.status_int)),
+                 message=cgi.escape(request.GET.get('message', resp.body)))
         return page
 
     def img(self, id):
