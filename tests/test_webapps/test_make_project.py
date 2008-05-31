@@ -4,8 +4,12 @@ import sys
 import time
 import urllib
 
+from shutil import rmtree
+
 import pkg_resources
 from paste.fixture import *
+
+TEST_OUTPUT_DIRNAME = 'output'
 
 for spec in ['PasteScript', 'Paste', 'PasteDeploy', 'pylons']:
     pkg_resources.require(spec)
@@ -17,7 +21,7 @@ test_environ = os.environ.copy()
 test_environ['PASTE_TESTING'] = 'true'
 
 testenv = TestFileEnvironment(
-    os.path.join(os.path.dirname(__file__), 'output').replace('\\','/'),
+    os.path.join(os.path.dirname(__file__), TEST_OUTPUT_DIRNAME).replace('\\','/'),
     template_path=template_path,
     environ=test_environ)
 
@@ -86,6 +90,14 @@ def make_controller():
     res = projenv.run(_get_script_name('paster')+' controller sample')
     assert os.path.join('projectname','controllers','sample.py') in res.files_created
     assert os.path.join('projectname','tests','functional','test_sample.py') in res.files_created
+    #res = projenv.run(_get_script_name('svn')+' status')
+    # Make sure all files are added to the repository:
+    assert '?' not in res.stdout
+
+def make_restcontroller():
+    res = projenv.run(_get_script_name('paster')+' restcontroller restsample restsamples')
+    assert os.path.join('projectname','controllers','restsamples.py') in res.files_created
+    assert os.path.join('projectname','tests','functional','test_restsamples.py') in res.files_created
     #res = projenv.run(_get_script_name('svn')+' status')
     # Make sure all files are added to the repository:
     assert '?' not in res.stdout
@@ -219,19 +231,58 @@ def make_tag():
         start_clear=False,
         template_path=template_path)
 
-def test_project():
-    #yield svn_repos_setup
-    yield (paster_create,)
-    yield (make_controller,)
-    yield (do_nosetests,)
-    yield (do_knowntest,)
-    yield (do_i18ntest,)
-    yield (do_kid_default,)
-    yield (do_two_engines,)
-    yield (do_cheetah,)
-    yield (do_crazy_decorators,)
-    yield (do_cache_decorator,)
-    yield (do_xmlrpc,)
-    #yield do_legacy_app
-    #yield make_tag
-    
+
+# Unfortunately, these are ordered, so be careful
+def test_project_paster_create():
+    paster_create()
+
+def test_project_make_controller():
+    make_controller()
+
+def test_project_do_nosetests():
+    do_nosetests()
+
+def test_project_do_knowntest():
+    do_knowntest()
+
+def test_project_do_i18ntest():
+    do_i18ntest()
+
+def test_project_make_restcontroller():
+    make_restcontroller()
+
+def test_project_do_rest_nosetests():
+    copydict = {
+        'rest_routing.py':'projectname/config/routing.py',
+        'development.ini':'development.ini',
+    }
+    _do_proj_test(copydict)
+
+# Tests with templating plugin dependencies
+def test_project_do_crazy_decorators():
+    do_crazy_decorators()
+
+def test_project_do_cache_decorator():
+    do_cache_decorator()
+
+def test_project_do_kid_default():
+    do_kid_default()
+
+def test_project_do_two_engines():
+    do_two_engines()
+
+def test_project_do_cheetah():
+    do_cheetah()
+
+def test_project_do_xmlrpc():
+    do_xmlrpc()
+
+#def test_project_do_legacy_app():
+#    do_legacy_app()
+
+#def test_project_make_tag():
+#    make_tag()
+
+def teardown():
+    dir_to_clean = os.path.join(os.path.dirname(__file__), TEST_OUTPUT_DIRNAME)
+    rmtree(dir_to_clean)

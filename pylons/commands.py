@@ -345,7 +345,7 @@ class RestControllerCommand(Command):
                               template_renderer=paste_script_template_renderer)
             if not self.options.no_test:
                 file_op.copy_file(
-                    template='test_controller.py_tmpl',
+                    template='test_restcontroller.py_tmpl',
                     dest=os.path.join('tests', 'functional'),
                     filename='test_' + testname,
                     template_renderer=paste_script_template_renderer)
