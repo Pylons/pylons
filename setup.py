@@ -69,6 +69,8 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
     packages=find_packages(exclude=['ez_setup']),
     zip_safe=False,
     include_package_data=True,
+    test_suite='nose.collector',
+    tests_require=['nose'],
     install_requires=[
         "Routes>=1.8", "WebHelpers>=0.6dev-20080410", "Beaker>=0.9.4",
         "Paste>=1.6", "PasteDeploy>=1.3.1", "PasteScript==dev,>=1.6.3dev-r7327",
