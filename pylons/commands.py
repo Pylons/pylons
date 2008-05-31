@@ -14,7 +14,7 @@ Commands available:
     Create a REST Controller and accompanying functional test
 ``shell``
     Open an interactive shell with the Pylons app loaded
-
+ 
 Example usage::
     
     ~/sample$ paster controller account
