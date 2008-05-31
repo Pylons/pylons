@@ -38,6 +38,7 @@ Example usage::
     This same system is used when running :command:`paster create` to
     determine what templates are available when creating new projects.
 
+
 """
 import os
 import sys
