@@ -10,7 +10,6 @@ Commands available:
 
 ``controller``
     Create a Controller and accompanying functional test
-
 ``restcontroller``
     Create a REST Controller and accompanying functional test
 ``shell``
@@ -58,8 +57,8 @@ import pylons
 __all__ = ['ControllerCommand', 'RestControllerCommand', 'ShellCommand']
 
 def can_import(name):
-    """Attempt to __import__ the specified package/module, returning True when
-    succeeding, otherwise False"""
+    """Attempt to __import__ the specified package/module, returning
+    True when succeeding, otherwise False"""
     try:
         __import__(name)
         return True
@@ -68,8 +67,8 @@ def can_import(name):
 
 
 def is_minimal_template(package):
-    """Determine if the specified Pylons project (package) uses the Pylons
-    Minimal Tempalte"""
+    """Determine if the specified Pylons project (package) uses the
+    Pylons Minimal Tempalte"""
     minimal_template = False
     try:
         # Check if PACKAGE.lib.base exists
@@ -146,6 +145,7 @@ class ControllerCommand(Command):
         Creating yourproj/controllers/admin
         Creating yourproj/yourproj/controllers/admin/trackback.py
         Creating yourproj/yourproj/tests/functional/test_admin_trackback.py
+
     """
     summary = __doc__.splitlines()[0]
     usage = '\n' + __doc__
@@ -250,6 +250,7 @@ class RestControllerCommand(Command):
         Creating yourproj/controllers/admin
         Creating yourproj/yourproj/controllers/admin/trackbacks.py
         Creating yourproj/yourproj/tests/functional/test_admin_trackbacks.py
+
     """
     summary = __doc__.splitlines()[0]
     usage = '\n' + __doc__
@@ -368,6 +369,7 @@ class ShellCommand(Command):
     Example::
 
         $ paster shell my-development.ini
+
     """
     summary = __doc__.splitlines()[0]
     usage = '\n' + __doc__
