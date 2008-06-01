@@ -40,11 +40,40 @@ var TRACEBACK = {
 }
 </script>
 <div id="service_widget">
-<h4>Online Assistance</h4>
-<div class="widget_nav"><a class="active" href="#">Traceback</a> &nbsp;<a href="#">Search Mail Lists</a></div>
-<div class="results">
-    <a href="#" class="submit_traceback">Post traceback to PylonsHQ</a>
+<h2 class="assistance">Online Assistance</h2>
+<div id="nv">
+<ul id="supportnav">
+    <li class="nav active"><a class="overview" href="#">Overview</a></li>
+    <li class="nav"><a class="search" href="#">Search Mail Lists</a></li>
+    <li class="nav"><a class="posttraceback" href="#">Post Traceback</a></li>
+</ul>
 </div>
+<div class="clearfix">&nbsp;</div>
+<div class="overviewtab">
+<h3>Looking for help?</h3>
+
+<ol>
+<li>Search the mail list</li>
+<li>Post the traceback, and ask for help on IRC</li>
+<li>Post a message to the mail list, referring to the posted traceback</li>
+
+</div>
+<div class="posttracebacktab">
+Post traceback....
+</div>
+
+<div class="searchtab">
+<p>The following mail lists will be searched:<br />
+<input type="checkbox" name="lists" value="pylons" checked="checked"/> Pylons<br />
+<input type="checkbox" name="lists" value="sqlalchemy" /> SQLAlchemy</p>
+<p class="query">for: <input type="text" name="query" class="query" /></p>
+
+<p><input type="submit" value="Search" /></p>
+<div class="searchresults">
+
+</div>
+</div>
+
 </div>
 <div id="pylons_logo">\
 <img src="{{prefix}}/media/pylons/img/pylons-tower120.png" /></div>
