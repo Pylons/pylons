@@ -449,6 +449,25 @@ class ShellCommand(Command):
 
         # Start the rest of our imports now that the app is loaded
         found_base = False
+
+        model_module = pkg_name + '.model'
+        found_model = can_import(model_module)
+        if found_model:
+            model = sys.modules[model_module]
+            locs['model'] = model
+
+        helpers_module = pkg_name + '.lib.helpers'
+        found_helpers = can_import(helpers_module)
+        if found_helpers:
+            helpers = sys.modules[helpers_module]
+            locs['h'] = helpers
+
+        exec 'from pylons import c, cache, config, g, request, response, session' in locs
+        exec 'from pylons.controllers import WSGIController' in locs
+        exec 'from pylons.decorators import jsonify, validate' in locs
+        exec 'from pylons.controllers.util import abort, etag_cache, redirect_to' in locs
+        exec 'from pylons.i18n import _, ungettext, N_' in locs
+        exec 'from pylons.templating import render' in locs
         
         # Import all objects from the base module
         base_module = pkg_name + '.lib.base'
