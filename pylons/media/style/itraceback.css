@@ -29,7 +29,128 @@ div.feature-highlight button {
     margin: 15px 0 0 20px;
 }
 
-div.service_widget {
-    width: 450px;
-    border: none;
+div#service_widget {
+    width: 500px;
+    padding: 0;
+    margin: 0;
+    margin-right: 10px;
+    line-height: 1.4;
+    font-size: 1.2em;
+}
+
+div#service_widget h4, div.overviewtab h3 {
+    margin: 0;
+    padding: 0;
+}
+
+div#service_widget h2 {
+    color: #000;
+    border-bottom: 1px solid #0a0;
+    font-variant: small-caps;
+    font-size: 20px;
+    line-height: 1.3;
+}
+
+div.overviewtab, div.posttracebacktab, div.searchtab {
+    padding: 6px;
+    background-color: #eee;
+}
+
+div.clearfix {
+    clear: left;
+    margin: 0;
+    padding: 0;
+    height: 0;
+}
+
+.hide {
+    display: none;
+}
+
+input.query {
+    width: 350px;
+}
+
+p.query {
+	margin: 0 0 0 20px;
+	padding: 0;
+}
+
+/* Nav Bar */
+
+#nv li {
+    display:block; 
+    float:left; 
+    list-style-type:none; 
+    margin:0; 
+    padding:0;
+}
+#nv a { 
+    display:block; 
+    float:left; 
+    border: 0px;
+    letter-spacing: 0.1em;
+    font-size: 14px;
+}
+
+ul#supportnav
+{
+    margin: 0;
+    padding:0;
+    color: #eee;
+    line-height: 20px;
+}
+
+ul#supportnav li a
+{
+    border: 1px solid #fff;
+    color: #000;
+    margin-right: 29px;
+    text-decoration: underline;
+    padding-left: 8px;
+    padding-right: 8px;
+}
+ul#supportnav  li a#highlight , ul#supportnav li a#highlight:hover
+{
+    color: #555;
+}
+
+ul#supportnav li a:hover
+{
+    color: #b11;
+}
+
+ul#supportnav li.active a,  ul#supportnav li.active a:hover
+{
+    color: #b00;
+    border: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+    background-color: #eee;
+}
+
+div.searchresults div.result {
+	margin-bottom: 5px;
+	padding: 2px 0px 2px 4px;
+	cursor: pointer;
+	background-color: rgb(247, 247, 247);
+	border: 1px solid rgb(235, 235, 235);
+}
+
+div.searchresults div.result div.meta {
+	font-size: 0.8em;
+	color: rgb(1, 116, 22);
+}
+
+p.results a {
+    float: right;
+}
+
+div.searchresults div.blurb {
+	font-size: 0.8em;
+}
+
+div.searchresults div.result a {
+	text-decoration: underline;
+	font-size: 0.9em;
+	cursor: pointer;
 }
