@@ -23,7 +23,7 @@ class ErrorController(BaseController):
         resp = request.environ.get('pylons.original_response')
         page = error_document_template % \
             dict(prefix=request.environ.get('SCRIPT_NAME', ''),
-                 code=cgi.escape(request.GET.get('code', resp.status_int)),
+                 code=cgi.escape(request.GET.get('code', resp.status)),
                  message=cgi.escape(request.GET.get('message', resp.body)))
         return page
 
