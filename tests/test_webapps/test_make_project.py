@@ -55,8 +55,7 @@ def paster_create():
                       'template_engine=mako',
                       )
     expect_fn = ['projectname', 'development.ini', 'setup.cfg', 'README.txt',
-                 'setup.py', 'ProjectName.egg-info',
-                 ]
+                 'setup.py']
     for fn in expect_fn:
         fn = os.path.join('ProjectName', fn)
         #~ if fn not in res.files_created.keys():
