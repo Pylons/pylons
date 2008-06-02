@@ -1,5 +1,5 @@
 Pylons Changelog
-=================
+================
 
 0.9.7 (**tip**)
 * WARNING: Fixed a minor security hole in the default Pylons error page that
