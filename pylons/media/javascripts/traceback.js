@@ -13,7 +13,6 @@ $(document).ready(function() {
     $('div.widget_layout')[0].appendChild(document.getElementById('service_widget'));
     
     var data = {
-        q:'list:com.googlegroups.pylons-discuss list:python ' + $('code.main-exception').text(),
         mode:'json',
         page:1
     };
@@ -104,6 +103,7 @@ $(document).ready(function() {
                     result.append(meta);
                     sr.append(result);
                 });
+                window.scrollTo(0, $('#service_widget').offset().top-20);
             });
         return false;
     });
