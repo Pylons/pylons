@@ -66,6 +66,7 @@ Post traceback....
 <p>The following mail lists will be searched:<br />
 <input type="checkbox" name="lists" value="pylons" checked="checked" /> Pylons<br />
 <input type="checkbox" name="lists" value="python" /> Python<br />
+<input type="checkbox" name="lists" value="mako" /> Mako<br />
 <input type="checkbox" name="lists" value="sqlalchemy" /> SQLAlchemy</p>
 <p class="query">for: <input type="text" name="query" class="query" /></p>
 
