@@ -11,12 +11,7 @@ $(document).ready(function() {
     $('div.feature-highlight').wrapAll(newholder[0])[0].appendChild(
         $('button:last').remove()[0]);
     $('div.widget_layout')[0].appendChild(document.getElementById('service_widget'));
-    
-    var data = {
-        mode:'json',
-        page:1
-    };
-    
+        
     $('#service_widget a.submit_traceback').click(function () {
         var uri = TRACEBACK.uri+'/post_traceback?debugcount='+debug_count
             +'&host='+encodeURIComponent(TRACEBACK.host)
@@ -62,14 +57,24 @@ $(document).ready(function() {
         return false;
     });
     
+    // Set the search field to the exception as the default search
     $('.searchtab input[@type="text"]')[0].value = $('code.main-exception').text();
+    
+    // Bind the search button to hit the mail lists
     $('.searchtab input[@type="submit"]').click(function () {
+        
+        // Populate the lists array with the strings for the lists to include
+        // in the search
         var lists = [];
         var options = $('.searchtab input[@type="checkbox"]').serializeArray();
         $.each(options, function(i, val) {
             lists.push('list:' + val.value);
         });
+        
+        // Setup the search data
+        var data = {mode:'json', page:1};
         data.q = lists.join(' ') + " " + $('.searchtab input[@type="text"]')[0].value;
+        
         var sr = $('.searchresults');
         sr.html('Loading...');
         var searchResults = getProxyJSON('markmail.org', '/results.xqy', data,
@@ -85,9 +90,14 @@ $(document).ready(function() {
                 $(searchlink).html('View all results');
                 numresults.prepend(searchlink);
                 sr.html('').append(numresults);
+                
+                // If there's no search results, stop here
                 if (!data.search.results) {
                     return false;
                 }
+                
+                // Iterate through the search results adding them dynamically
+                // to the element
                 $.each(data.search.results.result, function(i, val) {
                     var result = $(document.createElement('div')).addClass('result');
                     var link = document.createElement('a');
@@ -103,6 +113,8 @@ $(document).ready(function() {
                     result.append(meta);
                     sr.append(result);
                 });
+                
+                // Scroll the window down to the top of the service widget with some space
                 window.scrollTo(0, $('#service_widget').offset().top-20);
             });
         return false;
