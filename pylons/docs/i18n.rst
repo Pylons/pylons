@@ -1,0 +1,763 @@
+.. _i18n:
+
+=====================================
+Internationalization and Localization
+=====================================
+
+Introduction
+============
+
+Internationalization and localization are means of adapting software for 
+non-native environments, especially for other nations and cultures. 
+
+Parts of an application which might need to be localized might include: 
+
+* Language 
+* Date/time format 
+* Formatting of numbers e.g. decimal points, positioning of separators, character used as separator 
+* Time zones (UTC in internationalized environments) 
+* Currency 
+* Weights and measures 
+
+The distinction between internationalization and localization is subtle but 
+important. Internationalization is the adaptation of products for potential use
+virtually everywhere, while localization is the addition of special features 
+for use in a specific locale. 
+
+For example, in terms of language used in software, internationalization is the
+process of marking up all strings that might need to be translated whilst 
+localization is the process of producing translations for a particular locale. 
+
+Pylons provides built-in support to enable you to internationalize language but
+leaves you to handle any other aspects of internationalization which might be 
+appropriate to your application. 
+
+.. note:: 
+
+    Internationalization is often abbreviated as I18N (or i18n or I18n) where the 
+    number 18 refers to the number of letters omitted. 
+    Localization is often abbreviated L10n or l10n in the same manner. These 
+    abbreviations also avoid picking one spelling (internationalisation vs. 
+    internationalization, etc.) over the other. 
+
+In order to represent characters from multiple languages, you will 
+need to utilize Unicode. This document assumes you have read the 
+`Unicode document <Unicode>`_. 
+
+By now you should have a good idea of what Unicode is, how to use it in Python 
+and which areas of you application need to pay specific attention to decoding and 
+encoding Unicode data. 
+
+This final section will look at the issue of making your application work with 
+multiple languages. 
+
+Pylons uses the `Python gettext module  <http://docs.python.org/lib/module-gettext.html>`_ for internationalization. 
+It is based off the `GNU gettext API <http://www.gnu.org/software/gettext/>`_. 
+
+Getting Started 
+=============== 
+
+Everywhere in your code where you want strings to be available in different 
+languages you wrap them in the ``_()`` function. There are also a number of 
+other translation functions which are documented in the API reference at 
+http://pylonshq.com/docs/module-pylons.i18n.translation.html 
+
+.. note:: 
+
+    The ``_()`` function is a reference to the ``ugettext()`` function. ``_()`` is a convention for marking text to be translated and saves on keystrokes. ``ugettext()`` is the Unicode version of ``gettext()``; it returns unicode strings. 
+
+In our example we want the string ``'Hello'`` to appear in three different 
+languages: English, French and Spanish. We also want to display the word 
+``'Hello'`` in the default language. We'll then go on to use some pural words 
+too. 
+
+Lets call our project ``translate_demo``: 
+
+.. code-block:: bash 
+
+    $ paster create -t pylons translate_demo 
+
+Now lets add a friendly controller that says hello: 
+
+.. code-block:: bash 
+
+    $ cd translate_demo 
+    $ paster controller hello 
+
+Edit ``controllers/hello.py`` to make use of the ``_()`` function everywhere 
+where the string ``Hello`` appears: 
+
+.. code-block:: python 
+
+    import logging 
+
+    from pylons.i18n import get_lang, set_lang 
+
+    from translate_demo.lib.base import * 
+
+    log = logging.getLogger(__name__) 
+
+    class HelloController(BaseController): 
+
+        def index(self): 
+            response.write('Default: %s<br />' % _('Hello')) 
+            for lang in ['fr','en','es']: 
+                set_lang(lang) 
+            response.write("%s: %s<br />" % (get_lang(), _('Hello'))) 
+
+When writing wrapping strings in the gettext functions, it is important not to 
+piece sentences together manually; certain languages might need to invert the 
+grammars. Don't do this: 
+
+.. code-block:: python 
+
+    # BAD! 
+    msg = _("He told her ") 
+    msg += _("not to go outside.") 
+
+but this is perfectly acceptable: 
+
+.. code-block:: python 
+
+    # GOOD 
+    msg = _("He told her not to go outside") 
+
+The controller has now been internationalized, but it will raise a 
+``LanguageError`` until we have setup the alternative language catalogs. 
+
+GNU gettext use three types of files in the translation framework. 
+
+POT (Portable Object Template) files 
+------------------------------------
+
+The first step in the localization process. A program is used to search 
+through your project's source code and pick out every string passed to one 
+of the translation functions, such as ``_()``. This list is put together in 
+a specially-formatted template file that will form the basis of all 
+translations. This is the ``.pot`` file. 
+
+PO (Portable Object) files 
+--------------------------
+
+The second step in the localization process. Using the POT file as a 
+template, the list of messages are translated and saved as a ``.po`` file. 
+
+MO (Machine Object) files 
+-------------------------
+
+The final step in the localization process. The PO file is run through a 
+program that turns it into an optimized machine-readable binary file, which 
+is the ``.mo`` file. Compiling the translations to machine code makes the 
+localized program much faster in retrieving the translations while it is 
+running. 
+
+GNU gettext provides a suite of command line programs for extracting messages 
+from source code and working with the associated gettext catalogs. The `Babel 
+<http://babel.edgewall.org/>`_ project provides pure Python alternative 
+versions of these tools. Unlike the GNU gettext tool `xgettext`', Babel 
+supports extracting translatable strings from Python templating languages 
+(currently Mako and Genshi). 
+
+Using Babel 
+===========
+
+.. image:: http://www.edgewall.org/gfx/babel_logo.png 
+
+To use Babel, you must first install it via easy_install. Run the command: 
+
+.. code-block:: bash 
+
+    $ easy_install Babel 
+
+Pylons (as of 0.9.6) includes some sane defaults for Babel's distutils commands
+in the setup.cfg file. 
+
+It also includes an extraction method mapping in the setup.py file. It is 
+commented out by default, to avoid distutils warning about it being an 
+unrecognized option when Babel is not installed. These lines should be 
+uncommented before proceeding with the rest of this walk through: 
+
+.. code-block :: Python 
+
+    message_extractors = {'translate_demo': [ 
+                            ('**.py', 'python', None), 
+                            ('templates/**.mako', 'mako', None), 
+                            ('public/**', 'ignore', None)]}, 
+
+
+We'll use Babel to extract messages to a ``.pot`` file in your project's 
+``i18n`` directory. First, the directory needs to be created. Don't forget to 
+add it to your revision control system if one is in use: 
+
+.. code-block:: bash 
+
+    $ cd translate_demo 
+    $ mkdir translate_demo/i18n 
+    $ svn add translate_demo/i18n 
+
+Next we can extract all messages from the project with the following command: 
+
+.. code-block:: bash 
+
+    $ python setup.py extract_messages 
+    running extract_messages 
+    extracting messages from translate_demo/__init__.py 
+    extracting messages from translate_demo/websetup.py 
+    ... 
+    extracting messages from translate_demo/tests/functional/test_hello.py 
+    writing PO template file to translate_demo/i18n/translate_demo.pot 
+
+This will create a ``.pot`` file in the ``i18n`` directory that looks something
+like this: 
+
+.. code-block:: pot 
+
+    # Translations template for translate_demo. 
+    # Copyright (C) 2007 ORGANIZATION 
+    # This file is distributed under the same license as the translate_demo project. 
+    # FIRST AUTHOR <EMAIL@ADDRESS>, 2007. 
+    # 
+    #, fuzzy 
+    msgid "" 
+    msgstr "" 
+    "Project-Id-Version: translate_demo 0.0.0\n" 
+    "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n" 
+    "POT-Creation-Date: 2007-08-02 18:01-0700\n" 
+    "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n" 
+    "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n" 
+    "Language-Team: LANGUAGE <LL@li.org>\n" 
+    "MIME-Version: 1.0\n" 
+    "Content-Type: text/plain; charset=utf-8\n" 
+    "Content-Transfer-Encoding: 8bit\n" 
+    "Generated-By: Babel 0.9dev-r215\n" 
+
+    #: translate_demo/controllers/hello.py:10 translate_demo/controllers/hello.py:13 
+    msgid "Hello" 
+    msgstr "" 
+
+The ``.pot`` details that appear here can be customized via the 
+``extract_messages`` configuration in your project's ``setup.cfg`` (See the 
+`Babel Command-Line Interface Documentation 
+<http://babel.edgewall.org/wiki/Documentation/cmdline.html#extract>`_ for all 
+configuration options). 
+
+Next, we'll initialize a catalog (``.po`` file) for the Spanish language: 
+
+.. code-block:: bash 
+
+    $ python setup.py init_catalog -l es 
+    running init_catalog 
+    creating catalog 'translate_demo/i18n/es/LC_MESSAGES/translate_demo.po' based on 
+    'translate_demo/i18n/translate_demo.pot' 
+
+Then we can edit the last line of the new Spanish ``.po`` file to add a 
+translation of ``"Hello"``: 
+
+.. code-block:: bash 
+
+    msgid "Hello" 
+    msgstr "¡Hola!" 
+
+Finally, to utilize these translations in our application, we need to compile 
+the ``.po`` file to a ``.mo`` file: 
+
+.. code-block:: bash 
+
+    $ python setup.py compile_catalog 
+    running compile_catalog 
+    1 of 1 messages (100%) translated in 'translate_demo/i18n/es/LC_MESSAGES/translate_demo.po' 
+    compiling catalog 'translate_demo/i18n/es/LC_MESSAGES/translate_demo.po' to 
+    'translate_demo/i18n/es/LC_MESSAGES/translate_demo.mo' 
+
+We can also use the ``update_catalog`` command to merge new messages from the 
+``.pot`` to the ``.po`` files. For example, if we later added the following 
+line of code to the end of HelloController's index method: 
+
+.. code-block :: Python 
+
+    response.write('Goodbye: %s' % _('Goodbye')) 
+
+We'd then need to re-extract the messages from the project, then run the 
+``update_catalog`` command: 
+
+.. code-block:: bash 
+
+    $ python setup.py extract_messages 
+    running extract_messages 
+    extracting messages from translate_demo/__init__.py 
+    extracting messages from translate_demo/websetup.py 
+    ... 
+    extracting messages from translate_demo/tests/functional/test_hello.py 
+    writing PO template file to translate_demo/i18n/translate_demo.pot 
+    $ python setup.py update_catalog 
+    running update_catalog 
+    updating catalog 'translate_demo/i18n/es/LC_MESSAGES/translate_demo.po' based on 
+    'translate_demo/i18n/translate_demo.pot' 
+
+We'd then edit our catalog to add a translation for "Goodbye", and recompile 
+the ``.po`` file as we did above. 
+
+For more information, see the `Babel documentation 
+<http://babel.edgewall.org/wiki/Documentation/index.html>`_ and the `GNU 
+Gettext Manual <http://www.gnu.org/software/gettext/manual/gettext.html>`_. 
+
+Back To Work 
+============
+
+Next we'll need to repeat the process of creating a ``.mo`` file for the ``en``
+and ``fr`` locales: 
+
+.. code-block:: bash 
+
+    $ python setup.py init_catalog -l en 
+    running init_catalog 
+    creating catalog 'translate_demo/i18n/en/LC_MESSAGES/translate_demo.po' based on 
+    'translate_demo/i18n/translate_demo.pot' 
+    $ python setup.py init_catalog -l fr 
+    running init_catalog 
+    creating catalog 'translate_demo/i18n/fr/LC_MESSAGES/translate_demo.po' based on 
+    'translate_demo/i18n/translate_demo.pot' 
+
+Modify the last line of the ``fr`` catalog to look like this: 
+
+.. code-block:: po 
+
+    #: translate_demo/controllers/hello.py:10 translate_demo/controllers/hello.py:13 
+    msgid "Hello" 
+    msgstr "Bonjour" 
+
+Since our original messages are already in English, the ``en`` catalog can stay
+blank; gettext will fallback to the original. 
+
+Once you've edited these new ``.po`` files and compiled them to ``.mo`` files, 
+you'll end up with an ``i18n`` directory containing: 
+
+.. code-block:: text 
+
+    i18n/translate_demo.pot 
+    i18n/en/LC_MESSAGES/translate_demo.po 
+    i18n/en/LC_MESSAGES/translate_demo.mo 
+    i18n/es/LC_MESSAGES/translate_demo.po 
+    i18n/es/LC_MESSAGES/translate_demo.mo 
+    i18n/fr/LC_MESSAGES/translate_demo.po 
+    i18n/fr/LC_MESSAGES/translate_demo.mo 
+
+Testing the Application 
+=======================
+
+Start the server with the following command: 
+
+.. code-block:: bash 
+
+    $ paster serve --reload development.ini 
+
+Test your controller by visiting http://localhost:5000/hello. You should see 
+the following output: 
+
+.. code-block:: text 
+
+    Default: Hello 
+    fr: Bonjour 
+    en: Hello 
+    es: ¡Hola! 
+
+You can now set the language used in a controller on the fly. 
+
+For example this could be used to allow a user to set which language they 
+wanted your application to work in. You could save the value to the session 
+object: 
+
+.. code-block:: python 
+
+    session['lang'] = 'en' 
+    session.save() 
+
+then on each controller call the language to be used could be read from the 
+session and set in your controller's ``__before__()`` method so that the pages 
+remained in the same language that was previously set: 
+
+.. code-block:: python 
+
+    def __before__(self): 
+        if 'lang' in session: 
+            set_lang(session['lang']) 
+
+Pylons also supports defining the default language to be used in the 
+configuration file. Set a ``lang`` variable to the desired default language in 
+your ``development.ini`` file, and Pylons will automatically call ``set_lang`` 
+with that language at the beginning of every request. 
+
+E.g. to set the default language to Spanish, you would add ``lang = es`` to 
+your ``development.ini``: 
+
+.. code-block:: ini 
+
+    [app:main] 
+    use = egg:translate_demo 
+    lang = es 
+
+If you are running the server with the ``--reload`` option the server will 
+automatically restart if you change the ``development.ini`` file. Otherwise 
+restart the server manually and the output would this time be as follows: 
+
+.. code-block:: text 
+
+    Default: ¡Hola! 
+    fr: Bonjour 
+    en: Hello 
+    es: ¡Hola! 
+
+Fallback Languages 
+==================
+
+If your code calls ``_()`` with a string that doesn't exist at all in your 
+language catalog, the string passed to ``_()`` is returned instead. 
+
+Modify the last line of the hello controller to look like this: 
+
+.. code-block:: python 
+
+    response.write("%s %s, %s" % (_('Hello'), _('World'), _('Hi!'))) 
+
+.. warning :: 
+
+    Of course, in real life breaking up sentences in this way is very dangerous 
+    because some grammars might require the order of the words to be different. 
+
+If you run the example again the output will be: 
+
+.. code-block:: text 
+
+    Default: ¡Hola! 
+    fr: Bonjour World! 
+    en: Hello World! 
+    es: ¡Hola! World! 
+
+This is because we never provided a translation for the string ``'World!'`` so 
+the string itself is used. 
+
+Pylons also provides a mechanism for fallback languages, so that you can 
+specify other languages to be used if the word is ommitted from the main 
+language's catalog. 
+
+In this example we choose ``fr`` as the main language but ``es`` as a fallback:
+
+.. code-block:: python 
+
+    import logging 
+
+    from pylons.i18n import add_fallback, set_lang 
+
+    from translate_demo.lib.base import * 
+
+    log = logging.getLogger(__name__) 
+
+    class HelloController(BaseController): 
+
+        def index(self): 
+            set_lang('fr') 
+            add_fallback('es') 
+            return "%s %s, %s" % (_('Hello'), _('World'), _('Hi!')) 
+
+If ``Hello`` is in the ``fr`` ``.mo`` file as ``Bonjour``, ``World`` is only in
+``es`` as ``Mundo`` and none of the catalogs contain ``Hi!``, you'll get the 
+multilingual message: ``Bonjour Mundo, Hi!``. This is a combination of the 
+French, Spanish and original (English in this case, as defined in our source 
+code) words. 
+
+You can add as many fallback languages with the ``add_fallback()`` function as 
+you like and they will be tested in the order you add them. 
+
+One case where using fallbacks in this way is particularly useful is when you 
+wish to display content based on the languages requested by the browser in the 
+``HTTP_ACCEPT_LANGUAGE`` header. Typically the browser may submit a number of 
+languages so it is useful to be add fallbacks in the order specified by the 
+browser so that you always try to display words in the language of preference 
+and search the other languages in order if a translation cannot be found. The 
+languages defined in the ``HTTP_ACCEPT_LANGAUGE`` header are available in 
+Pylons as ``request.languages`` and can be used like this: 
+
+.. code-block:: python 
+
+    for lang in request.languages: 
+        add_fallback(lang) 
+
+
+Translations Within Templates 
+============================= 
+
+You can also use the ``_()`` function within templates in exactly the same way 
+you do in code. For example, in a Mako template: 
+
+.. code-block:: Mako 
+
+    ${_('Hello')} 
+
+would produce the string ``'Hello'`` in the language you had set. 
+
+Babel currently supports extracting gettext messages from Mako and Genshi 
+templates. The Mako extractor also provides support for translator comments. 
+Babel can be extended to extract messages from other sources via a `custom 
+extraction method plugin 
+<http://babel.edgewall.org/wiki/Documentation/messages.html#writing-extraction-methods>`_. 
+
+Pylons (as of 0.9.6) automatically configures a Babel extraction mapping for 
+your Python source code and Mako templates. This is defined in your project's 
+setup.py file: 
+
+.. code-block:: python 
+
+    message_extractors = {'translate_demo': [ 
+    ('public/**', 'ignore', None), 
+    ('**.py', 'python', None), 
+    ('templates/**.mako', 'mako', None), 
+    ]}, 
+
+For a project using Genshi instead of Mako, the Mako line might be replaced with: 
+
+.. code-block:: python 
+
+    ('templates/**.html, 'genshi, None), 
+
+See `Babel's documentation on Message Extraction 
+<http://babel.edgewall.org/wiki/Documentation/messages.html#message-extraction>`_ 
+for more information. 
+
+Lazy Translations 
+================= 
+
+Occasionally you might come across a situation when you need to translate a 
+string when it is accessed, not when the ``_()`` or other functions are called.
+
+Consider this example: 
+
+.. code-block:: python 
+
+    import logging 
+
+    from pylons.i18n import get_lang, set_lang 
+
+    from translate_demo.lib.base import * 
+
+    log = logging.getLogger(__name__) 
+
+    text = _('Hello') 
+
+    class HelloController(BaseController): 
+
+        def index(self): 
+            response.write('Default: %s<br />' % _('Hello')) 
+            for lang in ['fr','en','es']: 
+                set_lang(lang) 
+            response.write("%s: %s<br />" % (get_lang(), _('Hello'))) 
+            response.write('Text: %s<br />' % text) 
+
+If we run this we get the following output: 
+
+.. code-block:: text 
+
+    Default: Hello 
+    ['fr']: Bonjour 
+    ['en']: Good morning 
+    ['es']: Hola 
+    Text: Hello 
+
+This is because the function ``_('Hello')`` just after the imports is called 
+when the default language is ``en`` so the variable ``text`` gets the value of 
+the English translation even though when the string was used the default 
+language was Spanish. 
+
+The rule of thumb in these situations is to try to avoid using the translation 
+functions in situations where they are not executed on each request. For 
+situations where this isn't possible, perhaps because you are working with 
+legacy code or with a library which doesn't support internationalization, you 
+need to use lazy translations. 
+
+If we modify the above example so that the import statements and assignment to 
+``text`` look like this: 
+
+.. code-block:: python 
+
+    from pylons.i18n import get_lang, lazy_gettext, set_lang 
+
+    from helloworld.lib.base import * 
+
+    log = logging.getLogger(__name__) 
+
+    text = lazy_gettext('Hello') 
+
+then we get the output we expected: 
+
+.. code-block:: text 
+
+    Default: Hello 
+    ['fr']: Bonjour 
+    ['en']: Good morning 
+    ['es']: Hola 
+    Text: Hola 
+
+There are lazy versions of all the standard Pylons `translation functions 
+<http://pylonshq.com/docs/module-pylons.i18n.translation.html>`_. 
+
+There is one drawback to be aware of when using the lazy translation functions:
+they are not actually strings. This means that if our example had used the 
+following code it would have failed with an error ``cannot concatenate 'str' 
+and 'LazyString' objects``: 
+
+.. code-block:: python 
+
+    response.write('Text: ' + text + '<br />') 
+
+For this reason you should only use the lazy translations where absolutely 
+necessary and should always ensure they are converted to strings by calling 
+``str()`` or ``repr()`` before they are used in operations with real strings. 
+
+Producing a Python Egg 
+====================== 
+
+Finally you can produce an egg of your project which includes the translation 
+files like this: 
+
+.. code-block:: bash 
+
+    $ python setup.py bdist_egg 
+
+The ``setup.py`` automatically includes the ``.mo`` language catalogs your 
+application needs so that your application can be distributed as an egg. This 
+is done with the following line in your ``setup.py`` file: 
+
+.. code-block:: python 
+
+    package_data={'translate_demo': ['i18n/*/LC_MESSAGES/*.mo']}, 
+
+Plural Forms 
+============ 
+
+Pylons also provides the ``ungettext()`` function. It's designed for 
+internationalizing plural words, and can be used as follows: 
+
+.. code-block:: python 
+
+    ungettext('There is %(num)d file here', 'There are %(num)d files here', 
+    n) % {'num': n} 
+
+Plural forms have a different type of entry in ``.pot``/``.po`` files, as 
+described in `The Format of PO Files 
+<http://www.gnu.org/software/gettext/manual/html_chapter/gettext_10.html#PO-Files>`_ 
+in `GNU Gettext's Manual 
+<http://www.gnu.org/software/gettext/manual/gettext.html>`_: 
+
+.. code-block:: pot 
+
+    #: translate_demo/controllers/hello.py:12 
+    #, python-format 
+    msgid "There is %(num)d file here" 
+    msgid_plural "There are %(num)d files here" 
+    msgstr[0] "" 
+    msgstr[1] "" 
+
+One thing to keep in mind is that other languages don't have the same plural 
+forms as English. While English only has 2 plural forms, singular and plural, 
+Slovenian has 4! That means that you *must* use ugettext for proper 
+pluralization. Specifically, the following will not work: 
+
+.. code-block:: python 
+
+    # BAD! 
+    if n == 1: 
+        msg = _("There was no dog.") 
+    else: 
+        msg = _("There were no dogs.") 
+
+Summary 
+=======
+
+This document only covers the basics of internationalizing and localizing a web
+application. 
+
+GNU Gettext is an extensive library, and the GNU Gettext Manual is highly 
+recommended for more information. 
+
+Babel also provides support for interfacing to the CLDR (Common Locale Data 
+Repository), providing access to various locale display names, localized number
+and date formatting, etc. 
+
+You should also be able to internationalize and then localize your application 
+using Pylons' support for GNU gettext. 
+
+Further Reading 
+===============
+
+http://en.wikipedia.org/wiki/Internationalization 
+
+Please feel free to report any mistakes to the Pylons mailing list or to the 
+author. Any corrections or clarifications would be gratefully received.
+
+.. note:: 
+
+    This is a work in progress. We hope the internationalization, localization 
+    and Unicode support in Pylons is now robust and flexible but we would 
+    appreciate hearing about any issues we have. Just drop a line to the 
+    pylons-discuss mailing list on Google Groups. 
+
+:mod:`babel.core` -- Babel core classes
+===================================================
+
+.. module:: babel.core
+
+.. automodule:: babel
+
+Module Contents
+---------------
+
+.. autoclass:: Locale
+    :members:
+
+.. autofunction:: default_locale
+.. autofunction:: negotiate_locale
+.. autofunction:: parse_locale
+
+:mod:`babel.localedata` --- Babel locale data
+====================================================
+
+.. automodule:: babel.localedata
+
+.. autofunction:: exists
+.. autofunction:: exists
+
+:mod:`babel.dates` -- Babel date classes
+===================================================
+
+.. automodule:: babel.dates
+
+Module Contents
+---------------
+
+.. autoclass:: DateTimeFormat
+    :members:
+.. autoclass:: DateTimePattern
+    :members:
+
+:mod:`babel.numbers` -- Babel number classes
+===================================================
+
+.. automodule:: babel.numbers
+
+Module Contents
+---------------
+
+.. autoclass:: NumberFormatError
+    :members:
+
+.. autoclass:: NumberPattern
+    :members: __init__, apply
+
+.. autofunction:: format_number
+.. autofunction:: format_decimal
+.. autofunction:: format_percent
+.. autofunction:: format_scientific
+.. autofunction:: parse_number
+.. autofunction:: parse_decimal
+
+
+.. autofunction: format_currency
