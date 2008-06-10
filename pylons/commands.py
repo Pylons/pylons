@@ -225,9 +225,9 @@ class RestControllerCommand(Command):
     """Create a REST Controller and accompanying functional test
 
     The RestController command will create a REST-based Controller file
-    for use with the :meth:`~routes.base.Mapper.resource`
+    for use with the :meth:`~routes.mapper.Mapper.resource`
     REST-based dispatching. This template includes the methods that
-    :meth:`~routes.base.Mapper.resource` dispatches to in
+    :meth:`~routes.mapper.Mapper.resource` dispatches to in
     addition to doc strings for clarification on when the methods will
     be called.
 
