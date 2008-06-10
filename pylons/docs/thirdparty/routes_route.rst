@@ -1,12 +1,12 @@
-:mod:`routes.base` -- Route and Mapper core classes
+:mod:`routes.route` -- Route class
 ===================================================
 
-.. automodule:: routes.base
+.. automodule:: routes.route
 
 Module Contents
 ---------------
 
 .. autoclass:: Route
     :members:
-.. autoclass:: Mapper
-    :members:
+
+    .. automethod:: __init__
