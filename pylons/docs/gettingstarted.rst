@@ -1,5 +1,6 @@
-.. _getting-started:
+.. _getting_started:
 
+===============
 Getting Started
 ===============
 
@@ -33,7 +34,7 @@ Installing
 .. warning::
     
     These instructions require Python 2.4+. For installing with
-    Python 2.3, see :ref:`python2.3-installation`.
+    Python 2.3, see :ref:`python23_installation`.
 
 To avoid conflicts with system-installed Python libraries, Pylons comes with a
 boot-strap Python script that sets up a `virtual environment <http://http://pypi.python.org/pypi/virtualenv>`_. Pylons will then be
@@ -89,6 +90,47 @@ Or on Window to activate:
     > mydevenv\bin\activate.bat
 
 
+Using the latest beta 
+^^^^^^^^^^^^^^^^^^^^^^ 
+
+.. warning:: Pinned to 0.9.7
+
+Read the `Easy Install documentation <http://peak.telecommunity.com/DevCenter/EasyInstall>`_, to decide whether to install Pylons as a root user so it can be used by everyone or whether to use a `custom installation location <http://peak.telecommunity.com/DevCenter/EasyInstall#custom-installation-locations>`_. 
+
+If you have easy install run: 
+
+.. code-block:: bash 
+
+    $ easy_install -f http://pylonshq.com/download/0.9.7 -U Pylons 
+
+Otherwise download `ez_setup.py <http://peak.telecommunity.com/dist/ez_setup.py>`_ and run: 
+
+.. code-block:: bash 
+
+    $ python ez_setup.py -f http://pylonshq.com/download/0.9.7 -U Pylons 
+
+
+Working Directly From the Source Code 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+
+`Mercurial <http://www.selenic.com/mercurial/wiki/>`_ must be installed to retrieve the latest development source for Pylons. `Mercurial packages <http://www.selenic.com/mercurial/wiki/index.cgi/BinaryPackages>`_ are also available for Windows, MacOSX, and other OS's. 
+
+Check out the latest code: 
+
+.. code-block:: bash 
+
+    $ hg clone https://www.knowledgetap.com/hg/pylons-dev Pylons 
+
+To tell setuptools to use the version you are editing in the ``Pylons`` directory: 
+
+.. code-block:: bash 
+
+    $ cd Pylons 
+    $ python setup.py develop 
+
+Now you can make changes to the files in the Pylons directory and the code will run exactly as if you had installed a version of the egg with the changes you have made. 
+
+
 Creating a Pylons Project
 -------------------------
 
@@ -100,7 +142,7 @@ Create a new project named ``helloworld`` with the following command:
 
 .. note:: 
     
-    Windows users must configure their ``PATH`` as described in :ref:`windows-notes`, otherwise they must specify the full path name to the ``paster`` command (including the virtual environment bin dir).
+    Windows users must configure their ``PATH`` as described in :ref:`windows_notes`, otherwise they must specify the full path name to the ``paster`` command (including the virtual environment bin dir).
 
 Running this will prompt you for two choices, whether or not to include 
 :term:`SQLAlchemy` support, and which template language to use. Hit enter both times
@@ -171,7 +213,9 @@ To create the basic hello world application, we'll first create a
 
 If you open the :file:`helloworld/controllers/hello.py` module it created, you
 can see that it will return just the string 'Hello World', and looks like
-this::
+this:
+
+.. code-block:: python
 
     import logging
 
@@ -208,7 +252,7 @@ short text saying "Hello World" like so (start up your app if needed):
 Let's add a template to render some of the information thats in the 
 :term:`environ` back out.
 
-First, create a :file:`hello.mako` file in your :file:`helloworld/templates`
+First, create a :file:`hello.mako` file in your :file:`templates`
 directory with the following contents:
 
 .. code-block:: mako
@@ -222,8 +266,10 @@ get information about the current request. There are a variety of other
 `template globals <modules/templating.html#template-globals>`_ available as
 well.
 
-Next, update the :file:`helloworld/controllers/hello.py` module so that the
-index method is as follows::
+Next, update the :file:`controllers/hello.py` module so that the
+index method is as follows:
+
+.. code-block:: python
 
     class HelloController(BaseController):
 

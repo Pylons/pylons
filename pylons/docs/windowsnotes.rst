@@ -1,5 +1,6 @@
-.. _windows-notes:
+.. _windows_notes:
 
+=============
 Windows Notes
 =============
 
