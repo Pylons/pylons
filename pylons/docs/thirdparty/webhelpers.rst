@@ -1,353 +1,233 @@
-:mod:`webhelpers` -- Web helpers
-================================
 .. _webhelpers:
 
 ==========
 WebHelpers
 ==========
 
-.. automodule:: webhelpers
+WebHelpers is a package designed to ease common tasks developers need that
+are usually done for formatting or displaying data in templates.
 
-:mod:`webhelpers.constants`
-----------------------------
-.. currentmodule:: webhelpers.constants
-
-.. automodule:: webhelpers.constants
-.. autofunction:: uk_counties
-.. autofunction:: country_codes
-.. autofunction:: timezones
-.. autofunction:: timezones_for_country
+Helpers available by module:
 
 
-:mod:`webhelpers.containers`
-----------------------------
-.. currentmodule:: webhelpers.containers
+.. module:: webhelpers.date
 
-.. automodule:: webhelpers.containers
-.. autoclass:: Flash
-    :members:
+Date
+====
 
-:mod:`webhelpers.date`
-----------------------
-.. currentmodule:: webhelpers.date
-
-.. automodule:: webhelpers.date
 .. autofunction:: distance_of_time_in_words
+.. autofunction:: time_ago_in_words
 
 
-:mod:`webhelpers.feedgenerator`
---------------------------------
-.. currentmodule:: webhelpers.feedgenerator
+.. module:: webhelpers.feedgenerator
 
-.. automodule:: webhelpers.feedgenerator
+FeedGenerator
+=============
+
+The feed generator is intended for use in controllers, and generates an
+output stream. Currently the following feeds can be created by imported the
+appropriate class:
+
+* RssFeed
+* RssUserland091Feed
+* Rss201rev2Feed
+* Atom1Feed
+
+All of these format specific Feed generators inherit from the 
+:meth:`~webhelpers.feedgenerator.SyndicationFeed` class.
+
+Example controller method::
+    
+    import logging
+
+    from pylons import request, response, session
+    from pylons import tmpl_context as c
+    from pylons.controllers.util import abort, redirect_to, url_for
+    from webhelpers.feedgenerator import Atom1Feed
+
+    from helloworld.lib.base import BaseController, render
+
+    log = logging.getLogger(__name__)
+
+    class CommentsController(BaseController):
+
+        def index(self):
+            feed = Atom1Feed(
+                title=u"An excellent Sample Feed",
+                link=url_for(),
+                description=u"A sample feed, showing how to make and add entries",
+                language=u"en",
+            )
+            feed.add_item(title="Sample post", 
+                          link=u"http://hellosite.com/posts/sample", 
+                          description="Testing.")
+            response.content_type = 'application/atom+xml'
+            return feed.writeString('utf-8')
+
 .. autoclass:: SyndicationFeed
     :members:
+    
+    .. automethod:: __init__
+    
 
-.. autoclass:: Enclosure
-    :members:
+.. module:: webhelpers.html.converters
 
-.. autoclass:: RssFeed
-    :members:
+Converters
+==========
 
-.. autoclass:: RssUserland091Feed
-    :members:
-
-.. autoclass:: Rss201rev2Feed
-    :members:
-
-.. autoclass:: Atom1Feed
-    :members:
-
-.. autofunction:: rfc2822_date
-.. autofunction:: rfc3339_date
-.. autofunction:: get_tag_uri
-
-:mod:`webhelpers.html.builder`
-------------------------------
-.. currentmodule:: webhelpers.html.builder
-
-.. automodule:: webhelpers.html.builder
-.. autoclass::  HTMLBuilder
-
-:mod:`webhelpers.html.converters`
----------------------------------
-.. currentmodule:: webhelpers.html.converters
-
-.. automodule:: webhelpers.html.converters
+Functions that convert from text markup languages to HTML
 
 .. autofunction:: markdown
 .. autofunction:: textilize
 
-:mod:`webhelpers.html.tags`
-----------------------------
-.. currentmodule:: webhelpers.html.tags
+
+Secure Forms
+============
+
+.. automodule:: webhelpers.html.secure_form
+
+.. autofunction:: secure_form
+
+
+Tags
+====
 
 .. automodule:: webhelpers.html.tags
-.. autofunction:: form
+
+Form Tags
+---------
+
+.. autofunction:: checkbox
 .. autofunction:: end_form
+.. autofunction:: file
+.. autofunction:: form
+.. autofunction:: hidden
+.. autofunction:: password
+.. autofunction:: radio
+.. autofunction:: select
+.. autofunction:: submit
 .. autofunction:: text
 .. autofunction:: textarea
-.. autofunction:: hidden
-.. autofunction:: file
-.. autofunction:: password
-.. autofunction:: text
-.. autofunction:: checkbox
-.. autofunction:: radio
-.. autofunction:: submit
-.. autofunction:: select
-.. autofunction:: ModelTags
+.. autoclass:: ModelTags
+    :members:
+    
+    .. automethod:: __init__
+
+Hyperlinks
+----------
+
 .. autofunction:: link_to
 .. autofunction:: link_to_if
 .. autofunction:: link_to_unless
+
+Other Tags
+----------
+
 .. autofunction:: image
+
+Head Tags
+---------
+
 .. autofunction:: auto_discovery_link
 .. autofunction:: javascript_link
-.. autofunction:: javascript_path
 .. autofunction:: stylesheet_link
+
+Utility
+-------
+
 .. autofunction:: convert_boolean_attrs
 
-:mod:`webhelpers.html.tools`
-----------------------------
-.. currentmodule:: webhelpers.html.tools
 
-.. automodule:: webhelpers.html.tools
+.. module:: webhelpers.html.tools
 
-.. autofunction:: button_to
-.. autofunction:: mail_to
-.. autofunction:: highlight
-.. autofunction:: strip_links
+Tools
+=====
+
+Powerful HTML helpers that produce more than just simple tags.
+
 .. autofunction:: auto_link
+.. autofunction:: button_to
+.. autofunction:: highlight
+.. autofunction:: mail_to
+.. autofunction:: strip_links
 
-:mod:`webhelpers.mail`
-----------------------
-.. currentmodule:: webhelpers.mail
 
-.. automodule:: webhelpers.mail
+.. module:: webhelpers.mimehelper
 
-.. autofunction:: plain
-.. autofunction:: part
-.. autofunction:: multi
-.. autofunction:: send
+MIMEType Helper
+===============
 
-:mod:`webhelpers.markdown`
---------------------------
-.. currentmodule:: webhelpers.markdown
+The MIMEType helper assists in delivering appropriate content types for a
+single action in a controller, based on several requirements:
 
-.. automodule:: webhelpers.markdown
-.. autofunction:: markdown
+1) Does the URL end in a specific extension? (.html, .xml, etc.)
+2) Can the client accept HTML?
+3) What Accept headers did the client send?
 
-:mod:`webhelpers.paginate`
---------------------------
-.. automodule:: webhelpers.paginate
+If the URL ends in an extension, the mime-type associated with that is given
+the highest preference. Since some browsers fail to properly set their Accept
+headers to indicate they should be serving HTML, the next check looks to see
+if its at least in the list. This way those browsers will still get the HTML
+they are expecting.
 
-.. autoclass:: Page
+Finally, if the client didn't include an extension, and doesn't have HTML in
+the list of Accept headers, than the desired mime-type is returned if the
+server can send it.
+
+.. autoclass:: MIMETypes
     :members:
 
-.. automethod:: Page.pager
 
-:mod:`webhelpers.text`
-----------------------
-.. currentmodule:: webhelpers.text
+.. module:: webhelpers.number
+
+Number
+======
+
+Number formatting and calculation helpers.
+
+.. autofunction:: format_number
+.. autofunction:: mean
+.. autofunction:: median
+.. autofunction:: percent_of
+.. autofunction:: standard_deviation
+.. autoclass:: Stats
+.. autoclass:: SimpleStats
+
+
+Misc
+====
+
+.. automodule:: webhelpers.misc
+
+.. autofunction:: all
+.. autofunction:: any
+.. autofunction:: no
+.. autofunction:: count_true
+.. autofunction:: convert_or_none
+
+
+.. module:: webhelpers.pylonslib
+
+Pylons-specific
+===============
+
+.. autoclass:: Flash
+    :members:
+    
+    .. automethod:: __init__
+    .. automethod:: __call__
+
+
+Text
+====
 
 .. automodule:: webhelpers.text
-.. autofunction:: truncate
+
+.. autofunction:: chop_at
 .. autofunction:: excerpt
-
-:mod:`webhelpers.textile`
--------------------------
-.. currentmodule:: webhelpers.textile
-
-.. automodule:: webhelpers.textile
-
-:mod:`webhelpers.util`
-----------------------
-.. currentmodule:: webhelpers.util
-
-.. automodule:: webhelpers.util
-.. autoclass:: SimplerXMLGenerator
-.. autoclass:: UnicodeMultiDict
-
-.. autofunction:: iri_to_uri
-.. autofunction:: html_escape
-
-:mod:`webhelpers.rails.asset_tag`
----------------------------------
-.. currentmodule:: webhelpers.rails.asset_tag
-
-.. automodule:: webhelpers.rails.asset_tag
-.. autofunction:: auto_discovery_link_tag
-.. autofunction:: image_tag
-.. autofunction:: javascript_include_tag
-.. autofunction:: stylesheet_link_tag
-.. autofunction:: compute_public_path
-.. autofunction:: get_script_name
-
-:mod:`webhelpers.rails.date`
-----------------------------
-.. currentmodule:: webhelpers.rails.date
-
-.. automodule:: webhelpers.rails.date
-.. autofunction:: time_ago_in_words
-.. autofunction:: distance_of_time_in_words
-
-:mod:`webhelpers.rails.form_options`
--------------------------------------
-.. currentmodule:: webhelpers.rails.form_options
-
-.. automodule:: webhelpers.rails.form_options
-
-.. autofunction:: options_for_select
-.. autofunction:: options_for_select_from_objects
-.. autofunction:: options_for_select_from_dicts
-
-:mod:`webhelpers.rails.form_tag`
---------------------------------
-.. currentmodule:: webhelpers.rails.form_tag
-
-.. automodule:: webhelpers.rails.form_tag
-
-.. autofunction:: form
-.. autofunction:: end_form
-.. autofunction:: select
-.. autofunction:: text_field
-.. autofunction:: hidden_field
-.. autofunction:: file_field
-.. autofunction:: password_field
-.. autofunction:: text_area
-.. autofunction:: check_box
-.. autofunction:: radio_button
-.. autofunction:: submit
-
-:mod:`webhelpers.rails.javascript`
-----------------------------------
-.. currentmodule:: webhelpers.rails.javascript
-
-.. automodule:: webhelpers.rails.javascript
-.. autofunction:: link_to_function
-.. autofunction:: button_to_function
-.. autofunction:: escape_javascript
-.. autofunction:: javascript_tag
-.. autofunction:: javascript_cdata_section
-.. autofunction:: options_for_javascript
-.. autofunction:: array_or_string_for_javascript
-
-:mod:`webhelpers.rails.number`
-------------------------------
-.. currentmodule:: webhelpers.rails.number
-
-.. automodule:: webhelpers.rails.number
-.. autofunction:: number_to_phone
-.. autofunction:: number_to_currency
-.. autofunction:: number_to_percentage
-.. autofunction:: number_to_human_size
-.. autofunction:: human_size
-.. autofunction:: number_with_delimiter
-.. autofunction:: number_with_precision
-
-:mod:`webhelpers.rails.prototype`
----------------------------------
-.. currentmodule:: webhelpers.rails.prototype
-
-.. automodule:: webhelpers.rails.prototype
-
-.. autofunction:: link_to_remote
-.. autofunction:: periodically_call_remote
-.. autofunction:: form_remote_tag
-.. autofunction:: submit_to_remote
-.. autofunction:: update_element_function
-.. autofunction:: evaluate_remote_response
-.. autofunction:: remote_function
-.. autofunction:: observe_field
-.. autofunction:: observe_form
-.. autofunction:: options_for_ajax
-.. autofunction:: build_observer
-.. autofunction:: build_callbacks
-
-:mod:`webhelpers.rails.scriptaculous`
--------------------------------------
-.. currentmodule:: webhelpers.rails.scriptaculous
-
-.. automodule:: webhelpers.rails.scriptaculous
-.. autofunction:: _elements_to_js
-.. autofunction:: visual_effect
-.. autofunction:: parallel_effects
-.. autofunction:: sortable_element
-.. autofunction:: sortable_element_js
-.. autofunction:: draggable_element
-.. autofunction:: draggable_element_js
-.. autofunction:: drop_receiving_element
-.. autofunction:: drop_receiving_element_js
-
-:mod:`webhelpers.rails.secure_form_tag`
----------------------------------------
-.. currentmodule:: webhelpers.rails.secure_form_tag
-
-.. automodule:: webhelpers.rails.secure_form_tag
-.. autofunction:: get_session
-.. autofunction:: authentication_token
-.. autofunction:: secure_form
-.. autofunction:: secure_form_remote_tag
-.. autofunction:: secure_button_to
-
-:mod:`webhelpers.rails.tags`
-----------------------------
-.. currentmodule:: webhelpers.rails.tags
-
-.. automodule:: webhelpers.rails.tags
-.. autofunction:: camelize
-.. autofunction:: strip_unders
-.. autofunction:: tag
-.. autofunction:: content_tag
-.. autofunction:: cdata_section
-.. autofunction:: escape_once
-.. autofunction:: fix_double_escape
-.. autofunction:: tag_options
-.. autofunction:: convert_booleans
-.. autofunction:: boolean_attribute
-
-:mod:`webhelpers.rails.text`
-----------------------------
-.. currentmodule:: webhelpers.rails.text
-
-.. automodule:: webhelpers.rails.text
-.. autofunction:: iterdict
-.. autofunction:: cycle
-.. autofunction:: reset_cycle
-.. autofunction:: counter
-.. autofunction:: reset_counter
+.. autofunction:: lchop
+.. autofunction:: plural
+.. autofunction:: rchop
+.. autofunction:: strip_leading_whitespace
 .. autofunction:: truncate
-.. autofunction:: highlight
-.. autofunction:: excerpt
-.. autofunction:: word_wrap
-.. autofunction:: simple_format
-.. autofunction:: auto_link
-.. autofunction:: auto_link_urls
-.. autofunction:: auto_link_email_addresses
-.. autofunction:: strip_links
-.. autofunction:: textilize
-.. autofunction:: markdown
-
-:mod:`webhelpers.rails.urls`
-----------------------------
-.. currentmodule:: webhelpers.rails.urls
-
-.. automodule:: webhelpers.rails.urls
-.. autofunction:: get_url
-.. autofunction:: url
-.. autofunction:: link_to
-.. autofunction:: button_to
-.. autofunction:: _button_to
-.. autofunction:: link_to_unless_current
-.. autofunction:: link_to_unless
-.. autofunction:: link_to_if
-.. autofunction:: current_page
-.. autofunction:: current_url
-.. autofunction:: convert_options_to_javascript
-.. autofunction:: convert_boolean_attributes
-.. autofunction:: confirm_javascript_function
-.. autofunction:: popup_javascript_function
-.. autofunction:: method_javascript_function
-.. autofunction:: mail_to
-.. autofunction:: js_obfuscate
-
-
+.. autofunction:: wrap_paragraphs
