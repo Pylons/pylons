@@ -22,7 +22,7 @@ class SampleController(BaseController):
     def globalup(self):
         return g.message
     
-    def global_store(self, id):
+    def global_store(self, id=None):
         if id:
             g.counter += int(id)
         return str(g.counter)
