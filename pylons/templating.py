@@ -220,7 +220,9 @@ def pylons_globals():
     
     # If the session was overriden to be None, don't populate the session
     # var
-    if pylons.config['pylons.environ_config'].get('session', True):
+    econf = pylons.config['pylons.environ_config']
+    if 'beaker.session' in pylons.request.environ or \
+        ('session' in econf and econf['session'] in pylons.request.environ):
         pylons_vars['session'] = pylons.session._current_obj()
     log.debug("Created render namespace with pylons vars: %s", pylons_vars)
     return pylons_vars
