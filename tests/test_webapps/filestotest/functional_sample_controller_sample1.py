@@ -2,7 +2,7 @@ from projectname.tests import *
 
 class TestSampleController(TestController):
     def test_root_index(self):
-        response = self.app.get(url_for(controller='/'))
+        response = self.app.get('/')
         assert 'Welcome' in response
         # Test response...
     
