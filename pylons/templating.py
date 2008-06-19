@@ -4,11 +4,11 @@ Render functions and helpers
 ============================
 
 :mod:`pylons.templating` includes several basic render functions, 
-:func:`render_mako`, :func:`render_genshi` and :func:`render_jinja` that
-render templates from the file-system with the assumption that variables
-intended for the will be attached to :data:`tmpl_context` (hereafter
-referred to by its short name of :data:`c` which it is commonly imported
-as).
+:func:`render_mako`, :func:`render_genshi` and :func:`render_jinja`
+that render templates from the file-system with the assumption that
+variables intended for the will be attached to :data:`tmpl_context`
+(hereafter referred to by its short name of :data:`c` which it is
+commonly imported as).
 
 The default render functions work with the template language loader
 object that is setup on the :data:`app_globals` object in the project's
@@ -17,7 +17,7 @@ object that is setup on the :data:`app_globals` object in the project's
 Usage
 -----
 
-Generally, one of the render functions will be imported in the 
+Generally, one of the render functions will be imported in the
 controller. Variables intended for the template are attached to the
 :data:`c` object.
 
@@ -59,8 +59,8 @@ Template Globals
 
 Templates rendered in Pylons should include the default Pylons globals
 as the :func:`render_mako`, :func:`render_genshi` and
-:func:`render_jinja` functions. The full list of Pylons globals that are
-included in the template's namespace are:
+:func:`render_jinja` functions. The full list of Pylons globals that
+are included in the template's namespace are:
 
 - :term:`c` -- Template context object
 - :term:`tmpl_context` -- Template context object
@@ -73,13 +73,15 @@ included in the template's namespace are:
   object for this request
 - :data:`response` -- Pylons :class:`~pylons.controllers.util.Response`
   object for this request
-- :class:`session` -- Pylons session object (unless Sessions are removed)
-- :class:`translator` -- Gettext translator object configured for current locale
-- :func:`ungettext` -- Unicode capable version of gettext's ngettext function
-  (handles plural translations)
+- :class:`session` -- Pylons session object (unless Sessions are
+  removed)
+- :class:`translator` -- Gettext translator object configured for
+  current locale
+- :func:`ungettext` -- Unicode capable version of gettext's ngettext
+  function (handles plural translations)
 - :func:`_` -- Unicode capable gettext translate function
-- :func:`N_` -- gettext no-op function to mark a string for translation, but
-  doesn't actually translate
+- :func:`N_` -- gettext no-op function to mark a string for
+  translation, but doesn't actually translate
 
 Configuring the template language
 ---------------------------------
@@ -150,20 +152,22 @@ makes it easy to get to the features of the template language you need.
 Legacy Buffet templating plugin and render functions
 ====================================================
 
-The Buffet object is styled after the original Buffet module that implements
-template language neutral rendering for CherryPy. This version of Buffet also
-contains caching functionality that utilizes 
-`Beaker middleware <http://beaker.groovie.org/>`_ to provide template language
-neutral caching functionality.
+The Buffet object is styled after the original Buffet module that
+implements template language neutral rendering for CherryPy. This
+version of Buffet also contains caching functionality that utilizes
+`Beaker middleware <http://beaker.groovie.org/>`_ to provide template
+language neutral caching functionality.
 
 A customized version of 
-`BuffetMyghty <http://projects.dowski.com/projects/buffetmyghty>`_ is included
-that provides a template API hook as the ``pylonsmyghty`` engine. This version
-of BuffetMyghty disregards some of the TurboGears API spec so that traditional
-Myghty template names can be used with ``/`` and file extensions.
+`BuffetMyghty <http://projects.dowski.com/projects/buffetmyghty>`_ is
+included that provides a template API hook as the ``pylonsmyghty``
+engine. This version of BuffetMyghty disregards some of the TurboGears
+API spec so that traditional Myghty template names can be used with
+``/`` and file extensions.
 
-The render functions are intended as the primary user-visible rendering 
+The render functions are intended as the primary user-visible rendering
 commands and hook into Buffet to make rendering content easy.
+
 """
 import logging
 import os
@@ -259,11 +263,13 @@ def cached_template(template_name, render_func, ns_options=(),
         Valid options are ``dbm``, ``file``, ``memory``, ``database``,
         or ``memcached``.
     ``cache_expire``
-        Time in seconds to cache this template with this ``cache_key`` for.
-        Or use 'never' to designate that the cache should never expire.
+        Time in seconds to cache this template with this ``cache_key``
+        for. Or use 'never' to designate that the cache should never
+        expire.
     
-    The minimum key required to trigger caching is ``cache_expire='never'``
-    which will cache the template forever seconds with no key.
+    The minimum key required to trigger caching is
+    ``cache_expire='never'`` which will cache the template forever
+    seconds with no key.
     
     """
     # If one of them is not None then the user did set something
@@ -286,8 +292,8 @@ def cached_template(template_name, render_func, ns_options=(),
         return render_func()
 
 
-def render_mako(template_name, cache_key=None, cache_type=None, 
-                cache_expire=None):
+def render_mako(template_name, extra_vars=None, cache_key=None, 
+                cache_type=None, cache_expire=None):
     """Render a template with Mako
     
     Accepts the cache options ``cache_key``, ``cache_type``, and
@@ -296,8 +302,11 @@ def render_mako(template_name, cache_key=None, cache_type=None,
     """    
     # Create a render callable for the cache function
     def render_template():
-        # First, get the globals
-        globs = pylons_globals()
+        # Pull in extra vars if needed
+        globs = extra_vars or {}
+        
+        # Second, get the globals
+        globs.update(pylons_globals())
 
         # Grab a template reference
         template = globs['app_globals'].mako_lookup.get_template(template_name)
@@ -308,8 +317,8 @@ def render_mako(template_name, cache_key=None, cache_type=None,
                            cache_type=cache_type, cache_expire=cache_expire)
 
 
-def render_genshi(template_name, cache_key=None, cache_type=None, 
-                  cache_expire=None, method='xhtml'):
+def render_genshi(template_name, extra_vars=None, cache_key=None, 
+                  cache_type=None, cache_expire=None, method='xhtml'):
     """Render a template with Genshi
     
     Accepts the cache options ``cache_key``, ``cache_type``, and
@@ -319,8 +328,11 @@ def render_genshi(template_name, cache_key=None, cache_type=None,
     """
     # Create a render callable for the cache function
     def render_template():
-        # First, get the globals
-        globs = pylons_globals()
+        # Pull in extra vars if needed
+        globs = extra_vars or {}
+        
+        # Second, get the globals
+        globs.update(pylons_globals())
 
         # Grab a template reference
         template = globs['app_globals'].genshi_loader.load(template_name)
@@ -332,8 +344,8 @@ def render_genshi(template_name, cache_key=None, cache_type=None,
                            ns_options=('method'), method=method)
 
 
-def render_jinja(template_name, cache_key=None, cache_type=None,
-                 cache_expire=None):
+def render_jinja(template_name, extra_vars=None, cache_key=None, 
+                 cache_type=None, cache_expire=None):
     """Render a template with Jinja
 
     Accepts the cache options ``cache_key``, ``cache_type``, and
@@ -342,8 +354,11 @@ def render_jinja(template_name, cache_key=None, cache_type=None,
     """    
     # Create a render callable for the cache function
     def render_template():
-        # First, get the globals
-        globs = pylons_globals()
+        # Pull in extra vars if needed
+        globs = extra_vars or {}
+        
+        # Second, get the globals
+        globs.update(pylons_globals())
 
         # Grab a template reference
         template = \
@@ -363,9 +378,10 @@ class BuffetError(Exception):
 class Buffet(object):
     """Buffet style plug-in template rendering
     
-    Buffet implements template language plug-in support modeled highly on the
-    `Buffet Project <http://projects.dowski.com/projects/buffet>`_ from which
-    this class inherits its name.
+    Buffet implements template language plug-in support modeled highly
+    on the `Buffet Project 
+    <http://projects.dowski.com/projects/buffet>`_ from which this
+    class inherits its name.
     
     """
     def __init__(self, default_engine=None, template_root=None,
@@ -385,11 +401,12 @@ class Buffet(object):
     def prepare(self, engine_name, template_root=None, alias=None, **config):
         """Prepare a template engine for use
         
-        This method must be run before the `render <#render>`_ method is called
-        so that the ``template_root`` and options can be set. Template engines
-        can also be aliased if you wish to use multiplate configurations of the
-        same template engines, or prefer a shorter name when rendering a
-        template with the engine of your choice.
+        This method must be run before the `render <#render>`_ method
+        is called so that the ``template_root`` and options can be set.
+        Template engines can also be aliased if you wish to use
+        multiplate configurations of the same template engines, or
+        prefer a shorter name when rendering a template with the engine
+        of your choice.
         
         """
         Engine = available_engines.get(engine_name, None)
@@ -410,12 +427,13 @@ class Buffet(object):
                cache_key=None, cache_expire=None, cache_type=None, **options):
         """Render a template using a template engine plug-in
         
-        To use templates it is expected that you will attach data to be used in
-        the template to the ``c`` variable which is available in the controller
-        and the template. 
+        To use templates it is expected that you will attach data to be
+        used in the template to the ``c`` variable which is available
+        in the controller and the template. 
         
-        When porting code from other projects it is sometimes easier to use an
-        exisitng dictionary which can be specified with ``namespace``.
+        When porting code from other projects it is sometimes easier to
+        use an exisitng dictionary which can be specified with
+        ``namespace``.
         
         ``engine_name``
             The name of the template engine to use, which must be
@@ -423,12 +441,12 @@ class Buffet(object):
         ``template_name``
             Name of the template to render
         ``include_pylons_variables``
-            If a custom namespace is specified this determines whether Pylons 
-            variables are included in the namespace or not. Defaults to 
-            ``True``.
+            If a custom namespace is specified this determines whether
+            Pylons variables are included in the namespace or not.
+            Defaults to ``True``.
         ``namespace``
-            A custom dictionary of names and values to be substituted in the
-            template.
+            A custom dictionary of names and values to be substituted
+            in the template.
         
         Caching options (uses Beaker caching middleware)
         
@@ -438,14 +456,16 @@ class Buffet(object):
             Valid options are ``dbm``, ``file``, ``memory``, or 
             ``ext:memcached``.
         ``cache_expire``
-            Time in seconds to cache this template with this ``cache_key`` for.
-            Or use 'never' to designate that the cache should never expire.
+            Time in seconds to cache this template with this
+            ``cache_key`` for. Or use 'never' to designate that the
+            cache should never expire.
         
-        The minimum key required to trigger caching is ``cache_expire='never'``
-        which will cache the template forever seconds with no key.
+        The minimum key required to trigger caching is
+        ``cache_expire='never'`` which will cache the template forever
+        seconds with no key.
         
-        All other keyword options are passed directly to the template engine
-        used.
+        All other keyword options are passed directly to the template
+        engine used.
         
         """
         if not engine_name and self.default_engine:
@@ -540,9 +560,9 @@ class TemplateEngineMissing(Exception):
 class MyghtyTemplatePlugin(object):
     """Myghty Template Plugin
     
-    This Myghty Template Plugin varies from the official BuffetMyghty in that 
-    it will properly populate all the default Myghty variables needed and 
-    render fragments.
+    This Myghty Template Plugin varies from the official BuffetMyghty
+    in that it will properly populate all the default Myghty variables
+    needed and render fragments.
     
     """
     extension = "myt"
@@ -566,8 +586,8 @@ class MyghtyTemplatePlugin(object):
     def render(self, info, format="html", fragment=False, template=None,
                output_encoding=None, encoding_errors=None,
                disable_unicode=None):
-        """Render the template indicated with info as the namespace and globals
-        from the ``info['_global_args']`` key."""
+        """Render the template indicated with info as the namespace
+        and globals from the ``info['_global_args']`` key."""
         buf = StringIO()
         global_args = info.pop('_global_args')
         if self.extra_vars:
@@ -613,7 +633,8 @@ for entry_point in \
 def render(*args, **kargs):
     """Render a template and return it as a string (possibly Unicode)
     
-    Optionally takes 3 keyword arguments to use caching supplied by Buffet.
+    Optionally takes 3 keyword arguments to use caching supplied by
+    Buffet.
     
     Examples:
         
@@ -625,10 +646,11 @@ def render(*args, **kargs):
     
     .. admonition:: Note
         
-        Not all template languages support the concept of a fragment. In those
-        template languages that do support the fragment option, this usually 
-        implies that the template will be rendered without extending or 
-        inheriting any site skin.
+        Not all template languages support the concept of a fragment.
+        In those template languages that do support the fragment
+        option, this usually implies that the template will be rendered
+        without extending or inheriting any site skin.
+
     """
     fragment = kargs.pop('fragment', False)
     format = kargs.pop('format', None)
