@@ -12,20 +12,32 @@ $(document).ready(function() {
         $('button:last').remove()[0]);
     $('div.widget_layout')[0].appendChild(document.getElementById('service_widget'));
         
-    $('#service_widget a.submit_traceback').click(function () {
+    $('#service_widget input.submit_traceback').click(function () {
+        $('#service_widget .posttracebacktab').html('Sending traceback...');
         var uri = TRACEBACK.uri+'/post_traceback?debugcount='+debug_count
             +'&host='+encodeURIComponent(TRACEBACK.host)
             +'&path='+encodeURIComponent(TRACEBACK.traceback);
-        $.getJSON(uri, function(data, textStatus) {
-            var iframe = document.createElement("iframe");
-            iframe.style.display = "none";
-            document.body.appendChild(iframe);
-            iframe.src = 'http://'+TRACEBACK.host+TRACEBACK.traceback
-                +'/'+encodeURIComponent(data.traceback.link.replace(/\.xml/, ''))
-                +'/reown?uuid='+encodeURIComponent(data.traceback.uuid);
-            
-            stuff = data;
-        });
+        var opts = {
+            url: uri,
+            cache: false,
+            dataType: 'json',
+            success: function(data, textStatus) {
+                var iframe = document.createElement("iframe");
+                var tlink = data.traceback.link.replace(/\.xml/, '');
+                iframe.style.display = "none";
+                document.body.appendChild(iframe);
+                iframe.src = 'http://'+TRACEBACK.host+TRACEBACK.traceback
+                    +'/'+encodeURIComponent(tlink)
+                    +'/reown?uuid='+encodeURIComponent(data.traceback.uuid);
+                stuff = data;
+                var full_uri = 'http://' + TRACEBACK.host + TRACEBACK.traceback + '/' + tlink;
+                var reply = '<b>Traceback posted successfully</b>.<br /><br />';
+                reply += ' <a href="' + full_uri;
+                reply += '">' + full_uri + '</a>';
+                $('#service_widget .posttracebacktab').html(reply);
+            }
+        };
+        $.ajax(opts);
         return false;
     });
     
