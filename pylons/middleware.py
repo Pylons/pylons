@@ -107,6 +107,8 @@ class StaticJavascripts(object):
             return self.javascripts_app.not_found(environ, start_response)
 
 
+report_libs = ['pylons', 'genshi', 'sqlalchemy']
+
 def ErrorHandler(app, global_conf, **errorware):
     """ErrorHandler Toggle
     
@@ -133,7 +135,8 @@ def ErrorHandler(app, global_conf, **errorware):
         app = EvalException(app, global_conf, 
                             templating_formatters=template_error_formatters,
                             media_paths=py_media, head_html=head_html, 
-                            footer_html=footer)
+                            footer_html=footer,
+                            libraries=report_libs)
     else:
         app = ErrorMiddleware(app, global_conf, **errorware)
     return app
