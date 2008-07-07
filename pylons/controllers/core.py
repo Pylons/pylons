@@ -207,7 +207,11 @@ class WSGIController(object):
                 if log_debug:
                     log.debug("Controller returned a Response object, merging "
                               "it with pylons.response")
-                response.headers.update(py_response.headers)
+                for name, value in py_response.headers.items():
+                    if name.lower() == 'set-cookie':
+                        response.headers.add(name, value)
+                    else:
+                        response.headers.setdefault(name, value)
                 registry = environ['paste.registry']
                 registry.replace(pylons.response, response)
                 py_response = response
