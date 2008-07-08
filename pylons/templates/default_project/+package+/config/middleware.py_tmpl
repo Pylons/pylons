@@ -26,9 +26,10 @@ def make_app(global_conf, full_stack=True, **app_conf):
         another WSGI middleware.
 
     ``app_conf``
-        The application's local configuration. Normally specified in the
-        [app:<name>] section of the Paste ini file (where <name>
+        The application's local configuration. Normally specified in
+        the [app:<name>] section of the Paste ini file (where <name>
         defaults to main).
+
     """
     # Configure the Pylons environment
     load_environment(global_conf, app_conf)
