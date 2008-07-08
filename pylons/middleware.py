@@ -129,7 +129,7 @@ def ErrorHandler(app, global_conf, **errorware):
 
     if asbool(global_conf.get('debug')):
         footer = footer_html % (pylons.config.get('traceback_host', 
-                                                'pylonshq.com'),
+                                                  'beta.pylonshq.com'),
                                 pylons.__version__)
         py_media = dict(pylons=media_path)
         app = EvalException(app, global_conf, 
