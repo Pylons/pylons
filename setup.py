@@ -75,7 +75,7 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
         "Routes>=1.9", "WebHelpers>=0.6dev-20080613", "Beaker>=0.9.5",
         "Paste>=1.6", "PasteDeploy>=1.3.2", "PasteScript>=1.6.3",
         "FormEncode>=1.0.1", "simplejson>=1.8.1", "decorator>=2.2.0",
-        "nose>=0.10.3", "Mako>=0.2.0", "WebOb>=0.9.2", "WebError>=0.8",
+        "nose>=0.10.3", "Mako>=0.2.0", "WebOb>=0.9.2", "WebError>=0.9",
         "Tempita>=0.2",
     ],
     dependency_links=[
