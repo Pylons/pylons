@@ -268,13 +268,17 @@ class PylonsApp(object):
         __traceback_hide__ = 'before_and_this'
         
         __import__(full_module_name)
-        module_name = controller.split('/')[-1]
-        class_name = class_name_from_module_name(module_name) + 'Controller'
-        if self.log_debug:
-            log.debug("Found controller, module: '%s', class: '%s'",
-                      full_module_name, class_name)
-        self.controller_classes[controller] = mycontroller = \
-            getattr(sys.modules[full_module_name], class_name)
+        if hasattr(sys.modules[full_module_name], '__controller__'):
+            mycontroller = getattr(sys.modules[full_module_name],
+                sys.modules[full_module_name].__controller__)
+        else:
+            module_name = controller.split('/')[-1]
+            class_name = class_name_from_module_name(module_name) + 'Controller'
+            if self.log_debug:
+                log.debug("Found controller, module: '%s', class: '%s'",
+                          full_module_name, class_name)
+            mycontroller = getattr(sys.modules[full_module_name], class_name)
+        self.controller_classes[controller] = mycontroller
         return mycontroller
         
     def dispatch(self, controller, environ, start_response):

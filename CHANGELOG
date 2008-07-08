@@ -2,6 +2,9 @@ Pylons Changelog
 ================
 
 0.9.7 (**tip**)
+* Added option to specify the controller name with a __controller__ variable
+  in the controller's module. This name will be used for the controller class
+  rather than the default naming scheme.
 * WARNING: Fixed a minor security hole in the default Pylons error page that
   could result in an XSS security hole.
 * WARNING: Fixed a security hole in the default project template to use the
