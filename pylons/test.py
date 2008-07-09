@@ -22,6 +22,11 @@ import nose.plugins
 import pkg_resources
 from paste.deploy import loadapp
 
+import pylons
+from pylons.i18n.translation import _get_translator
+
+pylonsapp = None
+
 class PylonsPlugin(nose.plugins.Plugin):
     """Nose plugin extension
 
@@ -60,7 +65,8 @@ class PylonsPlugin(nose.plugins.Plugin):
         Loads the application, and in turn its configuration.
         
         """
+        global pylonsapp
         path = os.getcwd()
         sys.path.insert(0, path)
         pkg_resources.working_set.add_entry(path)
-        self.app = loadapp('config:' + self.config_file, relative_to=path)
+        self.app = pylonsapp = loadapp('config:' + self.config_file, relative_to=path)
