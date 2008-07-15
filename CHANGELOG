@@ -2,6 +2,7 @@ Pylons Changelog
 ================
 
 0.9.7 (**tip**)
+* Updating host to use 127.0.0.1 for development binding.
 * Added option to specify the controller name with a __controller__ variable
   in the controller's module. This name will be used for the controller class
   rather than the default naming scheme.
