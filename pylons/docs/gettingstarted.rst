@@ -9,19 +9,6 @@ possible, and provide a quick overview of a project. Links are provided
 throughout to encourage your exploration of the various aspects of Pylons.
 
 
-About
------
-
-Pylons is a MVC (Model-View-Controller) based approach to writing Python web
-applications. While Pylons encourages and allows for a wide variety of popular
-Python libraries, the documentation and recommendations by the Pylons 
-developers covers 'best of breed' components chosen with the goal of
-expressiveness, efficiency, and performance.
-
-Created in 2005 by Ben Bangert and James Gardner, Pylons has since grown to
-be one of the most popular Python web frameworks. 
-
-
 Requirements
 ------------
 
