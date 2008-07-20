@@ -9,14 +9,15 @@ possible, and provide a quick overview of a project. Links are provided
 throughout to encourage your exploration of the various aspects of Pylons.
 
 
+************
 Requirements
-------------
+************
 
 * Python 2.3+ (Python 2.4+ highly recommended)
 
-
+**********
 Installing
-----------
+**********
 
 .. warning::
     
@@ -78,7 +79,7 @@ Or on Window to activate:
 
 
 Using the latest beta 
-^^^^^^^^^^^^^^^^^^^^^^ 
+=====================
 
 .. warning:: Pinned to 0.9.7
 
@@ -98,7 +99,7 @@ Otherwise download `ez_setup.py <http://peak.telecommunity.com/dist/ez_setup.py>
 
 
 Working Directly From the Source Code 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+=====================================
 
 `Mercurial <http://www.selenic.com/mercurial/wiki/>`_ must be installed to retrieve the latest development source for Pylons. `Mercurial packages <http://www.selenic.com/mercurial/wiki/index.cgi/BinaryPackages>`_ are also available for Windows, MacOSX, and other OS's. 
 
@@ -118,8 +119,9 @@ To tell setuptools to use the version you are editing in the ``Pylons`` director
 Now you can make changes to the files in the Pylons directory and the code will run exactly as if you had installed a version of the egg with the changes you have made. 
 
 
+*************************
 Creating a Pylons Project
--------------------------
+*************************
 
 Create a new project named ``helloworld`` with the following command:
 
@@ -165,8 +167,9 @@ The created directory structure with links to more information:
     - test.ini
 
 
+***********************
 Running the application
------------------------
+***********************
 
 We can now run the web application like this:
 
@@ -188,8 +191,9 @@ If you visit http://127.0.0.1:5000/ when the server is running you will see
 the welcome page.
 
 
+***********
 Hello World
------------
+***********
 
 To create the basic hello world application, we'll first create a
 :term:`controller` in the project to handle requests:
