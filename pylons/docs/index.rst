@@ -1,5 +1,5 @@
-Welcome to Pylons' documentation!
-==================================
+Pylons Reference Documentation
+==============================
 
 .. image:: _static/pylon1.jpg
    :alt: The First Pylon of the Ramesseum, Thebes is approximately 69m long and 22m high, and marks the entrance to the Main Temple and the First Courtyard.

@@ -24,7 +24,7 @@ Installing
     Python 2.3, see :ref:`python23_installation`.
 
 To avoid conflicts with system-installed Python libraries, Pylons comes with a
-boot-strap Python script that sets up a `virtual environment <http://http://pypi.python.org/pypi/virtualenv>`_. Pylons will then be
+boot-strap Python script that sets up a `virtual environment <http://pypi.python.org/pypi/virtualenv>`_. Pylons will then be
 installed under the virtual environment.
 
 .. admonition:: By The Way
@@ -226,12 +226,11 @@ this:
 At the top are some imports of common objects you will frequently want to use
 in your controllers.
 
-Then navigate to http://127.0.0.1:5000/hello, where you should be greeted by
-short text saying "Hello World" like so (start up your app if needed):
+Then navigate to http://127.0.0.1:5000/hello/index, where you should be greeted by short text saying "Hello World" like so (start up your app if needed):
 
 .. image:: _static/helloworld.png
 
-.. admonition:: How'd that get to /hello?
+.. admonition:: How'd that get to /hello/index?
     
     :ref:`url-config` explains how URL's get mapped to controllers and
     their methods.
