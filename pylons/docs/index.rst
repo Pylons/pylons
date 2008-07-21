@@ -15,6 +15,7 @@ Contents
 
     gettingstarted
     configuration
+    logging
     controllers
     models
     views

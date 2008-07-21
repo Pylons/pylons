@@ -5,6 +5,10 @@ Glossary
 
 .. glossary::
     
+    action
+        The class method in a Pylons applications' controller that handles
+        a request.
+
     API
         Application Programming Interface. The means of communication between 
         a programmer and a software program or operating system.
@@ -85,6 +89,10 @@ Glossary
         Refers to the current request being processed. Available to import
         from :mod:`pylons` and is available for use in templates by the
         same name. See :class:`~pylons.controllers.util.Request`.
+    
+    route
+        Routes determine how the URL's are mapped to the controllers and which
+        URL is generated. See :ref:`url-config`
     
     SQLAlchemy
         One of the most popular Python database object-relation mappers

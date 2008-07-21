@@ -34,6 +34,26 @@ Standard Controllers
 
 Standard Controllers intended for subclassing by web developers
 
+Keeping methods private
+-----------------------
+
+Since the default route will map any controller and action, you will probably 
+want to prevent some methods in a controller from being callable from a URL.
+
+Routes uses the default Python convention of private methods beginning with
+``_``. To hide a method ``edit_generic`` in this class, just changing its name
+to begin with ``_`` will be sufficient:
+
+.. code-block:: python
+
+	class UserController(BaseController):
+		def index(self):
+			return Response("This is the index.")
+	
+		def _edit_generic(self):
+			"I can't be called from the web!"
+			return True
+
 
 Adding Controllers dynamically
 ------------------------------
