@@ -299,6 +299,46 @@ You then override the functionality as necessary (have a look at the source code
 
 Depending on how you code your ``MyInstaller`` class you may not even need your ``websetup.py`` or ``paste_deploy_config.ini_tmpl`` as you might have decided to create the ``.ini`` file and setup the application in an entirely different way. 
 
+
+PrefixMiddleware
+================
+
+``PrefixMiddleware`` provides a way to manually override the root prefix (``SCRIPT_NAME``) of your application for certain situations. 
+
+When running an application under a prefix (such as '``/james``') in FastCGI/apache, the ``SCRIPT_NAME`` environment variable is automatically set to to the appropriate value: '``/james``'. Pylons' URL generating functions such as ``url_for`` always take the ``SCRIPT_NAME`` value into account. 
+
+One situation where ``PrefixMiddleware`` is required is when an application is accessed via a reverse proxy with a prefix. The application is accessed through the reverse proxy via the the URL prefix '``/james``', whereas the reverse proxy forwards those requests to the application at the prefix '``/``'. 
+
+The reverse proxy, being an entirely separate web server, has no way of specifying the ``SCRIPT_NAME`` variable; it must be manually set by a ``PrefixMiddleware`` instance. Without setting ``SCRIPT_NAME``, ``url_for`` will generate URLs such as: '``/purchase_orders/1``', when it should be generating: '``/james/purchase_orders/1``'. 
+
+To filter your application through a ``PrefixMiddleware`` instance, add the following to the '``[app:main]``' section of your .ini file: 
+
+.. code-block :: ini 
+
+    filter-with = proxy-prefix 
+
+    [filter:proxy-prefix] 
+    use = egg:PasteDeploy#prefix 
+    prefix = /james 
+
+The name ``proxy-prefix`` simply acts as an identifier of the filter section; feel free to rename it. 
+
+These .ini settings are equivalent to adding the following to the end of your application's ``config/middleware.py``, right before the ``return app`` line: 
+
+.. code-block :: python 
+
+    # This app is served behind a proxy via the following prefix (SCRIPT_NAME) 
+    app = PrefixMiddleware(app, global_conf, prefix='/james') 
+
+This requires the additional import line: 
+
+.. code-block :: python 
+
+    from paste.deploy.config import PrefixMiddleware 
+
+Whereas the modification to ``config/middleware.py`` will setup an instance of ``PrefixMiddleware`` under every environment (.ini). 
+
+
 .. _adding_documentation:
 
 Adding documentation to your application
