@@ -80,7 +80,7 @@ class WSGIController(object):
             args = kargs
         else:
             args = {}
-            argnames = argspec[0][1:]
+            argnames = argspec[0][isinstance(func, types.MethodType) and 1 or 0:]
             for name in argnames:
                 if name in kargs:
                     setattr(c, name, kargs[name])
@@ -146,7 +146,7 @@ class WSGIController(object):
             func = getattr(self, action_method, None)
         except UnicodeEncodeError:
             func = None
-        if isinstance(func, types.MethodType):
+        if action_method != 'start_response' and callable(func):
             # Store function used to handle request
             req.environ['pylons.action_method'] = func
             
