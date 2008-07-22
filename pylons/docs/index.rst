@@ -15,10 +15,10 @@ Contents
 
     gettingstarted
     configuration
-    logging
     controllers
     models
     views
+    logging
     i18n
     beaker
     helpers
