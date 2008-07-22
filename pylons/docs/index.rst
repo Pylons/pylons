@@ -14,13 +14,14 @@ Contents
     :maxdepth: 2
 
     gettingstarted
+    concepts
     configuration
     controllers
     models
     views
     logging
     i18n
-    session
+    sessions
     caching
     helpers
     forms

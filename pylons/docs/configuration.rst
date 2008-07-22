@@ -237,33 +237,58 @@ Inside templates and controllers, other variables may seem to creep into the URL
 Middleware
 **********
 
-Within :file:`config/middleware.py` a Pylons application is wrapped in successive layers which add functionality. The process of wrapping the Pylons application in middleware results in a structure conceptually similar to the layers in an onion.
+A projects WSGI stack should be setup in the :file:`config/middleware.py`
+module. Ideally this file should import middleware it needs, and set it up
+in the `make_app` function.
 
-.. image:: _static/pylons_as_onion.png
-   :alt: Pylons middleware onion analogy
-   :align: center
+The default stack that is setup for a Pylons application is described in
+detail in :ref:`wsgi-middleware`.
 
-Once the middleware has been used to wrap the Pylons application, the make_app
-function returns the completed app with the following structure (outermost
-layer listed first):
+Default middleware stack:
 
-Registry Manager
-    Status Code Redirect
-        Error Handler
-            Cache Middleware
-                Session Middleware
-                    Routes Middleware
-                        Pylons App (Not middleware!)
+.. code-block :: python
 
-Each layer in the middleware has a common interface which underlies much of Pylons itself, called :term:`WSGI`. This basic interface declares how each layer is called, and how it must return its content and set HTTP headers.
-
-.. note:: 
+    # The Pylons WSGI app
+    app = PylonsApp()
     
-    There is one final piece of middleware called Cascade which is used to
-    serve static content and JavaScript files during development. For top
-    performance, consider wrapping the line that wraps the app with
-    Cascade in an if block that checks to see if ``debug`` is set to true.
-    Then have the webserver or a :term:`CDN` serve static files.
+    # CUSTOM MIDDLEWARE HERE (filtered by error handling middlewares)
+    
+    # Routing/Session/Cache Middleware
+    app = RoutesMiddleware(app, config['routes.map'])
+    app = SessionMiddleware(app, config)
+    app = CacheMiddleware(app, config)
+    
+    if asbool(full_stack):
+        # Handle Python exceptions
+        app = ErrorHandler(app, global_conf, **config['pylons.errorware'])
+
+        # Display error documents for 401, 403, 404 status codes (and
+        # 500 when debug is disabled)
+        if asbool(config['debug']):
+            app = StatusCodeRedirect(app)
+        else:
+            app = StatusCodeRedirect(app, [400, 401, 403, 404, 500])
+
+    # Establish the Registry for this application
+    app = RegistryManager(app)
+
+    # Static files (If running in production, and Apache or another web 
+    # server is handling this static content, remove the following 3 lines)
+    javascripts_app = StaticJavascripts()
+    static_app = StaticURLParser(config['pylons.paths']['static_files'])
+    app = Cascade([static_app, javascripts_app, app])
+    return app
+    
+Since each piece of middleware wraps the one before it, the stack needs to be
+assembled in reverse order from the order in which its called. That is, the
+very last middleware that wraps the WSGI Application, is the very first that
+will be called by the server.
+
+The last piece of middleware in the stack, called Cascade, is used to
+serve static content and JavaScript files during development. For top
+performance, consider wrapping the line that wraps the app with
+Cascade in an if block that checks to see if ``debug`` is set to true.
+Then have the webserver or a :term:`CDN` serve static files.
 
 .. warning::
 

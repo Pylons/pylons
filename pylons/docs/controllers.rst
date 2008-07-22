@@ -4,26 +4,28 @@
 Controllers
 ===========
 
-About the controller
---------------------
-
 .. image:: _static/pylon2.jpg
    :alt: 
    :align: left
    :height: 450
    :width: 368
 
-In the MVC paradigm the *controller* interprets the inputs, commanding the model and/or the view to change as appropriate.
+In the :term:`MVC` paradigm the *controller* interprets the inputs, commanding
+the model and/or the view to change as appropriate. Under Pylons, this concept
+is extended slightly in that a Pylons controller is not directly interpreting
+the input, but is acting to determine the appropriate way to assemble data
+from the model, and render it with the correct template.
 
-The controller is used to stitch together different pieces of the model and the view to fulfill a request. This places significant power into the developer’s hands. 
+The controller is used to stitch together different pieces of the model and the view to fulfill a request. This places significant power into the developer’s hands.
 
 Presented with a number of reusable building blocks in the model and the view, the controller picks and chooses which blocks are needed to handle specific processing and display requirements.
 
 The controller interprets requests from the user and calls portions of the model and view as necessary to fulfill the request. So when the user clicks a Web link or submits an HTML form, the controller itself doesn’t output anything or perform any real processing. It takes the request and determines which model components to invoke and which formatting to apply to the resulting data.
 
-Pylons uses a class, where the superclass provides the WSGI interface and the subclass implements the application-specific controller logic. 
+Pylons uses a class, where the superclass provides the :term:`WSGI` interface
+and the subclass implements the application-specific controller logic.
 
-The Pylons WSGI Controller handles incoming web requests that are dispatched from the PylonsBaseWSGIApp. 
+The Pylons WSGI Controller handles incoming web requests that are dispatched from the PylonsBaseWSGIApp.
 
 These requests result in a new instance of the WSGIController being created, which is then called with the dict options from the Routes match. The standard WSGI response is then returned with start_response called as per the WSGI spec.
 

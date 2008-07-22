@@ -53,6 +53,15 @@ Glossary
         logic to prepare data for display, then renders a template with
         the data and returns it to the user. See :ref:`controllers`.
     
+    egg
+        Python egg's are bundled Python packages, generally installed by
+        a package called :term:`setuptools`. Unlike normal Python package
+        installs, egg's allow a few additional features, such as package
+        dependencies, and dynamic discovery.
+        
+        .. seealso::
+            `The Quick Guide to Python Eggs <http://peak.telecommunity.com/DevCenter/PythonEggs>`_
+    
     EJBs
         Enterprise JavaBeans (EJB) technology is the server-side component 
         architecture for Java Platform, Enterprise Edition (Java EE). EJB 
@@ -80,8 +89,15 @@ Glossary
         same manner as any other module import.
     
     Model-View-Controller
-        an architectural pattern used in software engineering. 
-        See http://wikipedia.org/wiki/Model-View-Controller
+        An architectural pattern used in software engineering. In Pylons, the
+        MVC paradigm is extended slightly with a pipeline that may transform
+        and extend the data available to a controller, as well as the Pylons
+        :term:`WSGI` app itself that determines the appropriate Controller
+        to call.
+        
+        .. seealso::
+            `MVC at Wikipedia
+            <http://wikipedia.org/wiki/Model-View-Controller>`_
 
     MVC
         See :term:`Model-View-Controller`
@@ -102,6 +118,14 @@ Glossary
         Routes determine how the URL's are mapped to the controllers and which
         URL is generated. See :ref:`url-config`
     
+    setuptools
+        An extension to the basic distutils, setuptools allows packages to
+        specify package dependencies and have dynamic discovery of other
+        installed Python packages.
+        
+        .. seealso::
+            `Building and Distributing Packages with setuptools <http://peak.telecommunity.com/DevCenter/setuptools>`_
+
     SQLAlchemy
         One of the most popular Python database object-relation mappers
         (ORM's). `SQLAlchemy <http://www.sqlalchemy.org/>`_ is the default
@@ -134,3 +158,7 @@ Glossary
         :term:`WSGI` Middleware refers to the ability of WSGI applications
         to modify the environ, and/or the content of other WSGI applications
         by being placed in between the request and the other WSGI application.
+        
+        .. seealso::
+            :ref:`WSGI Middleware in Concepts of Pylons <wsgi-middleware>`
+            :ref:`WSGI Middleware Configuration <middleware-config>`
