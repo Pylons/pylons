@@ -70,6 +70,24 @@ Or the current debug status like this:
 
     debug = config['debug']
 
+Evaluating Non-string Data in Configuration Files
+-------------------------------------------------
+
+By default, all the values in the configuration file are considered strings.
+To make it easier to handle boolean values, the Paste library comes with a
+function that will convert ``true`` and ``false`` to proper Python boolean
+values:
+
+.. code-block :: python
+    
+    from paste.deploy.converters import asbool
+    
+    debug = asbool(config['debug'])
+
+This is used already in the default projects' :ref:`middleware-config` to
+toggle middleware that should only be used in development mode (with
+``debug``) set to true.
+
 
 Production Configuration Files
 ==============================
@@ -242,10 +260,10 @@ Each layer in the middleware has a common interface which underlies much of Pylo
 .. note:: 
     
     There is one final piece of middleware called Cascade which is used to
-    serve static content and JavaScript files during development. Before
-    placing a Pylons application into production, this line should be
-    commented out and the static files should be served by a webserver for
-    top performance.
+    serve static content and JavaScript files during development. For top
+    performance, consider wrapping the line that wraps the app with
+    Cascade in an if block that checks to see if ``debug`` is set to true.
+    Then have the webserver or a :term:`CDN` serve static files.
 
 .. warning::
 
@@ -309,7 +327,73 @@ The full_stack flag determines if the ErrorHandler and StatusCodeRedirect is inc
 Application Setup
 *****************
 
+There are two kinds of 'Application Setup' that are occasionally referenced
+with regards to a project using Pylons.
 
+* Setting up a new application
+* Configuring project information and package dependencies
 
-XXX: Explain how to setup app dependencies in the setup.py file to ensure
-the appropriate libraries are required, explain what setup.py needs, etc.
+Setting Up a New Application
+============================
+
+To make it easier to setup a new instance of a project, such as setting up
+the basic database schema, populating necessary defaults, etc. a setup
+script can be created.
+
+In a Pylons project, the setup script to be run is located in the projects'
+:file:`websetup.py` file. The default script loads the projects configuration
+to make it easier to write application setup steps:
+
+.. code-block :: python
+    
+    import logging
+
+    from helloworld.config.environment import load_environment
+
+    log = logging.getLogger(__name__)
+
+    def setup_app(command, conf, vars):
+        """Place any commands to setup helloworld here"""
+        load_environment(conf.global_conf, conf.local_conf)
+
+.. note::
+    If the project was configured during creation to use SQLAlchemy this file
+    will include some commands to setup the database connection to make it
+    easier to setup database tables.
+
+To run the setup script using the development configuration:
+
+.. code-block :: bash
+    
+    $ paster setup-app development.ini
+
+Configuring the Package
+=======================
+
+A newly created project with Pylons is a standard Python package. As a Python
+package, it has a :file:`setup.py` file that records meta-information about
+the package. Most of the options in it are fairly self-explanatory, the most
+important being the 'install_requires' option:
+
+.. code-block :: python
+    
+    install_requires=[
+        "Pylons>=0.9.7",
+        "Mako",
+    ],
+    
+These lines indicate what packages are required for the proper functioning
+of the application, and should be updated as needed. To re-parse the
+:file:`setup.py` line for new dependencies:
+
+.. code-block :: bash
+
+    $ python setup.py develop
+
+In addition to updating the packages as needed so that the dependency
+requirements are made, this command will ensure that this package is active
+in the system (without requiring the traditional
+:command:`python setup.py install`).
+
+.. seealso::
+    `Declaring Dependencies <http://peak.telecommunity.com/DevCenter/setuptools#declaring-dependencies>`_

@@ -34,6 +34,14 @@ Glossary
         The storage of the results of expensive or length computations for 
         later re-use at a point more quickly accessed by the end user. 
 
+    CDN
+        Content Delivery Networks (CDN's) are generally globally distributed
+        content delivery networks optimized for low latency for static file
+        distribution. They can significantly increase page-load times by
+        ensuring that the static resources on a page are delivered by servers
+        geographically close to the client in addition to lightening the load
+        placed on the application server.
+
     ColdFusion Components
         CFCs represent an attempt by Macromedia to bring ColdFusion closer 
         to an Object Oriented Programming (OOP) language. ColdFusion is in 
