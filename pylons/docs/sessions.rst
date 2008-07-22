@@ -1,8 +1,8 @@
-.. _beaker_caching:
+.. _sessions:
 
-===============================================
-Sessions & Caching in controllers and templates
-===============================================
+========
+Sessions
+========
 
 Inevitably, there will be occasions during your applications development or deployment where some task takes a significant amount of time to complete. When this occurs, the best way to speed things up is with :term:`caching`. 
 

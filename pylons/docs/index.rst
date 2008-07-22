@@ -20,7 +20,8 @@ Contents
     views
     logging
     i18n
-    beaker
+    session
+    caching
     helpers
     forms
     webob
