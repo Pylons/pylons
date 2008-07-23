@@ -102,6 +102,13 @@ Glossary
     MVC
         See :term:`Model-View-Controller`
     
+    ORM
+        (Object-Relational Mapper) Maps relational databases such as
+        MySQL, Postgres, Oracle to objects providing a cleaner API.
+        Most ORM's also make it easier to prevent SQL Injection attacks
+        by binding variables, and can handle generating sometimes
+        extensive SQL.
+    
     Pylons
         A Python-based WSGI oriented web framework.
     
@@ -128,8 +135,9 @@ Glossary
 
     SQLAlchemy
         One of the most popular Python database object-relation mappers
-        (ORM's). `SQLAlchemy <http://www.sqlalchemy.org/>`_ is the default
-        ORM recommended in Pylons. SQLAlchemy at the ORM level can look
+        (:term:`ORM`\'s). `SQLAlchemy <http://www.sqlalchemy.org/>`_ is the
+        default :term:`ORM` recommended in Pylons. SQLAlchemy at the ORM
+        level can look
         similar to Rails ActiveRecord, but uses the
         `DataMapper <http://www.martinfowler.com/eaaCatalog/dataMapper.html>`_
         pattern for additional flexibility with the ability to map simple to

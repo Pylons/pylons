@@ -17,6 +17,36 @@ To follow along with the explanations below, create a project following the
 :ref:`getting_started` Guide.
 
 
+*****************************
+The 'Why' of a Pylons Project
+*****************************
+
+A new Pylons project works a little differently than in many other web
+frameworks. Rather than loading the framework, which then finds a new
+projects code and runs it, Pylons creates a Python package that does the
+opposite. That is, when its run, it imports objects from Pylons, assembles
+the WSGI Application and stack, and returns it.
+
+If desired, a new project could be completely cleared of the Pylons imports
+and run any arbitrary WSGI application instead. This is done for a greater
+degree of freedom and flexibility in building a web application that works
+the way the developer needs it to.
+
+By default, the project is configured to use standard components that most
+developers will need, such as sessions, template engines, caching, high
+level request and response objects, and an :term:`ORM`. By having it all
+setup in the project (rather than hidden away in 'framework' code), the
+developer is free to tweak and customize as needed.
+
+In this manner, Pylons has setup a project with its *opinion* of what may
+be needed by the developer, but the developer is free to use the tools
+needed to accomplish the projects goals. Pylons offers an unprecedented
+level of customization by exposing its functionality through the project
+while still maintaining a remarkable amount of simplicity by retaining a
+single standard interface between core components (:term:`WSGI`).
+
+
+
 *****************
 WSGI Applications
 *****************
