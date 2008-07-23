@@ -187,6 +187,12 @@ controller under it. To get to the comments controller:
     
     /admin/comments/index    >>    controller: admin/comments, action: index
 
+.. note::
+    The ``{controller}`` match is special, in that it doesn't always stop
+    at the next forward slash (``/``). As the example above demonstrates,
+    it is able to match controllers nested under a directory should they
+    exist.
+
 Adding a route to match ``/``
 =============================
 
