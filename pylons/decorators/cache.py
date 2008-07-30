@@ -1,14 +1,22 @@
 """Caching decorator"""
 import inspect
 import logging
+import time
 
 from decorator import decorator
 from paste.deploy.converters import asbool
 
+try:
+    import set
+except:
+    from sets import Set as set
+    
 log = logging.getLogger(__name__)
 
 def beaker_cache(key="cache_default", expire="never", type=None,
-    query_args=False, response=False, **b_kwargs):
+    query_args=False, cache_headers=('content-type','content-length'), 
+    invalidate_on_startup=False,
+    **b_kwargs):
     """Cache decorator utilizing Beaker. Caches action or other
     function that returns a pickle-able object as a result.
 
@@ -18,24 +26,32 @@ def beaker_cache(key="cache_default", expire="never", type=None,
         None - No variable key, uses function name as key
         "cache_default" - Uses all function arguments as the key
         string - Use kwargs[key] as key
-        list - Joins the arguments in the list
+        list - Use [kwargs[k] for k in list] as key
     ``expire``
-        Time in seconds before cache expires, defaults to never
+        Time in seconds before cache expires, or the string "never". 
+        Defaults to "never"
     ``type``
         Type of cache to use: dbm, memory, file, memcached, or None for
         Beaker's default
     ``query_args``
         Uses the query arguments as the key, defaults to False
-    ``response``
-        Whether or not the response status/headers/cookies present at 
-        the time the cache is generated should be restored. This is
-        ideal for caching controller actions, but shouldn't be used
-        for caching non-action functions. Defaults to False.
-
+    ``cache_headers``
+        A tuple of header names indicating response headers that
+        will also be cached.
+     ``invalidate_on_startup``
+        If True, the cache will be invalidated each time the application
+        starts or is restarted.
+        
     If cache_enabled is set to False in the .ini file, then cache is
     disabled globally.
     
     """
+    if invalidate_on_startup:
+        starttime = time.time()
+    else:
+        starttime = None
+    cache_headers = set(cache_headers)
+
     def wrapper(func, *args, **kwargs):
         """Decorator wrapper"""
         self = args[0]
@@ -46,15 +62,28 @@ def beaker_cache(key="cache_default", expire="never", type=None,
             log.debug("Caching disabled, skipping cache lookup")
             return func(*args, **kwargs)
 
-        my_cache = self._py_object.cache.get_cache('%s.%s' % (func.__module__,
-                                                              func.__name__))
-        cache_key = _make_key(func, key, args, kwargs, query_args)
+        if key:
+            if query_args:
+                key_dict = dict(self._py_object.request.GET)
+            else:
+                key_dict = kwargs.copy()
+                key_dict.update(_make_dict_from_args(func, args))
+            
+            if key != "cache_default":
+                if isinstance(key, list):
+                    key_dict = dict((k, key_dict[k]) for k in key)
+                else:
+                    key_dict = {key: key_dict[key]}
+        else:
+            key_dict = None
+
+        namespace, cache_key = create_cache_key(func, key_dict, self)
+        my_cache = self._py_object.cache.get_cache(namespace)
 
         if expire == "never":
             cache_expire = None
         else:
             cache_expire = expire
-        
         
         def create_func():
             log.debug("Creating new cache copy with key: %s, type: %s",
@@ -63,47 +92,47 @@ def beaker_cache(key="cache_default", expire="never", type=None,
             glob_response = self._py_object.response
             headers = glob_response.headerlist
             status = glob_response.status
-            cookies=None
             full_response = dict(headers=headers, status=status,
-                                 cookies=cookies, content=result)
+                                 cookies=None, content=result)
             return full_response
         
         if type:
             b_kwargs['type'] = type
-        
+
         response = my_cache.get_value(cache_key, createfunc=create_func,
-                                     expiretime=cache_expire, **b_kwargs)
-        if response:
-            glob_response = self._py_object.response
-            glob_response.headerlist = response['headers']
-            glob_response.status = response['status']
+                                     expiretime=cache_expire, starttime=starttime,
+                                     **b_kwargs)
+        
+        glob_response = self._py_object.response
+        glob_response.headerlist = [header for header in response['headers'] if header[0].lower() in cache_headers]
+        glob_response.status = response['status']
+
         return response['content']
     return decorator(wrapper)
 
-def _make_key(func, key, args, kwargs, query_args):
-    """Helps make unique key from largs, kwargs and request.GET"""
-    self = args[0]
-    if key == "cache_default":
-        if query_args:
-            cache_key = repr(dict(self._py_object.request.GET))
-        else:
-            cache_key = repr(kwargs.items())
-            largs_keys = _make_dict_from_args(func, args)
-            cache_key += repr(largs_keys.items())
-    elif not key:
-        cache_key = func.__name__
+def create_cache_key(func, key_dict=None, self=None):
+    """Get a cache namespace and key used by the beaker_cache decorator.
+    
+        E.g.::
+            from pylons import cache
+            from pylons.decorators.cache import create_cache_key
+            namespace, key = create_cache_key(MyController.some_method)
+            cache.get_cache(namespace).remove(key)
+            
+    """
+    
+    if key_dict:
+        cache_key = " ".join(["%s=%s" % (k, v) for k, v in key_dict.iteritems()])
     else:
-        if query_args:
-            dic = self._py_object.request.GET
+        if hasattr(self, 'im_func'):
+            cache_key = func.im_func.__name__
         else:
-            largs_keys = _make_dict_from_args(func, args)
-            dic = kwargs.copy()
-            dic.update(largs_keys)
-        if isinstance(key, list):
-            cache_key = " ".join(["%s=%s" % (k, dic[k]) for k in key])
-        else:
-            cache_key = "%s=%s" % (key, dic[key])
-    return cache_key
+            cache_key = func.__name__
+    
+    if self:
+        return '%s.%s' % (func.__module__, self.__class__.__name__), cache_key
+    else:
+        return '%s.%s' % (func.__module__, func.im_class.__name__), cache_key
 
 def _make_dict_from_args(func, args):
     """Inspects function for name of args"""

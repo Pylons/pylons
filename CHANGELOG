@@ -2,6 +2,17 @@ Pylons Changelog
 ================
 
 0.9.7 (**tip**)
+* "response" flag has been removed from pylons.decorators.cache.beaker_cache, 
+  as it sends all headers along unconditionally including cookies; 
+  additionally, the flag was taking effect in all cases previously 
+  so prior versions of beaker_cache are not secure.
+  
+  In its place, a new option "cache_headers" is provided, which is a
+  tuple of specific header names to be cached.  It defaults 
+  to ('content-type','content-length').
+* "invalidate_on_startup" flag added to beaker_cache, which provides a 
+  "starttime" to the cache such that when the application is started
+  or restarted, the cache entry is invalidated.
 * Updating host to use 127.0.0.1 for development binding.
 * Added option to specify the controller name with a __controller__ variable
   in the controller's module. This name will be used for the controller class
