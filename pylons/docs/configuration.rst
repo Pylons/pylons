@@ -153,10 +153,51 @@ A Python library called Routes handles mapping URLs to controllers and their met
     to begin with a ``:`` like ``map.connect(':controller/:action')``. This
     syntax is now optional, and the new ``{}`` syntax is recommended.
 
-Any part of the path inside the curly braces is a variable that will match
+Any part of the path inside the curly braces is a variable (a `variable part`
+) that will match
 any text in the URL for that 'part'. A 'part' of the URL is the text between
 two forward slashes. Every part of the URL must be present for the
 :term:`route` to match, otherwise a 404 will be returned.
+
+The routes above are translated by the Routes library into regular expressions
+for high performance URL matching. By default, all the variable parts (except
+for the special case of ``{controller}``) become a matching regular expression
+of ``[^/]+`` to match anything except for a forward slash. This can be
+changed easily, for example to have the ``{id}`` only match digits:
+
+.. code-block :: python
+    
+    map.connect('/{controller}/{action}/{id:\d+}')
+
+If the desired regular expression includes the ``{}``, then it should be
+specified separately for the variable part. To limit the ``{id}`` to only
+match at least 2-4 digits:
+
+.. code-block :: python
+    
+    map.connect('/{controller}/{action}/{id}',  requirements=dict(id='\d{2,4}'))
+
+The controller and action can also be specified as keyword arguments so that
+they don't need to be included in the URL:
+
+.. code-block :: python
+    
+    # Archives by 2 digit year -> /archives/08
+    map.connect('/archives/{year:\d\d}', controller='articles',  action='archives')
+
+Any variable part, or keyword argument in the ``map.connect`` statement will
+be available for use in the
+action used. For the route above, which resolves to the `articles`
+controller:
+
+.. code-block :: python
+    
+    class ArticlesController(BaseController):
+        def archives(self, year):
+            # etc.
+
+The part of the URL that matched as the year is available by name in the
+function argument.
 
 .. note::
     Routes also includes the ability to attempt to 'minimize' the URL. This

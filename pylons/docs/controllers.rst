@@ -13,12 +13,8 @@ Controllers
 In the :term:`MVC` paradigm the *controller* interprets the inputs, commanding
 the model and/or the view to change as appropriate. Under Pylons, this concept
 is extended slightly in that a Pylons controller is not directly interpreting
-the input, but is acting to determine the appropriate way to assemble data
-from the model, and render it with the correct template.
-
-The controller is used to stitch together different pieces of the model and the view to fulfill a request. This places significant power into the developer’s hands.
-
-Presented with a number of reusable building blocks in the model and the view, the controller picks and chooses which blocks are needed to handle specific processing and display requirements.
+the clients request, but is acting to determine the appropriate way to
+assemble data from the model, and render it with the correct template.
 
 The controller interprets requests from the user and calls portions of the model and view as necessary to fulfill the request. So when the user clicks a Web link or submits an HTML form, the controller itself doesn’t output anything or perform any real processing. It takes the request and determines which model components to invoke and which formatting to apply to the resulting data.
 
@@ -128,60 +124,6 @@ By specifying the ``path_info`` dynamic path, Routes will put everything leading
 
     Is this still true of Routes 2?
 
-
-Adding trailing slashes
------------------------
-
-From a search engine point of view, it is important that every URL in your application has one canonical location. It's not true by default in your Pylons app but it is easy to fix.
-
-.. warning::
-
-    Will it be true by default in Routes 2?
-
-1. Routes has undocumented :data:`append_slash` option which adds a trailing '/' to every URL that it is asked to generate for you. So update :file:`routing.py` like this:
-
-    .. code-block:: python
-
-        map = Mapper(...)
-        map.append_slash = True
-
-2. In addition to generating correct URLs, you also want to redirect the user to the canonical page location if the '/' wasn't specified. One possible solution is to add the following code to :file:`YOURPROJ/lib/base.py`:
-
-    .. code-block:: python
-
-        from paste.request import construct_url
-        from paste.httpexceptions import HTTPMovedPermanently
-
-        class BaseController(WSGIController):
-            # ...
-            def __call__(self, environ, start_response):
-                """Invoke the Controller"""
-                if not environ['PATH_INFO'].endswith('/'):
-                    environ['PATH_INFO'] += '/'
-                    url = construct_url(environ)
-                    raise HTTPMovedPermanently(url)
-                return WSGIController.__call__(self, environ, start_response)
-
-3. Adjust :file:`YOURPROJ/config/middleware.py`
-
-    In the imports:
-
-    .. code-block:: python
-
-        from paste import httpexceptions
-
-    In :meth:`make_app` after instantiating the PylonsApp
-
-    .. code-block:: python
-
-        app = httpexceptions.make_middleware(app, global_conf)
-
-.. seealso::
-
-     `Trailing spaces <http://jtauber.com/blog/2007/08/22/trailing_slashes/>`_
-     
-     James' Tauber's blog post - *The biggest mistake I made in 
-     Leonardo was making "foo" and "foo/" mean the same thing.*
 
 Using the WSGI Controller to provide a WSGI service
 ===================================================

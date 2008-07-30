@@ -46,7 +46,6 @@ while still maintaining a remarkable amount of simplicity by retaining a
 single standard interface between core components (:term:`WSGI`).
 
 
-
 *****************
 WSGI Applications
 *****************
@@ -137,9 +136,9 @@ as the Status Code Redirect, and the Error Handler may fully intercept the
 request entirely, and change how its responded to.
 
 
-************
-URL Dispatch
-************
+*******************
+Controller Dispatch
+*******************
 
 When the request passes down the middleware, the incoming URL gets parsed in
 the RoutesMiddleware, and if it matches a URL (See :ref:`url-config`), the
@@ -161,9 +160,9 @@ class the corresponds to the `action` that Routes found, calls it, and
 returns the response completing the request.
 
 
-********************
-Understanding Paster
-********************
+******
+Paster
+******
 
 Running the :command:`paster` command all by itself will
 show the sets of commands it accepts:
