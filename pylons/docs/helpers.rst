@@ -306,7 +306,7 @@ Template ``list-partial.mako``:
 
     ${ c.employees.pager(
         'Page $page: $link_previous $link_next ~4~',
-        onclick="$('#my-page-area').load('%s'); return false;"
+        onclick="$('#page-area').load('%s'); return false;"
         ) }
     <ul>
     % for employee in c.employees:
