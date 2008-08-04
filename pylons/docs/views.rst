@@ -1,4 +1,4 @@
-.. _views:
+﻿.. _views:
 
 =====
 Views
@@ -7,7 +7,7 @@ Views
 About the view
 ==============
 
-.. image:: _static/pylon4.jpg
+.. image:: ../_static/pylon4.jpg
    :alt: 
    :align: left
    :height: 434
@@ -39,10 +39,13 @@ Typically, no significant processing occurs in the view; it serves only as a mea
 Templates
 =========
 
-Template rendering engines are a popular choice for handling view presentation.
+Template rendering engines are a popular choice for handling the task of view presentation.
 
-In Pylons this functionality is typically implemented using a template rendering engine. Pylons provides pre-configured options for using the Mako and Genshi template rendering engines.
+In Pylons this functionality is typically implemented using a template rendering engine. Pylons provides pre-configured options for using the `Mako`__, `Genshi`__ and `Jinja`__ template rendering engines.
 
+.. __: http://www.makotemplates.org/
+.. __: http://genshi.edgewall.org/
+.. __: http://jinja.pocoo.org/
 
 Directly-supported template engines
 -----------------------------------
@@ -81,26 +84,14 @@ Templating with Mako
 Introduction
 ------------
 
-The template library deals with the *view*, presenting the model. It generates (X)HTML code, CSS and Javascript that is sent to the browser.
+The template library deals with the *view*, presenting the model. It generates (X)HTML code, CSS and Javascript that is sent to the browser. *(In the examples for this section, the project root is ``myapp``.)* 
 
 Static vs. dynamic
 ^^^^^^^^^^^^^^^^^^
 
-Templates to generate dynamic web content are stored in `YOURPROJ/templates`, static files are stored in `YOURPROJ/public`.
+Templates to generate dynamic web content are stored in `myapp/templates`, static files are stored in `myapp/public`.
 
 Both are served from the server root, **if there is a name conflict the static files will be served in preference**
-
-Install and setup Mako
-----------------------
-
-.. warning:: Is this step still required for Pylons 0.9.6+>
-
-Next open :file:`config/middleware.py` and add `template_engine='mako'` to :data:`config.init_app` so that it reads,
-
-.. code-block:: python
-
-    config.init_app(global_conf, app_conf, package='myapp', template_engine='mako')
-
 
 Making templates unicode safe
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -121,7 +112,7 @@ then change the final `return` statement in the same file so that it reads,
     return pylons.config.Config(tmpl_options, map, paths,
         request_settings = dict(charset = 'utf-8', error = 'replace'))
 
-Also, ensure that all templates you create begin with the line:
+Also, ensure that all templates begin with the line:
 
 .. code-block:: html+mako
 
@@ -134,7 +125,7 @@ Making a template hierarchy
 Create a base template
 ^^^^^^^^^^^^^^^^^^^^^^
 
-In `YOURPROJ/templates` create a file named `base.mako` and edit it to appear as follows:
+In `myapp/templates` create a file named `base.mako` and edit it to appear as follows:
 
 .. code-block:: html+mako
 
@@ -150,7 +141,7 @@ In `YOURPROJ/templates` create a file named `base.mako` and edit it to appear as
       </body>
     </html>
 
-We can use a base template such as the very basic one above for all pages rendered by Mako. This is useful for giving a consistent look to the application. 
+A base template such as the very basic one above can be used for all pages rendered by Mako. This is useful for giving a consistent look to the application. 
 
 * Expressions wrapped in `${...}` are evaluated by Mako and returned as text 
 * `${` and `}` may span several lines but the closing brace should not be on a line by itself (or Mako throws an error)
@@ -159,7 +150,7 @@ We can use a base template such as the very basic one above for all pages render
 Create child templates
 ^^^^^^^^^^^^^^^^^^^^^^
 
-Create another file in `YOURPROJ/templates` called `my_action.mako` and edit it to appear as follows:
+Create another file in `myapp/templates` called `my_action.mako` and edit it to appear as follows:
 
 .. code-block:: html+mako
 
@@ -174,27 +165,27 @@ Create another file in `YOURPROJ/templates` called `my_action.mako` and edit it 
 
     <p>Lorem ipsum dolor ...</p>
 
-Here we define the functions called by `base.mako`. 
+This file  define the functions called by `base.mako`. 
 
 * The `inherit` tag specifies a parent file to pass program flow to
 * Mako defines functions with `<%def name="function_name()">...</%def>`, the contents of the tag are returned
 * Anything left after the Mako tags are parsed out is automatically put into the `body()` function
 
-If all your application pages refer back to single file (in this case `base.mako`), you can keep a consistent feel to your application.
+A consistent feel to an application can be more readily achieved if all application pages refer back to single file (in this case `base.mako`)..
 
 Rendering a Mako template from a controller
 -------------------------------------------
 
-In your controller action, use the following as a `return()` value,
+In the controller action, use the following as a `return()` value,
 
 .. code-block:: python
 
     return render_response('/my_action.mako')
 
 
-Now run the action, usually by visiting something like [http://localhost:5000/my_controller/my_action] in your browser (if Pylons is running)
+Now run the action, usually by visiting something like ``http://localhost:5000/my_controller/my_action`` in a browser (if Pylons is running)
 
-If you do 'View Source' in your browser the output should be the following,
+Selecting 'View Source' in the browser should reveal the following output:
 
 .. code-block:: html
 
@@ -216,19 +207,19 @@ If you do 'View Source' in your browser the output should be the following,
 Passing variables to Mako from the controller
 ---------------------------------------------
 
-Add the following to your controller action just before the `return` line,
+Add the following to the controller action just before the `return` line,
 
 .. code-block:: python
 
     c.title = 'Mr Jones lives!'
 
-and now in `YOURPROJ/template/my_action.mako` add the following in place of `<!-- add some head tags here -->`,
+and now in `myapp/template/my_action.mako` add the following in place of `<!-- add some head tags here -->`,
 
 .. code-block:: html+mako
 
     <title>${c.title}</title>
 
-Now when run the browser window title should read 'Mr Jones lives!'
+Now, when run, the browser window title should read 'Mr Jones lives!'
 
 * The `c` dictionary is passed to Mako from the controller
 
@@ -240,14 +231,16 @@ The Webhelper functions are available in Mako templates under the `h` object. So
 * `h.stylesheet_link_tag('base')` - This returns a link tag to a static stylesheet named `base.css` in `myapp/public/stylesheets`
 * `h.javascript_include_tag('base')` - This return a script tag to a static javascript file named `base.js` in `myapp/public/scripts`
 
-[Routes for people in a hurry] describes how you should generate internal application URIs using Webhelpers
+The Pylons Cookbook article `Routes for people in a hurry`__ describes how to generate internal application URIs using Webhelpers
+
+.. __: http://wiki.pylonshq.com/display/pylonscookbook/Routes+for+people+in+a+hurry
 
 The rest of the webhelpers are documented in `Webhelpers documentation <http://pylonshq.com/WebHelpers/module-index.html>`_. 
 
 Python in Mako
 --------------
 
-You can include arbitrary Python code in Mako by enclosing it in `<%` and `%>`. Note that to actually output the text from a Python block in your Mako template, you need to write to the `template context <http://www.makotemplates.org/docs/runtime.html#runtime_context>`_.
+Arbitrary Python code can be included in Mako by enclosing it in `<%` and `%>`. Note that the `template context <http://www.makotemplates.org/docs/runtime.html#runtime_context>`_ is used to actually output the text from a Python block in a Mako template.
 
 .. code-block:: html+mako
 
@@ -257,7 +250,7 @@ You can include arbitrary Python code in Mako by enclosing it in `<%` and `%>`. 
       context.write('<p>Sorry Mr Jones, you are too old for Pandas Palace!</p>')
     %>
 
-We can also use Pythons flow control elements (`for`, `while`, `if` etc.) more directly with slight modification,
+Pythons flow control elements (`for`, `while`, `if` etc.) can be used reasonably directly with slight modification,
 
 .. code-block:: html+mako
 
@@ -277,91 +270,10 @@ We can also use Pythons flow control elements (`for`, `while`, `if` etc.) more d
         Provides more help on making your application more worldly.
 
 
-.. _using_other_template_languages:
-
-Using other template languages
-==============================
-
-Template Language Plugins 
-------------------------- 
-
-Pylons supports a variety of template languages in addition to Mako through the use of template engine plug-ins. This can be useful both for migrating web applications to Pylons, or in cases where you just would rather prefer some other templating solution. 
-
-Template language plug-ins can be installed rather easily using setuptools. A current list of template engine plug-ins is at the `Buffet <http://projects.dowski.com/projects/buffet>`_ website. 
-
-Once you have installed one of these, using the new template language within Pylons is quite easy. As Pylons does not come pre-configured with this in mind, you will need to do a little more work yourself depending on which template language you're using. 
-
-
-Example: Using Kid with Pylons 
------------------------------- 
-
-If you didn't select the ``kid`` optional extra package when you installed Pylons (described on the `install page <Installing+Pylons>`_) you will need to install the appropriate Buffet plugin. In the case of Kid, this is called TurboKid and can be installed as follows: 
-
-.. code-block:: bash 
-
-    $ easy_install TurboKid 
-
-To use Kid with Pylons, first we must setup a new template directory for the Kid templates. 
-
-First, create a directory in ``yourproject`` called ``kidtemplates`` and add a controller: 
-
-.. code-block:: bash 
-
-    $ cd yourproject 
-    $ mkdir yourproject/kidtemplates 
-    $ paster controller kid 
-
-You will now have a kid.py controller in your controllers directory. First, we will need to add Kid to the available template engines. 
-
-Edit ``yourproject/config/environment.py`` add to the bottom of the ``load_environment`` function: 
-
-.. code-block:: python 
-
-    kidopts = {'kid.assume_encoding':'utf-8', 'kid.encoding':'utf-8'} 
-    config.add_template_engine('kid', 'yourproject.kidtemplates', kidopts) 
-
-Edit the KidController class so it looks like this: 
-
-.. code-block:: python 
-
-    class KidController(BaseController): 
-        def index(self): 
-            c.title = "Your Page" 
-            c.message = 'hi' 
-            return render_response('kid', 'test') 
-
-Make sure to change ``yourproject.kidtemplates`` to reflect what your project is actually called. The 
-first argument to ``render`` or ``render_response`` can be the template engine to use, while the second non-keyword argument is the template. If you don't specify a template engine, it will drop back to the default (Mako, unless you change the default). 
-
-Now let's add the Kid template to render, create the file ``yourproject/kidtemplates/test.kid`` with 
-the following content: 
-
-.. code-block:: html+genshi 
-
-    <html xmlns="http://www.w3.org/1999/xhtml" xmlns:py="http://purl.org/kid/ns#"> 
-        <head> 
-            <title py:content="c.title">title</title> 
-        </head> 
-        <body> 
-            <p py:content="c.message">message</p> 
-            <p>You made it to the following url: ${h.url_for()}</p> 
-        </body> 
-    </html> 
-
-Since the template plug-ins currently expect paths to act as module imports, you will also need to create 
-a ``__init__.py`` file inside ``yourproject/kidtemplates``. 
-
-Loading ``/kid`` will now return the Kid template that you have created. 
-
-Notice that all the same Pylons variables are made accessible to template engine plug-ins. You will have c, h, g, 
-session, and request available in any template language you choose to use. This also makes it easier to switch 
-later to Mako or a different template language without having to update your controller action. 
-
-
 Switching the Default Template Engine 
-------------------------------------- 
+===================================== 
 
-In Pylons, customization is not just allowed but actively encouraged. It's quite easy to change the default engine from Mako to your choice. Let's make Kid the default template engine. 
+In Pylons, customization is not just allowed but actively encouraged. It's quite easy to change the default engine from Mako to your choice. Let's make Genshi the default template engine. 
 
 Edit ``yourproject/config/environment.py`` and change the ``template_engine`` argument passed to `config.init_app`: 
 
@@ -374,4 +286,198 @@ Edit ``yourproject/config/environment.py`` and change the ``template_engine`` ar
 This swaps Mako out and uses Kid, making Kid the new default template engine. The above ``index`` method no longer needs to specify 'kid' now when rendering a template. The existing templates directory will be used, and you'll need to create the ``__init__.py`` file before adding Kid templates. Current template engine's that can be swapped in this manner are kid, mako, and genshi. 
 
 .. Note::  For more details on the config object, check out the `extensive Config docs <http://pylonshq.com/docs/class-pylons.config.Config.html>`_ from the Pylons Module API. 
+
+
+.. _using_other_template_languages:
+
+Using other template languages
+==============================
+
+.. warning:: Prior to 0.9.7, all templating was handled through a layer called 'Buffet'. This layer frequently made customization of the template engine difficult as any customization required additional plugin modules being installed. Pylons 0.9.7 now deprecates use of the Buffet plug-in layer.
+
+Example: adding the Brevé template language
+-------------------------------------------
+
+Pylons requires two things of a template language: a template loader function and a template render function. If the template engin does not provide off-the-shelf integration with Pylons, this integration can be added fairly simply by creating an interface module in the project's ``lib`` directory.
+
+In this example, the interface module is called ``template``. The module is  defined in ``myapp/lib/template.py`` and makes available a template loader class: :class:`PathLoader` plus a template render function: :func:`render_breve`.
+
+``myapp/lib/template.py``
+-------------------------
+
+Imports
+^^^^^^^
+
+The module imports ``pylons.config`` and :func:`pylons_globals` from ``pylons.templating``,  providing the template render function with the necessary access to config variables. Imports from ``breve`` provide access to Brevé's :class:`Template` template-handling class and to a set of tags supplied as args to the Brevé :class:`Template` :func:`render` function.
+
+.. code-block:: python
+
+    # -*- coding: utf-8 -*-
+	
+    from pylons.templating import pylons_globals
+    from pylons import config
+    from breve import Template
+    from breve.tags.html import tags
+
+The template loader
+^^^^^^^^^^^^^^^^^^^^
+
+Brevé's own :class:`PathLoader` class is pressed into service as the template loader. At runtime it will be bound to the environment in ``pylons.app_globals``, ready for subsequent retrieval and call by the template rendering function: 
+
+.. code-block:: python
+
+    class PathLoader ( object ):
+        __slots__ = [ 'paths' ]
+    
+        def __init__ ( self, *paths ):
+            self.paths = paths
+    
+        def stat ( self, template, root ):
+            import os
+            for p in self.paths:
+                f = os.path.join ( root, p, template )
+                if os.path.isfile ( f ):
+                    timestamp = long ( os.stat ( f ).st_mtime )
+                    uid = f
+                    return uid, timestamp
+            raise OSError, 'No such file or directory %s' % template
+    
+        def load ( self, uid ):
+    
+            return file ( uid, 'U' ).read ( )
+
+The template renderer
+^^^^^^^^^^^^^^^^^^^^^
+
+The template renderer function uses the imported :func:`pylons_globals` to retrieve configuration variables, including ``breve_loader``, the Brevé template loader function previously bound to config in ``environment.py`` (above). The loader will load the appropriate template file when called by the template renderer.
+
+.. code-block:: python
+
+    def render_breve(template_name, extra_vars=None):
+        # Pull in extra vars if needed
+
+        globs = extra_vars or {}
+
+        # Second, get the globals
+        globs.update(pylons_globals())
+
+        # Retrieve the Breve template loader from config 
+        loader = config['pylons.app_globals'].breve_loader
+
+        # Instantiate a Breve template, supplying (default)
+        # tags and specifying a Breve template directory
+        # relative to the project root
+        template = Template ( tags, root = "brevetemplates" )
+
+        return template.render(template_name, loader=loader, vars=globs)
+
+Template caching
+^^^^^^^^^^^^^^^^
+
+Breve handles template caching internally. Had that not been the case, a template caching facility :func:`cached_template` can be imported from ``pylons.templating``:
+
+.. code-block:: python
+
+    from pylons.templating import pylons_globals
+
+and used to create a cacheing wrapper around the template renderer:
+
+.. code-block:: python
+
+    def render_breve(template_name, extra_vars=None, cache_key=None, 
+                    cache_type=None, cache_expire=None):
+        """Render a template with Breve
+    
+        Accepts the cache options ``cache_key``, ``cache_type``, and
+        ``cache_expire``.
+    
+        """    
+        # Create a render callable for the cache function
+        def render_template():
+            # Pull in extra vars if needed
+            globs = extra_vars or {}
+        
+            # Second, get the globals
+            globs.update(pylons_globals())
+
+            # Retrieve the Breve template loader from config 
+            loader = config['pylons.app_globals'].breve_loader
+            
+            # Instantiate a Breve template, supplying (default)
+            # tags and specifying a Breve template directory
+            # relative to the project root
+            template = Template ( tags, root = "brevetemplates" )
+            
+            return template.render(template_name, loader=loader, vars=globs)
+    
+        return cached_template(template_name, 
+                               render_template, 
+                               cache_key=cache_key,
+                               cache_type=cache_type, 
+                               cache_expire=cache_expire)
+
+
+Template engine configuration
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The template loader import is added to the import statements in ``config/environment.py``:
+
+.. code-block:: python
+
+    from myapp.lib.template import PathLoader
+
+The requisite template initialisation and configuration operations are added at the relevant point. The required operations are: iterating over any options given in ``development.ini``, instantiating the template loader with an appropriate template directory, binding the template loader instance to the environment and finally adding the template engine to the config dictionary.
+
+.. code-block:: python
+
+    def load_environment(global_conf, app_conf):
+
+        [ ... ]
+
+        # CONFIGURATION OPTIONS HERE (note: all config options will override
+        # any Pylons config options)
+
+        # Setup Breve Template Engine
+        # Retrieve breve.* options from config
+        breve_options = dict((k,v) for k,v in app_conf.iteritems() 
+                                     if k.startswith('breve'))
+
+        # Create the Breve TemplateLoader
+        config['pylons.app_globals'].breve_loader = \
+            PathLoader(os.path.join(root, 'brevetemplates'))
+        # Add the Breve template engine to the config
+        config.add_template_engine(
+                'breve', 'bel.brevetemplates', breve_options)
+
+Calling the template renderer from a controller action
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Typical usage in a controller action:
+
+.. code-block:: python
+
+    class TestingController(BaseController):
+
+        def index(self):
+            from myapp.lib.template import render_breve
+            c.title = u'Title here'
+            c.content = loremipsum
+            return render_breve('test')
+
+All the same Pylons variables are made accessible to template engine plug-ins. The variables ``c``, ``h``, ``g``, ``session``, and ``request`` are available in any chosen template language. This also makes it easier to switch between and change template languages without extensive refactoring of controller actions.
+
+Template files
+^^^^^^^^^^^^^^
+
+With the above configuration, Breve will search for template in myapp/brevetemplates and will search for a matching filename with a ``.b`` extension.
+
+``myapp/brevetemplates/test.b``
+
+.. code-block:: python
+
+    html [
+        head [ title [ c.title ] ],
+        body [ h1 [ c.title ],
+                div [ p [ c.content ] ] ] 
+        ]
 
