@@ -223,6 +223,10 @@ Now, when run, the browser window title should read 'Mr Jones lives!'
 
 * The `c` dictionary is passed to Mako from the controller
 
+``c`` is an import synonym for ``tmpl_context``, an instance of either the :class:`AttribSafeContextObj` class or its parent :class:`ContextObj` class. Accessing a nonexistent attribute of a :class:ContextObj raises an ``AttributeError`` exception whereas an instance of :class:`AttribSafeContextObj` returns an empty string and does not cause an exception to be raised. This more tolerant option can be used to avoid templates becoming cluttered with repetitive screening tests for the existence of attributes. It can also result in a degree of puzzlement on those occasions when this behavior is not expected. It can be disabled by setting ``config['pylons.strict_c'] = True`` in the project's ``config/environment.py``.
+
+.. warning:: The templating engine for the Jinja template language requires ``strict_c`` to be set to `True`. This variable affects *all* of the loaded templating engines so any Mako templates that contain tests of the form: ``% if c.some_attrib is not UNDEFINED:`` will cause AttributeError exceptions.
+
 Using Webhelpers
 ----------------
 
