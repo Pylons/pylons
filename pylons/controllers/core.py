@@ -138,6 +138,9 @@ class WSGIController(object):
         log_debug = self._pylons_log_debug
         req = self._py_object.request
         action = req.environ['pylons.routes_dict'].get('action')
+        if not action:
+            raise Exception("No action matched from Routes, unable to"
+                            "determine action dispatch.")
         action_method = action.replace('-', '_')
         if log_debug:
             log.debug("Looking for %r method to handle the request",
