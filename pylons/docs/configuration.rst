@@ -321,7 +321,6 @@ Default middleware stack:
 
     # Static files (If running in production, and Apache or another web 
     # server is handling this static content, remove the following 3 lines)
-    javascripts_app = StaticJavascripts()
     static_app = StaticURLParser(config['pylons.paths']['static_files'])
     app = Cascade([static_app, javascripts_app, app])
     return app
