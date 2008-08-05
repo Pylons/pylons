@@ -7,7 +7,7 @@ Views
 About the view
 ==============
 
-.. image:: ../_static/pylon4.jpg
+.. image:: _static/pylon4.jpg
    :alt: 
    :align: left
    :height: 434
