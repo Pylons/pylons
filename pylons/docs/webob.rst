@@ -1,10 +1,10 @@
-.. _webob:
+.. _webob_req_resp:
 
 =================================
 Working with the Request/Response
 =================================
 
-.. warning:: Included as a convenience to Pylons documenters.
+.. warning:: Included directly from the WebOb docs as a convenience to Pylons documenters.
 
 .. comment:
 
@@ -29,9 +29,6 @@ Request
 
 The primary object in WebOb is ``webob.Request``, a wrapper around a
 `WSGI environment <http://www.python.org/dev/peps/pep-0333/>`_.
-
-.. autoclass:: webob.Request
-   :members:
 
 The basic way you create a request object is simple enough:
 

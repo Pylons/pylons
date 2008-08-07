@@ -21,10 +21,13 @@ import sys
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
+
+# Intersphinx config
+intersphinx_mapping = {'http://docs.pylonshq.com/': None}
 
 # The suffix of source filenames.
 source_suffix = '.rst'
@@ -66,7 +69,6 @@ today_fmt = '%B %d, %Y'
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
-
 
 # Options for HTML output
 # -----------------------

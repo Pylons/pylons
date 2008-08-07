@@ -338,7 +338,35 @@ then a partial load is done through the ``onclick`` action.
 
 .. _secure-forms:
 
-Secure Forms
-============
+Secure Form Tag Helpers
+=======================
 
-XXX: Document using the secure_form_tag and authenticate_form function in the controller to prevent CSRF exploits.
+For prevention of Cross-site request forgery (CSRF) attacks.
+
+Generates form tags that include client-specific authorization tokens to be
+verified by the destined web app.
+
+Authorization tokens are stored in the client's session. The web app can then
+verify the request's submitted authorization token with the value in the
+client's session.
+
+This ensures the request came from the originating page. See the wikipedia entry
+for `Cross-site request forgery`__ for more information.
+
+.. __: http://en.wikipedia.org/wiki/Cross-site_request_forgery
+
+Pylons provides an ``authenticate_form`` decorator that does this verfication
+on the behalf of controllers.
+
+These helpers depend on Pylons' ``session`` object.  Most of them can be easily 
+ported to another framework by changing the API calls.
+
+The helpers are implemented in such a way that it should be easy for developers
+to create their own helpers if using helpers for AJAX calls.
+
+:func:`authentication_token` returns the current authentication token, creating one
+and storing it in the session if it doesn't already exist.
+
+:func:`auth_token_hidden_field` creates a hidden field containing the authentication token.
+
+:func:`secure_form` is :func:`form` plus :func:`auth_token_hidden_field`.
