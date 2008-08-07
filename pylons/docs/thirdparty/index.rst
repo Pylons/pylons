@@ -8,8 +8,9 @@ Third-party components
    :maxdepth: 1
 
    beaker
+   formencode_api
    routes
    weberror
-   webhelpers
+   webhelpers/index
    webob
    
