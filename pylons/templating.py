@@ -197,8 +197,8 @@ def pylons_globals():
     namespace if possible.
     
     Pylons variables that are returned in the dictionary:
-        c, g, h, _, N_, config, request, response, translator,
-        ungettext
+        ``c``, ``g``, ``h``, ``_``, ``N_``, config, request, response, 
+        translator, ungettext
     
     If SessionMiddleware is being used, ``session`` will also be
     available in the template namespace.
