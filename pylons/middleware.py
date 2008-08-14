@@ -12,7 +12,6 @@ from weberror.evalexception import EvalException
 from weberror.exceptions.errormiddleware import ErrorMiddleware
 from webob import Request
 from webhelpers.html import literal
-from webhelpers.rails.asset_tag import javascript_path
 
 import pylons
 import pylons.legacy
@@ -96,6 +95,7 @@ class StaticJavascripts(object):
     
     """
     def __init__(self, **kwargs):
+        from webhelpers.rails.asset_tag import javascript_path
         self.javascripts_app = \
             StaticURLParser(os.path.dirname(javascript_path), **kwargs)
         
