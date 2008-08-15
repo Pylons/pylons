@@ -33,12 +33,14 @@ Contents
     python23_install
     windowsnotes
     security_policy_for_bugs
+    advanced_pylons/index
     tutorials/index
-    advanced_pylons
     thirdparty/index
     modules/index
     glossary
 
+.. toctree::
+    :maxdepth: 2
 
 Indices and tables
 ==================

@@ -87,30 +87,26 @@ Pylons uses a Model View Controller architecture; we'll start by creating the mo
 
 SQLAlchemy provides a full suite of well known enterprise-level persistence patterns, designed for efficient and high-performance database access, adapted into a simple and Pythonic domain language. There is full and detailed documentation available on the SQLAlchemy website at http://sqlalchemy.org/docs/ and you should really read this before you get heavily into SQLAlchemy. 
 
-The most basic way of using SQLAlchemy is with explicit sessions where you create ``Session`` objects as needed. Pylons applications typically employ a slightly more sophisticated setup using SQLAlchemy 0.4's "contextual," thread-local sessions, via ``scoped_session``. With this configuration, the application can use a single ``Session`` instance per web request, without the need to pass it around explicitly. Instantiating a new ``Session`` will actually find an existing one in the current thread if available. This is also covered in the Pylons Cookbook article `SQLAlchemy 0.4 for People in a Hurry </display/pylonscookbook/SQLAlchemy+0.4+for+people+in+a+hurry>`_, and you can learn further details in the `SQLAlchemy documentation on the Session <http://www.sqlalchemy.org/docs/04/session.html#unitofwork_contextual>`_. 
+The most basic way of using SQLAlchemy is with explicit sessions where you create ``Session`` objects as needed. Pylons applications typically employ a slightly more sophisticated setup using SQLAlchemy 0.4's "contextual," thread-local sessions, via ``scoped_session``. With this configuration, the application can use a single ``Session`` instance per web request, without the need to pass it around explicitly. Instantiating a new ``Session`` will actually find an existing one in the current thread if available. There are further details in the `SQLAlchemy documentation on the Session <http://www.sqlalchemy.org/docs/04/session.html#unitofwork_contextual>`_. 
 
 .. Note:: 
     It is important to recognize the difference between SQLAlchemy's (or possibly another DB abstraction layer's) ``Session`` object and Pylons' standard ``session`` (with a lowercase 's') for web requests. See `Beaker <beaker>`_ for more on the latter. It is customary to reference the database session by ``model.Session`` outside of model classes. 
 
 
-Now replace the contents of your ``model/__init__.py`` file so that it looks like this: 
+Now add the following to the end of the contents of your ``model/__init__.py`` file: 
 
 .. code-block:: python 
 
-    from pylons import config 
     from sqlalchemy import Column, MetaData, Table, types 
-    from sqlalchemy.orm import mapper 
-    from sqlalchemy.orm import scoped_session, sessionmaker 
+    pages_table = Table('pages', meta.metadata, 
+                    sa.Column('title', sa.types.Unicode(40), primary_key=True), 
+                    sa.Column('content', sa.types.Unicode(), default='') 
+                    )
+    
+    class Page(object):
+        pass
 
-    Session = scoped_session(sessionmaker(autoflush=True, transactional=True, 
-    bind=config['pylons.g'].sa_engine)) 
-
-    metadata = MetaData() 
-
-    pages_table = Table('pages', metadata, 
-                    Column('title', types.Unicode(40), primary_key=True), 
-                    Column('content', types.Unicode(), default='') 
-                    ) 
+    orm.mapper(Page, pages_table)
 
 The first line imports Pylons' ``config`` object so we can bind our database ``Session`` to an engine -- more on that in a bit. The second line imports some useful SQLAlchemy objects such as the ``Table`` and ``Column`` classes. The third imports the mapper function which we use to map our table schemas to objects. The final import statement provides two functions for setting up the session and adding the contextual functionality. 
 

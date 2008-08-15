@@ -17,20 +17,20 @@ If you want to, you can get the WSGI application object from your Pylons configu
 
 .. code-block:: python 
 
-from paste.deploy import loadapp 
-wsgi_app = loadapp('config:/path/to/config.ini') 
+    from paste.deploy import loadapp 
+    wsgi_app = loadapp('config:/path/to/config.ini') 
 
 You can then serve the file using a WSGI server. Here is an example using the WSGI Reference Implementation to be included with Python 2.5: 
 
 .. code-block:: python 
 
-from paste.deploy import loadapp 
-wsgi_app = loadapp('config:/path/to/config.ini') 
+    from paste.deploy import loadapp 
+    wsgi_app = loadapp('config:/path/to/config.ini') 
 
-from wsgiref import simple_server 
-httpd = simple_server.WSGIServer(('',8000), simple_server.WSGIRequestHandler) 
-httpd.set_app(wsgi_app) 
-httpd.serve_forever() 
+    from wsgiref import simple_server 
+    httpd = simple_server.WSGIServer(('',8000), simple_server.WSGIRequestHandler) 
+    httpd.set_app(wsgi_app) 
+    httpd.serve_forever() 
 
 The ``paster serve`` command you will be used to using during the development of Pylons projects combines these two steps of creating a WSGI app from the config file and serving the resulting file to give the illusion that it is serving the config file directly. 
 
@@ -47,25 +47,25 @@ For example, if you added a ``hello`` controller by executing ``paster controlle
 
 .. code-block:: python 
 
-def HelloController(environ, start_response): 
-start_response('200 OK', [('Content-Type','text/html')]) 
-return ['Hello World!'] 
+    def HelloController(environ, start_response): 
+        start_response('200 OK', [('Content-Type','text/html')]) 
+        return ['Hello World!'] 
 
 or use ``yield`` statements like this: 
 
 .. code-block:: python 
 
-def HelloController(environ, start_response): 
-start_response('200 OK', [('Content-Type','text/html')]) 
-yield 'Hello ' 
-yield 'World!' 
+    def HelloController(environ, start_response): 
+        start_response('200 OK', [('Content-Type','text/html')]) 
+        yield 'Hello ' 
+        yield 'World!' 
 
 or use the standard Pylons ``Response`` object which is a valid WSGI response which takes care of calling ``start_response()`` for you: 
 
 .. code-block:: python 
 
-def HelloController(environ, start_response): 
-return Response('Hello World!') 
+    def HelloController(environ, start_response): 
+        return Response('Hello World!') 
 
 and you could use the ``render()`` and ``render_response()`` objects exactly like you would in a normal controller action. 
 
@@ -73,10 +73,11 @@ As well as writing your WSGI application as a function you could write it as a c
 
 .. code-block:: python 
 
-class HelloController: 
-def __call__(self, environ, start_response): 
-start_response('200 OK', [('Content-Type','text/html')]) 
-return ['Hello World!'] 
+    class HelloController: 
+
+        def __call__(self, environ, start_response): 
+            start_response('200 OK', [('Content-Type','text/html')]) 
+            return ['Hello World!'] 
 
 All the standard Pylons middleware defined in ``config/middleware.py`` is still available. 
 
@@ -87,15 +88,15 @@ There may be occasions where you don't want to replace your entire controller wi
 
 .. code-block:: python 
 
-from test.lib.base import * 
+    from test.lib.base import * 
 
-def wsgi_app(environ, start_response): 
-start_response('200 OK',[('Content-type','text/html')]) 
-return ['<html>\n<body>\nHello World!\n</body>\n</html>'] 
+    def wsgi_app(environ, start_response): 
+        start_response('200 OK',[('Content-type','text/html')]) 
+        return ['<html>\n<body>\nHello World!\n</body>\n</html>'] 
 
-class HelloController(BaseController): 
-def index(self): 
-return wsgi_app(request.environ, self.start_response) 
+    class HelloController(BaseController): 
+        def index(self): 
+            return wsgi_app(request.environ, self.start_response) 
 
 Configuring Middleware Within a Pylons Application 
 -------------------------------------------------- 
@@ -108,29 +109,29 @@ As an example, if you wanted to add middleware that added a new key to the envir
 
 .. code-block:: python 
 
-# YOUR MIDDLEWARE 
-# Put your own middleware here, so that any problems are caught by the error 
-# handling middleware underneath 
+    # YOUR MIDDLEWARE 
+    # Put your own middleware here, so that any problems are caught by the error 
+    # handling middleware underneath 
 
-class KeyAdder: 
-def __init__(self, app, key, value): 
-self.app = app 
-if '.' not in key: 
-raise Exception("WSGI environ keys must contain a '.' character") 
-self.key = key 
-self.value = value 
+    class KeyAdder: 
+    def __init__(self, app, key, value): 
+        self.app = app 
+        if '.' not in key: 
+            raise Exception("WSGI environ keys must contain a '.' character") 
+        self.key = key 
+        self.value = value 
 
-def __call__(self, environ, start_response): 
-environ[self.key] = self.value 
-return self.app(environ, start_response) 
+    def __call__(self, environ, start_response): 
+        environ[self.key] = self.value 
+        return self.app(environ, start_response) 
 
-app = KeyAdder(app, 'test.hello', 'Hello World') 
+    app = KeyAdder(app, 'test.hello', 'Hello World') 
 
 Then in your controller you could write: 
 
 .. code-block:: python 
 
-return Response(request.environ['test.hello']) 
+    return Response(request.environ['test.hello']) 
 
 and you would see your ``Hello World!`` message. 
 
@@ -150,7 +151,7 @@ Towards the end of the middleware stack in your project's ``config/middleware.py
 
 .. code-block:: python 
 
-app = Cascade([static_app, javascripts_app, app]) 
+    app = Cascade([static_app, javascripts_app, app]) 
 
 Passed a list of applications, ``Cascade`` will try each of them in turn. If one returns a 404 status code then the next application is tried until one of the applications returns a code other than ``200`` in which case its response is returned. If all applications fail, then the last application's failure response is used. 
 

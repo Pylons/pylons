@@ -4,6 +4,14 @@
 Python 2.3 Installation Instructions
 ====================================
 
+Advice of **end of support for Python 2.3**
+-------------------------------------------
+
+.. warning:: **END OF SUPPORT FOR PYTHON 2.3** This is the **LAST** version to support Python 2.3 **BEGIN UPGRADING OR DIE**
+
+Preparation
+-----------
+
 First, please note that Python 2.3 users on Windows will need to install `subprocess.exe`__ before beginning the installation (whereas Python 2.4 users on Windows do not). All windows users also should read the section :ref:`windows_notes` after installation. Users of Ubuntu/debian will also likely need to install the python-dev package.
 
 System-wide Install
@@ -45,3 +53,5 @@ Otherwise:
 
 
 .. __: http://www.pylonshq.com/download/subprocess-0.1-20041012.win32-py2.3.exe
+
+.. warning:: **END OF SUPPORT FOR PYTHON 2.3** This is the **LAST** version to support Python 2.3 **BEGIN UPGRADING OR DIE**

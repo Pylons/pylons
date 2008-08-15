@@ -23,6 +23,7 @@ any other module reference.
 By customizing the :file:`lib/helpers.py` module you can quickly add custom
 functions and classes for use in your templates.
 
+Helper functions are organized into modules by theme. All HTML generators are under the ``webhelpers_html`` package, except for a few third-party modules which are directly under ``webhelpers``. The webhelpers modules are separately documented, see :mod:`webhelpers`.
 
 .. _pagination:
 
@@ -306,7 +307,7 @@ Template ``list-partial.mako``:
 
     ${ c.employees.pager(
         'Page $page: $link_previous $link_next ~4~',
-        onclick="$('#page-area').load('%s'); return false;"
+        onclick="$('#my-page-area').load('%s'); return false;"
         ) }
     <ul>
     % for employee in c.employees:
@@ -370,3 +371,4 @@ and storing it in the session if it doesn't already exist.
 :func:`auth_token_hidden_field` creates a hidden field containing the authentication token.
 
 :func:`secure_form` is :func:`form` plus :func:`auth_token_hidden_field`.
+

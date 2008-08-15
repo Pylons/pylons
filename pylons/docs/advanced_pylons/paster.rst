@@ -1,12 +1,3 @@
-.. _advanced_pylons:
-
-===============
-Advanced Pylons
-===============
-
-To be added
-===========
-
 .. _paster:
 
 WSGI, CLI scripts

@@ -52,7 +52,22 @@ to begin with ``_`` will be sufficient:
 			"I can't be called from the web!"
 			return True
 
+Special methods
+---------------
 
+Special controller methods you may define:
+
+``__before__``
+    This method will be run before your action is, and should be
+    used for setting up variables/objects, restricting access to
+    other actions, or other tasks which should be executed before
+    the action is called.
+
+``__after__``
+    Method to run after the action is run. This method will
+    *always* be run after your method, even if it raises an
+    Exception or redirects.
+    
 Adding Controllers dynamically
 ------------------------------
 

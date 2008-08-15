@@ -8,20 +8,19 @@ Upgrading your Pylons Project
 ============================= 
 
 Pylons projects should be updated using the paster command create. In addition 
-to creating new projects, paster create when run over an existing project will 
-provide several ways to update the project template to the latest version. 
+to creating new projects, ``paster create`` when run within an existing project, 
+provides several ways to update the project template to the latest version. 
 
 Using this tool properly can make upgrading a fairly minor task. For the 
 purpose of this document, the project being upgraded will be called 'demoapp' 
-and all commands will use that name. 
+and all commands will use that name.
 
-Running paster create to upgrade 
--------------------------------- 
+Running ``paster create`` to upgrade 
+------------------------------------ 
 
-You'll first need to cd to the directory *above* your projects main directory. 
-The main directory is the one that contains your setup.py, setup.cfg, and 
-development.ini files. 
-
+First, navigate to the directory *above* the project's main directory. 
+The main directory is the one that contains the ``setup.py``, ``setup.cfg``, and 
+``development.ini`` files. 
 
 .. code-block:: bash 
 
@@ -36,19 +35,25 @@ Then run paster create on the project directory:
     /home/joe $ paster create demoapp -t pylons 
 
 
-paster will prompt you on how to handle conflicts and updates to the existing 
-project files. The options let you (hit the key in the parens to perform the 
+paster will issue prompts to allow the handling conflicts and updates to the existing 
+project files. The options available are (hit the key in the parens to perform the 
 operation): 
 
-    (d)iff them, and show you the changes between your projects file and the one 
-    that has changed in Pylons 
-    (b)ackup the file, and copy the new version into its place. The old one will 
-    end in .bak 
-    (y)es to overwrite the existing file with the new one. *Not recommended* since 
-    you will then have no way to see your existing one, unless you have seen 
-    the diff first and know there is no changes you're losing. 
-    (n)o to overwrite, and just keep your existing file. Also safe if you know 
-    that nothing has changed. 
+.. code-block:: text 
+
+    (d)iff them, and show the changes between the project files and the ones 
+    that have changed in Pylons
+ 
+    (b)ackup the file and copy the new version into its place. The backup file that
+    is created will have a ``.bak`` extension. 
+
+    (y)es to overwrite the existing file with the new one. This approach is generally 
+    not recommended as it does not allow the developer to view the content of the file
+    that will be replaced and it offers no opportunity for later recovery of the content.
+    The option can be made less intrepid by first viewing the diff to ascertain if any
+    changes will be lost in the overwriting. 
+
+    (n)o to overwrite, retain the existing file. Safe if nothing has changed. 
 
 It's recommended when upgrading your project that you always look at the diff 
 first to see what has changed. Then either overwrite your existing one if you are 
