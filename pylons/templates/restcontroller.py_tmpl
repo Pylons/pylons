@@ -56,6 +56,6 @@ class {{classname}}Controller(BaseController):
         pass
 
     def edit(self, id, format='html'):
-        """GET /{{nameprefix}}{{pluralname}}/id;edit: Form to edit an existing item."""
+        """GET /{{nameprefix}}{{pluralname}}/id/edit: Form to edit an existing item."""
         # url_for('{{nameprefix}}edit_{{singularname}}', id=ID)
         pass
