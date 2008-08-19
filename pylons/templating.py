@@ -98,56 +98,6 @@ template engine, and are used by the render functions.
     functions that :mod:`pylons.templating` comes with. The render_*
     functions look for the template loader to render the template.
 
-.. _custom-render:
-
-Writing your own render function
---------------------------------
-
-The default render function doesn't fully expose template language
-capabilities as various template languages have different sets of
-functionality. If you need to use specific features in Genshi, or
-another template language entirely, a custom render function should
-be made.
-
-Two helper functions for use with the render function make it easy to
-include the common Pylons globals that are useful in a template as well
-as enabling easy use of cache capabilities. The :func:`pylons_globals`
-and :func:`cached_template` functions can be used if desired.
-
-Generally, the custom render function should reside in your project's
-``lib/`` directory, probably in :file:`base.py`.
-
-Here's a sample Genshi render function as it would look in a project's
-``lib/base.py`` that doesn't fully render the result to a string, and
-rather than use :data:`c` assumes that a dict is passed in to be used
-in the templates global namespace. It also returns a Genshi stream
-instead the rendered string.
-
-.. code-block:: python
-    
-    from pylons.templating import pylons_globals
-    
-    def render(template_name, tmpl_vars):
-        # First, get the globals
-        globs = pylons_globals()
-
-        # Update the passed in vars with the globals
-        tmpl_vars.update(globs)
-        
-        # Grab a template reference
-        template = globs['app_globals'].genshi_loader.load(template_name)
-        
-        # Render the template
-        return template.generate(**tmpl_vars)
-
-In 6 short lines of Python code, you have a custom render function that
-makes it easy to get to the features of the template language you need.
-
-.. note::
-    
-    Importing the Pylons globals also makes it easy to get to ``g`` 
-    which is where your template language's persistent template loader
-    should be (if that applies to your chosen template language).
 
 Legacy Buffet templating plugin and render functions
 ====================================================

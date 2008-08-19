@@ -17,8 +17,8 @@ Contents
     concepts
     configuration
     controllers
-    models
     views
+    models
     logging
     i18n
     sessions

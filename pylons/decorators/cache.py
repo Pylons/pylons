@@ -14,9 +14,9 @@ except:
 log = logging.getLogger(__name__)
 
 def beaker_cache(key="cache_default", expire="never", type=None,
-    query_args=False, cache_headers=('content-type','content-length'), 
-    invalidate_on_startup=False,
-    **b_kwargs):
+                 query_args=False,
+                 cache_headers=('content-type', 'content-length'),
+                 invalidate_on_startup=False, **b_kwargs):
     """Cache decorator utilizing Beaker. Caches action or other
     function that returns a pickle-able object as a result.
 
@@ -38,13 +38,13 @@ def beaker_cache(key="cache_default", expire="never", type=None,
     ``cache_headers``
         A tuple of header names indicating response headers that
         will also be cached.
-     ``invalidate_on_startup``
+    ``invalidate_on_startup``
         If True, the cache will be invalidated each time the application
         starts or is restarted.
-        
+
     If cache_enabled is set to False in the .ini file, then cache is
     disabled globally.
-    
+
     """
     if invalidate_on_startup:
         starttime = time.time()
@@ -113,14 +113,13 @@ def beaker_cache(key="cache_default", expire="never", type=None,
 def create_cache_key(func, key_dict=None, self=None):
     """Get a cache namespace and key used by the beaker_cache decorator.
     
-        E.g.::
-            from pylons import cache
-            from pylons.decorators.cache import create_cache_key
-            namespace, key = create_cache_key(MyController.some_method)
-            cache.get_cache(namespace).remove(key)
+    Example::
+        from pylons import cache
+        from pylons.decorators.cache import create_cache_key
+        namespace, key = create_cache_key(MyController.some_method)
+        cache.get_cache(namespace).remove(key)
             
     """
-    
     if key_dict:
         cache_key = " ".join(["%s=%s" % (k, v) for k, v in key_dict.iteritems()])
     else:
