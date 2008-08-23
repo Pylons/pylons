@@ -112,20 +112,29 @@ htmlhelp_basename = 'Pylonsdoc'
 # ------------------------
 
 # The paper size ('letter' or 'a4').
-#latex_paper_size = 'letter'
+latex_paper_size = 'a4'
 
 # The font size ('10pt', '11pt' or '12pt').
 #latex_font_size = '10pt'
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, document class [howto/manual]).
-#latex_documents = []
+latex_documents = [
+  ('index', 'Pylons.tex', 'Pylons Documentation', 'Ben Bangert', 'manual', 'toctree_only'),
+]
 
 # Additional stuff for the LaTeX preamble.
-#latex_preamble = ''
+latex_preamble = '''
+\usepackage{palatino}
+\definecolor{TitleColor}{rgb}{0.7,0,0}
+\definecolor{InnerLinkColor}{rgb}{0.7,0,0}
+\definecolor{OuterLinkColor}{rgb}{0.8,0,0}
+\definecolor{VerbatimColor}{rgb}{0.985,0.985,0.985}
+\definecolor{VerbatimBorderColor}{rgb}{0.8,0.8,0.8}
+'''
 
 # Documents to append as an appendix to all manuals.
 #latex_appendices = []
 
 # If false, no module index is generated.
-#latex_use_modindex = True
+latex_use_modindex = False

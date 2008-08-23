@@ -7,40 +7,108 @@ Pylons Reference Documentation
    :height: 255
    :width: 780
 
-Contents
---------
+Getting Started with Pylons
+---------------------------
 
 .. toctree::
     :maxdepth: 2
 
     gettingstarted
     concepts
-    configuration
-    controllers
-    views
-    models
-    logging
-    i18n
-    sessions
-    caching
-    helpers
-    forms
-    webob
-    testing
-    upgrading
-    deployment
-    wsgi_support
-    python23_install
-    windowsnotes
-    security_policy_for_bugs
-    advanced_pylons/index
-    tutorials/index
-    thirdparty/index
-    modules/index
-    glossary
+
+Tutorials
+---------
 
 .. toctree::
     :maxdepth: 2
+
+    tutorials/index
+
+
+MVC Reference
+-------------
+
+.. toctree::
+    :maxdepth: 2
+
+    controllers
+    views
+    models
+
+Project Configuration and Logging
+---------------------------------
+
+.. toctree::
+    :maxdepth: 2
+
+    configuration
+    logging
+
+Forms, Validation, and Helpers
+------------------------------
+
+.. toctree::
+    :maxdepth: 2
+
+    helpers
+    forms
+
+Internationalization, Sessions, and Caching
+-------------------------------------------
+
+.. toctree::
+    :maxdepth: 2
+
+    i18n
+    sessions
+    caching
+
+Request and Response Object Reference
+-------------------------------------
+
+.. toctree::
+    :maxdepth: 2
+
+    webob
+
+Testing, Upgrading, and Deploying
+---------------------------------
+
+.. toctree::
+    :maxdepth: 2
+
+    testing
+    upgrading
+    deployment
+
+Installation for Windows / Python 2.3
+-------------------------------------
+
+.. toctree::
+    :maxdepth: 2
+
+    python23_install
+    windowsnotes
+
+Advanced Pylons
+---------------
+
+.. toctree::
+    :maxdepth: 2
+
+    security_policy_for_bugs
+    wsgi_support
+    advanced_pylons/index
+
+Module Listing
+--------------
+
+.. toctree::
+    :maxdepth: 2
+
+    modules/index
+    thirdparty/index
+    glossary
 
 Indices and tables
 ==================

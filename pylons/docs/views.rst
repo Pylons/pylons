@@ -94,7 +94,7 @@ Strict vs Attribute-Safe tmpl_context objects
 
 The :term:`tmpl_context` object is created at the beginning of every request, and by default is an instance of the :class:`~pylons.util.AttribSafeContextObj` class, which is an Attribute-Safe object. This means that accessing attributes on it that do **not** exist will return an empty string **instead** of raising an :exc:`AttributeError` error.
 
-This can be convenient for use in templates since it can act as a default::
+This can be convenient for use in templates since it can act as a default:
 
 .. code-block:: html+mako
     
