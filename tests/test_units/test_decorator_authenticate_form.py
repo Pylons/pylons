@@ -56,3 +56,10 @@ class TestAuthenticateFormDecorator(TestWSGIController):
                                  extra_environ=self.environ,
                                  expect_errors=True)
         assert 'Authenticated' in response
+
+        self.environ['pylons.routes_dict']['action'] = 'protected'
+        response = self.app.put('/protected',
+                                params={secure_form_tag.token_key: token},
+                                extra_environ=self.environ,
+                                expect_errors=True)
+        assert 'Authenticated' in response
