@@ -5,7 +5,7 @@ except ImportError:
     use_setuptools()
     from setuptools import setup, find_packages
 
-version = '0.9.7rc1'
+version = '0.9.7rc2'
 
 setup(
     name="Pylons",
@@ -75,7 +75,7 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
         "Routes>=1.9.2", "WebHelpers>=0.6.1", "Beaker>=1.0",
         "Paste>=1.7.1", "PasteDeploy>=1.3.2", "PasteScript>=1.6.3",
         "FormEncode>=1.0.1", "simplejson>=1.8.1", "decorator>=2.2.0",
-        "nose>=0.10.3", "Mako>=0.2.2", "WebOb>=0.9.2", "WebError>=0.9",
+        "nose>=0.10.3", "Mako>=0.2.2", "WebOb==dev,>=0.9.3dev-r7504", "WebError>=0.9",
         "Tempita>=0.2",
     ],
     dependency_links=[

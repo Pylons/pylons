@@ -42,6 +42,9 @@ class BasicWSGIController(WSGIController):
     def nothing(self):
         return
 
+    def params(self):
+        return str(sorted(pylons.request.params.mixed().items()))
+
 
 class FilteredWSGIController(WSGIController):
     def __init__(self):
@@ -124,6 +127,15 @@ class TestBasicWSGI(TestWSGIController):
     def test_unicode_action(self):
         self.baseenviron['pylons.routes_dict']['action'] = u'ОбсуждениеКомпаний'
         resp = self.app.get('/', status=404)
+
+    def test_params(self):
+        self.baseenviron['pylons.routes_dict']['action'] = u'params'
+        resp = self.app.get('/?foo=bar')
+        assert "[('foo', u'bar')]" in resp, str(resp)
+        resp = self.app.post('/?foo=bar', params=dict(snafu='snafoo'))
+        assert "[('foo', u'bar'), ('snafu', u'snafoo')]" in resp, str(resp)
+        resp = self.app.put('/?foo=bar', params=dict(snafu='snafoo'))
+        assert "[('foo', u'bar'), ('snafu', u'snafoo')]" in resp, str(resp)
 
 class TestFilteredWSGI(TestWSGIController):
     def __init__(self, *args, **kargs):
