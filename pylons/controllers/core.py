@@ -161,7 +161,7 @@ class WSGIController(object):
                 raise NotImplementedError('Action %r is not implemented' %
                                           action)
             else:
-                response = HTTPNotFound().exception
+                response = HTTPNotFound()
         return response
     
     def __call__(self, environ, start_response):
