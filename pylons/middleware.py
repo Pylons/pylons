@@ -9,7 +9,7 @@ from paste.errordocument import StatusBasedForward
 from paste.recursive import RecursiveMiddleware
 from paste.urlparser import StaticURLParser
 from weberror.evalexception import EvalException
-from weberror.exceptions.errormiddleware import ErrorMiddleware
+from weberror.errormiddleware import ErrorMiddleware
 from webob import Request
 from webhelpers.html import literal
 
