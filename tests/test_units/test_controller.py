@@ -43,7 +43,9 @@ class BasicWSGIController(WSGIController):
         return
 
     def params(self):
-        return str(sorted(pylons.request.params.mixed().items()))
+        items = pylons.request.params.mixed().items()
+        items.sort()
+        return str(items)
 
 
 class FilteredWSGIController(WSGIController):
