@@ -70,3 +70,6 @@ class PylonsPlugin(nose.plugins.Plugin):
         sys.path.insert(0, path)
         pkg_resources.working_set.add_entry(path)
         self.app = pylonsapp = loadapp('config:' + self.config_file, relative_to=path)
+        
+        # For tests that utilize the i18n _ object, initialize a NullTranslator
+        pylons.translator._push_object(_get_translator(pylons.config.get('lang')))
