@@ -61,7 +61,7 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
 
 
 """ % version,
-    keywords='web wsgi framework sqlalchemy formencode mako templates buffet',
+    keywords='web wsgi framework sqlalchemy formencode mako templates',
     license='BSD',
     author='Ben Bangert, Philip Jenvey, James Gardner',
     author_email='ben@groovie.org, pjenvey@underboss.org',
