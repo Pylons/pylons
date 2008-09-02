@@ -7,9 +7,13 @@ Module Contents
 ---------------
 
 .. autoclass:: Request
-    :members:    
+    :members:
+    :undoc-members:
+    :show-inheritance:
 .. autoclass:: Response
     :members:
+    :undoc-members:
+    :show-inheritance:
 .. autofunction:: abort
 .. autofunction:: etag_cache
 .. autofunction:: forward
