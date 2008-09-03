@@ -1,5 +1,6 @@
 recursive-include pylons/templates *
 recursive-include pylons/media *
+recursive-include tests *
 include CHANGELOG
 include LICENSE
 include UPGRADING
