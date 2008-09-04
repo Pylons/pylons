@@ -1,10 +1,5 @@
 :mod:`webhelpers.markdown` -- Markdown
 ======================================
-.. _webhelpers_markdown:
-
-========
-Markdown
-========
 
 :mod:`webhelpers.markdown`
 --------------------------

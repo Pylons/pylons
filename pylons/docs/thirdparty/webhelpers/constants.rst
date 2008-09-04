@@ -1,10 +1,5 @@
 :mod:`~webhelpers.constants` -- Useful constants (Geo-lists)
 ============================================================
-.. _webhelpers_constants:
-
-=========
-Constants
-=========
 
 :mod:`webhelpers.constants`
 ----------------------------

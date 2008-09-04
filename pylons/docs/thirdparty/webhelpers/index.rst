@@ -1,10 +1,5 @@
 :mod:`webhelpers` -- Web Helpers package
 ========================================
-.. _webhelpers:
-
-============
-Web Helpers
-============
 
 .. warning:: Pertinent to *WebHelpers 0.6*. **NB:** Significant changes from WebHelpers 0.3
 

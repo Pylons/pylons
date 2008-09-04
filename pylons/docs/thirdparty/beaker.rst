@@ -1,11 +1,5 @@
-:mod:`beaker` -- Caching
-========================
-.. _beaker:
-
-======
-Beaker
-======
-
+:mod:`beaker` -- Beaker Caching
+===============================
 
 Cache
 -----

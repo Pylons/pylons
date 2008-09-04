@@ -1,11 +1,5 @@
 :mod:`~webhelpers.paginate` -- Paging and pagination
 ====================================================
-.. _webhelpers_paginate:
-
-
-==========
-Pagination
-==========
 
 :mod:`webhelpers.paginate`
 --------------------------

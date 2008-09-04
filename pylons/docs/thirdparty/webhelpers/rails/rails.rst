@@ -1,10 +1,5 @@
-:mod:`~webhelpers.rails` *(deprecated)*
-=======================================
-.. _webhelpers_rails:
-
-================
-WebHelpers Rails
-================
+:mod:`~webhelpers.rails` WebHelpers Rails *(deprecated)*
+========================================================
 
 .. warning:: Deprecated in 0.6
 

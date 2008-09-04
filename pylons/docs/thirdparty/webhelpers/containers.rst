@@ -1,11 +1,6 @@
 :mod:`~webhelpers.containers` Handy Containers
 ==============================================
 
-.. _webhelpers_containers:
-
-==========
-Containers
-==========
 
 :mod:`webhelpers.containers`
 ----------------------------

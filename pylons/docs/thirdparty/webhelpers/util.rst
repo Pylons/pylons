@@ -1,12 +1,6 @@
 :mod:`~webhelpers.util` -- Utilities
 ====================================
 
-.. _webhelpers_util:
-
-==========
-Utilities
-==========
-
 :mod:`webhelpers.util`
 ----------------------
 

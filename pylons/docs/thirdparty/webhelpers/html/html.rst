@@ -1,10 +1,5 @@
 :mod:`webhelpers.html` -- HTML handling
 ========================================
-.. _webhelpers_html:
-
-=============
-HTML handling
-=============
 
 :mod:`webhelpers.html.builder`
 -------------------------------

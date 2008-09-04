@@ -1,12 +1,6 @@
 :mod:`~webhelpers.date` -- Date helpers
 =======================================
 
-.. _webhelpers_date:
-
-====
-Date
-====
-
 :mod:`webhelpers.date`
 ----------------------
 

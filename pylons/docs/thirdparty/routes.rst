@@ -1,11 +1,6 @@
 :mod:`routes` -- Route and Mapper core classes
 ==============================================
 
-.. _routes_base: Route and Mapper core classes
-
-=============================
-Route and Mapper core classes
-=============================
 
 :mod:`routes.base`
 ------------------

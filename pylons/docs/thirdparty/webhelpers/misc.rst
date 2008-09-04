@@ -1,10 +1,5 @@
 :mod:`~webhelpers.misc` -- Miscellaneous helpers
 ================================================
-.. _webhelpers_misc:
-
-=============
-Miscellaneous
-=============
 
 :mod:`webhelpers.misc`
 ----------------------

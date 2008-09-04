@@ -1,10 +1,5 @@
 :mod:`~webhelpers.text` -- Text helpers
 =======================================
-.. _webhelpers_text:
-
-============
-Text helpers
-============
 
 :mod:`webhelpers.text`
 ----------------------

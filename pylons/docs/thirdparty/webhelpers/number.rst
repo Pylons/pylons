@@ -1,10 +1,5 @@
 :mod:`~webhelpers.number` -- Numbers and statistics helpers
 ===========================================================
-.. _webhelpers_number:
-
-=================
-Numbers and stats
-=================
 
 :mod:`webhelpers.number`
 ------------------------

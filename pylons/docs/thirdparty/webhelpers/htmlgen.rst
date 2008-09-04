@@ -1,11 +1,6 @@
 :mod:`~webhelpers.htmlgen` *(deprecated)*
 =========================================
 
-.. _webhelpers_htmlgen:
-
-=======
-htmlgen
-=======
 
 :mod:`webhelpers.htmlgen`
 -------------------------

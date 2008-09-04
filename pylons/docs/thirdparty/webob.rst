@@ -1,10 +1,5 @@
 :mod:`webob` -- WebOb
 =====================
-.. _webob:
-
-=====
-WebOb
-=====
 
 .. currentmodule:: webob
 .. automodule:: webob

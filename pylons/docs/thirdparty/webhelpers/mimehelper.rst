@@ -1,10 +1,5 @@
 :mod:`~webhelpers.mimehelper` -- MIMEtypes helper
 =================================================
-.. _webhelpers_mimehelper:
-
-=========
-Mimetypes
-=========
 
 :mod:`webhelpers.mimehelper`
 ----------------------------

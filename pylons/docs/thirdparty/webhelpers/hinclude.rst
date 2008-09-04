@@ -1,10 +1,5 @@
 :mod:`~webhelpers.hinclude` *(deprecated)*
 ==========================================
-.. _webhelpers_hinclude:
-
-========
-hinclude
-========
 
 :mod:`webhelpers.hinclude`
 --------------------------

@@ -1,11 +1,5 @@
-:mod:`~webhelpers.pagination` *(part deprecated)*
-=================================================
-
-.. _webhelpers_pagination:
-
-=====================
-WebHelpers Pagination
-=====================
+:mod:`~webhelpers.pagination` -- WebHelpers Pagination *(part deprecated)*
+==========================================================================
 
 :mod:`~webhelpers.pagination.links`
 -----------------------------------

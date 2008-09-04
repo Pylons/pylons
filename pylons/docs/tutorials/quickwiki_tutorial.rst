@@ -86,7 +86,7 @@ SQLAlchemy provides a full suite of well known enterprise-level persistence patt
 The most basic way of using SQLAlchemy is with explicit sessions where you create ``Session`` objects as needed. Pylons applications typically employ a slightly more sophisticated setup using SQLAlchemy 0.4's "contextual," thread-local sessions, via ``scoped_session``. With this configuration, the application can use a single ``Session`` instance per web request, without the need to pass it around explicitly. Instantiating a new ``Session`` will actually find an existing one in the current thread if available. There are further details in the `SQLAlchemy documentation on the Session <http://www.sqlalchemy.org/docs/04/session.html#unitofwork_contextual>`_. 
 
 .. Note:: 
-    It is important to recognize the difference between SQLAlchemy's (or possibly another DB abstraction layer's) ``Session`` object and Pylons' standard ``session`` (with a lowercase 's') for web requests. See :ref:`beaker` for more on the latter. It is customary to reference the database session by ``model.Session`` outside of model classes. 
+    It is important to recognize the difference between SQLAlchemy's (or possibly another DB abstraction layer's) ``Session`` object and Pylons' standard ``session`` (with a lowercase 's') for web requests. See :mod:`beaker` for more on the latter. It is customary to reference the database session by ``model.Session`` outside of model classes. 
 
 
 Now add the following to the end of the contents of your ``model/__init__.py`` file: 
