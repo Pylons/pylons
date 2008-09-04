@@ -471,7 +471,7 @@ Chainsaw on OS X):
 .. image:: _static/Pylons_Stack-Chainsaw-OSX.png 
     :width: 900 
     :height: 563 
-    :target: _/static/Pylons_Stack-Chainsaw-OSX.png 
+    :target: _static/Pylons_Stack-Chainsaw-OSX.png 
 
 Alternate Logging Configuration style
 =====================================

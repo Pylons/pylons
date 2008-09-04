@@ -7,7 +7,7 @@ Quickwiki tutorial
 Introduction 
 ============ 
 
-If you haven't done so already read the `installation instructions </display/pylonsdocs/Installing+Pylons>`_ and `getting started </display/pylonsdocs/Getting+Started>`_ guide. 
+If you haven't done so already read the :ref:`getting_started` guide. 
 
 In this tutorial we are going to create a working wiki from scratch using Pylons 0.9.6 and SQLAlchemy. Our wiki will allow visitors to add, edit or delete formatted wiki pages. 
 
@@ -55,11 +55,7 @@ Note that there is also currently a small bug where running the command doesn't 
 Developing QuickWiki 
 ==================== 
 
-If you skipped the "Starting at the End" section you will need to assure that you have Pylons installed. See the `installation instructions </display/pylonsdocs/Installing+Pylons>`_, or in a nutshell: 
-
-.. code-block:: bash 
-
-    $ easy_install -U Pylons>=0.9.6 
+If you skipped the "Starting at the End" section you will need to assure that you have Pylons installed. See the :ref:`getting_started`.
 
 Then create your project: 
 
@@ -90,7 +86,7 @@ SQLAlchemy provides a full suite of well known enterprise-level persistence patt
 The most basic way of using SQLAlchemy is with explicit sessions where you create ``Session`` objects as needed. Pylons applications typically employ a slightly more sophisticated setup using SQLAlchemy 0.4's "contextual," thread-local sessions, via ``scoped_session``. With this configuration, the application can use a single ``Session`` instance per web request, without the need to pass it around explicitly. Instantiating a new ``Session`` will actually find an existing one in the current thread if available. There are further details in the `SQLAlchemy documentation on the Session <http://www.sqlalchemy.org/docs/04/session.html#unitofwork_contextual>`_. 
 
 .. Note:: 
-    It is important to recognize the difference between SQLAlchemy's (or possibly another DB abstraction layer's) ``Session`` object and Pylons' standard ``session`` (with a lowercase 's') for web requests. See `Beaker <beaker>`_ for more on the latter. It is customary to reference the database session by ``model.Session`` outside of model classes. 
+    It is important to recognize the difference between SQLAlchemy's (or possibly another DB abstraction layer's) ``Session`` object and Pylons' standard ``session`` (with a lowercase 's') for web requests. See :ref:`beaker` for more on the latter. It is customary to reference the database session by ``model.Session`` outside of model classes. 
 
 
 Now add the following to the end of the contents of your ``model/__init__.py`` file: 
@@ -121,7 +117,7 @@ After the imports we setup our ``metadata`` object which is used when defining a
 
 `SQLAlchemy table reflection docs <http://www.sqlalchemy.org/docs/04/metadata.html#metadata_tables_reflecting>`_ 
 
-.. Note:: A primary key is a unique ID for each row in a database table. In the example above we are using the page title as a natural primary key. Some people prefer to use integer primary keys for all tables, so-called surrogate primary keys. The author of this tutorial uses both methods in his own code and is not advocating one method over the other, it is important that you choose the best database structure for your application. See the Pylons Cookbook for `a quick general overview of relational databases <pylonscookbook/Relational+databases+for+people+in+a+hurry>`_ if you're not familiar with these concepts. 
+.. Note:: A primary key is a unique ID for each row in a database table. In the example above we are using the page title as a natural primary key. Some people prefer to use integer primary keys for all tables, so-called surrogate primary keys. The author of this tutorial uses both methods in his own code and is not advocating one method over the other, it is important that you choose the best database structure for your application. See the Pylons Cookbook for `a quick general overview of relational databases <http://wiki.pylonshq.com/display/pylonscookbook/Relational+databases+for+people+in+a+hurry>`_ if you're not familiar with these concepts. 
 
 A core philosophy of SQLAlchemy is that tables and domain classes are different beasts. So next, we'll create the Python class that will represent the pages of our wiki and map these domain objects to rows in the ``pages`` table using a mapper. In a more complex application, you could break out model classes into separate ``.py`` files in your ``model`` directory, but for sake of simplicity in this case, we'll just stick to ``__init__.py``. 
 
@@ -506,7 +502,7 @@ We can spruce it up a little by adding the stylesheet we linked to in the ``temp
     border-top: 1px solid #000; 
     } 
 
-When you run the example you will notice that the word ``QuickWiki`` has been turned into a hyperlink by the ``get_wiki_content()`` method we added to our ``Page`` domain object earlier. You can click the link and will see an example of the new page screen from the ``new_page.mako`` template. If you follow the ``Create the page`` link you will see the Pylons automatic error handler kick in to tell you ``Action edit is not implemented``. Well, we better write it next, but before we do, have a play with the `interactive debugger <Interactive+Application+Debugging>`_, try clicking on the ``+`` or ``>>`` arrows and you will be able to interactively debug your application. It is a tremendously useful tool. 
+When you run the example you will notice that the word ``QuickWiki`` has been turned into a hyperlink by the ``get_wiki_content()`` method we added to our ``Page`` domain object earlier. You can click the link and will see an example of the new page screen from the ``new_page.mako`` template. If you follow the ``Create the page`` link you will see the Pylons automatic error handler kick in to tell you ``Action edit is not implemented``. Well, we better write it next, but before we do, have a play with the :ref:`interactive_debugging`, try clicking on the ``+`` or ``>>`` arrows and you will be able to interactively debug your application. It is a tremendously useful tool. 
 
 edit() 
 ------ 

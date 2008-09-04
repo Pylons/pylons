@@ -8,7 +8,7 @@ Date
 ====
 
 :mod:`webhelpers.date`
------------------------
+----------------------
 
 .. currentmodule:: webhelpers.date
 

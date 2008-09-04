@@ -142,9 +142,21 @@ If you _really_ want tags without training slashes (e.g., ``<br>`)`, you can
 .. autoclass:: UnfinishedLiteral
     :members:
 .. autoclass:: HTMLBuilder
-    :members:
 .. autofunction:: make_tag
-.. autofunction:: literal
+.. function:: literal
+
+    Represents an HTML literal.
+    
+    This subclass of unicode has a ``.__html__()`` method that is 
+    detected by the ``escape()`` function.
+    
+    Also, if you add another string to this string, the other string 
+    will be quoted and you will get back another literal object.  Also
+    ``literal(...) % obj`` will quote any value(s) from ``obj``.  If
+    you do something like ``literal(...) + literal(...)``, neither
+    string will be changed because ``escape(literal(...))`` doesn't
+    change the original literal.
+
 .. autofunction:: lit_sub
 .. autofunction:: escape
 .. autoclass:: _EscapedItem

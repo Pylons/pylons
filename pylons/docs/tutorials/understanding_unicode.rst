@@ -473,7 +473,7 @@ takes place when the ``request`` object is constructed.
 parameters: what's provided is a copy of the original ``FieldStorage`` object 
 with a unicode version of its ``filename`` attribute. 
 
-See `File Uploads <Form+Handling+in+Pylons#file-uploads>`_ for more information on working with file uploads/``FieldStorage`` objects. 
+See :ref:`file_uploads` for more information on working with file uploads/``FieldStorage`` objects. 
 
 .. note:: 
 

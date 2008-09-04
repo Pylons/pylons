@@ -7,7 +7,7 @@ Feed Generator
 ==============
 
 :mod:`webhelpers.feedgenerator`
---------------------------------
+-------------------------------
 
 .. currentmodule:: webhelpers.feedgenerator
 

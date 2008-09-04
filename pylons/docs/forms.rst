@@ -90,6 +90,8 @@ Creating forms can also be done using Pylons' `built in helpers <http://pylonshq
 
 You can also make use of the built-in script.aculo.us functionality or override the default behavior of any of the helpers by defining a new function of the same name at the bottom of your project's `lib/helpers.py` file. 
 
+.. _file_uploads:
+
 File Uploads 
 ============ 
 File upload fields are created by using the `file` input field type. The `file_field` helper provides a shortcut for creating these form fields: 

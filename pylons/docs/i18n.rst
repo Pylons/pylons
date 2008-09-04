@@ -161,7 +161,7 @@ supports extracting translatable strings from Python templating languages
 Using Babel 
 ===========
 
-.. image:: http://www.edgewall.org/gfx/babel_logo.png 
+.. image:: _static/babel_logo.png 
 
 To use Babel, you must first install it via easy_install. Run the command: 
 

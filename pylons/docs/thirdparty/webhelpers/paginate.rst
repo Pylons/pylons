@@ -8,7 +8,7 @@ Pagination
 ==========
 
 :mod:`webhelpers.paginate`
----------------------------
+--------------------------
 
 .. currentmodule:: webhelpers.paginate
 

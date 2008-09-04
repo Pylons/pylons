@@ -123,7 +123,7 @@ Edit your controller so it looks like this:
         start_response('200 OK', [('Content-type', 'text/plain')])
         return ["Hello World"]
 
-When hooking up other WSGI applications, they will expect the part of the URL that was used to get to this controller to have been moved into :envvar:`SCRIPT_NAME`. :mod:`Routes` can properly adjust the environ if a :term:`map route` for this controller is added to the :file:`config/routing.py` file:
+When hooking up other WSGI applications, they will expect the part of the URL that was used to get to this controller to have been moved into :envvar:`SCRIPT_NAME`. :mod:`Routes` can properly adjust the environ if a map route for this controller is added to the :file:`config/routing.py` file:
 
 .. code-block:: python
 

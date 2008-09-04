@@ -78,6 +78,7 @@ Testing, Upgrading, and Deploying
     :maxdepth: 2
 
     testing
+    debugging
     upgrading
     deployment
 

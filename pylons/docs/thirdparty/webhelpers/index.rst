@@ -10,8 +10,10 @@ Web Helpers
 
 .. automodule:: webhelpers
 
+
+=======
 Current
--------
+=======
 
 .. toctree::
     :maxdepth: 1
@@ -31,8 +33,9 @@ Current
     textile
     util
 
+==========
 Deprecated
-----------
+==========
 
 .. toctree::
     :maxdepth: 1

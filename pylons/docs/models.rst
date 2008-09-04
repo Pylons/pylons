@@ -53,7 +53,7 @@ Most of these provide a higher-level ORM, either by combining the table definiti
 
 If you're familiar with ActiveRecord, used in Ruby on Rails, then you may want to use the `Elixir <http://elixir.ematia.de/>`_ layer on top of SQLAlchemy.
 
-In addition, you can check the `Pylons Cookbook <pylonscookbook:Home>`_ for a tutorial, or look at the pylons-discuss list archive, especially `this thread <http://groups.google.com/group/pylons-discuss/browse_thread/thread/5be6a0c084a96412?hl=en>`_. 
+In addition, you can check the `Pylons Cookbook <http://wiki.pylonshq.com/display/pylonscookbook/Home>`_ for a tutorial, or look at the pylons-discuss list archive, especially `this thread <http://groups.google.com/group/pylons-discuss/browse_thread/thread/5be6a0c084a96412?hl=en>`_. 
 
 `Tesla <http://code.google.com/p/tesla-pylons-elixir/>`_ is a framework built on top of Pylons and Elixir/SQLAlchemy. 
 `Tutorial <http://code.google.com/p/tesla-pylons-elixir/wiki/GettingStarted>`_ (not sure if it's current?)
@@ -105,7 +105,7 @@ The `SQLAlchemy manual <http://www.sqlalchemy.org/docs/04/>`_ should be your nex
 
 Throughout this chapter, `myapp` refers to your Pylons application's package directory (e.g., MyApp-1.0.1.egg/myapp). 
 
-The Pylons development version (which will become Pylons 0.9.7) will ask when you create your application whether you intend to use SQLAlchemy, and will preconfigure it for you. In this case, you'll find that many of the steps below are already done. Pylons 0.9.6 does not do this, so you'll have to make all the changes by hand. Under the Attachments tab on this page you'll find a Pylons 0.9.6.1 application containing the code here. The application won't *do* anything because we've neglected the user interface, but you can examine the code or paste it into your own application. The `Pylons Cookbook <pylonscookbook:Home>`_ contains more advanced database tutorials. 
+The Pylons development version (which will become Pylons 0.9.7) will ask when you create your application whether you intend to use SQLAlchemy, and will preconfigure it for you. In this case, you'll find that many of the steps below are already done. Pylons 0.9.6 does not do this, so you'll have to make all the changes by hand. Under the Attachments tab on this page you'll find a Pylons 0.9.6.1 application containing the code here. The application won't *do* anything because we've neglected the user interface, but you can examine the code or paste it into your own application. The `Pylons Cookbook <http://wiki.pylonshq.com/display/pylonscookbook/Home>`_ contains more advanced database tutorials. 
 
 Install SQLAlchemy
 ------------------

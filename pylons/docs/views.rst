@@ -380,6 +380,6 @@ Selecting 'View Source' in the browser should reveal the following output:
     The `Mako documentation <http://www.makotemplates.org/docs/>`_
         Reasonably straightforward to follow
 
-    See the `official Pylons docs on unicode support <i18n>`_ 
+    See the :ref:`i18n` 
         Provides more help on making your application more worldly.
 

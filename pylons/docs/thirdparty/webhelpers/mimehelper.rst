@@ -7,7 +7,7 @@ Mimetypes
 =========
 
 :mod:`webhelpers.mimehelper`
------------------------------
+----------------------------
 
 .. currentmodule:: webhelpers.mimehelper
 

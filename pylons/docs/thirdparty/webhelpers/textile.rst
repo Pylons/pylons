@@ -12,7 +12,3 @@ Textile
 .. currentmodule:: webhelpers.textile
 
 .. autofunction:: textile
-.. autoclass:: Textiler
-    :members:
-
-
