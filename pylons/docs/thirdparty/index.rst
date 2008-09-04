@@ -9,7 +9,6 @@ Third-party components
 
    beaker
    formencode_api
-   routes_manual
    routes
    weberror
    webhelpers/index
