@@ -63,14 +63,6 @@ Internationalization, Sessions, and Caching
     sessions
     caching
 
-Request and Response Object Reference
--------------------------------------
-
-.. toctree::
-    :maxdepth: 2
-
-    webob
-
 Testing, Upgrading, and Deploying
 ---------------------------------
 
