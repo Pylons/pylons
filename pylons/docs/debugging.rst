@@ -55,7 +55,7 @@ Since we want to explore the ``session`` and ``request``, we'll need to bind the
 
 Here's what exploring the Traceback from the above example looks like (Excerpt of the relevant portion): 
 
-.. image:: _static/doctraceback.gif 
+.. image:: _static/doctraceback.png
 
 Email Options 
 -------------

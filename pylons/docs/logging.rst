@@ -469,8 +469,8 @@ Here's how the Pylons stack's log messages can look with colors defined (using
 Chainsaw on OS X): 
 
 .. image:: _static/Pylons_Stack-Chainsaw-OSX.png 
-    :width: 900 
-    :height: 563 
+    :width: 900px
+    :height: 563px
 
 Alternate Logging Configuration style
 =====================================

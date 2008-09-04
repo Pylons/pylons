@@ -35,7 +35,7 @@ Container
 .. autoclass:: DBMNamespaceManager
 .. autoclass:: FileContainer
 .. autoclass:: FileNamespaceManager
-.. autoclass:: CreationAbortedError
+.. autoexception:: CreationAbortedError
 
 
 Database

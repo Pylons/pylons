@@ -9,7 +9,7 @@ XXX: how to package an app, deployment in package format, etc.
 Running Pylons apps with webservers
 ===================================
 
-This document assumes that you have already installed a Pylons web application, and `run-config`_ for it.  Pylons applications use `PasteDeploy <http://pythonpaste.org/deploy/>`_ to  start up your Pylons WSGI application, and can use the flup package to provide a Fast-CGI, SCGI, or AJP connection to it. 
+This document assumes that you have already installed a Pylons web application, and :ref:`run-config` for it.  Pylons applications use `PasteDeploy <http://pythonpaste.org/deploy/>`_ to  start up your Pylons WSGI application, and can use the flup package to provide a Fast-CGI, SCGI, or AJP connection to it. 
 
 Using Fast-CGI 
 ============== 
@@ -174,7 +174,7 @@ Say you have written a Pylons wiki application called ``wiki``. When a webmaster
 
 .. code-block:: bash 
 
-$ paster make-config wiki wiki_production.ini 
+    $ paster make-config wiki wiki_production.ini 
 
 He will then edit the config file for his production environment with the settings he wants and then run this command to setup the application: 
 
@@ -382,9 +382,9 @@ then run the following command from your project's main directory where the ``se
     The ``pudge`` command is currently disabled by default. Run the following command 
     first to enable it: 
 
-    code-block:: bash 
+    ..code-block:: bash 
 
-    $ python setup.py addcommand -p buildutils.pudge_command 
+        $ python setup.py addcommand -p buildutils.pudge_command 
 
     Thanks to Yannick Gingras for the tip. 
 

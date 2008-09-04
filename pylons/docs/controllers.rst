@@ -7,8 +7,8 @@ Controllers
 .. image:: _static/pylon2.jpg
    :alt: 
    :align: left
-   :height: 450
-   :width: 368
+   :height: 450px
+   :width: 368px
 
 In the :term:`MVC` paradigm the *controller* interprets the inputs, commanding
 the model and/or the view to change as appropriate. Under Pylons, this concept
@@ -232,7 +232,7 @@ An Atom-Style REST Controller for Users
 
 .. code-block:: python
 
-    # From http://pylonshq.com/pasties/503
+    # From http://pylonshq.com/pasties/503
     import logging
 
     from simplejson import dumps

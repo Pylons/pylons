@@ -12,7 +12,7 @@ Getting Started with Pylons
 
 .. toctree::
     :maxdepth: 2
-
+    
     gettingstarted
     concepts
 
@@ -23,7 +23,6 @@ Tutorials
     :maxdepth: 2
 
     tutorials/index
-
 
 MVC Reference
 -------------
@@ -93,6 +92,7 @@ Advanced Pylons
     wsgi_support
     advanced_pylons/index
 
+
 Module Listing
 --------------
 
@@ -103,8 +103,10 @@ Module Listing
     thirdparty/index
     glossary
 
-Indices and tables
-==================
+For further information, indices are available:
+
+Indices
+=======
 
 * :ref:`genindex`
 * :ref:`modindex`

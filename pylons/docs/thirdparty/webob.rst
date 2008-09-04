@@ -11,6 +11,7 @@ WebOb
 
 .. autoclass:: Request
     :members:
+
 .. autoclass:: Response
     :members:
 

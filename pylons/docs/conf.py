@@ -120,7 +120,8 @@ latex_paper_size = 'a4'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, document class [howto/manual]).
 latex_documents = [
-  ('index', 'Pylons.tex', 'Pylons Documentation', 'Ben Bangert', 'manual', 'toctree_only'),
+  ('index', 'Pylons.tex', 'Pylons Documentation', 
+   'Ben Bangert, James Gardner, Phil Jenvey with contributions from many others...', 'manual', 'toctree_only'),
 ]
 
 # Additional stuff for the LaTeX preamble.

@@ -123,26 +123,33 @@ The created directory structure with links to more information:
     - development.ini - :ref:`run-config`
     - docs
     - ez_setup.py
-    - helloworld
-        - __init__.py
-        - config
-            - environment.py - :ref:`environment-config`
-            - middleware.py - :ref:`middleware-config`
-            - routing.py - :ref:`url-config`
-        - controllers - :ref:`controllers`
-        - lib
-            - app_globals.py - :term:`app_globals`
-            - base.py
-            - helpers.py - :ref:`helpers`
-        - model - :ref:`models`
-        - public
-        - templates - :ref:`templates`
-        - tests - :ref:`testing`
-        - websetup.py - :ref:`run-config`
+    - helloworld (See nested :ref:`helloworld directory <helloworld_dir>`)
     - helloworld.egg-info
     - setup.cfg
     - setup.py - :ref:`setup-config`
     - test.ini
+
+.. _helloworld_dir:
+
+The nested ``helloworld directory`` looks like this:
+
+- helloworld
+    - __init__.py
+    - config
+        - environment.py - :ref:`environment-config`
+        - middleware.py - :ref:`middleware-config`
+        - routing.py - :ref:`url-config`
+    - controllers - :ref:`controllers`
+    - lib
+        - app_globals.py - :term:`app_globals`
+        - base.py
+        - helpers.py - :ref:`helpers`
+    - model - :ref:`models`
+    - public
+    - templates - :ref:`templates`
+    - tests - :ref:`testing`
+    - websetup.py - :ref:`run-config`
+
 
 
 ***********************

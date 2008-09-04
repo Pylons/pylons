@@ -10,8 +10,8 @@ About the model
 .. image:: _static/pylon3.jpg
    :alt: 
    :align: left
-   :height: 450
-   :width: 368
+   :height: 450px
+   :width: 368px
 
 In the MVC paradigm the *model* manages the behavior and data of the application domain, responds to requests for information about its state and responds to instructions to change state.
 

@@ -34,7 +34,7 @@ Add a new template called `form.mako` in the `templates` directory that contains
     <input type="submit" name="submit" value="Submit" /> 
     </form> 
 
-If the server is still running (see the Getting Started Guide) you can visit http://localhost:5000/hello/form and you will see the form. Try entering the email address `test@example.com` and clicking Submit. The URL should change to http://localhost:5000/hello/email?email=test%40example.com and you should see the text `Your email is test@example.com`. 
+If the server is still running (see the Getting Started Guide) you can visit http://localhost:5000/hello/form and you will see the form. Try entering the email address `test@example.com` and clicking Submit. The URL should change to ``http://localhost:5000/hello/email?email=test%40example.com`` and you should see the text `Your email is test@example.com`. 
 
 In Pylons all form variables can be accessed from the :data:`request.params` object which behaves like a dictionary. The keys are the names of the fields in the form and the value is a string with all the characters entity decoded. For example note how the `@` character was converted by the browser to `%40` in the URL and was converted back ready for use in :data:`request.params`. 
 
@@ -154,7 +154,7 @@ Python `tempfiles` are secure file objects that are automatically destroyed when
         return 'Successfully uploaded: %s, description: %s' % \ 
             (myfile.filename, request.POST['description']) 
 
-.. Warning:: 
+.. warning:: 
     The previous basic example allows any file uploader to overwrite any file in
     the `permanent_store` directory that your web application has permissions
     to.
@@ -272,8 +272,8 @@ type; in this case a Python integer.
 
     .. code-block:: python 
 
-    c.domain = 'example.com' 
-    form_result = schema.to_python(request.params, c) 
+        c.domain = 'example.com' 
+        form_result = schema.to_python(request.params, c) 
 
 The schema passes `c` to each validator in turn so that you can do things like this: 
 

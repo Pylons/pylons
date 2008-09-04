@@ -108,7 +108,7 @@ Run ``nosetests`` in your main project directory and you should see them all pas
     ---------------------------------------------------------------------- 
     Ran 2 tests in 2.999s 
 
-OK 
+    OK 
 
 Unfortunately, a plain assert does not provide detailed information about the results of an assertion should it fail, unless you specify it a second argument. For example, add the following test to the ``test_sess`` function: 
 
@@ -139,7 +139,7 @@ You can augment this result by doing the following:
 
 .. code-block:: python 
 
-assert response.session.has_key('address') == True, "address not found in session" 
+    assert response.session.has_key('address') == True, "address not found in session" 
 
 Which results in: 
 

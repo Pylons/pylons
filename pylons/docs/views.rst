@@ -8,8 +8,8 @@ Views
 .. image:: _static/pylon4.jpg
    :alt: 
    :align: left
-   :height: 434
-   :width: 368
+   :height: 434px
+   :width: 368px
 
 In the MVC paradigm the *view* manages the presentation of the model. 
 
