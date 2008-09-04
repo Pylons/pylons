@@ -1,4 +1,4 @@
-.. _entry_points_and_plugins: - Using Entry Points to Write Plugins
+.. _entry_points_and_plugins:
 
 ===================================
 Using Entry Points to Write Plugins

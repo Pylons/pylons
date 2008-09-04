@@ -9,7 +9,7 @@ XXX: how to package an app, deployment in package format, etc.
 Running Pylons apps with webservers
 ===================================
 
-This document assumes that you have already installed a Pylons web application, and `created a configuration <Configuration+Files>`_ for it.  Pylons applications use `PasteDeploy <http://pythonpaste.org/deploy/>`_ to  start up your Pylons WSGI application, and can use the flup package to provide a Fast-CGI, SCGI, or AJP connection to it. 
+This document assumes that you have already installed a Pylons web application, and `run-config`_ for it.  Pylons applications use `PasteDeploy <http://pythonpaste.org/deploy/>`_ to  start up your Pylons WSGI application, and can use the flup package to provide a Fast-CGI, SCGI, or AJP connection to it. 
 
 Using Fast-CGI 
 ============== 
@@ -133,7 +133,7 @@ Paste configuration files can be run in many different ways, from CGI scripts, a
 Running your application
 ------------------------
 
-In order to run your application your users will need to install it as described above but then generate a config file and setup your application before deploying it. This is described in `Application Configuration <Configuration+Files>`_.
+In order to run your application your users will need to install it as described above but then generate a config file and setup your application before deploying it. This is described in :ref:`run-config`.
 
 Packaging and deployment
 ========================
@@ -360,7 +360,7 @@ When you run a simple command all the documentation is built into sophisticated 
 Tutorial 
 ======== 
 
-First create a project as described in the `Getting Started Guide <Getting+Started>`_. 
+First create a project as described in :ref:`getting_started`.
 
 You will notice a docs directory within your main project directory. This is where you should write your main documentation. 
 

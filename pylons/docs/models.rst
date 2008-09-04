@@ -63,7 +63,7 @@ Non-SQLAlchemy libraries
 
 Most of these expose only the object-relational mapper; their SQL builder and connection pool are not meant to be used directly.
 
-`Storm <https://storm.canonical.com/>`_
+`Storm <http://storm.canonical.com>`_
 
 DB-API
 ++++++
@@ -241,7 +241,7 @@ Relation example
 ^^^^^^^^^^^^^^^^
 
 
-Here's an example of a `Person` and an `Address` class with a many:many relationship on `people.my_addresses`. See `Relational Databases for Poeople in a Hurry <pylonscookbook:Relational databases for people in a hurry>`_ and the SQLAlchemy manual for details. 
+Here's an example of a `Person` and an `Address` class with a many:many relationship on `people.my_addresses`. See `Relational Databases for Poeople in a Hurry <http://wiki.pylonshq.com/display/pylonscookbook/Relational+databases+for+people+in+a+hurry>`_ and the SQLAlchemy manual for details. 
 
 .. code-block:: python
 

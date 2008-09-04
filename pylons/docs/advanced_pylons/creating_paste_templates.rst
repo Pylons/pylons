@@ -7,10 +7,7 @@ Creating Paste templates
 Introduction
 ============
 
-`Python Paste`__ is an extremely powerful package that isn't just about WSGI middleware. The related document `Using Entry Points to Write Plugins`__ demonstrates how to use entry_points to create simple plugins. This document describes how to write just such a plugin for use Paste's project template creation facility and how to add a command to Paste's ``paster`` script.
-
-.. __: http://pythonpaste.org/
-.. __: ../entry_points_and_plugins.html
+`Python Paste <http://pythonpaste.org/>`_ is an extremely powerful package that isn't just about WSGI middleware. The related document :ref:`entry_points_and_plugins` demonstrates how to use entry_points to create simple plugins. This document describes how to write just such a plugin for use Paste's project template creation facility and how to add a command to Paste's ``paster`` script.
 
 The example task is to create a template for an imaginary content management system. The template is going to produce a project directory structure for a Python package, so we need to be able to specify a package name. 
 

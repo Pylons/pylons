@@ -42,7 +42,7 @@ appropriate to your application.
 
 In order to represent characters from multiple languages, you will 
 need to utilize Unicode. This document assumes you have read the 
-`Unicode document <Unicode>`_. 
+:ref:`unicode`. 
 
 By now you should have a good idea of what Unicode is, how to use it in Python 
 and which areas of you application need to pay specific attention to decoding and 

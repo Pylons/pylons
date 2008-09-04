@@ -11,7 +11,6 @@ Interactive debugging
 
 Things break, and when they do, quickly pinpointing what went wrong and why makes a huge difference. By default, Pylons uses a customized version of `Ian Bicking's <http://blog.ianbicking.org/>`_ EvalException middleware that also includes full Mako/Myghty Traceback information. 
 
-See the Enabling Debugging section of the `Getting Started <Getting+Started>`_ guide to enable the interactive debugging. 
 
 The Debugging Screen 
 -------------------- 
@@ -172,4 +171,4 @@ Your interactive debugger will now be themed with the new template.
 Error Handling Options 
 ====================== 
 
-A number of error handling options can be specified in the config file. These are described in the `Error Handler <interactive_debugger.txt>`_ documentation but the important point to remember is that debug should always be set to ``false`` in production environments otherwise if an error occurs the visitor will be presented with the developer's interactive traceback which they could use to execute malicious code.
+A number of error handling options can be specified in the config file. These are described in the :ref:`interactive_debugging` documentation but the important point to remember is that debug should always be set to ``false`` in production environments otherwise if an error occurs the visitor will be presented with the developer's interactive traceback which they could use to execute malicious code.
