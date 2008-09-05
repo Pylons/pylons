@@ -54,7 +54,8 @@ Which will result in the following printed to the console, on stderr:
 
 .. code-block:: text 
 
-    16:20:20,440 DEBUG [helloworld.controllers.hello] Returning: Hello World! (content-type: text/plain) 
+    16:20:20,440 DEBUG [helloworld.controllers.hello] Returning: Hello World!
+                       (content-type: text/plain) 
 
 
 Basic Logging configuration 
@@ -265,9 +266,12 @@ output to the console when we request a page:
 
 .. code-block:: text 
 
-    00:50:53,694 INFO [helloworld.controllers.hello] Returning: Hello World! (content-type: text/plain) 
-    00:50:53,695 INFO [wsgi] 192.168.1.111 - - [11/Aug/2007:20:09:33 -0700] "GET /hello HTTP/1.1" 404 - "-" 
-    "Mozilla/5.0 (Macintosh; U; Intel Mac OS X; en-US; rv:1.8.1.6) Gecko/20070725 Firefox/2.0.0.6" 
+    00:50:53,694 INFO [helloworld.controllers.hello] Returning: Hello World!
+                      (content-type: text/plain) 
+    00:50:53,695 INFO [wsgi] 192.168.1.111 - - [11/Aug/2007:20:09:33 -0700] "GET /hello
+    HTTP/1.1" 404 - "-" 
+    "Mozilla/5.0 (Macintosh; U; Intel Mac OS X; en-US; rv:1.8.1.6) Gecko/20070725
+    Firefox/2.0.0.6" 
 
 To direct TransLogger to the ``access.log`` FileHandler defined above, we need 
 to add that FileHandler to the wsgi Logger's list of Handlers: 
@@ -469,8 +473,8 @@ Here's how the Pylons stack's log messages can look with colors defined (using
 Chainsaw on OS X): 
 
 .. image:: _static/Pylons_Stack-Chainsaw-OSX.png 
-    :width: 900px
-    :height: 563px
+    :width: 750px
+    :height: 469px
 
 Alternate Logging Configuration style
 =====================================

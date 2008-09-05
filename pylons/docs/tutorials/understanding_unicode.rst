@@ -218,7 +218,8 @@ When you run it with Python 2.4, it will output the following warning:
 
 .. code-block:: pycon 
 
-    sys:1: DeprecationWarning: Non-ASCII character '\xe9' in file testas.py on line 2, but no encoding declared; see http://www.python.org/peps/pep-0263.html for details 
+    sys:1: DeprecationWarning: Non-ASCII character '\xe9' in file testas.py on line 2, but
+     no encoding declared; see http://www.python.org/peps/pep-0263.html for details 
 
 and then the following output: 
 

@@ -96,13 +96,15 @@ Once the middleware has been used to wrap the Pylons application, the make_app
 function returns the completed app with the following structure (outermost
 layer listed first):
 
-Registry Manager
-    Status Code Redirect
-        Error Handler
-            Cache Middleware
-                Session Middleware
-                    Routes Middleware
-                        Pylons App (WSGI Application)
+.. code-block:: text
+
+    Registry Manager
+        Status Code Redirect
+            Error Handler
+                Cache Middleware
+                    Session Middleware
+                        Routes Middleware
+                            Pylons App (WSGI Application)
 
 WSGI middleware is used extensively in Pylons to add functionality to the
 base WSGI application. In Pylons, the 'base' WSGI Application is the 

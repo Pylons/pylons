@@ -540,9 +540,15 @@ To add an existing address to 'Mr Jones' we do the following:
 .. code-block:: python
 
     address_q = meta.Session.query(Address) 
-    address = address_q.filter(Address.address=='33 Pine Marten Lane, Pleasantville').one() # Retrieve an existing address 
-    mr_jones.my_addresses.append(new_address) # Add to the list 
-    meta.Session.commit() # issue updates to the join table 
+    
+    # Retrieve an existing address 
+    address = address_q.filter(Address.address=='33 Pine Marten Lane, Pleasantville').one()
+    
+    # Add to the list 
+    mr_jones.my_addresses.append(new_address)
+    
+    # issue updates to the join table
+    meta.Session.commit()  
 
 
 To add an entirely new address to 'Mr Jones' we do the following: 
@@ -658,7 +664,7 @@ Use `meta.Session.execute()` to execute a non-ORM SQL query within the session's
 meta.Session.execute("ALTER TABLE Foo ADD new_column (VARCHAR(255)) NOT NULL") 
 
 
-.. warning:: *Warning:* the last example changes the database structure and may adversely interact with ORM operations. 
+.. warning:: The last example changes the database structure and may adversely interact with ORM operations. 
 
 
 Further reading 

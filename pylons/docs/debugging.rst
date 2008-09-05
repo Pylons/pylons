@@ -56,6 +56,8 @@ Since we want to explore the ``session`` and ``request``, we'll need to bind the
 Here's what exploring the Traceback from the above example looks like (Excerpt of the relevant portion): 
 
 .. image:: _static/doctraceback.png
+    :width: 750px
+    :height: 260px
 
 Email Options 
 -------------
@@ -67,106 +69,6 @@ You can make all sorts of changes to how the debugging works. For example if you
     error_email_from = you@example.com 
 
 This is very useful for a production site. Emails are sent via SMTP so you need to specify a valid SMTP server too. 
-
-Changing the Debugger Theme 
---------------------------- 
-
-If you are using Pylons in a commercial company it is useful to be able to change the theme of the debugger so that if an error occurs, a page with your company logo appears. You might also decide to remove the Pylons logo if you use the debugger a lot so that there is more space to view the traceback. 
-
-You can change the theme by creating a new template. For example, a very simple template might look like this: 
-
-.. code-block:: python 
-
-    my_error_template = ''' 
-    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
-    <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"> 
-    <head> 
-    <title>Server Error</title> 
-    %(head)s 
-    <body id="documentation"> 
-    %(extra_data)s 
-    %(template_data)s 
-    %(traceback_data)s 
-    </body> 
-    </html> 
-    ''' 
-
-The values are automatically substituted by the error middleware. You can also add ``%(prefix)s`` which is replaced by the path to your application so you can include CSS files or images. For example if your application had a file called ``style.css`` in a directory called ``css`` within your ``public`` directory, you could add the following line to your template to ensure that the CSS file was always correctly found: 
-
-.. code-block:: html 
-
-    <link rel="stylesheet" href="%(prefix)s/css/style.css" type="text/css" media="screen" /> 
-
-If you want to retain the ability to switch between the different error displays you need a slightly more complicated example: 
-
-.. code-block:: python 
-
-    my_error_template = ''' 
-    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
-    <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"> 
-    <head> 
-    <title>Server Error</title> 
-    %(head)s 
-    <body id="documentation" onload="switch_display('%(set_tab)s')"> 
-    <ul id="navlist"> 
-    <li id='traceback_data_tab' class="active"> 
-    <a href="javascript:switch_display('traceback_data')" id='traceback_data_link'>Traceback</a> 
-    </li> 
-    <li id='extra_data_tab' class=""> 
-    <a href="javascript:switch_display('extra_data')" id='extra_data_link'>Extra Data</a> 
-    </li> 
-    <li id='template_data_tab'> 
-    <a href="javascript:switch_display('template_data')" id='template_data_link'>Template</a> 
-    </li> 
-    </ul> 
-    <div id="extra_data" class="hidden-data"> 
-    %(extra_data)s 
-    </div> 
-    <div id="template_data" class="hidden-data"> 
-    %(template_data)s 
-    </div> 
-    <div id="traceback_data"> 
-    %(traceback_data)s 
-    </div> 
-    </body> 
-    </html> 
-    ''' 
-
-In this case when you click on a link the relevant tab is displayed. As long as you keep the same IDs and class names, you can specify your own styles and create a theme like the one used by Pylons by default. 
-
-Now that you have a template you need to use it in your application. In ``config/middleware.py`` change the following lines: 
-
-.. code-block:: python 
-
-    # Error Handling 
-    app = ErrorHandler(app, 
-            global_conf, error_template=error_template, **config.errorware) 
-
-to use your template: 
-
-.. code-block:: python 
-
-    my_error_template = ''' 
-    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
-    <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"> 
-        <head> 
-            <title>Server Error</title> 
-            %(head)s 
-        <body id="documentation"> 
-            %(extra_data)s 
-            %(template_data)s 
-            %(traceback_data)s 
-        </body> 
-    </html> 
-    ''' 
-    app = ErrorHandler(app, global_conf, 
-            error_template=my_error_template, **config.errorware) 
-
-Your interactive debugger will now be themed with the new template. 
- 
 
 Error Handling Options 
 ====================== 

@@ -1,10 +1,8 @@
 .. _modules:
 
-=======
-Modules
-=======
-
-Contents:
+==============
+Pylons Modules
+==============
 
 .. toctree::
    :maxdepth: 2

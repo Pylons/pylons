@@ -100,7 +100,7 @@ There are several other class attributes that affect the parser; see them define
 
 See the ``paster shell`` command, ``pylons.commands:ShellCommand``, for an example of using command-line options and loading the ``.ini file`` and model.  
 
-Also see "paster setup-app" where it is defined in ``paste.script.appinstall.SetupCommand``.  This is evident from the entry point in PasteScript (:file:`PasteScript-VERSION.egg/EGG_INFO/entry_points.txt`).  It is a complex example of reading a config file and delegating to another entry point. 
+Also see "paster setup-app" where it is defined in ``paste.script.appinstall.SetupCommand``.  This is evident from the entry point in PasteScript  (:file:`PasteScript-VERSION.egg/EGG_INFO/entry_points.txt`).  It is a complex example of reading a config file and delegating to another entry point. 
 
 The code for calling ``myapp.websetup:setup_config`` is in ``paste.script.appinstall``.  
 
