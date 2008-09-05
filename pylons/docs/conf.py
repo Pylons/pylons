@@ -112,7 +112,7 @@ htmlhelp_basename = 'Pylonsdoc'
 # ------------------------
 
 # The paper size ('letter' or 'a4').
-latex_paper_size = 'a4'
+latex_paper_size = 'letter'
 
 # The font size ('10pt', '11pt' or '12pt').
 #latex_font_size = '10pt'
@@ -120,8 +120,8 @@ latex_paper_size = 'a4'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, document class [howto/manual]).
 latex_documents = [
-  ('index', 'Pylons.tex', 'Pylons Documentation', 
-   'Ben Bangert, James Gardner, Phil Jenvey with contributions from many others...', 'manual', 'toctree_only'),
+  ('index', 'Pylons.tex', 'Pylons Reference Documentation', 
+   'Ben Bangert, Graham Higgins, James Gardner', 'manual', 'toctree_only'),
 ]
 
 # Additional stuff for the LaTeX preamble.
