@@ -82,6 +82,14 @@ Glossary
     g
         Alias used in prior versions of Pylons for :term:`app_globals`.
     
+    Google App Engine
+    	A cloud computing platform for hosting web applications implemented in
+    	Python. Building Pylons applications for App Engine is facilitated by
+    	Ian Bicking's `appengine-monkey project <http://code.google.com/p/appengine-monkey/>`_.
+    	
+    	.. seealso::
+    		`What is Google App Engine? - Official Doc <http://code.google.com/appengine/docs/whatisgoogleappengine.html>`_
+
     h
         The helpers reference, ``h``, is made available for use inside
         templates to assist with common rendering tasks. ``h`` is just a 
