@@ -155,6 +155,8 @@ class PylonsTemplate(Template):
             default='mako'),
         var('sqlalchemy', 'True/False: Include SQLAlchemy 0.4 configuration',
             default=False),
+        var('google_app_engine', 'True/False: Setup default appropriate for'
+            ' Google App Engine', default=False)
     ]
     
     def pre(self, command, output_dir, vars):
@@ -179,6 +181,8 @@ class PylonsTemplate(Template):
         vars['version'] = vars.get('version', '0.1')
         vars['zip_safe'] = asbool(vars.get('zip_safe', 'false'))
         vars['sqlalchemy'] = asbool(vars.get('sqlalchemy', 'false'))
+        vars['google_app_engine'] = asbool(vars.get('google_app_engine', 
+                                                    'false'))
 
 class MinimalPylonsTemplate(PylonsTemplate):
     _template_dir = 'templates/minimal_project'
