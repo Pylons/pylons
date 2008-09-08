@@ -130,6 +130,7 @@ except ImportError:
 import pkg_resources
 
 import pylons
+from webhelpers.html import literal
 
 __all__ = ['Buffet', 'MyghtyTemplatePlugin', 'render', 'render_genshi', 
            'render_jinja', 'render_mako', 'render_response']
@@ -261,7 +262,7 @@ def render_mako(template_name, extra_vars=None, cache_key=None,
         # Grab a template reference
         template = globs['app_globals'].mako_lookup.get_template(template_name)
         
-        return template.render(**globs)
+        return literal(template.render(**globs))
     
     return cached_template(template_name, render_template, cache_key=cache_key,
                            cache_type=cache_type, cache_expire=cache_expire)
@@ -287,7 +288,7 @@ def render_genshi(template_name, extra_vars=None, cache_key=None,
         # Grab a template reference
         template = globs['app_globals'].genshi_loader.load(template_name)
         
-        return template.generate(**globs).render(method=method)
+        return literal(template.generate(**globs).render(method=method))
     
     return cached_template(template_name, render_template, cache_key=cache_key,
                            cache_type=cache_type, cache_expire=cache_expire,
@@ -314,7 +315,7 @@ def render_jinja(template_name, extra_vars=None, cache_key=None,
         template = \
             globs['app_globals'].jinja_env.get_template(template_name)
 
-        return template.render(**globs)
+        return literal(template.render(**globs))
 
     return cached_template(template_name, render_template, cache_key=cache_key,
                            cache_type=cache_type, cache_expire=cache_expire)
