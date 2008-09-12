@@ -190,7 +190,14 @@ For each form you create you also create a validation schema. In our case this i
 
 Our form actually has two fields, an email text field and a submit button. If extra fields are submitted FormEncode's default behavior is to consider the form invalid so we specify `allow_extra_fields = True`. Since we don't want to use the values of the extra fields we also specify `filter_extra_fields = True`. The final line specifies that the email field should be validated with an `Email()` validator. In creating the validator we also specify `not_empty=True` so that the email field will require input. 
 
-Pylons comes with an easy to use `validate` decorator, imported by default in your `lib/base.py`. Using it in your controller is pretty straight-forward: 
+Pylons comes with an easy to use `validate` decorator, if you wish to use it import it in your `lib/base.py` like this:
+
+.. code-block:: python
+    # other imports
+
+    from pylons.decorators import validate
+ 
+Using it in your controller is pretty straight-forward: 
 
 .. code-block:: python 
 
