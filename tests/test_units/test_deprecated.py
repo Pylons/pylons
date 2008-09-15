@@ -8,6 +8,7 @@ from paste.registry import RegistryManager
 import pylons
 from pylons import jsonify, Response
 from pylons.controllers import WSGIController
+from pylons.controllers.util import etag_cache
 from pylons.decorators import jsonify as orig_jsonify
 from pylons.util import ContextObj
 
@@ -112,6 +113,13 @@ class MiscLegacyController(WSGIController):
     def legacy_response(self):
         return Response('Legacy Response!')
 
+    def legacy_etag_cache(self):
+        # used to crash
+        response = etag_cache('test')
+        response.body = 'from etag_cache'
+        return response
+
+
 class TestMiscLegacy(SimpleTestWSGIController):
     wsgi_app = MiscLegacyController
 
@@ -151,7 +159,24 @@ class TestMiscLegacy(SimpleTestWSGIController):
             assert False, 'Expected a DeprecationWarning'
 
     def test_legacy_response(self):
-        self.baseenviron['pylons.routes_dict']['action'] = 'legacy_response'
         warnings.simplefilter('always', DeprecationWarning)
+
+        self.baseenviron['pylons.routes_dict']['action'] = 'legacy_response'
         response = self.app.get('/')
         assert 'Legacy Response!' in response
+
+    def test_legacy_etag_cache_deprecated(self):
+        self.baseenviron['pylons.routes_dict']['action'] = 'legacy_etag_cache'
+        try:
+            self.app.get('/')
+        except DeprecationWarning, msg:
+            assert pylons.legacy.response_warning in msg[0], msg
+        else:
+            assert False, 'Expected a DeprecationWarning'
+
+    def test_legacy_return_etag_cache(self):
+        warnings.simplefilter('always', DeprecationWarning)
+
+        self.baseenviron['pylons.routes_dict']['action'] = 'legacy_etag_cache'
+        response = self.app.get('/')
+        assert 'from etag_cache' in response

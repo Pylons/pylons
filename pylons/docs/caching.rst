@@ -149,11 +149,14 @@ of requesting the application to send a fresh copy.
 Because the ETag cache relies on sending headers to the browser, it works in a 
 slightly different manner to the other caching mechanisms described above. 
 
-The :func:`etag_cache` function will return a :class:`Response` 
-object with the proper HTTP headers set if the browser doesn't yet have a copy 
-of the page. Otherwise, a 304 HTTP Exception will be thrown that is then caught by 
-Paste middleware and turned into a proper 304 response to the browser. This will
-cause the browser to use its own locally-cached copy. 
+The :func:`etag_cache` function will set the proper HTTP headers if
+the browser doesn't yet have a copy of the page. Otherwise, a 304 HTTP
+Exception will be thrown that is then caught by Paste middleware and
+turned into a proper 304 response to the browser. This will cause the
+browser to use its own locally-cached copy.
+
+:func:`etag_cache` returns `pylons.response` for legacy purposes
+(`pylons.response` should be used directly instead).
 
 ETag-based caching requires a single key which is sent in the ETag HTTP header
 back to the browser. The `RFC specification for HTTP headers <http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html>`_ indicates that an 

@@ -8,6 +8,7 @@ from paste.httpexceptions import HTTPException as LegacyHTTPException
 from webob.exc import HTTPException, HTTPNotFound, status_map
 
 import pylons
+import pylons.legacy
 from pylons.controllers.util import Response
 
 __all__ = ['WSGIController']
@@ -210,6 +211,13 @@ class WSGIController(object):
                 if log_debug:
                     log.debug("Controller returned a Response object, merging "
                               "it with pylons.response")
+                if response is pylons.response:
+                    # Only etag_cache() returns pylons.response
+                    # (deprecated). Unwrap it to avoid a recursive loop
+                    # (see ticket #508)
+                    response = response._current_obj()
+                    warnings.warn(pylons.legacy.response_warning,
+                                  DeprecationWarning, 1)
                 for name, value in py_response.headers.items():
                     if name.lower() == 'set-cookie':
                         response.headers.add(name, value)
