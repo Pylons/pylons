@@ -66,9 +66,8 @@ Pylons Changelog
 * Fixed paster shell command to no longer search for egg_info dir. Allows
   usage of paster shell with installed packages. Suggested by Gavin Carothers.
 * Added mimetype function and MIMETypes class for registering mimetypes.
-* WARNING: Removed pylons.Response, so do not attempt to import it or use it
-  as it's no longer there. If you must return a new Response object, import
-  Response from pylons.controllers.util.
+* WARNING: Usage of pylons.Response is now deprecated. Please use
+  pylons.response instead.
 * Removed use of WSGIRequest/WSGIResponse and replaced with WebOb subclasses
   that implement methods to make it backwards compatible with the Paste
   wsgiwrappers.

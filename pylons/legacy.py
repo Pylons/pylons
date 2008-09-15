@@ -7,6 +7,7 @@ from paste.registry import StackedObjectProxy
 
 import pylons
 import pylons.decorators
+from pylons.controllers.util import Response as PylonsResponse
 from pylons.util import deprecated, func_move
 
 __all__ = ['load_h']
@@ -133,3 +134,12 @@ class DeprecatedStackedObjectProxy(StackedObjectProxy):
         warnings.warn(pylons_h_warning, DeprecationWarning, 3)
         return StackedObjectProxy._current_obj(*args, **kwargs)
 h = DeprecatedStackedObjectProxy(name="h")
+
+response_warning = (
+"Returning a Response object from a controller is deprecated, and support for "
+"it will be removed in a future version of Pylons. Please return the response "
+"content directly and or use pylons.response instead")
+class Response(PylonsResponse):
+    def __init__(self, *args, **kwargs):
+        warnings.warn(response_warning, DeprecationWarning, 2)
+        PylonsResponse.__init__(self, *args, **kwargs)

@@ -6,7 +6,7 @@ from paste.httpexceptions import HTTPMovedPermanently
 from paste.registry import RegistryManager
 
 import pylons
-from pylons import jsonify
+from pylons import jsonify, Response
 from pylons.controllers import WSGIController
 from pylons.decorators import jsonify as orig_jsonify
 from pylons.util import ContextObj
@@ -104,14 +104,16 @@ class TestDeprecatedHelpers(SimpleTestWSGIController):
             assert False, 'Expected a DeprecationWarning'
 
 
-class LegacyHTTPExceptionController(WSGIController):
+class MiscLegacyController(WSGIController):
 
     def legacy_httpexception(self):
         raise HTTPMovedPermanently('/elsewhere')
 
+    def legacy_response(self):
+        return Response('Legacy Response!')
 
-class TestLegacyHTTPException(SimpleTestWSGIController):
-    wsgi_app = LegacyHTTPExceptionController
+class TestMiscLegacy(SimpleTestWSGIController):
+    wsgi_app = MiscLegacyController
 
     def setUp(self):
         SimpleTestWSGIController.setUp(self)
@@ -138,3 +140,18 @@ class TestLegacyHTTPException(SimpleTestWSGIController):
             'legacy_httpexception'
         warnings.simplefilter('always', DeprecationWarning)
         self.app.get('/', status=301)
+
+    def test_legacy_response_deprecated(self):
+        self.baseenviron['pylons.routes_dict']['action'] = 'legacy_response'
+        try:
+            self.app.get('/')
+        except DeprecationWarning, msg:
+            assert pylons.legacy.response_warning in msg[0], msg
+        else:
+            assert False, 'Expected a DeprecationWarning'
+
+    def test_legacy_response(self):
+        self.baseenviron['pylons.routes_dict']['action'] = 'legacy_response'
+        warnings.simplefilter('always', DeprecationWarning)
+        response = self.app.get('/')
+        assert 'Legacy Response!' in response
