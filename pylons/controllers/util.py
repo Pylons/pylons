@@ -132,6 +132,9 @@ def etag_cache(key=None):
     the browser that it should use its current cache of the page.
     
     Otherwise, the ETag header will be added to the response headers.
+
+    Returns a Response object for legacy purposes (``pylons.response``
+    should be used instead).
     
     Suggested use is within a Controller Action like so:
     
@@ -150,16 +153,17 @@ def etag_cache(key=None):
     
     """
     if_none_match = pylons.request.environ.get('HTTP_IF_NONE_MATCH', None)
-    pylons.response.headers['ETag'] = key
+    response = pylons.response._current_obj()
+    response.headers['ETag'] = key
     if str(key) == if_none_match:
         log.debug("ETag match, returning 304 HTTP Not Modified Response")
-        pylons.response.headers.pop('Content-Type', None)
-        pylons.response.headers.pop('Cache-Control', None)
-        pylons.response.headers.pop('Pragma', None)
+        response.headers.pop('Content-Type', None)
+        response.headers.pop('Cache-Control', None)
+        response.headers.pop('Pragma', None)
         raise status_map[304]().exception
     else:
         log.debug("ETag didn't match, returning response object")
-        return pylons.response
+        return response
 
 
 def forward(wsgi_app):
