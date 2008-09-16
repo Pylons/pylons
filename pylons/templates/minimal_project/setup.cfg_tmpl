@@ -6,4 +6,4 @@ tag_svn_revision = true
 find_links = http://www.pylonshq.com/download/
 
 [nosetests]
-with-pylons=test.ini
+with-pylons = test.ini
