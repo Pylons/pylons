@@ -13,3 +13,7 @@ class TestSample2Controller(TestController):
         response = self.app.post(url_for(controller='/sample', action='test_only_post'),
             params={'id':4})
         assert 'It was a post' in response
+
+    def test_head(self):
+        response = self.app._gen_request('HEAD', url_for(controller='/sample'))
+        assert '' == response.body

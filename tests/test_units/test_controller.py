@@ -116,6 +116,12 @@ class TestBasicWSGI(TestWSGIController):
         assert resp.response.headers['Cache-Control'] == 'private'
         assert resp.header('Content-Type') == 'text/plain'
     
+    def test_head(self):
+        self.baseenviron['pylons.routes_dict']['action'] = 'header_check'
+        resp = self.app._gen_request('HEAD', '/')
+        assert '' == resp.body
+        assert resp.header('Content-Type') == 'text/plain'
+
     def test_redirect(self):
         self.baseenviron['pylons.routes_dict']['action'] = 'use_redirect'
         resp = self.app.get('/', status=301)

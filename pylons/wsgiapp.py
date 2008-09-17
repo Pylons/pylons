@@ -127,7 +127,7 @@ class PylonsApp(object):
                     log.debug("Transforming legacy Response object into WSGI "
                               "response")
                 return response(environ, start_response)
-            elif response:
+            elif response is not None:
                 return response
         
             raise Exception("No content returned by controller (Did you remember "
