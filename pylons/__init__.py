@@ -24,12 +24,12 @@ def __figure_version():
         
 __version__ = __figure_version()
 
-app_globals = g = StackedObjectProxy(name="G")
-cache = StackedObjectProxy(name="Cache")
-request = StackedObjectProxy(name="Request")
-response = StackedObjectProxy(name="Response")
-session = StackedObjectProxy(name="Session")
-tmpl_context = c = StackedObjectProxy(name="C")
+app_globals = g = StackedObjectProxy(name="app_globals")
+cache = StackedObjectProxy(name="cache")
+request = StackedObjectProxy(name="request")
+response = StackedObjectProxy(name="response")
+session = StackedObjectProxy(name="session")
+tmpl_context = c = StackedObjectProxy(name="tmpl_context or C")
 
-buffet = StackedObjectProxy(name="Buffet")
-translator = StackedObjectProxy(name="Translator")
+buffet = StackedObjectProxy(name="buffet")
+translator = StackedObjectProxy(name="translator")
