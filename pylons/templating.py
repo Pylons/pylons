@@ -75,6 +75,8 @@ are included in the template's namespace are:
   object for this request
 - :class:`session` -- Pylons session object (unless Sessions are
   removed)
+- :method:`~routes.util.URLGenerator.url` -- Routes url generator
+  object
 - :class:`translator` -- Gettext translator object configured for
   current locale
 - :func:`ungettext` -- Unicode capable version of gettext's ngettext
@@ -149,7 +151,7 @@ def pylons_globals():
     
     Pylons variables that are returned in the dictionary:
         ``c``, ``g``, ``h``, ``_``, ``N_``, config, request, response, 
-        translator, ungettext
+        translator, ungettext, ``url``
     
     If SessionMiddleware is being used, ``session`` will also be
     available in the template namespace.
@@ -167,6 +169,7 @@ def pylons_globals():
         h=conf.get('pylons.h') or pylons.h._current_obj(),
         request=pylons.request._current_obj(),
         response=pylons.response._current_obj(),
+        url=pylons.url._current_obj(),
         translator=pylons.translator._current_obj(),
         ungettext=pylons.i18n.ungettext,
         _=pylons.i18n._,

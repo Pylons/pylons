@@ -165,6 +165,9 @@ class PylonsApp(object):
             registry.register(pylons.session, pylons_obj.session)
         if hasattr(pylons_obj, 'cache'):
             registry.register(pylons.cache, pylons_obj.cache)
+        
+        if 'routes.url' in environ:
+            registry.register(pylons.url, environ['routes.url'])
     
     def setup_app_env(self, environ, start_response):
         """Setup and register all the Pylons objects with the registry
