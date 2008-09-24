@@ -2,8 +2,6 @@ Pylons Changelog
 ================
 
 0.9.7 (**tip**)
-* The default test.ini now configures logging for test runs. Fixes #339.
-  Thanks Max Ischenko.
 * Fix a crash when returning the result of ``etag_cache`` in a controller.
   Fixes #508.
 * "response" flag has been removed from pylons.decorators.cache.beaker_cache, 
