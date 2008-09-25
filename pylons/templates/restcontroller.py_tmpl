@@ -16,17 +16,17 @@ class {{classname}}Controller(BaseController):
 
     def index(self, format='html'):
         """GET /{{nameprefix}}{{pluralname}}: All items in the collection."""
-        # url_for('{{nameprefix}}{{pluralname}}')
+        # url('{{nameprefix}}{{pluralname}}')
         pass
 
     def create(self):
         """POST /{{nameprefix}}{{pluralname}}: Create a new item."""
-        # url_for('{{nameprefix}}{{pluralname}}')
+        # url('{{nameprefix}}{{pluralname}}')
         pass
 
     def new(self, format='html'):
         """GET /{{nameprefix}}{{pluralname}}/new: Form to create a new item."""
-        # url_for('{{nameprefix}}new_{{singularname}}')
+        # url('{{nameprefix}}new_{{singularname}}')
         pass
 
     def update(self, id):
@@ -36,7 +36,7 @@ class {{classname}}Controller(BaseController):
         # Or using helpers:
         #    h.form(h.url_for('{{nameprefix}}{{singularname}}', id=ID),
         #           method='put')
-        # url_for('{{nameprefix}}{{singularname}}', id=ID)
+        # url('{{nameprefix}}{{singularname}}', id=ID)
         pass
 
     def delete(self, id):
@@ -46,15 +46,15 @@ class {{classname}}Controller(BaseController):
         # Or using helpers:
         #    h.form(h.url_for('{{nameprefix}}{{singularname}}', id=ID),
         #           method='delete')
-        # url_for('{{nameprefix}}{{singularname}}', id=ID)
+        # url('{{nameprefix}}{{singularname}}', id=ID)
         pass
 
     def show(self, id, format='html'):
         """GET /{{nameprefix}}{{pluralname}}/id: Show a specific item."""
-        # url_for('{{nameprefix}}{{singularname}}', id=ID)
+        # url('{{nameprefix}}{{singularname}}', id=ID)
         pass
 
     def edit(self, id, format='html'):
         """GET /{{nameprefix}}{{pluralname}}/id/edit: Form to edit an existing item."""
-        # url_for('{{nameprefix}}edit_{{singularname}}', id=ID)
+        # url('{{nameprefix}}edit_{{singularname}}', id=ID)
         pass

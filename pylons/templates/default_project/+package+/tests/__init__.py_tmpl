@@ -12,12 +12,12 @@ from unittest import TestCase
 from paste.deploy import loadapp
 from paste.fixture import TestApp
 from paste.script.appinstall import SetupCommand
-from pylons import config
-from routes import url_for
+from pylons import config, url
+from routes.util import URLGenerator
 
 import pylons.test
 
-__all__ = ['url_for', 'TestController']
+__all__ = ['url', 'TestController']
 
 # Invoke websetup with the current config file
 SetupCommand('setup-app').run([config['__file__']])
@@ -30,4 +30,5 @@ class TestController(TestCase):
         else:
             wsgiapp = loadapp('config:%s' % config['__file__'])
         self.app = TestApp(wsgiapp)
+        url._push_object(URLGenerator(config['routes.map'], {}))
         TestCase.__init__(self, *args, **kwargs)
