@@ -17,12 +17,14 @@ import base64
 import hmac
 import logging
 import mimetypes
-import sha
-
 try:
     import cPickle as pickle
 except ImportError:
     import pickle
+try:
+    from hashlib import sha1
+except ImportError:
+    import sha as sha1
 
 from routes import url_for
 from webob import Request as WebObRequest
@@ -78,7 +80,7 @@ class Request(WebObRequest):
         except:
             # Badly formed data can make base64 die
             return None
-        if hmac.new(secret, pickled, sha).hexdigest() == sig:
+        if hmac.new(secret, pickled, sha1).hexdigest() == sig:
             return pickle.loads(pickled)
         else:
             return None
@@ -121,7 +123,7 @@ class Response(WebObResponse):
         
         """
         pickled = pickle.dumps(data, pickle.HIGHEST_PROTOCOL)
-        sig = hmac.new(secret, pickled, sha).hexdigest()
+        sig = hmac.new(secret, pickled, sha1).hexdigest()
         self.set_cookie(name, sig + base64.encodestring(pickled), **kwargs)
 
 def etag_cache(key=None):

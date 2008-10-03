@@ -7,8 +7,8 @@ from decorator import decorator
 from paste.deploy.converters import asbool
 
 try:
-    import set
-except:
+    set
+except NameError:
     from sets import Set as set
     
 log = logging.getLogger(__name__)
