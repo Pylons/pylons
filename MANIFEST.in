@@ -4,4 +4,5 @@ recursive-include tests *
 include CHANGELOG
 include LICENSE
 include UPGRADING
+recursive-exclude tests/test_units/session *
 global-exclude .DS_Store *.hgignore *.hgtags
