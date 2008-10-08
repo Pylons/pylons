@@ -76,15 +76,17 @@ class WSGIController(object):
         args = None
         
         if argspec[2]:
-            for k, val in kargs.iteritems():
-                setattr(c, k, val)
+            if not self._py_object.config['pylons.strict_c']:
+                for k, val in kargs.iteritems():
+                    setattr(c, k, val)
             args = kargs
         else:
             args = {}
             argnames = argspec[0][isinstance(func, types.MethodType) and 1 or 0:]
             for name in argnames:
                 if name in kargs:
-                    setattr(c, name, kargs[name])
+                    if not self._py_object.config['pylons.strict_c']:
+                        setattr(c, name, kargs[name])
                     args[name] = kargs[name]
         if log_debug:
             log.debug("Calling %r method with keyword args: **%r",

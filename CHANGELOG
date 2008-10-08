@@ -2,6 +2,8 @@ Pylons Changelog
 ================
 
 0.9.7 (**tip**)
+* Made strict_c stricter, as variables are no longer magically attached when
+  its activated.
 * Fix HEAD requests causing an Exception as if no content was returned
   by the controller. Fixes #507. Thanks mvtellingen, Petr Kobalicek.
 * Fix a crash when returning the result of ``etag_cache`` in a controller.
