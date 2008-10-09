@@ -113,7 +113,8 @@ class PylonsConfig(DispatchingConfig):
         'pylons.h': None,
         'pylons.request_options': request_defaults.copy(),
         'pylons.response_options': response_defaults.copy(),
-        'pylons.strict_c': False,
+        'pylons.strict_c': True,
+        'pylons.c_attach_args': False,
         'buffet.template_engines': [],
         'buffet.template_options': {},
     }

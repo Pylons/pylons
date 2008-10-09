@@ -76,7 +76,7 @@ class WSGIController(object):
         args = None
         
         if argspec[2]:
-            if not self._py_object.config['pylons.strict_c']:
+            if self._py_object.config['pylons.c_attach_args']:
                 for k, val in kargs.iteritems():
                     setattr(c, k, val)
             args = kargs
@@ -85,7 +85,7 @@ class WSGIController(object):
             argnames = argspec[0][isinstance(func, types.MethodType) and 1 or 0:]
             for name in argnames:
                 if name in kargs:
-                    if not self._py_object.config['pylons.strict_c']:
+                    if self._py_object.config['pylons.c_attach_args']:
                         setattr(c, name, kargs[name])
                     args[name] = kargs[name]
         if log_debug:
