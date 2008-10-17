@@ -2,6 +2,8 @@ Pylons Changelog
 ================
 
 0.9.7 (**tip**)
+* Changes to cache_decorator and cached_template to support Beaker API
+  changes in version 1.0.4.  1.0.3 is still supported.
 * WARNING: A new option is available to determine whether or not an actions
   arguments should be automatically attached to 'c'. To turn on this implicit
   behavior in environment.py:

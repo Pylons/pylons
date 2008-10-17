@@ -78,8 +78,12 @@ def beaker_cache(key="cache_default", expire="never", type=None,
             key_dict = None
 
         namespace, cache_key = create_cache_key(func, key_dict, self)
-        my_cache = self._py_object.cache.get_cache(namespace)
 
+        if type:
+            b_kwargs['type'] = type
+            
+        my_cache = self._py_object.cache.get_cache(namespace, **b_kwargs)
+            
         if expire == "never":
             cache_expire = None
         else:
@@ -96,12 +100,8 @@ def beaker_cache(key="cache_default", expire="never", type=None,
                                  cookies=None, content=result)
             return full_response
         
-        if type:
-            b_kwargs['type'] = type
-
         response = my_cache.get_value(cache_key, createfunc=create_func,
-                                     expiretime=cache_expire, starttime=starttime,
-                                     **b_kwargs)
+                                     expiretime=cache_expire, starttime=starttime)
         
         glob_response = self._py_object.response
         glob_response.headerlist = [header for header in response['headers'] if header[0].lower() in cache_headers]

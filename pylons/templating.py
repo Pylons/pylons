@@ -229,6 +229,7 @@ def cached_template(template_name, render_func, ns_options=(),
     # If one of them is not None then the user did set something
     if cache_key is not None or cache_expire is not None or cache_type \
         is not None:
+
         if not cache_type:
             cache_type = 'dbm'
         if not cache_key:
@@ -238,9 +239,9 @@ def cached_template(template_name, render_func, ns_options=(),
         namespace = template_name
         for name in ns_options:
             namespace += str(kwargs.get(name))
-        cache = pylons.cache.get_cache(namespace)
+        cache = pylons.cache.get_cache(namespace, type=cache_type)
         content = cache.get_value(cache_key, createfunc=render_func, 
-            type=cache_type, expiretime=cache_expire)
+            expiretime=cache_expire)
         return content
     else:
         return render_func()

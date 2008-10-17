@@ -20,6 +20,11 @@ class CacheController(WSGIController):
         pylons.g.counter += 1
         return 'Counter=%s' % pylons.g.counter
     test_default_cache_decorator = beaker_cache(key=None)(test_default_cache_decorator)
+
+    def test_dbm_cache_decorator(self):
+        pylons.g.counter += 1
+        return 'Counter=%s' % pylons.g.counter
+    test_dbm_cache_decorator = beaker_cache(key=None, type='dbm')(test_dbm_cache_decorator)
     
     def test_get_cache_decorator(self):
         pylons.g.counter += 1
@@ -35,6 +40,11 @@ class CacheController(WSGIController):
         pylons.g.counter += 1
         return 'Counter=%s' % pylons.g.counter
     test_expire_cache_decorator = beaker_cache(expire=1)(test_expire_cache_decorator)
+
+    def test_expire_dbm_cache_decorator(self):
+        pylons.g.counter += 1
+        return 'Counter=%s' % pylons.g.counter
+    test_expire_dbm_cache_decorator = beaker_cache(expire=1)(test_expire_dbm_cache_decorator)
     
     def test_key_cache_decorator(self, id):
         pylons.g.counter += 1
@@ -49,6 +59,11 @@ class CacheController(WSGIController):
     def test_invalidate_cache(self):
         ns, key = create_cache_key(CacheController.test_default_cache_decorator)
         c = pylons.cache.get_cache(ns)
+        c.remove_value(key)
+
+    def test_invalidate_dbm_cache(self):
+        ns, key = create_cache_key(CacheController.test_dbm_cache_decorator)
+        c = pylons.cache.get_cache(ns, type='dbm')
         c.remove_value(key)
     
     def test_header_cache(self):
@@ -121,6 +136,29 @@ class TestCacheDecorator(TestWSGIController):
         response = self.get_response(action='test_get_cache_default', _url="/?param=1243")
         assert 'Counter=8' in response
     
+    def test_dbm_cache_decorator(self):
+        sap.g.counter = 0
+        self.get_response(action="test_invalidate_dbm_cache")
+        
+        response = self.get_response(action="test_dbm_cache_decorator")
+        assert "Counter=1" in response
+
+        response = self.get_response(action="test_dbm_cache_decorator")
+        assert "Counter=1" in response
+        
+        self.get_response(action="test_invalidate_dbm_cache")
+        response = self.get_response(action="test_dbm_cache_decorator")
+        assert "Counter=2" in response
+
+        sap.g.counter = 0
+        response = self.get_response(action="test_expire_dbm_cache_decorator")
+        assert "Counter=1" in response
+        response = self.get_response(action="test_expire_dbm_cache_decorator")
+        assert "Counter=1" in response
+        time.sleep(1)
+        response = self.get_response(action="test_expire_dbm_cache_decorator")
+        assert "Counter=2" in response
+        
     def test_cache_key(self):
         key = create_cache_key(TestCacheDecorator.test_default_cache_decorator)
         assert key == ('%s.TestCacheDecorator' % self.__module__, 'test_default_cache_decorator')
