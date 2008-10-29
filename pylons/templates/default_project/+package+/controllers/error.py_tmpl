@@ -4,7 +4,7 @@ import os.path
 from paste.urlparser import PkgResourcesParser
 from pylons import request
 from pylons.controllers.util import forward
-from pylons.middleware import error_document_template, media_path
+from pylons.middleware import error_document_template
 from webhelpers.html.builder import literal
 
 from {{package}}.lib.base import BaseController
