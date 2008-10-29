@@ -73,7 +73,7 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
     tests_require=['nose'],
     install_requires=[
         "Routes>=1.10.1", "WebHelpers>=0.6.1", "Beaker>=1.0.3",
-        "Paste>=1.7.2", "PasteDeploy>=1.3.2", "PasteScript>=1.7.0",
+        "Paste>=1.7.2", "PasteDeploy>=1.3.2", "PasteScript==dev,>=1.7.1dev-r7561",
         "FormEncode>=1.1", "simplejson>=2.0.3", "decorator>=2.2.0",
         "nose>=0.10.4", "Mako>=0.2.2", "WebOb>=0.9.4", "WebError>=0.9.1",
         "Tempita>=0.2",
