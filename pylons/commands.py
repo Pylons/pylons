@@ -165,8 +165,7 @@ class ControllerCommand(Command):
     def command(self):
         """Main command to create controller"""
         try:
-            file_op = FileOp(source_dir=os.path.join(
-                os.path.dirname(__file__), 'templates'))
+            file_op = FileOp(source_dir=('pylons', 'templates'))
             try:
                 name, directory = file_op.parse_path_name_args(self.args[0])
             except:
@@ -270,8 +269,7 @@ class RestControllerCommand(Command):
     def command(self):
         """Main command to create controller"""
         try:
-            file_op = FileOp(source_dir=os.path.join(
-                os.path.dirname(__file__), 'templates'))
+            file_op = FileOp(source_dir=('pylons', 'templates'))
             try:
                 singularname, singulardirectory = \
                     file_op.parse_path_name_args(self.args[0])
