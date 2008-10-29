@@ -146,7 +146,7 @@ class AttribSafeContextObj(ContextObj):
 
 
 class PylonsTemplate(Template):
-    _template_dir = 'templates/default_project'
+    _template_dir = ('pylons', 'templates/default_project')
     template_renderer = staticmethod(paste_script_template_renderer)
     summary = 'Pylons application template'
     egg_plugins = ['PasteScript', 'Pylons']
@@ -185,7 +185,7 @@ class PylonsTemplate(Template):
                                                     'false'))
 
 class MinimalPylonsTemplate(PylonsTemplate):
-    _template_dir = 'templates/minimal_project'
+    _template_dir = ('pylons', 'templates/minimal_project')
     summary = 'Pylons minimal application template'
     vars = [
         var('template_engine', 'mako/genshi/jinja/etc: Template language', 
