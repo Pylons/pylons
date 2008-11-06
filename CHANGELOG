@@ -5,16 +5,10 @@ Pylons Changelog
 * Changes to cache_decorator and cached_template to support Beaker API
   changes in version 1.1.  1.0.3 is still supported.
 * WARNING: A new option is available to determine whether or not an actions
-  arguments should be automatically attached to 'c'. To turn on this implicit
+  arguments should be automatically attached to 'c'. To turn off this implicit
   behavior in environment.py:
-    config['pylons.c_attach_args'] = True
-  This is set to False by default, older projects relying on this should add
-  this line.
-* WARNING: 'strict_c' is now the *default*. This means using non-existent
-  attributes on 'c' will now throw an exception. To restore the old behavior
-  turn 'strict_c' to False in environment.py:
-    # After config.init_app:
-    config['pylons.strict_c'] = False
+    config['pylons.c_attach_args'] = False
+  This is set to True by default.
 * Fix HEAD requests causing an Exception as if no content was returned
   by the controller. Fixes #507. Thanks mvtellingen, Petr Kobalicek.
 * Fix a crash when returning the result of ``etag_cache`` in a controller.
