@@ -9,6 +9,7 @@ Module Contents
 .. autofunction:: pylons_globals
 .. autofunction:: cached_template
 .. autofunction:: render_mako
+.. autofunction:: render_mako_def
 .. autofunction:: render_genshi
 
 Legacy Render Functions
