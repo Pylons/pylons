@@ -272,6 +272,41 @@ def render_mako(template_name, extra_vars=None, cache_key=None,
                            cache_type=cache_type, cache_expire=cache_expire)
 
 
+def render_mako_def(template_name, def_name, cache_key=None,
+                    cache_type=None, cache_expire=None, **kwargs):
+    """Render a def block within a Mako template
+    
+    Takes the template name, and the name of the def within it to call.
+    If the def takes arguments, they should be passed in as keyword
+    arguments.
+    
+    Example::
+        
+        # To call the def 'header' within the 'layout.mako' template
+        # with a title argument
+        render_mako_def('layout.mako', 'header', title='Testing')
+    
+    Also accepts the cache options ``cache_key``, ``cache_type``, and
+    ``cache_expire``.
+    
+    """
+    # Create a render callable for the cache function
+    def render_template():
+        # Pull in extra vars if needed
+        globs = kwargs or {}
+        
+        # Second, get the globals
+        globs.update(pylons_globals())
+
+        # Grab a template reference
+        template = globs['app_globals'].mako_lookup.get_template(template_name).get_def(def_name)
+        
+        return literal(template.render(**globs))
+    
+    return cached_template(template_name, render_template, cache_key=cache_key,
+                           cache_type=cache_type, cache_expire=cache_expire)
+
+
 def render_genshi(template_name, extra_vars=None, cache_key=None, 
                   cache_type=None, cache_expire=None, method='xhtml'):
     """Render a template with Genshi
