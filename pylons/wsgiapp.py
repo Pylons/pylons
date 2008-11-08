@@ -135,7 +135,8 @@ class PylonsApp(object):
         finally:
             # Help Python collect ram a bit faster by removing the reference 
             # cycle that the pylons object causes
-            del environ['pylons.pylons']
+            if 'pylons.pylons' in environ:
+                del environ['pylons.pylons']
     
     def register_globals(self, environ):
         """Registers globals in the environment, called from
