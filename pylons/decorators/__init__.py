@@ -11,14 +11,12 @@ import sys
 import warnings
 
 import formencode
-import formencode.variabledecode as variabledecode
 import simplejson
 from decorator import decorator
-from formencode import htmlfill
+from formencode import api, htmlfill, variabledecode
 from webob import UnicodeMultiDict
 
 from pylons.i18n import _ as pylons_gettext
-from formencode.api import _stdtrans as formencode_gettext
 
 __all__ = ['jsonify', 'validate']
 
@@ -252,7 +250,7 @@ def pylons_formencode_gettext(value):
     trans = pylons_gettext(value)
     if trans == value:
         # translation failed, try formencode
-        trans = formencode_gettext(value)
+        trans = api._stdtrans(value)
     return trans
 
 
