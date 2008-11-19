@@ -34,7 +34,7 @@ class {{classname}}Controller(BaseController):
         # Forms posted to this method should contain a hidden field:
         #    <input type="hidden" name="_method" value="PUT" />
         # Or using helpers:
-        #    h.form(url_for('{{nameprefix}}{{singularname}}', id=ID),
+        #    h.form(url('{{nameprefix}}{{singularname}}', id=ID),
         #           method='put')
         # url('{{nameprefix}}{{singularname}}', id=ID)
         pass
@@ -44,7 +44,7 @@ class {{classname}}Controller(BaseController):
         # Forms posted to this method should contain a hidden field:
         #    <input type="hidden" name="_method" value="DELETE" />
         # Or using helpers:
-        #    h.form(url_for('{{nameprefix}}{{singularname}}', id=ID),
+        #    h.form(url('{{nameprefix}}{{singularname}}', id=ID),
         #           method='delete')
         # url('{{nameprefix}}{{singularname}}', id=ID)
         pass
