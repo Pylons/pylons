@@ -118,7 +118,7 @@ When a file upload has succeeded, the `request.POST` (or `request.params`) `Mult
     The name of file uploaded as it appeared on the uploader's filesystem. 
 
 `file` 
-    A file(-like) object from which the file's data can be read: a python `tempfile` object. 
+    A file(-like) object from which the file's data can be read: A python `tempfile` or a `StringIO` object. 
 
 `value` 
     The content of the uploaded file, eagerly read directly from the file object. 
@@ -132,7 +132,7 @@ The easiest way to gain access to the file's data is via the `value` attribute: 
         return 'Successfully uploaded: %s, size: %i, description: %s' % \ 
             (myfile.filename, len(myfile.value), request.POST['description']) 
 
-However reading the entire contents of the file into memory is undesirable, especially for large file uploads. A common means of handling file uploads is to store the file somewhere on the filesystem. The `FieldStorage` instance already reads the file onto filesystem, however to a non permanent location, via a python `tempfile` object. 
+However reading the entire contents of the file into memory is undesirable, especially for large file uploads. A common means of handling file uploads is to store the file somewhere on the filesystem. The `FieldStorage` typically reads the file onto filesystem, however to a non permanent location, via a python `tempfile` object (though for very small uploads it stores the file in a `StringIO` object instead). 
 
 Python `tempfiles` are secure file objects that are automatically destroyed when they are closed (including an implicit close when the object is garbage collected). One of their security features is that their path cannot be determined: a simple `os.rename` from the `tempfile's` path isn't possible. Alternatively, `shutil.copyfileobj` can perform an efficient copy of the file's data to a permanent location: 
 
