@@ -235,8 +235,10 @@ An Atom-Style REST Controller for Users
     # From http://pylonshq.com/pasties/503
     import logging
 
-    from simplejson import dumps
     from formencode.api import Invalid
+    from routes import url_for
+    from simplejson import dumps
+
     from restmarks.lib.base import *
 
     log = logging.getLogger(__name__)
@@ -258,7 +260,7 @@ An Atom-Style REST Controller for Users
                 for user in users:
                     d = user._state['original'].data
                     del d['password']
-                    d['link'] = h.url_for('user', id=user.name)
+                    d['link'] = url_for('user', id=user.name)
                     data.append(d)
                 response.headers['content-type'] = 'text/javascript'
                 return dumps(data)
@@ -274,7 +276,7 @@ An Atom-Style REST Controller for Users
                 # The client tried to create a user that already exists
                 abort(409, '409 Conflict', 
                       headers=[('location', 
-                                 h.url_for('user', id=user.name)), ])
+                                 url_for('user', id=user.name)), ])
             else:
                 try:
                     # Validate the data that was sent to us
@@ -285,7 +287,7 @@ An Atom-Style REST Controller for Users
                 user = model.User(**params)
                 model.objectstore.flush()
                 response.headers['location'] = \
-                    h.url_for('user', id=user.name)
+                    url_for('user', id=user.name)
                 response.status_code = 201
                 c.user_name = user.name
                 return render('/users/created_user.mako')
@@ -304,7 +306,7 @@ An Atom-Style REST Controller for Users
             # Forms posted to this method should contain a hidden field:
             #    <input type="hidden" name="_method" value="PUT" />
             # Or using helpers:
-            #    h.form(h.url_for('user', id=ID),
+            #    h.form(url_for('user', id=ID),
             #           method='put')
             # url_for('user', id=ID)
             old_name = id
@@ -325,7 +327,7 @@ An Atom-Style REST Controller for Users
                     if user.name != old_name:
                         abort(301, '301 Moved Permanently',
                               [('Location', 
-                                h.url_for('users', id=user.name)),])
+                                url_for('users', id=user.name)),])
                     else:
                         return ''
 
@@ -336,7 +338,7 @@ An Atom-Style REST Controller for Users
             # Forms posted to this method should contain a hidden field:
             #    <input type="hidden" name="_method" value="DELETE" />
             # Or using helpers:
-            #    h.form(h.url_for('user', id=ID),
+            #    h.form(url_for('user', id=ID),
             #           method='delete')
             # url_for('user', id=ID)
             user = model.User.get_by(name=id)
@@ -355,7 +357,7 @@ An Atom-Style REST Controller for Users
                 if format=='json':
                     data = user._state['original'].data
                     del data['password']
-                    data['link'] = h.url_for('user', id=user.name)
+                    data['link'] = url_for('user', id=user.name)
                     response.headers['content-type'] = 'text/javascript'
                     return dumps(data)
                 else:
