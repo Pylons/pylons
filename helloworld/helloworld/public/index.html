@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+   "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Pylons Default Page</title>
+  <style>
+    body { background-color: #fff; color: #333; }
+
+    body, p {
+      font-family: verdana, arial, helvetica, sans-serif;
+      font-size:   12px;
+      line-height: 18px;
+    }
+    pre {
+      background-color: #eee;
+      padding: 10px;
+      font-size: 11px;
+      line-height: 13px;
+    }
+
+    a { color: #000; }
+    a:visited { color: #666; }
+    a:hover { color: #fff; background-color:#000; }
+  </style>
+</head>
+<body>
+
+<h1>Welcome to your Pylons Web Application</h1>
+
+<h2>Weren't expecting to see this page?</h2>
+
+<p>The <tt>helloworld/public/</tt> directory is searched for static files
+ <i>before</i> your controllers are run. Remove this file (<tt>helloworld/public/index.html</tt>)
+  and edit the routes in <tt>helloworld/config/routing.py</tt> to point the
+  <a href="/">root path</a> to a 'hello' controller we'll create below:
+  <pre> map.connect('', controller='hello', action='index')</pre>
+</p>
+
+<h2>Getting Started</h2>
+<p>You're now ready to start creating your own web application. To create a 'hello' controller,
+  run the following command in your project's root directory: 
+<pre>
+helloworld$ paster controller hello
+</pre>
+
+  This generates the following the following code in <tt>helloworld/controllers/hello.py</tt>:
+<pre>
+import logging
+
+from helloworld.lib.base import *
+
+log = logging.getLogger(__name__)
+
+class HelloController(BaseController):
+
+    def index(self):
+        # Return a rendered template
+        #   return render('/some/template.mako)
+        # or, Return a response
+        return 'Hello World'
+</pre>
+</p>
+<p>This controller simply prints out 'Hello World' to the browser. Pylons' default routes
+  automatically set up this controller to respond at the <a href="/hello">/hello</a> URL.
+  With the additional route described above, this controller will also respond at the
+  <a href="/">root path</a>.
+</p>
+
+<h3>Using a template</h3>
+<p>To call a template and do something a little more complex, this following example
+   shows how to print out some request information from a
+  <a href="http://www.makotemplates.org">Mako</a> template.
+</p>
+<p>Create a <tt>serverinfo.mako</tt> file in your project's <tt>helloworld/templates/</tt>
+  directory with the following contents:
+</p>  
+<pre>
+&lt;h2&gt;
+Server info for ${request.host}
+&lt;/h2&gt;
+
+&lt;p&gt;
+The URL you called: ${h.url_for()}
+&lt;/p&gt;
+
+&lt;p&gt;
+The name you set: ${c.name}
+&lt;/p&gt;
+
+&lt;p&gt;The WSGI environ:&lt;br /&gt;
+&lt;pre&gt;${c.pretty_environ}&lt;/pre&gt;
+&lt;/p&gt;
+</pre>
+
+Then add the following to your 'hello' controller class:
+<pre>
+    def serverinfo(self):
+        import cgi
+        import pprint
+        c.pretty_environ = cgi.escape(pprint.pformat(request.environ))
+        c.name = 'The Black Knight'
+        return render('/serverinfo.mako')
+</pre>
+
+You can now view the page at: <tt><a href="/hello/serverinfo">/hello/serverinfo</a></tt>
+</p>
+</body>
+</html>

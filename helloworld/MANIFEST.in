@@ -1,0 +1,2 @@
+recursive-include helloworld/public *
+recursive-include helloworld/templates *
