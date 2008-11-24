@@ -75,7 +75,7 @@ are included in the template's namespace are:
   object for this request
 - :class:`session` -- Pylons session object (unless Sessions are
   removed)
-- :method:`~routes.util.URLGenerator.url` -- Routes url generator
+- :class:`url <routes.util.URLGenerator>` -- Routes url generator
   object
 - :class:`translator` -- Gettext translator object configured for
   current locale

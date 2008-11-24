@@ -18,4 +18,5 @@
 .. automodule:: routes.util
 
 .. autofunction:: url_for
+.. autoclass:: URLGenerator
 .. autofunction:: redirect_to

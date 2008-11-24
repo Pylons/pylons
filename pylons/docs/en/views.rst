@@ -68,9 +68,8 @@ To pass objects to templates, the standard Pylons method is to attach them to th
 
     import logging
 
-    from pylons import request, response, session
-    from pylons import tmpl_context as c
-    from pylons.controllers.util import abort, redirect_to, url_for
+    from pylons import request, response, session, tmpl_context as c
+    from pylons.controllers.util import abort, redirect_to
 
     from helloworld.lib.base import BaseController, render
     # import helloworld.model as model

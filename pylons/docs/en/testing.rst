@@ -268,9 +268,14 @@ Example:
             assert response.email.name == 'Fred Smith' 
 
 
-.. see_also::
+.. seealso::
+
     `WebTest Documentation <http://pythonpaste.org/webtest/>`_
+        Documentation covering webtest and its usage
+    
     :mod:`WebTest Module docs <webtest>`
+        Module API reference for methods available for use when testing
+        the application
 
 .. _unit_testing:
 

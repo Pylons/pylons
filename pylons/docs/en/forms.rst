@@ -193,6 +193,7 @@ Our form actually has two fields, an email text field and a submit button. If ex
 Pylons comes with an easy to use `validate` decorator, if you wish to use it import it in your `lib/base.py` like this:
 
 .. code-block:: python
+
     # other imports
 
     from pylons.decorators import validate
