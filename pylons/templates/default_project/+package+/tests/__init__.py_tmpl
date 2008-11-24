@@ -10,10 +10,10 @@ setup-app`) and provides the base testing objects.
 from unittest import TestCase
 
 from paste.deploy import loadapp
-from paste.fixture import TestApp
 from paste.script.appinstall import SetupCommand
 from pylons import config, url
 from routes.util import URLGenerator
+from webtest import TestApp
 
 import pylons.test
 

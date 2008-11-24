@@ -2,6 +2,7 @@ Pylons Changelog
 ================
 
 0.9.7 (**tip**)
+* Changed to using WebTest instead of paste.fixture for app testing.
 * Added render_mako_def to render def blocks within a mako template.
 * Changes to cache_decorator and cached_template to support Beaker API
   changes in version 1.1.  1.0.3 is still supported.
