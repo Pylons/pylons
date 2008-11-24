@@ -12,5 +12,6 @@ Third-party components
    routes
    weberror
    webhelpers/index
+   webtest
    webob
    

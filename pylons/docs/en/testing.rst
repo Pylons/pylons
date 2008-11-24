@@ -186,13 +186,13 @@ Testing Pylons Objects
 Pylons will provide several additional attributes for the :mod:`webtest` :class:`webtest.TestResponse` object that let you access various objects that were created during the web request: 
 
 ``session`` 
-Session object 
+    Session object 
 ``req`` 
-Request object 
+    Request object 
 ``c`` 
-Object containing variables passed to templates 
+    Object containing variables passed to templates 
 ``g`` 
-Globals object 
+    Globals object 
 
 To use them, merely access the attributes of the response *after* you've used 
 a get/post command: 
@@ -205,9 +205,9 @@ a get/post command:
 
 .. note:: 
 
-    The ``paste.fixture`` response object already has a TestRequest object 
-    assigned to it, therefore Pylons assigns its ``request`` object to the 
-    response as ``req``. 
+    The :class:`response <webtest.TestResponse>` object already has a
+    TestRequest object assigned to it, therefore Pylons assigns its
+    ``request`` object to the response as ``req``. 
 
 Testing Your Own Objects 
 ======================== 
