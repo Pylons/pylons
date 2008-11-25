@@ -1,5 +1,4 @@
 import cgi
-import os.path
 
 from paste.urlparser import PkgResourcesParser
 from pylons import request
@@ -10,6 +9,7 @@ from webhelpers.html.builder import literal
 from {{package}}.lib.base import BaseController
 
 class ErrorController(BaseController):
+
     """Generates error documents as and when they are required.
 
     The ErrorDocuments middleware forwards to ErrorController when error
@@ -17,8 +17,9 @@ class ErrorController(BaseController):
 
     This behaviour can be altered by changing the parameters to the
     ErrorDocuments middleware in your config/middleware.py file.
-    
+
     """
+
     def document(self):
         """Render the error document"""
         resp = request.environ.get('pylons.original_response')
@@ -41,6 +42,5 @@ class ErrorController(BaseController):
         """Call Paste's FileApp (a WSGI application) to serve the file
         at the specified path
         """
-        static = PkgResourcesParser('pylons', 'pylons')
         request.environ['PATH_INFO'] = '/%s' % path
-        return static(request.environ, self.start_response)
+        return forward(PkgResourcesParser('pylons', 'pylons'))
