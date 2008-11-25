@@ -35,7 +35,7 @@ def make_app(global_conf, full_stack=True, **app_conf):
 
     # Pull the other engine and put a new one up first
     config.template_engines.pop()
-    config.add_template_engine('genshi', 'projectname.genshitemplates')
+    config.add_template_engine('genshi', 'projectname.templates')
 
     # The Pylons WSGI app
     app = PylonsApp()

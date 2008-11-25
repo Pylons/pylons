@@ -11,6 +11,12 @@ class TestSample2Controller(TestController):
         assert 'session incrementer' in response
     
     def test_genshi_default(self):
-        response = self.app.get(url(controller='sample', action='testdefault'))
+        self._test_genshi_default('testdefault')
+        
+    def test_genshi_default_leagcy(self):
+        self._test_genshi_default('testdefault_legacy')
+
+    def _test_genshi_default(self, action):
+        response = self.app.get(url(controller='sample', action=action))
         assert 'Hello from Genshi' in response
         assert 'This is in c var' in response

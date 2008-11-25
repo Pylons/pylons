@@ -44,34 +44,33 @@ def svn_repos_setup():
     assert 'REPOS' in res.files_created
     testenv.ignore_paths.append('REPOS')
 
-def paster_create():
+def paster_create(template_engine='mako', overwrite=False):
     global projenv
-    res = testenv.run(_get_script_name('paster'), 'create', '--verbose', '--no-interactive',
-                      #'--svn-repository=' + testenv.svn_url,
-                      '--template=pylons',
-                      'ProjectName',
-                      'version=0.1',
-                      'sqlalchemy=False',
-                      'zip_safe=False',
-                      'template_engine=mako',
-                      )
+    paster_args = ['create', '--verbose', '--no-interactive']
+    if overwrite:
+        paster_args.append('-f')
+    paster_args.extend(['--template=pylons',
+                        'ProjectName',
+                        'version=0.1',
+                        'sqlalchemy=False',
+                        'zip_safe=False',
+                        'template_engine=%s' % template_engine])
+    res = testenv.run(_get_script_name('paster'), *paster_args)
     expect_fn = ['projectname', 'development.ini', 'setup.cfg', 'README.txt',
                  'setup.py']
     for fn in expect_fn:
         fn = os.path.join('ProjectName', fn)
-        #~ if fn not in res.files_created.keys():
-            #~ sys.stderr.write('ERROR not creates %r'%fn)
-        #~ if fn not in res.stdout:
-            #~ sys.stderr.write('ERROR not in stdout %r'%fn)
-        assert fn in res.files_created.keys()
+        if not overwrite:
+            assert fn in res.files_created.keys()
         assert fn in res.stdout
-    
-    setup = res.files_created[os.path.join('ProjectName','setup.py')]
-    setup.mustcontain('0.1')
-    setup.mustcontain('projectname.config.middleware:make_app')
-    setup.mustcontain('main = pylons.util:PylonsInstaller')
-    setup.mustcontain("include_package_data=True")
-    assert '0.1' in setup
+
+    if not overwrite:
+        setup = res.files_created[os.path.join('ProjectName','setup.py')]
+        setup.mustcontain('0.1')
+        setup.mustcontain('projectname.config.middleware:make_app')
+        setup.mustcontain('main = pylons.util:PylonsInstaller')
+        setup.mustcontain("include_package_data=True")
+        assert '0.1' in setup
     testenv.run(_get_script_name('python')+' setup.py egg_info',
                 cwd=os.path.join(testenv.cwd, 'ProjectName').replace('\\','/'),
                 expect_stderr=True)
@@ -141,13 +140,20 @@ def do_i18ntest():
     }
     _do_proj_test(copydict)
 
-def do_genshi_default():
+def do_genshi():
+    reset = {
+        'helpers_sample.py':'projectname/lib/helpers.py',
+        'app_globals.py':'projectname/lib/app_globals.py',
+        'rest_routing.py':'projectname/config/routing.py',
+        'development.ini':'development.ini',
+        }
     copydict = {
-        'testgenshi.html':'projectname/genshitemplates/testgenshi.html',
+        'testgenshi.html':'projectname/templates/testgenshi.html',
         'middleware_def_engine.py':'projectname/config/middleware.py',
         'functional_sample_controller_sample2.py':'projectname/tests/functional/test_sample2.py'
     }
-    empty = ['projectname/genshitemplates/__init__.py']
+    copydict.update(reset)
+    empty = ['projectname/templates/__init__.py']
     _do_proj_test(copydict, empty)
 
 def do_two_engines():
@@ -268,7 +274,8 @@ def test_project_do_cache_decorator():
 def test_project_do_genshi_default():
     if is_jython:
         raise SkipTest('Jython does not currently support Genshi')
-    do_genshi_default()
+    paster_create(template_engine='genshi', overwrite=True)
+    do_genshi()
 
 def test_project_do_two_engines():
     do_two_engines()
