@@ -12,8 +12,22 @@ setup(
     author='',
     author_email='',
     #url='',
-    install_requires=["Pylons>=0.9.6"],
-    setup_requires=["PasteScript==dev,>=1.6.3dev-r7326"],
+    install_requires=[
+        "Pylons>=0.9.6",
+{{if sqlalchemy}}
+        "SQLAlchemy>=0.4",
+{{endif}}
+{{if template_engine == 'genshi'}}
+        "Genshi>=0.4",
+{{endif}}
+{{if template_engine == 'mako'}}
+        "Mako",
+{{endif}}
+{{if template_engine == 'jinja'}}
+        "Jinja",
+{{endif}}
+    ],
+    setup_requires=["PasteScript>=1.6.3"],
     packages=find_packages(exclude=['ez_setup']),
     include_package_data=True,
     test_suite='nose.collector',
@@ -25,7 +39,7 @@ setup(
     paster_plugins={{egg_plugins}},
     entry_points="""
     [paste.app_factory]
-    main = {{package}}.wsgiapp:make_app
+    main = {{package}}.config.middleware:make_app
 
     [paste.app_install]
     main = pylons.util:PylonsInstaller
