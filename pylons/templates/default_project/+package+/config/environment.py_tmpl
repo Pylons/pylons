@@ -6,8 +6,8 @@ import os
 from mako.lookup import TemplateLookup
 {{elif template_engine == 'genshi'}}
 from genshi.template import TemplateLoader
-{{elif template_engine == 'jinja'}}
-from jinja import ChoiceLoader, Environment, FileSystemLoader
+{{elif template_engine == 'jinja2'}}
+from jinja2 import ChoiceLoader, Environment, FileSystemLoader
 {{endif}}
 from pylons import config
 {{if template_engine == 'mako'}}
@@ -56,12 +56,12 @@ def load_environment(global_conf, app_conf):
     # Create the Genshi TemplateLoader
     config['pylons.app_globals'].genshi_loader = TemplateLoader(
         paths['templates'], auto_reload=True)
-    {{elif template_engine == 'jinja'}}
+    {{elif template_engine == 'jinja2'}}
 
-    # Create the Jinja Environment
-    config['pylons.app_globals'].jinja_env = Environment(loader=ChoiceLoader(
+    # Create the Jinja2 Environment
+    config['pylons.app_globals'].jinja2_env = Environment(loader=ChoiceLoader(
             [FileSystemLoader(path) for path in paths['templates']]))
-    # Jinja's unable to request c's attributes without strict_c
+    # Jinja2's unable to request c's attributes without strict_c
     config['pylons.strict_c'] = True
     {{endif}}
     {{if sqlalchemy}}

@@ -141,6 +141,7 @@ def do_i18ntest():
     _do_proj_test(copydict)
 
 def do_genshi():
+    paster_create(template_engine='genshi', overwrite=True)
     reset = {
         'helpers_sample.py':'projectname/lib/helpers.py',
         'app_globals.py':'projectname/lib/app_globals.py',
@@ -167,15 +168,22 @@ def do_two_engines():
 def do_crazy_decorators():
     _do_proj_test({'functional_sample_controller_sample4.py':'projectname/tests/functional/test_sample3.py'})
 
-def do_cheetah():
+def do_jinja2():
+    paster_create(template_engine='jinja2', overwrite=True)
+    reset = {
+        'helpers_sample.py':'projectname/lib/helpers.py',
+        'app_globals.py':'projectname/lib/app_globals.py',
+        'rest_routing.py':'projectname/config/routing.py',
+        'development.ini':'development.ini',
+        }
     copydict = {
         'controller_sample.py':'projectname/controllers/sample.py',
-        'testcheetah.tmpl':'projectname/cheetah/testcheetah.tmpl',
-        'middleware_cheetah_engine.py':'projectname/config/middleware.py',
-        'functional_sample_controller_cheetah.py':'projectname/tests/functional/test_cheetah.py',
+        'testjinja2.html':'projectname/templates/testjinja2.html',
+        'functional_sample_controller_jinja2.py':'projectname/tests/functional/test_jinja2.py',
     }
+    copydict.update(reset)
     empty = [
-         'projectname/cheetah/__init__.py',
+         'projectname/templates/__init__.py',
          'projectname/tests/functional/test_sample.py',
          'projectname/tests/functional/test_sample2.py',
          'projectname/tests/functional/test_sample3.py'
@@ -191,7 +199,7 @@ def do_cache_decorator():
     }
     empty = [
         'projectname/tests/functional/test_mako.py',
-        'projectname/tests/functional/test_cheetah.py',
+        'projectname/tests/functional/test_jinja2.py',
         'projectname/tests/functional/test_sample.py',
         'projectname/tests/functional/test_sample2.py',
         'projectname/tests/functional/test_sample3.py'
@@ -207,7 +215,7 @@ def do_xmlrpc():
     }
     empty = [
         'projectname/tests/functional/test_cache.py',
-        'projectname/tests/functional/test_cheetah.py',
+        'projectname/tests/functional/test_jinja2.py',
     ]
     _do_proj_test(copydict, empty)
 
@@ -276,14 +284,13 @@ def test_project_do_cache_decorator():
 def test_project_do_genshi_default():
     if is_jython:
         raise SkipTest('Jython does not currently support Genshi')
-    paster_create(template_engine='genshi', overwrite=True)
     do_genshi()
 
 def test_project_do_two_engines():
     do_two_engines()
 
-def test_project_do_cheetah():
-    do_cheetah()
+def test_project_do_jinja2():
+    do_jinja2()
 
 def test_project_do_xmlrpc():
     do_xmlrpc()

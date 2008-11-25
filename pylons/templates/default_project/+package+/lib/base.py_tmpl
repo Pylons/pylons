@@ -3,7 +3,7 @@
 Provides the BaseController class for subclassing.
 """
 from pylons.controllers import WSGIController
-{{if template_engine in ('genshi', 'jinja', 'mako')}}
+{{if template_engine in ('genshi', 'jinja2', 'mako')}}
 from pylons.templating import render_{{template_engine}} as render
 {{endif}}
 {{if sqlalchemy}}

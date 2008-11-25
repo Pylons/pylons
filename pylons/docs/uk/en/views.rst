@@ -52,7 +52,7 @@ Using the default Mako template engine, this will cause Mako to look in the :fil
 Directly-supported template engines
 ===================================
 
-Pylons provides pre-configured options for using the `Mako`__, `Genshi`__ and `Jinja`__ template rendering engines. They are setup automatically during the creation of a new Pylons project, or can be added later manually.
+Pylons provides pre-configured options for using the `Mako`__, `Genshi`__ and `Jinja2`__ template rendering engines. They are setup automatically during the creation of a new Pylons project, or can be added later manually.
 
 
 .. __: http://www.makotemplates.org/

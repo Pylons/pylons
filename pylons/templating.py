@@ -3,8 +3,8 @@
 Render functions and helpers
 ============================
 
-:mod:`pylons.templating` includes several basic render functions, 
-:func:`render_mako`, :func:`render_genshi` and :func:`render_jinja`
+:mod:`pylons.templating` includes several basic render functions,
+:func:`render_mako`, :func:`render_genshi` and :func:`render_jinja2`
 that render templates from the file-system with the assumption that
 variables intended for the will be attached to :data:`tmpl_context`
 (hereafter referred to by its short name of :data:`c` which it is
@@ -59,7 +59,7 @@ Template Globals
 
 Templates rendered in Pylons should include the default Pylons globals
 as the :func:`render_mako`, :func:`render_genshi` and
-:func:`render_jinja` functions. The full list of Pylons globals that
+:func:`render_jinja2` functions. The full list of Pylons globals that
 are included in the template's namespace are:
 
 - :term:`c` -- Template context object
@@ -135,7 +135,7 @@ import pylons
 from webhelpers.html import literal
 
 __all__ = ['Buffet', 'MyghtyTemplatePlugin', 'render', 'render_genshi', 
-           'render_jinja', 'render_mako', 'render_response']
+           'render_jinja2', 'render_mako', 'render_response']
 
 PYLONS_VARS = ['c', 'config', 'g', 'h', 'render', 'request', 'session',
                'translator', 'ungettext', '_', 'N_']
@@ -334,9 +334,9 @@ def render_genshi(template_name, extra_vars=None, cache_key=None,
                            ns_options=('method'), method=method)
 
 
-def render_jinja(template_name, extra_vars=None, cache_key=None, 
+def render_jinja2(template_name, extra_vars=None, cache_key=None, 
                  cache_type=None, cache_expire=None):
-    """Render a template with Jinja
+    """Render a template with Jinja2
 
     Accepts the cache options ``cache_key``, ``cache_type``, and
     ``cache_expire``.
@@ -352,7 +352,7 @@ def render_jinja(template_name, extra_vars=None, cache_key=None,
 
         # Grab a template reference
         template = \
-            globs['app_globals'].jinja_env.get_template(template_name)
+            globs['app_globals'].jinja2_env.get_template(template_name)
 
         return literal(template.render(**globs))
 

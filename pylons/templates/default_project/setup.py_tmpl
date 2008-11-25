@@ -23,8 +23,8 @@ setup(
 {{if template_engine == 'mako'}}
         "Mako",
 {{endif}}
-{{if template_engine == 'jinja'}}
-        "Jinja",
+{{if template_engine == 'jinja2'}}
+        "Jinja2",
 {{endif}}
     ],
     setup_requires=["PasteScript>=1.6.3"],

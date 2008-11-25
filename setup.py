@@ -70,7 +70,7 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
     zip_safe=False,
     include_package_data=True,
     test_suite='nose.collector',
-    tests_require=['nose', 'Genshi'],
+    tests_require=['nose', 'Genshi', 'Jinja2'],
     install_requires=[
         "Routes>=1.10.1", "WebHelpers>=0.6.3", "Beaker>=1.1.2",
         "Paste>=1.7.2", "PasteDeploy>=1.3.2", "PasteScript>=1.7.3",
@@ -93,11 +93,12 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     extras_require = {
-        'cheetah':["Cheetah>=1.0", "TurboCheetah>=0.9.5"],
-        'myghty':["Myghty>=1.1"],
-        'kid':["kid>=0.9", "TurboKid>=0.9.1"],
-        'genshi':["Genshi>=0.4.4"],
-        'full':[
+        'cheetah': ["Cheetah>=1.0", "TurboCheetah>=0.9.5"],
+        'myghty': ["Myghty>=1.1"],
+        'kid': ["kid>=0.9", "TurboKid>=0.9.1"],
+        'genshi': ["Genshi>=0.4.4"],
+        'jinja2': ['Jinja2'],
+        'full': [
             "docutils>=0.4", "elementtree>=1.2.6",
             "Pygments>=0.7", "Cheetah>=1.0",
             "TurboCheetah>=0.9.5", "kid>=0.9", "TurboKid>=0.9.1",
