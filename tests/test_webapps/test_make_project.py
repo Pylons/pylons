@@ -184,7 +184,7 @@ def do_cheetah():
 
 def do_cache_decorator():
     copydict = {
-        'middleware_def_engine.py':'projectname/config/middleware.py',
+        'middleware_mako.py':'projectname/config/middleware.py',
         'app_globals.py':'projectname/lib/app_globals.py',
         'cache_controller.py':'projectname/controllers/cache.py',
         'functional_controller_cache_decorator.py':'projectname/tests/functional/test_cache.py',
@@ -200,12 +200,14 @@ def do_cache_decorator():
 
 def do_xmlrpc():
     copydict = {
+        'middleware_mako.py':'projectname/config/middleware.py',
         'base_with_xmlrpc.py':'projectname/lib/base.py',
         'controller_xmlrpc.py':'projectname/controllers/xmlrpc.py',
         'functional_controller_xmlrpc.py':'projectname/tests/functional/test_xmlrpc.py'
     }
     empty = [
         'projectname/tests/functional/test_cache.py',
+        'projectname/tests/functional/test_cheetah.py',
     ]
     _do_proj_test(copydict, empty)
 
