@@ -70,7 +70,7 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
     zip_safe=False,
     include_package_data=True,
     test_suite='nose.collector',
-    tests_require=['nose'],
+    tests_require=['nose', 'Genshi'],
     install_requires=[
         "Routes>=1.10.1", "WebHelpers>=0.6.3", "Beaker>=1.1.2",
         "Paste>=1.7.2", "PasteDeploy>=1.3.2", "PasteScript>=1.7.3",

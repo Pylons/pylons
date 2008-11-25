@@ -37,8 +37,7 @@ def make_app(global_conf, full_stack=True, **app_conf):
     app = PylonsApp()
     
     # Add the second engine
-    kidopts = {'kid.assume_encoding':'utf-8', 'kid.encoding':'utf-8'}
-    config.add_template_engine('kid', 'projectname.kidtemplates', kidopts)
+    config.add_template_engine('genshi', 'projectname.genshitemplates')
     
     # CUSTOM MIDDLEWARE HERE (filtered by error handling middlewares)
     

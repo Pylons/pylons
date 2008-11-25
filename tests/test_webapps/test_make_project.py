@@ -2,12 +2,13 @@
 import os
 import sys
 import time
-import urllib
-
 from shutil import rmtree
 
 import pkg_resources
+from nose import SkipTest
 from paste.fixture import *
+
+is_jython = sys.platform.startswith('java')
 
 TEST_OUTPUT_DIRNAME = 'output'
 
@@ -105,7 +106,7 @@ def _do_proj_test(copydict, emptyfiles=None):
     """Given a dict of files, where the key is a filename in filestotest, the value is
     the destination in the new projects dir. emptyfiles is a list of files that should
     be created and empty."""
-    if sys.platform.startswith('java'):
+    if is_jython:
         # Hack for Jython .py/bytecode mtime handling:
         # http://bugs.jython.org/issue1024 (the issue actually describes
         # this test)
@@ -140,13 +141,13 @@ def do_i18ntest():
     }
     _do_proj_test(copydict)
 
-def do_kid_default():
+def do_genshi_default():
     copydict = {
-        'testkid.kid':'projectname/kidtemplates/testkid.kid',
+        'testgenshi.html':'projectname/genshitemplates/testgenshi.html',
         'middleware_def_engine.py':'projectname/config/middleware.py',
         'functional_sample_controller_sample2.py':'projectname/tests/functional/test_sample2.py'
     }
-    empty = ['projectname/kidtemplates/__init__.py']
+    empty = ['projectname/genshitemplates/__init__.py']
     _do_proj_test(copydict, empty)
 
 def do_two_engines():
@@ -264,8 +265,10 @@ def test_project_do_crazy_decorators():
 def test_project_do_cache_decorator():
     do_cache_decorator()
 
-def test_project_do_kid_default():
-    do_kid_default()
+def test_project_do_genshi_default():
+    if is_jython:
+        raise SkipTest('Jython does not currently support Genshi')
+    do_genshi_default()
 
 def test_project_do_two_engines():
     do_two_engines()

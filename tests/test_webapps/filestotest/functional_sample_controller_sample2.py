@@ -10,7 +10,7 @@ class TestSample2Controller(TestController):
         assert response.session['counter'] == 1
         assert 'session incrementer' in response
     
-    def test_kid_default(self):
+    def test_genshi_default(self):
         response = self.app.get(url(controller='sample', action='testdefault'))
-        assert 'Hello from Kid' in response
+        assert 'Hello from Genshi' in response
         assert 'This is in c var' in response

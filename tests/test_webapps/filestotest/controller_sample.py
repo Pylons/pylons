@@ -35,7 +35,7 @@ class SampleController(BaseController):
     
     def testdefault(self):
         c.test = "This is in c var"
-        return render_response('testkid')
+        return render_response('testgenshi')
         
     def test_template_caching(self):
         return render_response('/test_mako.html', cache_expire='never')
