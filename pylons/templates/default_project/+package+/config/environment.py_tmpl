@@ -4,13 +4,15 @@ import os
 
 {{if template_engine == 'mako'}}
 from mako.lookup import TemplateLookup
-from pylons.error import handle_mako_error
 {{elif template_engine == 'genshi'}}
 from genshi.template import TemplateLoader
 {{elif template_engine == 'jinja'}}
 from jinja import ChoiceLoader, Environment, FileSystemLoader
 {{endif}}
 from pylons import config
+{{if template_engine == 'mako'}}
+from pylons.error import handle_mako_error
+{{endif}}
 {{if sqlalchemy}}
 from sqlalchemy import engine_from_config
 {{endif}}
