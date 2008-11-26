@@ -38,8 +38,8 @@ def authenticate_form(func, *args, **kwargs):
         del request.POST[secure_form.token_key]
         return func(*args, **kwargs)
     else:
-        log.debug('Cross-site request forgery detected, request denied: %r' %
-                  request)
+        log.warn('Cross-site request forgery detected, request denied: %r '
+                 'REMOTE_ADDR: %s' % (request, request.remote_addr))
         abort(403, detail=csrf_detected_message)
 authenticate_form = decorator(authenticate_form)
 
