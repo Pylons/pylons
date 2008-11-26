@@ -71,7 +71,7 @@ def paster_create(template_engine='mako', overwrite=False):
         setup.mustcontain('main = pylons.util:PylonsInstaller')
         setup.mustcontain("include_package_data=True")
         assert '0.1' in setup
-    testenv.run(_get_script_name('python')+' setup.py egg_info',
+    testenv.run(_get_script_name(sys.executable)+' setup.py egg_info',
                 cwd=os.path.join(testenv.cwd, 'ProjectName').replace('\\','/'),
                 expect_stderr=True)
     #testenv.run(_get_script_name('svn'), 'commit', '-m', 'Created project', 'ProjectName')
@@ -233,7 +233,7 @@ def make_tag():
     global tagenv
     #res = projenv.run(_get_script_name('svn')+' commit -m "updates"')
     # Space at the end needed so run() doesn't add \n causing svntag to complain
-    #res = projenv.run(_get_script_name('python')+' setup.py svntag --version=0.5 ')
+    #res = projenv.run(_get_script_name(sys.executable)+' setup.py svntag --version=0.5 ')
     # XXX Still fails => setuptools problem on win32?
     assert 'Tagging 0.5 version' in res.stdout
     assert 'Auto-update of version strings' in res.stdout
