@@ -8,10 +8,10 @@ except ImportError:
 setup(
     name='{{project}}',
     version='{{version}}',
-    description='',
-    author='',
-    author_email='',
-    #url='',
+    description={{repr(description)}},
+    author={{repr(author)}},
+    author_email={{repr(author_email)}},
+    url={{repr(url)}},
     install_requires=[
         "Pylons>=0.9.6",
 {{if sqlalchemy}}
@@ -19,11 +19,7 @@ setup(
 {{endif}}
 {{if template_engine == 'genshi'}}
         "Genshi>=0.4",
-{{endif}}
-{{if template_engine == 'mako'}}
-        "Mako",
-{{endif}}
-{{if template_engine == 'jinja2'}}
+{{elif template_engine == 'jinja2'}}
         "Jinja2",
 {{endif}}
     ],
@@ -32,7 +28,7 @@ setup(
     include_package_data=True,
     test_suite='nose.collector',
     package_data={'{{package}}': ['i18n/*/LC_MESSAGES/*.mo']},
-    #message_extractors = {'{{package}}': [
+    #message_extractors={'{{package}}': [
     #        ('**.py', 'python', None),
     #        {{babel_templates_extractor}}('public/**', 'ignore', None)]},
     zip_safe={{zip_safe}},
