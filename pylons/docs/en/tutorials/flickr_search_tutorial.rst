@@ -7,6 +7,8 @@ Flickr search tutorial
 Introduction
 ============
 
+.. warning:: This tutorial requires Python 2.5, specifically the :class:hashlib module. This dependency is introduced by the flickr library.  
+
 By now you may have seen the `amazing screencast <http://media.rubyonrails.org/video/flickr-rails-ajax.mov>`_ where someone implements a beautiful web interface to `Flickr! <http://www.flickr.com>`_ (an online photo gallery) in under 5 minutes. Well if you haven't seen it yet, you really should do so now. But if you have you would probably be glad to know that this is possible under Pylons too! 
 
 Getting Started 

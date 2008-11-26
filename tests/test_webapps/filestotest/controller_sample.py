@@ -1,3 +1,5 @@
+import datetime
+
 from projectname.lib.base import *
 import projectname.lib.helpers as h
 from pylons import h as deprecated_h
@@ -6,7 +8,8 @@ from pylons import tmpl_context as c
 from pylons import app_globals as g
 from pylons.decorators import rest
 from pylons.i18n import _, get_lang, set_lang, LanguageError
-from pylons.templating import render, render_response
+from pylons.templating import render as old_render, render_genshi, \
+    render_jinja2, render_response
 from pylons.controllers.util import abort, redirect_to, url_for
 
 class SampleController(BaseController):
@@ -35,7 +38,11 @@ class SampleController(BaseController):
     
     def testdefault(self):
         c.test = "This is in c var"
-        return render_response('testkid')
+        return render_genshi('testgenshi.html')
+
+    def testdefault_legacy(self):
+        c.test = "This is in c var"
+        return old_render('testgenshi')
         
     def test_template_caching(self):
         return render_response('/test_mako.html', cache_expire='never')
@@ -52,9 +59,10 @@ class SampleController(BaseController):
         return 'This should never be shown'
     impossible = rest.restrict('POST')(rest.dispatch_on(POST='test_only_post')(impossible))
 
-    def testcheetah(self):
+    def testjinja2(self):
         c.test = "This is in c var"
-        return render_response('testcheetah')
+        c.now = datetime.datetime.now
+        return render_jinja2('testjinja2.html')
 
     def set_lang(self):
         return self._set_lang(_)

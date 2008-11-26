@@ -151,7 +151,7 @@ class PylonsTemplate(Template):
     summary = 'Pylons application template'
     egg_plugins = ['PasteScript', 'Pylons']
     vars = [
-        var('template_engine', 'mako/genshi/jinja/etc: Template language', 
+        var('template_engine', 'mako/genshi/jinja2/etc: Template language', 
             default='mako'),
         var('sqlalchemy', 'True/False: Include SQLAlchemy 0.4 configuration',
             default=False),
@@ -188,7 +188,7 @@ class MinimalPylonsTemplate(PylonsTemplate):
     _template_dir = ('pylons', 'templates/minimal_project')
     summary = 'Pylons minimal application template'
     vars = [
-        var('template_engine', 'mako/genshi/jinja/etc: Template language', 
+        var('template_engine', 'mako/genshi/jinja2/etc: Template language', 
             default='mako'),
     ]
 

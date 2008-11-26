@@ -18,6 +18,7 @@ port = 5000
 [app:main]
 use = egg:{{project}}
 full_stack = true
+static_files = true
 cache_dir = %(here)s/data
 beaker.session.key = {{package}}
 beaker.session.secret = somesecret
@@ -28,13 +29,6 @@ beaker.session.secret = somesecret
 #beaker.cache.data_dir = %(here)s/data/cache
 #beaker.session.data_dir = %(here)s/data/sessions
 
-{{if sqlalchemy}}
-
-# SQLAlchemy database URL
-sqlalchemy.url = sqlite:///%(here)s/development.db
-
-{{endif}}
-
 # WARNING: *THE LINE BELOW MUST BE UNCOMMENTED ON A PRODUCTION ENVIRONMENT*
 # Debug mode will enable the interactive debugging tool, allowing ANYONE to
 # execute malicious code after an exception is raised.
@@ -43,7 +37,7 @@ sqlalchemy.url = sqlite:///%(here)s/development.db
 
 # Logging configuration
 [loggers]
-keys = root, {{package_logger}}{{if sqlalchemy}}, sqlalchemy{{endif}}
+keys = root, routes, {{package_logger}}
 
 [handlers]
 keys = console
@@ -54,6 +48,12 @@ keys = generic
 [logger_root]
 level = INFO
 handlers = console
+
+[logger_routes]
+level = INFO
+handlers =
+qualname = routes.middleware
+# "level = DEBUG" logs the route matched and routing variables.
 
 [logger_{{package_logger}}]
 level = DEBUG

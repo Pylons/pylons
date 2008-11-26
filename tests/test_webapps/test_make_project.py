@@ -2,12 +2,13 @@
 import os
 import sys
 import time
-import urllib
-
 from shutil import rmtree
 
 import pkg_resources
+from nose import SkipTest
 from paste.fixture import *
+
+is_jython = sys.platform.startswith('java')
 
 TEST_OUTPUT_DIRNAME = 'output'
 
@@ -43,35 +44,34 @@ def svn_repos_setup():
     assert 'REPOS' in res.files_created
     testenv.ignore_paths.append('REPOS')
 
-def paster_create():
+def paster_create(template_engine='mako', overwrite=False):
     global projenv
-    res = testenv.run(_get_script_name('paster'), 'create', '--verbose', '--no-interactive',
-                      #'--svn-repository=' + testenv.svn_url,
-                      '--template=pylons',
-                      'ProjectName',
-                      'version=0.1',
-                      'sqlalchemy=False',
-                      'zip_safe=False',
-                      'template_engine=mako',
-                      )
+    paster_args = ['create', '--verbose', '--no-interactive']
+    if overwrite:
+        paster_args.append('-f')
+    paster_args.extend(['--template=pylons',
+                        'ProjectName',
+                        'version=0.1',
+                        'sqlalchemy=False',
+                        'zip_safe=False',
+                        'template_engine=%s' % template_engine])
+    res = testenv.run(_get_script_name('paster'), *paster_args)
     expect_fn = ['projectname', 'development.ini', 'setup.cfg', 'README.txt',
                  'setup.py']
     for fn in expect_fn:
         fn = os.path.join('ProjectName', fn)
-        #~ if fn not in res.files_created.keys():
-            #~ sys.stderr.write('ERROR not creates %r'%fn)
-        #~ if fn not in res.stdout:
-            #~ sys.stderr.write('ERROR not in stdout %r'%fn)
-        assert fn in res.files_created.keys()
+        if not overwrite:
+            assert fn in res.files_created.keys()
         assert fn in res.stdout
-    
-    setup = res.files_created[os.path.join('ProjectName','setup.py')]
-    setup.mustcontain('0.1')
-    setup.mustcontain('projectname.config.middleware:make_app')
-    setup.mustcontain('main = pylons.util:PylonsInstaller')
-    setup.mustcontain("include_package_data=True")
-    assert '0.1' in setup
-    testenv.run(_get_script_name('python')+' setup.py egg_info',
+
+    if not overwrite:
+        setup = res.files_created[os.path.join('ProjectName','setup.py')]
+        setup.mustcontain('0.1')
+        setup.mustcontain('projectname.config.middleware:make_app')
+        setup.mustcontain('main = pylons.util:PylonsInstaller')
+        setup.mustcontain("include_package_data=True")
+        assert '0.1' in setup
+    testenv.run(_get_script_name(sys.executable)+' setup.py egg_info',
                 cwd=os.path.join(testenv.cwd, 'ProjectName').replace('\\','/'),
                 expect_stderr=True)
     #testenv.run(_get_script_name('svn'), 'commit', '-m', 'Created project', 'ProjectName')
@@ -105,7 +105,7 @@ def _do_proj_test(copydict, emptyfiles=None):
     """Given a dict of files, where the key is a filename in filestotest, the value is
     the destination in the new projects dir. emptyfiles is a list of files that should
     be created and empty."""
-    if sys.platform.startswith('java'):
+    if is_jython:
         # Hack for Jython .py/bytecode mtime handling:
         # http://bugs.jython.org/issue1024 (the issue actually describes
         # this test)
@@ -140,13 +140,21 @@ def do_i18ntest():
     }
     _do_proj_test(copydict)
 
-def do_kid_default():
+def do_genshi():
+    paster_create(template_engine='genshi', overwrite=True)
+    reset = {
+        'helpers_sample.py':'projectname/lib/helpers.py',
+        'app_globals.py':'projectname/lib/app_globals.py',
+        'rest_routing.py':'projectname/config/routing.py',
+        'development.ini':'development.ini',
+        }
     copydict = {
-        'testkid.kid':'projectname/kidtemplates/testkid.kid',
+        'testgenshi.html':'projectname/templates/testgenshi.html',
         'middleware_def_engine.py':'projectname/config/middleware.py',
         'functional_sample_controller_sample2.py':'projectname/tests/functional/test_sample2.py'
     }
-    empty = ['projectname/kidtemplates/__init__.py']
+    copydict.update(reset)
+    empty = ['projectname/templates/__init__.py']
     _do_proj_test(copydict, empty)
 
 def do_two_engines():
@@ -160,15 +168,22 @@ def do_two_engines():
 def do_crazy_decorators():
     _do_proj_test({'functional_sample_controller_sample4.py':'projectname/tests/functional/test_sample3.py'})
 
-def do_cheetah():
+def do_jinja2():
+    paster_create(template_engine='jinja2', overwrite=True)
+    reset = {
+        'helpers_sample.py':'projectname/lib/helpers.py',
+        'app_globals.py':'projectname/lib/app_globals.py',
+        'rest_routing.py':'projectname/config/routing.py',
+        'development.ini':'development.ini',
+        }
     copydict = {
         'controller_sample.py':'projectname/controllers/sample.py',
-        'testcheetah.tmpl':'projectname/cheetah/testcheetah.tmpl',
-        'middleware_cheetah_engine.py':'projectname/config/middleware.py',
-        'functional_sample_controller_cheetah.py':'projectname/tests/functional/test_cheetah.py',
+        'testjinja2.html':'projectname/templates/testjinja2.html',
+        'functional_sample_controller_jinja2.py':'projectname/tests/functional/test_jinja2.py',
     }
+    copydict.update(reset)
     empty = [
-         'projectname/cheetah/__init__.py',
+         'projectname/templates/__init__.py',
          'projectname/tests/functional/test_sample.py',
          'projectname/tests/functional/test_sample2.py',
          'projectname/tests/functional/test_sample3.py'
@@ -177,14 +192,14 @@ def do_cheetah():
 
 def do_cache_decorator():
     copydict = {
-        'middleware_def_engine.py':'projectname/config/middleware.py',
+        'middleware_mako.py':'projectname/config/middleware.py',
         'app_globals.py':'projectname/lib/app_globals.py',
         'cache_controller.py':'projectname/controllers/cache.py',
         'functional_controller_cache_decorator.py':'projectname/tests/functional/test_cache.py',
     }
     empty = [
         'projectname/tests/functional/test_mako.py',
-        'projectname/tests/functional/test_cheetah.py',
+        'projectname/tests/functional/test_jinja2.py',
         'projectname/tests/functional/test_sample.py',
         'projectname/tests/functional/test_sample2.py',
         'projectname/tests/functional/test_sample3.py'
@@ -193,12 +208,14 @@ def do_cache_decorator():
 
 def do_xmlrpc():
     copydict = {
+        'middleware_mako.py':'projectname/config/middleware.py',
         'base_with_xmlrpc.py':'projectname/lib/base.py',
         'controller_xmlrpc.py':'projectname/controllers/xmlrpc.py',
         'functional_controller_xmlrpc.py':'projectname/tests/functional/test_xmlrpc.py'
     }
     empty = [
         'projectname/tests/functional/test_cache.py',
+        'projectname/tests/functional/test_jinja2.py',
     ]
     _do_proj_test(copydict, empty)
 
@@ -216,7 +233,7 @@ def make_tag():
     global tagenv
     #res = projenv.run(_get_script_name('svn')+' commit -m "updates"')
     # Space at the end needed so run() doesn't add \n causing svntag to complain
-    #res = projenv.run(_get_script_name('python')+' setup.py svntag --version=0.5 ')
+    #res = projenv.run(_get_script_name(sys.executable)+' setup.py svntag --version=0.5 ')
     # XXX Still fails => setuptools problem on win32?
     assert 'Tagging 0.5 version' in res.stdout
     assert 'Auto-update of version strings' in res.stdout
@@ -264,14 +281,18 @@ def test_project_do_crazy_decorators():
 def test_project_do_cache_decorator():
     do_cache_decorator()
 
-def test_project_do_kid_default():
-    do_kid_default()
+def test_project_do_genshi_default():
+    if is_jython:
+        raise SkipTest('Jython does not currently support Genshi')
+    do_genshi()
 
 def test_project_do_two_engines():
     do_two_engines()
 
-def test_project_do_cheetah():
-    do_cheetah()
+def test_project_do_jinja2():
+    if is_jython:
+        raise SkipTest('Jython does not currently support Jinja2')
+    do_jinja2()
 
 def test_project_do_xmlrpc():
     do_xmlrpc()
