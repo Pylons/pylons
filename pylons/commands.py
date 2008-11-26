@@ -66,9 +66,13 @@ def can_import(name):
         return False
 
 
-def is_minimal_template(package):
+def is_minimal_template(package, fail_fast=False):
     """Determine if the specified Pylons project (package) uses the
-    Pylons Minimal Tempalte"""
+    Pylons Minimal Template.
+
+    fail_fast causes ImportErrors encountered during detection to be
+    raised.
+    """
     minimal_template = False
     try:
         # Check if PACKAGE.lib.base exists
@@ -78,7 +82,8 @@ def is_minimal_template(package):
             minimal_template = True
     except:
         # PACKAGE.lib.base exists but throws an error
-        pass
+        if fail_fast:
+            raise
     return minimal_template
 
 
@@ -446,38 +451,29 @@ class ShellCommand(Command):
         pkg_name = pylons.config['pylons.package']
 
         # Start the rest of our imports now that the app is loaded
-        found_base = False
+        if is_minimal_template(pkg_name, True):
+            model_module = None
+            helpers_module = pkg_name + '.helpers'
+            base_module = pkg_name + '.controllers'
+        else:
+            model_module = pkg_name + '.model'
+            helpers_module = pkg_name + '.lib.helpers'
+            base_module = pkg_name + '.lib.base'
 
-        model_module = pkg_name + '.model'
-        found_model = can_import(model_module)
-        if found_model:
-            model = sys.modules[model_module]
-            locs['model'] = model
+        if model_module and can_import(model_module):
+            locs['model'] = sys.modules[model_module]
 
-        helpers_module = pkg_name + '.lib.helpers'
-        found_helpers = can_import(helpers_module)
-        if found_helpers:
-            helpers = sys.modules[helpers_module]
-            locs['h'] = helpers
+        if can_import(helpers_module):
+            locs['h'] = sys.modules[helpers_module]
 
-        exec 'from pylons import c, cache, config, g, request, response, session' in locs
-        exec 'from pylons.controllers import WSGIController' in locs
-        exec 'from pylons.decorators import jsonify, validate' in locs
-        exec 'from pylons.controllers.util import abort, etag_cache, redirect_to' in locs
+        exec ('from pylons import app_globals, c, config, g, request, '
+              'response, session, tmpl_context, url') in locs
+        exec ('from pylons.controllers.util import abort, redirect_to') in locs
         exec 'from pylons.i18n import _, ungettext, N_' in locs
         exec 'from pylons.templating import render' in locs
         
         # Import all objects from the base module
-        base_module = pkg_name + '.lib.base'
-        found_base = can_import(base_module)
-        if not found_base:
-            # Minimal template
-            base_module = pkg_name + '.controllers'
-            found_base = can_import(base_module)
-
-        if not found_base:
-            raise ImportError("Could not import base module. Are you sure "
-                              "this is a Pylons app?")
+        __import__(base_module)
 
         base = sys.modules[base_module]
         base_public = [__name for __name in dir(base) if not \
