@@ -1,13 +1,14 @@
 """Test related functionality
 
-Adds a Pylons plugin to `nose <http://www.somethingaboutorange.com/mrl/projects/nose/>`_
-that loads the Pylons app *before* scanning for doc tests.
+Adds a Pylons plugin to `nose
+<http://www.somethingaboutorange.com/mrl/projects/nose/>`_ that loads
+the Pylons app *before* scanning for doc tests.
 
 This can be configured in the projects :file:`setup.cfg` under a
 ``[nosetests]`` block:
 
 .. code-block:: ini
-    
+
     [nosetests]
     with-pylons=development.ini
 
@@ -34,7 +35,7 @@ class PylonsPlugin(nose.plugins.Plugin):
     proceeds to scan the project for doc tests and unit tests. This
     prevents modules from being loaded without a configured Pylons
     environment.
-    
+
     """
     enabled = False
     enableOpt = 'pylons_config'
@@ -63,13 +64,15 @@ class PylonsPlugin(nose.plugins.Plugin):
         """Called before any tests are collected or run
 
         Loads the application, and in turn its configuration.
-        
+
         """
         global pylonsapp
         path = os.getcwd()
         sys.path.insert(0, path)
         pkg_resources.working_set.add_entry(path)
-        self.app = pylonsapp = loadapp('config:' + self.config_file, relative_to=path)
-        
-        # For tests that utilize the i18n _ object, initialize a NullTranslator
-        pylons.translator._push_object(_get_translator(pylons.config.get('lang')))
+        self.app = pylonsapp = loadapp('config:' + self.config_file,
+                                       relative_to=path)
+
+        # Initialize a translator for tests that utilize i18n
+        translator = _get_translator(pylons.config.get('lang'))
+        pylons.translator._push_object(translator)
