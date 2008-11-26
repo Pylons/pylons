@@ -510,7 +510,9 @@ class ShellCommand(Command):
                 paste.registry.restorer.restoration_end()
         except ImportError:
             import code
-            newbanner = "Pylons Interactive Shell\nPython %s\n\n" % sys.version
+            py_prefix = sys.platform.startswith('java') and 'J' or 'P'
+            newbanner = "Pylons Interactive Shell\n%sython %s\n\n" % \
+                (py_prefix, sys.version)
             banner = newbanner + banner
             shell = code.InteractiveConsole(locals=locs)
             try:
