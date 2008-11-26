@@ -1,3 +1,5 @@
+import sys
+
 try:
     from setuptools import setup, find_packages
 except ImportError:
@@ -6,6 +8,10 @@ except ImportError:
     from setuptools import setup, find_packages
 
 version = '0.9.7rc4'
+
+tests_require = ['nose']
+if not sys.platform.startswith('java'):
+    tests_require.extend(['Genshi', 'Jinja2'])
 
 setup(
     name="Pylons",
@@ -70,7 +76,7 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
     zip_safe=False,
     include_package_data=True,
     test_suite='nose.collector',
-    tests_require=['nose', 'Genshi', 'Jinja2'],
+    tests_require=tests_require,
     install_requires=[
         "Routes>=1.10.1", "WebHelpers>=0.6.3", "Beaker>=1.1.2",
         "Paste>=1.7.2", "PasteDeploy>=1.3.2", "PasteScript>=1.7.3",
