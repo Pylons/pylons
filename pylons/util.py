@@ -158,6 +158,7 @@ class PylonsTemplate(Template):
         var('google_app_engine', 'True/False: Setup default appropriate for'
             ' Google App Engine', default=False)
     ]
+    ensure_names = ['description', 'author', 'author_email', 'url']
     
     def pre(self, command, output_dir, vars):
         """Called before template is applied."""
@@ -178,6 +179,11 @@ class PylonsTemplate(Template):
                                                                  ' ' * 8)
         else:
             vars['babel_templates_extractor'] = ''
+
+        # Ensure these exist in the namespace
+        for name in self.ensure_names:
+            vars.setdefault(name, '')
+
         vars['version'] = vars.get('version', '0.1')
         vars['zip_safe'] = asbool(vars.get('zip_safe', 'false'))
         vars['sqlalchemy'] = asbool(vars.get('sqlalchemy', 'false'))
