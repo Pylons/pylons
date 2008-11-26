@@ -132,6 +132,7 @@ except ImportError:
 import pkg_resources
 
 import pylons
+import pylons.legacy
 from webhelpers.html import literal
 
 __all__ = ['Buffet', 'MyghtyTemplatePlugin', 'render', 'render_genshi', 
