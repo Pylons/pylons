@@ -168,7 +168,12 @@ def _get_translator(lang, **kwargs):
 
 
 def set_lang(lang, **kwargs):
-    """Set the i18n language used"""
+    """Set the current language used for translations.
+
+    ``lang`` should be a string or a list of strings. If a list of
+    strings, the first language is set as the main and the subsequent
+    languages are added as fallbacks.
+    """
     translator = _get_translator(lang, **kwargs)
     environ = pylons.request.environ
     environ['pylons.pylons'].translator = translator
@@ -183,5 +188,13 @@ def get_lang():
 
 def add_fallback(lang, **kwargs):
     """Add a fallback language from which words not matched in other
-    languages will be translated to."""
+    languages will be translated to.
+
+    This fallback will be associated with the currently selected
+    language -- that is, resetting the language via set_lang() resets
+    the current fallbacks.
+
+    This function can be called multiple times to add multiple
+    fallbacks.
+    """
     return pylons.translator.add_fallback(_get_translator(lang, **kwargs))
