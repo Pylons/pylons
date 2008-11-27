@@ -298,8 +298,6 @@ class PylonsApp(object):
                 log.debug("No controller found, returning 404 HTTP Not Found")
             return HTTPNotFound()(environ, start_response)
 
-        match = environ['pylons.routes_dict']
-        
         # If it's a class, instantiate it
         if inspect.isclass(controller):
             if log_debug:
