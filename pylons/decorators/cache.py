@@ -101,10 +101,12 @@ def beaker_cache(key="cache_default", expire="never", type=None,
             return full_response
         
         response = my_cache.get_value(cache_key, createfunc=create_func,
-                                     expiretime=cache_expire, starttime=starttime)
+                                      expiretime=cache_expire,
+                                      starttime=starttime)
         
         glob_response = self._py_object.response
-        glob_response.headerlist = [header for header in response['headers'] if header[0].lower() in cache_headers]
+        glob_response.headerlist = [header for header in response['headers']
+                                    if header[0].lower() in cache_headers]
         glob_response.status = response['status']
 
         return response['content']
@@ -121,7 +123,8 @@ def create_cache_key(func, key_dict=None, self=None):
             
     """
     if key_dict:
-        cache_key = " ".join(["%s=%s" % (k, v) for k, v in key_dict.iteritems()])
+        cache_key = " ".join(["%s=%s" % (k, v) for k, v
+                              in key_dict.iteritems()])
     else:
         if hasattr(self, 'im_func'):
             cache_key = func.im_func.__name__

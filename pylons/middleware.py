@@ -29,7 +29,7 @@ head_html = """\
 <link rel="stylesheet" href="{{prefix}}/media/pylons/style/itraceback.css" \
 type="text/css" media="screen" />"""
 
-footer_html ="""\
+footer_html = """\
 <script src="{{prefix}}/media/pylons/javascripts/traceback.js"></script>
 <script>
 var TRACEBACK = {
@@ -177,7 +177,8 @@ class StatusCodeRedirect(object):
     ``environ['pylons.status_code_redirect'] = True`` in the application.
     
     """
-    def __init__(self, app, errors=(400, 401, 403, 404), path='/error/document'):
+    def __init__(self, app, errors=(400, 401, 403, 404),
+                 path='/error/document'):
         """Initialize the ErrorRedirect
         
         ``errors``

@@ -160,7 +160,7 @@ def pylons_globals():
     """
     conf = pylons.config._current_obj()
     c = pylons.tmpl_context._current_obj()
-    g=conf.get('pylons.app_globals') or conf['pylons.g']
+    g = conf.get('pylons.app_globals') or conf['pylons.g']
     pylons_vars = dict(
         c=c,
         tmpl_context=c,
@@ -300,7 +300,8 @@ def render_mako_def(template_name, def_name, cache_key=None,
         globs.update(pylons_globals())
 
         # Grab a template reference
-        template = globs['app_globals'].mako_lookup.get_template(template_name).get_def(def_name)
+        template = globs['app_globals'].mako_lookup.get_template(
+            template_name).get_def(def_name)
         
         return literal(template.render(**globs))
     

@@ -79,9 +79,11 @@ class PylonsApp(object):
                 template_root=def_eng['template_root'],
                 **def_eng['template_options'])
             for e in config['buffet.template_engines'][1:]:
-                log.debug("Initializing additional template engine: %s", e['engine'])
-                self.buffet.prepare(e['engine'], template_root=e['template_root'], 
-                    alias=e['alias'], **e['template_options'])
+                log.debug("Initializing additional template engine: %s",
+                          e['engine'])
+                self.buffet.prepare(e['engine'],
+                                    template_root=e['template_root'],
+                                    alias=e['alias'], **e['template_options'])
     
     def __call__(self, environ, start_response):
         """Setup and handle a web request
@@ -130,8 +132,9 @@ class PylonsApp(object):
             elif response is not None:
                 return response
         
-            raise Exception("No content returned by controller (Did you remember "
-                            "to 'return' it?) in: %r" % controller.__name__)
+            raise Exception("No content returned by controller (Did you "
+                            "remember to 'return' it?) in: %r" %
+                            controller.__name__)
         finally:
             # Help Python collect ram a bit faster by removing the reference 
             # cycle that the pylons object causes
