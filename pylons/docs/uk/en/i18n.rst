@@ -522,7 +522,7 @@ For a project using Genshi instead of Mako, the Mako line might be replaced with
 
 .. code-block:: python 
 
-    ('templates/**.html, 'genshi, None), 
+    ('templates/**.html, 'genshi', None), 
 
 See `Babel's documentation on Message Extraction 
 <http://babel.edgewall.org/wiki/Documentation/messages.html#message-extraction>`_ 
