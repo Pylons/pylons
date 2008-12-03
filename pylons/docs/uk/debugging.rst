@@ -1,39 +1,39 @@
 .. _debugging:
 
-===========================
-Troubleshooting & Debugging
-===========================
+=================================
+Вірішення проблем і відлагодження
+=================================
 
 .. _interactive_debugging:
 
-Interactive debugging
----------------------
+Інтерактивне відлагодження
+--------------------------
 
-Things break, and when they do, quickly pinpointing what went wrong and why makes a huge difference. By default, Pylons uses a customized version of `Ian Bicking's <http://blog.ianbicking.org/>`_ EvalException middleware that also includes full Mako/Myghty Traceback information. 
+Предмети падінь, і коли вони виникають, швидке знаходження що пішло не так і чому виникають вличезні розбіжності. По замовчуванню, Pylons викорисовує дещо змінену версію `Ian Bicking <http://blog.ianbicking.org/>`_ EvalException middleware яке також включає і повну інформацію зворотнього трасування Mako/Myghty шаблонів. 
 
 
-The Debugging Screen 
--------------------- 
+Сторінка відлагодження
+----------------------
 
-The debugging screen has three tabs at the top: 
+Сторінка відлагодження має вгорі три закладки: 
 
 ``Traceback`` 
-Provides the raw exception trace with the interactive debugger 
+Надає необроблений трейс виняткового стану з інтерактивним відлагоджувачем 
 
 ``Extra Data`` 
-Displays CGI, WSGI variables at the time of the exception, in addition to configuration information 
+Відображає CGI, WSGI змінні в момент виняткової ситуації, як додаток до конфіґураційної інформації 
 
 ``Template`` 
-Human friendly traceback for Mako or Myghty templates 
+Дружелюбне зворотнє трасування для шаблонів Mako або Myghty 
 
-Since Mako and Myghty compile their templates to Python modules, it can be difficult to accurately figure out what line of the template resulted in the error. The `Template` tab provides the full Mako or Myghty traceback which contains accurate line numbers for your templates, and where the error originated from. If your exception was triggered before a template was rendered, no Template information will be available in this section. 
+Оскільки Mako and Myghty транслюють свої шаблони в Python модулі, не завжди можливо точно визначити який рядок в шаблоні спричинив помилку. Закладка `Template` забезпечує повне Mako or Myghty зворотнє трасування, яке містить точні номери рядків вашого шаблону і інформацію де саме виникла помилка. Якщо винятковий стан виник до того як був виконаний ваш шаблон, ніякої доступної інформації в цій секції небуде. 
 
-Example: Exploring the Traceback 
--------------------------------- 
+Приклад: Дослідження трасування 
+------------------------------- 
 
-Using the interactive debugger can also be useful to gain a deeper insight into objects present only during the web request like the ``session`` and ``request`` objects. 
+Вискористовуючи інтерактивний відлагоджувач також дуже зручно глибше розуміти представлення обєктів лише за допомогою веб запитів, такими наприклад як є ``session`` або ``request`` об’єкти. 
 
-To trigger an error so that we can explore what's happening just raise an exception inside an action you're curious about. In this example, we'll raise an error in the action that's used to display the page you're reading this on. Here's what the docs controller looks like: 
+Аби пробудити помилку щоб ми могли подивтись що сталось, лише породіть винятковий стан всередині action-а. В цьому прикладі, ми породимо помилку в action-і який використовується для того щоб відобразити сторінку яку ви зараз читаєте. Далі як цей контроллер виглядає: 
 
 .. code-block:: python 
 
@@ -43,7 +43,7 @@ To trigger an error so that we can explore what's happening just raise an except
                 redirect_to('/docs/') 
             return render('/docs/' + url) 
 
-Since we want to explore the ``session`` and ``request``, we'll need to bind them first. Here's what our action now looks like with the binding and raising an exception: 
+Оскільки ми хочем дослідити ``session`` і ``request``, ми повинні їх привязати. Далі наведено як наш Action буде виглядати: 
 
 .. code-block:: python 
 
@@ -53,24 +53,24 @@ Since we want to explore the ``session`` and ``request``, we'll need to bind the
             redirect_to('/docs/') 
         return render('/docs/' + url) 
 
-Here's what exploring the Traceback from the above example looks like (Excerpt of the relevant portion): 
+Ось як буде виглядати зворотнє трасування нашого прикладу(уривок доцільної частини): 
 
 .. image:: _static/doctraceback.png
     :width: 750px
     :height: 260px
 
-Email Options 
--------------
+Email Опції 
+-----------
 
-You can make all sorts of changes to how the debugging works. For example if you disable the ``debug`` variable in the config file Pylons will email you an error report instead of displaying it as long as you provide your email address at the top of the config file: 
+Ви можете вибирати як відлагодження буде працювати. Для прикладу, змінивши ``debug`` змінну в конфіґураційному файлі Pylons на ``false``, помилки не будуть відображатись на екрані, натомість Pylons відішле звіт помилки вам на email адресу, звісно якщо ви вкажите її в конфіґураційному файлі: 
 
 .. code-block:: ini 
 
     error_email_from = you@example.com 
 
-This is very useful for a production site. Emails are sent via SMTP so you need to specify a valid SMTP server too. 
+Це є дуже корисним для вже готового сайту. Листи відсилаються через SMTP, так шо вам буде потрібно вказати також і SMTP сервер. 
 
-Error Handling Options 
-====================== 
+Опції обробки помилок 
+===================== 
 
-A number of error handling options can be specified in the config file. These are described in the :ref:`interactive_debugging` documentation but the important point to remember is that debug should always be set to ``false`` in production environments otherwise if an error occurs the visitor will be presented with the developer's interactive traceback which they could use to execute malicious code.
+Певну кількість опцій для обробки помилок можна вказати в конфіґураційному файлі. Це все описується в розділі :ref:`interactive_debugging`, але одна важлива річ яку слід памятати, це те що відлагодження завжди повинне бути встановлено в ``false`` в готовому робочому середовищі, інакше якщо трапиться якась помилка, відвідувачу буде представлене інтерактивне зворотне трасування, яке він може використати для виконнання злоякісного коду.
