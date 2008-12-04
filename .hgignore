@@ -7,7 +7,7 @@ syntax:glob
 *.pyc
 *.egg-info
 ez_setup
-pylons/docs/_build
+pylons/docs/*/_build
 container_file
 container_dbm*
 *~
