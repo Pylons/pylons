@@ -1,47 +1,87 @@
 .. _getting_started:
 
-===============
+===================
 Getting Started
-===============
+===================
 
-This section is intended to get Pylons up and running as fast as
-possible and provide a quick overview of a project. Links are provided
-throughout to encourage exploration of the various aspects of Pylons.
+.. This section is intended to get Pylons up and running as fast as
+.. possible and provide a quick overview of a project. Links are provided
+.. throughout to encourage exploration of the various aspects of Pylons.
+
+このセクションでは、できるだけ早く Pylons を始められるようになることと、
+プロジェクトの quick overview を提供することを意図しています。Pylons の
+種々な側面の探検を奨励するために、リンクが提供されます。
 
 
-************
-Requirements
-************
+.. Requirements
+******************
+動作条件
+******************
 
-* Python 2.3+ (Python 2.4+ highly recommended)
+.. * Python 2.3+ (Python 2.4+ highly recommended)
 
-**********
-Installing
-**********
+* Python 2.3 以上 (Python 2.4 以上を強く推奨)
+
+
+.. Installing
+**************
+インストール
+**************
 
 .. warning::
     
-    These instructions require Python 2.4+. For installing with
-    Python 2.3, see :ref:`python23_installation`.
+    .. These instructions require Python 2.4+. For installing with
+    .. Python 2.3, see :ref:`python23_installation`.
 
-To avoid conflicts with system-installed Python libraries, Pylons comes with a
-boot-strap Python script that sets up a `virtual environment <http://pypi.python.org/pypi/virtualenv>`_. Pylons will then be
-installed under the virtual environment.
+    以下の instruction は Python 2.4 以上を必要とします。Python 2.3 と
+    ともにインストールするには :ref:`python23_installation` を見てくだ
+    さい。
+
+
+.. To avoid conflicts with system-installed Python libraries, Pylons
+.. comes with a boot-strap Python script that sets up a `virtual
+.. environment <http://pypi.python.org/pypi/virtualenv>`_. Pylons will
+.. then be installed under the virtual environment.
+
+システムにインストールされた Python ライブラリとの衝突を避けるために、
+Pylons には `virtual environment
+<http://pypi.python.org/pypi/virtualenv>`_ をセットアップするブートスト
+ラップ Python スクリプトが付属しています。そして Pylons は仮想環境にイ
+ンストールされます。
 
 .. admonition:: By The Way
     
-    virtualenv is a useful tool to create isolated Python environments. In 
-    addition to isolating packages from possible system conflicts, it makes
-    it easy to install Python libraries using `easy_install <http://peak.telecommunity.com/DevCenter/EasyInstall>`_ without dumping lots
-    of packages into the system-wide Python.
-    
-    The other great benefit is that no root access is required since all
-    modules are kept under the desired directory. This makes it easy
-    to setup a working Pylons install on shared hosting providers and other
-    systems where system-wide access is unavailable.
+    .. virtualenv is a useful tool to create isolated Python
+    .. environments. In addition to isolating packages from possible
+    .. system conflicts, it makes it easy to install Python libraries
+    .. using `easy_install
+    .. <http://peak.telecommunity.com/DevCenter/EasyInstall>`_ without
+    .. dumping lots of packages into the system-wide Python.
 
-1. Download the `go-pylons.py <http://www.pylonshq.com/download/0.9.7/go-pylons.py>`_ script.
-2. Run the script and specify a directory for the virtual environment to be created under:
+    virtualenv は独立した Python 環境を作成する便利なツールです。潜在的
+    なシステム衝突からパッケージを隔離することに加え、多くのパッケージ
+    を system-wide の Python の中にばらまくことなく、 `easy_install
+    <http://peak.telecommunity.com/DevCenter/EasyInstall>`_ を使用して
+    Python ライブラリをインストールすることを簡単にします。
+
+    .. The other great benefit is that no root access is required
+    .. since all modules are kept under the desired directory. This
+    .. makes it easy to setup a working Pylons install on shared
+    .. hosting providers and other systems where system-wide access is
+    .. unavailable.
+
+    もう一つのすばらしい利点は、すべてのモジュールを好きなディレクトリ
+    の下に置くことができるので、 root アクセスは全く必要でないというこ
+    とです。 これによって、共有ホスティングプロバイダーや、
+    system-wide へのアクセスが入手できないその他のシステムに、動作する
+    Pylons インストールをセットアップすることが簡単になります。
+
+
+.. 1. Download the `go-pylons.py <http://www.pylonshq.com/download/0.9.7/go-pylons.py>`_ script.
+.. 2. Run the script and specify a directory for the virtual environment to be created under:
+
+1. `go-pylons.py <http://www.pylonshq.com/download/0.9.7/go-pylons.py>`_ スクリプトをダウンロードします。
+2. スクリプトを実行して、以下のように、仮想環境を作成するためのディレクトリを指定します:
     
     .. code-block:: bash
         
@@ -49,61 +89,100 @@ installed under the virtual environment.
 
 .. admonition:: Tip
     
-    The two steps can be combined on unix systems with curl using the
-    following short-cut:
-    
+    .. The two steps can be combined on unix systems with curl using the
+    .. following short-cut:
+
+    これら 2 つのステップは、 Unix システム上では curl を用いて以下の
+    ショートカットでまとめて実行することができます:
+
     .. code-block:: bash
     
         $ curl http://pylonshq.com/download/0.9.7/go-pylons.py | python - mydevenv
     
-    To isolate further from additional system-wide Python libraries, run
-    with the no site packages option:
-    
+    .. To isolate further from additional system-wide Python libraries, run
+    .. with the no site packages option:
+
+    system-wide の追加の Python ライブラリからも分離するためには、no
+    site packages オプションを付けて実行します。
+
     .. code-block:: bash
     
         $ python go-pylons.py --no-site-packages mydevenv
 
-This will leave a functional virtualenv and Pylons installation.
-Activate the virtual environment (scripts may also be run by specifying the
-full path to the mydevenv/bin dir):
+.. This will leave a functional virtualenv and Pylons installation.
+.. Activate the virtual environment (scripts may also be run by specifying the
+.. full path to the mydevenv/bin dir):
+
+この結果、動作する virtualenv と Pylons インストールが得られます。仮想
+環境を activate してください (スクリプトは、 mydevenv/dir ディレクトリ
+へのフルパスを指定することによって実行することもできます):
+
 
 .. code-block:: bash
 
     $ source mydevenv/bin/activate
 
-Or on Window to activate:
+.. Or on Window to activate:
+
+Windows では、このように activate してください:
 
 .. code-block:: text
     
     > mydevenv\bin\activate.bat
 
 
-Working Directly From the Source Code 
-=====================================
+.. Working Directly From the Source Code 
 
-`Mercurial <http://www.selenic.com/mercurial/wiki/>`_ must be installed to retrieve the latest development source for Pylons. `Mercurial packages <http://www.selenic.com/mercurial/wiki/index.cgi/BinaryPackages>`_ are also available for Windows, MacOSX, and other OS's. 
+ソースコードから直接動かす
+===========================================
 
-Check out the latest code: 
+.. `Mercurial <http://www.selenic.com/mercurial/wiki/>`_ must be
+.. installed to retrieve the latest development source for
+.. Pylons. `Mercurial packages
+.. <http://www.selenic.com/mercurial/wiki/index.cgi/BinaryPackages>`_
+.. are also available for Windows, MacOSX, and other OS's.
+
+Pylons の最新の開発版ソースを取得するために、 `Mercurial
+<http://www.selenic.com/mercurial/wiki/>`_ をインストールしなければなり
+ません。 Windows, MacOSX, および他の OS のための `Mercurial パッケージ
+<http://www.selenic.com/mercurial/wiki/index.cgi/BinaryPackages>`_ も利
+用可能です。
+
+.. Check out the latest code: 
+
+最新のコードをチェクアウトします:
 
 .. code-block:: bash 
 
     $ hg clone https://www.knowledgetap.com/hg/pylons-dev Pylons 
 
-To tell setuptools to use the version in the ``Pylons`` directory: 
+.. To tell setuptools to use the version in the ``Pylons`` directory: 
+
+setuptools に ``Pylons`` というディレクトリに含まれるバージョンを使用す
+るように伝えるために:
 
 .. code-block:: bash 
 
     $ cd Pylons 
     $ python setup.py develop 
 
-The active version of Pylons is now the copy in this directory, and changes made there will be reflected for Pylons apps running.
+.. The active version of Pylons is now the copy in this directory, and
+.. changes made there will be reflected for Pylons apps running.
+
+現在 Pylons のアクティブなバージョンは、このディレクトリの中のコピーで
+あり、そこで行われた変更は実行される Pylons アプリケーションに反映され
+るでしょう。
 
 
-*************************
-Creating a Pylons Project
-*************************
+.. Creating a Pylons Project
+*******************************
+Pylons プロジェクトを作成する
+*******************************
 
-Create a new project named ``helloworld`` with the following command:
+.. Create a new project named ``helloworld`` with the following command:
+
+以下のコマンドで ``helloworld`` という名前の新しいプロジェクトを作成し
+てください:
 
 .. code-block:: bash
 
@@ -111,17 +190,38 @@ Create a new project named ``helloworld`` with the following command:
 
 .. note:: 
     
-    Windows users must configure their ``PATH`` as described in :ref:`windows_notes`, otherwise they must specify the full path name to the ``paster`` command (including the virtual environment bin dir).
+    .. Windows users must configure their ``PATH`` as described in
+    .. :ref:`windows_notes`, otherwise they must specify the full path
+    .. name to the ``paster`` command (including the virtual
+    .. environment bin dir).
 
-Running this will prompt for three choices:
+    Window ユーザーは、 :ref:`windows_notes` で説明されているように
+    ``PATH`` を構成しなければなりません。さもなければ、 (仮想環境 bin
+    ディレクトリに含まれている) ``paster`` コマンドにフルパス名を指定し
+    なければならないことに注意します。
 
-1. which template language to use
-2. whether or not to include :term:`SQLAlchemy` support
-3. whether or not to set options for :term:`Google App Engine` development
+.. Running this will prompt for three choices:
 
-Hit enter at each prompt to accept the defaults (Mako templating, no :term:`SQLAlchemy`, no :term:`Google App Engine` settings). 
+これを実行すると、 3 つのプロンプトが表示されます:
 
-The created directory structure with links to more information:
+.. 1. which template language to use
+.. 2. whether or not to include :term:`SQLAlchemy` support
+.. 3. whether or not to set options for :term:`Google App Engine` development
+
+1. どのテンプレート言語を使用するか
+2. :term:`SQLAlchemy` サポートを含むかどうか
+3. :term:`Google App Engine` 開発のためのオプションを設定するか
+
+.. Hit enter at each prompt to accept the defaults (Mako templating,
+.. no :term:`SQLAlchemy`, no :term:`Google App Engine` settings).
+
+それぞれのプロンプトについて、デフォルトを受け入れるなら Enter キーを打っ
+てください (デフォルトでは Mako テンプレート、 :term:`SQLAlchemy` なし、
+:term:`Google App Engine` 設定なしです)
+
+.. The created directory structure with links to more information:
+
+作成されたディレクトリ構造と詳しい情報へのリンク:
 
 - helloworld
     - MANIFEST.in
@@ -137,7 +237,9 @@ The created directory structure with links to more information:
 
 .. _helloworld_dir:
 
-The nested ``helloworld directory`` looks like this:
+.. The nested ``helloworld directory`` looks like this:
+
+入れ子の ``helloworld ディレクトリ`` はこんな風になっています:
 
 - helloworld
     - __init__.py
@@ -157,43 +259,68 @@ The nested ``helloworld directory`` looks like this:
     - websetup.py - :ref:`run-config`
 
 
+.. Running the application
+*****************************
+アプリケーションを実行する
+*****************************
 
-***********************
-Running the application
-***********************
+.. Run the web application:
 
-Run the web application:
+Web アプリケーションを起動する:
 
 .. code-block:: bash
 
     $ cd helloworld
     $ paster serve --reload development.ini
     
-The command loads the project's server configuration file in :file:`development.ini` and serves the Pylons application.
+.. The command loads the project's server configuration file in
+.. :file:`development.ini` and serves the Pylons application.
+
+このコマンドは、 :file:`development.ini` からプロジェクトのサーバ構成ファ
+イルを読み込んで、 Pylons アプリケーションを起動します。
 
 .. note::
     
-    The ``--reload`` option ensures that the server is automatically reloaded
-    if changes are made to Python files or the :file:`development.ini` 
-    config file. This is very useful during development. To stop the server
-    press :command:`Ctrl+c` or the platform's equivalent.
+    .. The ``--reload`` option ensures that the server is
+    .. automatically reloaded if changes are made to Python files or
+    .. the :file:`development.ini` config file. This is very useful
+    .. during development. To stop the server press :command:`Ctrl+c`
+    .. or the platform's equivalent.
 
-Visiting http://127.0.0.1:5000/ when the server is running will show the welcome page.
+    ``--reload`` オプションは、Python ファイルまたは
+    :file:`development.ini` 構成ファイルに変更が加えられたら自動的にサー
+    バがリロードされるようにします。これは、開発中は非常に便利です。 サー
+    バを止めるには、 :command:`Ctrl+c` あるいはプラットホームでそれに相
+    当するキーを押してください
+
+
+.. Visiting http://127.0.0.1:5000/ when the server is running will
+.. show the welcome page.
+
+サーバが稼働しているときに http://127.0.0.1:5000/ を訪問すると、ウェル
+カムページが表示されるでしょう。
 
 
 ***********
 Hello World
 ***********
 
-To create the basic hello world application, first create a
-:term:`controller` in the project to handle requests:
+.. To create the basic hello world application, first create a
+.. :term:`controller` in the project to handle requests:
+
+基本的な hello world アプリケーションを作成するには、リクエストを扱うた
+めの :term:`controller` をプロジェクトに作成します。
 
 .. code-block:: bash
 
     $ paster controller hello
 
-Open the :file:`helloworld/controllers/hello.py` module that was created.
-The default controller will return just the string 'Hello World':
+.. Open the :file:`helloworld/controllers/hello.py` module that was created.
+.. The default controller will return just the string 'Hello World':
+
+作成された :file:`helloworld/controllers/hello.py` モジュールを開いてく
+ださい。デフォルトコントローラは単に 'Hello World' 文字列を返すようになっ
+ています。
 
 .. code-block:: python
 
@@ -215,22 +342,42 @@ The default controller will return just the string 'Hello World':
             # or, Return a response
             return 'Hello World'
 
-At the top are some imports of common objects that are frequently used
-in controllers.
+.. At the top are some imports of common objects that are frequently used
+.. in controllers.
 
-Navigate to http://127.0.0.1:5000/hello/index where there should be a short text string saying "Hello World" (start up the app if needed):
+先頭で、コントローラで頻繁に使用される一般的なオブジェクトのいくつかが
+インポートされています。
+
+.. Navigate to http://127.0.0.1:5000/hello/index where there should be
+.. a short text string saying "Hello World" (start up the app if
+.. needed):
+
+http://127.0.0.1:5000/hello/index を開いてください。そこには "Hello
+World" という短いテキスト文字列があるはずです。(必要ならアプリケーショ
+ンを立ち上げます):
 
 .. image:: _static/helloworld.png
 
 .. admonition:: How'd that get to /hello/index?
     
-    :ref:`url-config` explains how URL's get mapped to controllers and
-    their methods.
+    .. :ref:`url-config` explains how URL's get mapped to controllers
+    .. and their methods.
 
-Add a template to render some of the information that's in the :term:`environ`.
+    :ref:`url-config` では URL がどのようにコントローラとそのメソッドに
+    マッピングされるかが説明されています。
 
-First, create a :file:`hello.mako` file in the :file:`templates`
-directory with the following contents:
+
+.. Add a template to render some of the information that's in the
+.. :term:`environ`.
+
+:term:`environ` の中にある情報のいくつかをレンダリングするためのテンプ
+レートを加えます。
+
+.. First, create a :file:`hello.mako` file in the :file:`templates`
+.. directory with the following contents:
+
+まず最初に、 :file:`templates` ディレクトリに :file:`hello.mako` を以下
+の内容で作成してください:
 
 .. code-block:: mako
 
@@ -238,10 +385,21 @@ directory with the following contents:
     
     ${request.environ}
 
-The :term:`request` variable in templates is used to get information about the current request.`template globals <modules/templating.html#template-globals>`_ lists all the variables Pylons makes available for use in templates.
+.. The :term:`request` variable in templates is used to get
+.. information about the current request. `template globals
+.. <modules/templating.html#template-globals>`_ lists all the
+.. variables Pylons makes available for use in templates.
 
-Next, update the :file:`controllers/hello.py` module so that the
-index method is as follows:
+テンプレートの中の :term:`request` 変数は、現在のリクエストの情報を得る
+ために使用されます。 Pylons においてテンプレートの中で使えるすべての変
+数は、 `template グローバル変数
+<modules/templating.html#template-globals>`_ にリストされています。
+
+.. Next, update the :file:`controllers/hello.py` module so that the
+.. index method is as follows:
+
+次に、 :file:`controllers/hello.py` モジュールを更新して index メソッド
+を以下の通りにしてください:
 
 .. code-block:: python
 
@@ -250,6 +408,8 @@ index method is as follows:
         def index(self):
             return render('/hello.mako')
 
-Refreshing the page in the browser will now look similar to this:
+.. Refreshing the page in the browser will now look similar to this:
+
+ブラウザでページをリフレッシュすると、今度はこのように見えるでしょう:
 
 .. image:: _static/hellotemplate.png
