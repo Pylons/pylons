@@ -1,42 +1,40 @@
 .. _caching:
 
-=======
-Caching
-=======
+=========
+Кешування
+=========
 
-Inevitably, there will be occasions during applications development or deployment when some task is revealed to be taking a significant amount of time to complete. When this occurs, the best way to speed things up is with :term:`caching`. 
+Неминуче, під час розробки, або розгортання може трапитись таке, що деякі завдання будуть виконуватись велику кількість часу. Коли це станеться, найкращий шлях збільшити швидкодію, це застосувати :term:`caching`. 
 
-Pylons comes with caching middleware enabled that is part of the same package that provides the session handling, `Beaker <http://beaker.groovie.org>`_. Beaker supports a variety of caching backends: memory-based, filesystem-based and the specialised `memcached` library. 
+Pylons одразу прийшов із можливістю кешування, це є частина того самого пакету `Beaker <http://beaker.groovie.org>`_, який використовується для роботи з сесіями. Також Beaker підримує різноманітні типи кешувань: memory-based, filesystem-based і спеціалізовану `memcached` бібліотеку. 
 
-There are several ways to cache data under Pylons, depending on where the slowdown is occurring:
+В Pylons існує декілька шляхів шоб закешувати діні, в залежності де проявляється низька швидкодія:
 
-* Browser-side Caching - HTTP/1.1 supports the :term:`ETag` caching system that allows the browser to use its own cache instead of requiring regeneration of the entire page. ETag-based caching avoids repeated generation of content but if the browser has never seen the page before, the page will still be generated. Therefore using ETag caching in conjunction with one of the other types of caching listed here will achieve optimal throughput and avoid unnecessary calls on resource-intensive operations.
+* Кешування на стороні веб-оглядача - HTTP/1.1 підтримує :term:`ETag` кешування, яке позволяє використовувати власний кеш оглядача, замість того щоб переґенеровувати цілу сторінку заново. ETag-базоване кешування запобігає уникнути повоторної реґенерації вмісту, проте якщо оглядач ніколи не бачив сторінки йому прийдеться зґенерувати її. Так що використання ETag кешування в поєднанні одним із інших типів кешування перерахованих нижче, забезпечить оптимальну продуктивність, і ви уникнуте непотрібних викликів в ресурсомістких операціях.
 
-.. note:: the latter only helps if the entire page can be cached.
+.. note:: отанній тип кешування може допомогти лише в тому випадку, коли можливо закешувати цілу сторінку.
 
-* Controllers - The `cache` object is available in controllers and templates for use in caching anything in Python that can be pickled. 
+* Контроллери - `cache` об’єкт є доступний в контроллерах і шаблонах, для кешування будь чого, що Python можна серіалізовати за допомогою pickle. 
 
-* Templates - The results of an entire rendered template can be cached using the `3 cache keyword arguments to the render calls <http://pylonshq.com/docs/class-pylons.templating.Buffet.html#render>`_. These render commands can also be used inside templates. 
+* Шаблони - Результат цілого, виконаного шаблону може бути поміщений в кеш, використовуючи `3 аргументи в методі render <http://pylonshq.com/docs/class-pylons.templating.Buffet.html#render>`_. Їх також можна використовувати в середині шаблонів. 
 
-* Mako/Myghty Templates - Built-in caching options are available for both `Mako <http://www.makotemplates.org/docs/caching.html>`_ and `Myghty <http://www.myghty.org/docs/cache.myt>`_ template engines. They allow fine-grained caching of only certain sections of the template as well as caching of the entire template. 
+* Mako/Myghty шаблони - вони містять вбудовані опції кешування, детальніше для `Mako <http://www.makotemplates.org/docs/caching.html>`_ і для `Myghty <http://www.myghty.org/docs/cache.myt>`_. Вони дозволяють дрібно-модульне кешування лише певних секцій шаблону, також як і кешування повного шаблону.
 
-The two primary concepts to bear in mind when caching are i) caches have a *namespace* and ii) caches can have *keys* under that namespace. The reason for this is that, for a single template, there might be multiple versions of the template each requiring its own cached version. The keys in the namespace are the ``version`` and the name of the template is the ``namespace``. **Both of these values must be Python strings.** 
+Дві основні концепції які треба памятати при роботі з кешем, це те що
+i) кеш має *простір імен*
+ii) кеш може мати ключі *keys* всередені цього простору імен.
+Причина цьому є те, що для якогось одного шаблону, може бути багато версій цього шаблону кожна з яких вимагає її власну закешовану версію. Ключі в просторі імен це є ``версія`` і ім’я шаблону це ``простір імен``. **Обидва ці значення повинні бути Python стрічками.** 
 
-In templates, the cache ``namespace`` will automatically be set to the name of the template being rendered. Nothing else is required for basic caching, unless the developer wishes to control for how long the template is cached and/or maintain caches of multiple versions of the template. 
+В шаблонах, ``простір імен`` кешу буде автоматично мати назву шаблону який був щойно виконаний. Нічого більше не потрібно для простого кешування, поки розробник не буде бажати контролювати як довго шаблон є в кеші, та/або  мати можливість кешувати різні версії того ж шаблону. 
 
-see also Stephen Pierzchala's `Caching for Performance <http://web.archive.org/web/20060424171425/http://www.webperformance.org/caching/caching_for_performance.pdf>`_ (stephen@pierzchala.com)
+дивіться також Stephen Pierzchala `Caching for Performance <http://web.archive.org/web/20060424171425/http://www.webperformance.org/caching/caching_for_performance.pdf>`_ (stephen@pierzchala.com)
 
-Using the Cache object 
----------------------- 
+Використання обєкта cache 
+-------------------------
 
-Inside a controller, the `cache` object will be available for use. If an action 
-or block of code makes heavy use of resources or take a long time to complete, 
-it can be convenient to cache the result. The `cache` object can cache any 
-Python structure that can be `pickled <http://docs.python.org/lib/module-pickle.html>`_. 
+Всередині контроллера буде доступний об’єкт `cache`, котрий можна використовувати. Якщо якась дія або частина коду використовує багато ресурсів, або виконується дуже довго, то може бути доречним закешувати результат. Об’єкт `cache` може закешувати будь яку Python структуру, котра може бути серіалізована за допомогою  `pickle <http://docs.python.org/lib/module-pickle.html>`_. 
 
-Consider an action where it is desirable to cache some code that does a 
-time-consuming or resource-intensive lookup and returns an object that can be 
-pickled (list, dict, tuple, etc.): 
+Поглянемо на ситуацію, коли бажано закешувати код, який витрачає багато часу/ресурсів та повертає об’єкт, який може бути серіалізований (list, dict, tuple, etc.): 
 
 .. code-block:: python 
 
@@ -57,14 +55,14 @@ pickled (list, dict, tuple, etc.):
 
         return render('/some/template.myt') 
 
-The `createfunc` option requires a callable object or a function which is then called by the cache whenever a value for the provided key is not in the cache, or has expired in the cache. 
+`сreatefunc` опція, вимагає обє’кт або функцію, котру можна би було викликлати, і цей об’єкт або функцію `сache` буде викликати кожного разу, як значення переданого ключа не буде знаходитись в кеші, або термін його придатності буде вичерпаний.
 
-Because the `createfunc` is called with no arguments, the resource- or time-expensive function must correspondingly also not require any arguments.
+Як бачимо `createfunc` викликається без аргументів, тому ресурсо/часо-затратна функція відповідно також не повинна вимагати жодного аргументу.
 
-Other Cache Options 
-^^^^^^^^^^^^^^^^^^^
+Інші опції кешування 
+^^^^^^^^^^^^^^^^^^^^
 
-The cache also supports the removal values from the cache, using the key(s) to identify the value(s) to be removed and it also supports clearing the cache completely, should it need to be reset.
+Також cache підтримує видалення певних значень, використовуючи ключі як ідентифікатори значень які потрібно видалити, і також підримує очищення кеш-пам’яті повністю, якщо її потрібно скинути.
 
 .. code-block:: python 
 
@@ -75,13 +73,13 @@ The cache also supports the removal values from the cache, using the key(s) to i
     mycache.remove_value('some_key') 
 
 
-Using Cache keywords to `render` 
--------------------------------- 
+Використання кеш параметрів в команді `render` 
+----------------------------------------------
 
-.. warning:: Needs to be extended to cover the specific render_* calls introduced in Pylons 0.9.7
+.. warning:: Цей розділ не описує специфічних викликів render_*, представлених у версії Pylons 0.9.7
 
-All `render` commmands have caching functionality built in. To use it, merely
-add the appropriate cache keyword to the `render` call. 
+Всі команди `render` мають вбудовану функціональність для роботи з кешем. Шоб її використовувати, просто
+додайте відповідний параметр в виклику `render`. 
 
 .. code-block:: python 
 
@@ -104,16 +102,16 @@ add the appropriate cache keyword to the `render` call.
             return render('/home.myt', cache_key=user, cache_expire='never') 
 
 
-Using the Cache Decorator 
--------------------------
+Використання Кеш Декоратора 
+---------------------------
 
-Pylons also provides the `beaker_cache 
+Pylons також постачає `beaker_cache 
 <http://pylonshq.com/docs/module-pylons.decorators.cache.html#beaker_cache>`_ 
-decorator for caching in `pylons.cache` the results of a completed function call (memoizing).
+декоратор для кешування в `pylons.cache` рузльтатів, які повертає певна функція(memoizing).
 
 .. warning:: ambiguous with respect to 'as does the render function'
 
-The cache decorator takes the same cache arguments (minus their `cache_` prefix), as does the `render` function. 
+Кеш декоратор використовує тіж самі кеш аргументи (не включаючи `cache_` префіксу), котрі приймає функція `render`.
 
 .. code-block:: python 
 
@@ -133,36 +131,27 @@ The cache decorator takes the same cache arguments (minus their `cache_` prefix)
             c.data = expensive_call(id) 
             return render('/show.myt') 
 
-By default the decorator uses a composite of all of the decorated function's arguments as the cache key. It can alternatively use a composite of the `request.GET` query args as the cache key when the `query_args` option is enabled. 
+По замовчуванню, декоратор використовує суміш усіх параметрів функції яку він декорує як ключ кешу. Як альтернатива він може використовувати суміш `request.GET` аргументів як ключ кешу, якщо `query_args` опція включена. 
 
-.. warning:: ambiguous - are customizations in addition or in place of the above key-using options?
+.. warning:: Двозначність. Чи опція `query_args`, додає дані для генерації ключа чи замінює його?
 
-The cache key can be further customized via the `key` argument. 
+Ключ кешу пізніше може бути змінений використовуючи аргумент `key`. 
 
-ETag Caching 
-------------
+ETag кешування 
+--------------
 
-Caching via ETag involves sending the browser an ETag header so that it knows 
-to save and possibly use a cached copy of the page from its own cache, instead 
-of requesting the application to send a fresh copy. 
+Використання кешування ETag, зумовлює відсилання веб-оглядачу хедера ETag, щоб він бачив що повинен зберегти і при можливості використовувати закешовану копію сторінки з його власного кешу, замість того щоб посилати запит для отримання свіжої копії.
 
-Because the ETag cache relies on sending headers to the browser, it works in a 
-slightly different manner to the other caching mechanisms described above. 
+Оскільки ETag кеш зумовлює відсилання веб-оглядачу хедера ETag, то це працює трохи в іншому стилі ніж механізми описані вище.
 
-The :func:`etag_cache` function will set the proper HTTP headers if
-the browser doesn't yet have a copy of the page. Otherwise, a 304 HTTP
-Exception will be thrown that is then caught by Paste middleware and
-turned into a proper 304 response to the browser. This will cause the
-browser to use its own locally-cached copy.
+Функція :func:`etag_cache` встановлює належні HTTP хедери якшо веб-оглядач ще не має копії сторінки. Інакше, буде згенерована
+виняткова ситуація 304 HTTP, яку буде оброблено проміжним кодом Paste і повернуто веб-оглядачу як належну 304-ту відповідь. Це буде мотивом щоб викорстовувати вашим веб-оглядачем, локальну закешовану копію.
 
-:func:`etag_cache` returns `pylons.response` for legacy purposes
+:func:`etag_cache` повертає `pylons.response` for legacy purposes
 (`pylons.response` should be used directly instead).
 
-ETag-based caching requires a single key which is sent in the ETag HTTP header
-back to the browser. The `RFC specification for HTTP headers <http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html>`_ indicates that an 
-ETag header merely needs to be a string. This value of this string does not need 
-to be unique for every URL as the browser itself determines whether to use its own 
-copy, this decision is based on the URL and the ETag key. 
+ETag базоване кешування вимагає єдиного ключа який посилається в ETag HTTP хедері назад до веб-оглядача. `RFC специфікація для HTTP headers <http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html>`_ вказує на те що 
+ETag хедер просто повинен бути стрічкою. Значення цієї стрічки не не обовязково повинне бути унікальним для кожної URL адреси, оскільки веб оглядач сам визначає чи використовувати його власну копію чи ні, це рішення базується на URL адресі і на ETag ключі. 
 
 .. code-block:: python 
 
@@ -170,7 +159,7 @@ copy, this decision is based on the URL and the ETag key.
         etag_cache('somekey') 
         return render('/show.myt', cache_expire=3600) 
 
-Or to change other aspects of the response: 
+Або змініть інші частини відповіді: 
 
 .. code-block:: python 
 
@@ -180,25 +169,25 @@ Or to change other aspects of the response:
         return render('/show.myt', cache_expire=3600) 
 
 .. note:: 
-    In this example that we are using template caching in addition to ETag
-    caching. If a new visitor comes to the site, we avoid re-rendering the
-    template if a cached copy exists and repeat hits to the page by that user
-    will then trigger the ETag cache. This example also will never change the
-    ETag key, so the browsers cache will always be used if it has one.
+    В цьому  прикладі ми вокиростовуємо кешування шаблонів в додаток до ETag
+    кешування. Якщо на цю сторінку зайде новий відвідувач, ми уникнемо
+    повторного виконання шаблону, у випадку якшо закешована копія вже існує
+    and repeat hits to the page by that user
+    will then trigger the ETag cache. Цей приклад ніколи не міняє
+    ETag ключа, так що завжди буде використовуватись кеш веб-оглядача, якщо він вже має закешовану копію.
 
-The frequency with which an ETag cache key is changed will depend on the web 
-application and the developer's assessment of how often the browser should be 
-prompted to fetch a fresh copy of the page. 
+Частота з якою ключ ETag кешу буде змінюватись, залежитиме від веб програми, і рішення розробника про те як часто веб оглядач повинен робити запит для отримання чистої копії сторінки.
 
-.. warning:: Stolen from Philip Cooper's `OpenVest wiki <http://www.openvest.com/trac/wiki/BeakerCache>`_  after which it was updated and edited ...
 
-Inside the Beaker Cache
------------------------
+.. warning:: Вкрадено в Philip Cooper's `OpenVest wiki <http://www.openvest.com/trac/wiki/BeakerCache>`_  після чого це було редаговано і оновлено...
 
-Caching
-^^^^^^^
+Всередині Beaker кешу
+---------------------
 
-First lets start out with some **slow** function that we would like to cache.  This function is not slow but it will show us when it was cached so we can see things are working as we expect:
+Кешування
+^^^^^^^^^
+
+Спочатку почнемо з **повільної** функції яку ми бажаємо закешувати. Насправді ця функція не є повільною, проте вона покаже нам коли вона буде закешована так що ми зможемо побачити що все працює так як ми очікували:
 
 .. code-block:: python
 
@@ -207,14 +196,14 @@ First lets start out with some **slow** function that we would like to cache.  T
       # some slow database or template stuff here
       return "%s at %s" % (myarg,time.asctime())
 
-When we have the cached function, multiple calls will tell us whether are seeing a cached or a new version.
+Коли ми маємо закешовану функцію, множинні виклики скажуть нам чи ми бачимо закешовану чи нову версію.
 
 DBMCache
 ^^^^^^^^
 
-The DBMCache stores (actually pickles) the response in a dbm style database.
+DBMCache зберігає (наспарвді серіалізує) результат в базі даних dbm стилю.
 
-What may not be obvious is that the are two levels of keys.  They are essentially created as one for the function or template name (called the namespace) and one for the ''keys'' within that (called the key).  So for `Some_Function_name`, there is a cache created as one dbm file/database.  As that function is called with different arguments, those arguments are keys within the dbm file. First lets create and populate a cache.  This cache might be a cache for the function `Some_Function_name` called three times with three different arguments: `x, yy, and zzz`:
+Те що може бути тут не очевидним, так це те що тут є два ступені ключів. Вони по суті створені, один для функції або імені шаблону (називається namespace) і другий для ''ключів''(називається ключ).  Так що для `Деяка_назва_функціїї`, створюється кеш як один файл/база даних.  Якщо функція викликається з різними аргументами, ці аргументи є ключами в dbm файлі. Спочатку створимо і заповнимо кеш. Цей кеш може бути кешом для `Деяка_назва_функціїї` яка викликається три рази з трьома різними аргументами: `x, yy, і zzz`:
 
 .. code-block:: python
 
@@ -227,7 +216,7 @@ What may not be obvious is that the are two levels of keys.  They are essentiall
     cache.get_value('yy',createfunc=lambda:slooow('yy'),expiretime=15)
     cache.get_value('zzz',createfunc=lambda:slooow('zzz'),expiretime=15)
 
-Nothing much new yet.  After getting the cache we can use the cache as per the Beaker Documentation.
+Нічого особливо нового тут нема. Тепер як ми маємо кеш, ми можем його використовувати як написано в Beaker документації.
 
 .. code-block:: python
 
@@ -236,14 +225,14 @@ Nothing much new yet.  After getting the cache we can use the cache as per the B
     nsm=cc.get_namespace_manager('Some_Function_name',container.DBMContainer,data_dir='beaker.cache')
     filename=nsm.file
 
-Now we have the file name.  The file name is a `sha` hash of a string which is a join of the container class name and the function name (used in the `get_cache` function call).  It would return something like:
+Тепер ми маємо назву файла. Назва файла це `sha` хеш стрічки, яка складається з  ім’я класу контейнера і ім’я функції (яка вказувалась в виклику `get_cache`).  Вона буде виглядати щось на подобі цього:
 
 
 .. code-block:: python
 
     'beaker.cache/container_dbm/a/a7/a768f120e39d0248d3d2f23d15ee0a20be5226de.dbm'
 
-With that file name you could look directly inside the cache database (but only for your education and debugging experience, **not** your cache interactions!)
+Маючи назву файла можна напряму глянути в базуданих (але лише для інтересу або відлагодження, **не** для роботи з кешем!)
 
 .. code-block:: python
 
@@ -253,16 +242,16 @@ With that file name you could look directly inside the cache database (but only 
     db=anydbm.open(filename)
     old_t, old_v = pickle.loads(db['zzz'])
 
-The database only contains the old time and old value.  Where did the expire time and the function to create/update the value go?.  They never make it to the database.  They reside in the `cache` object returned from `get_cache` call above.  
+База даних містить лише old time і old value. Де знаходиться час закінчення дійсності і функція для створення/оновлення значення? Вони ніколи і не мали бути в базі даних. Зате знаходяться в `cache` об’єкті, який повернув метод `get_cache`.  
 
-Note that the createfunc, and expiretime values are stored during the first call to `get_value`. Subsequent calls with (say) a different expiry time will **not** update that value.  This is a tricky part of the caching but perhaps is a good thing since different processes may have different policies in effect.
+Майте на увазі, що createfunc, і час закінчення дійсності кешу зберігаються під час першого виклику `get_value` функції. Наступні виклики, з іншим значенням часу **не** оновлять цього значення.  This is a tricky part of the caching but perhaps is a good thing since different processes may have different policies in effect.
 
-If there are difficulties with these values, remember that one call to :func:`cache.clear` resets everything.
+Якщо виникають якісь проблеми з цими значеннями, завжди памятайте один виклик :func:`cache.clear`, який все скидає.
 
-Database Cache
-^^^^^^^^^^^^^^
+Кеш в базі даних
+^^^^^^^^^^^^^^^^
 
-Using the `ext:database` cache type.
+Використання типу кеша `ext:database`.
 
 .. code-block:: python
 
@@ -278,9 +267,9 @@ Using the `ext:database` cache type.
     cache.get_value('zzz',createfunc=lambda:slooow('zzz'),expiretime=15)
 
 
-This is identical to the cache usage above with the only difference being the creation of the `CacheManager`.  It is much easier to view the caches outside the beaker code (again for edification and debugging, not for api usage).
+Робота з цим кешем точно така сама як і з поданим вище, за однієї лише відмінності, в створенні `CacheManager`. Набагато простоіше переглядати кеші ззовні  beaker коду (знову ж таки тільки для навчання і для відлагодження, не для використання).
 
-SQLite was used in this instance and the SQLite data file can be directly accessed uaing the SQLite command-line utility or the Firefox plug-in:
+В нашому випадку ми використовуємо SQLite базу даних, прямий доступ до файла даних котрої, можна отримати використовуючи консольну SQLite прогаму або задопомогою плаґіна до Firefox:
 
 .. code-block:: text
 
@@ -297,7 +286,7 @@ SQLite was used in this instance and the SQLite data file can be directly access
     );
     select * from beaker_cache;
 
-.. warning:: The data structure is different in Beaker 0.8 ...
+.. warning:: Сруктура даних в Beaker 0.8 є іншою...
 
 .. code-block:: python
 
@@ -311,14 +300,14 @@ SQLite was used in this instance and the SQLite data file can be directly access
     )
 
 
-It includes the access time but stores rows on a one-row-per-namespace basis, (storing a pickled dict) rather than one-row-per-namespace/key-combination. This is a more efficient approach when the problem is handling a large number of namespaces with limited keys --- like sessions.
+Це включає час доступу, але зберігає рядки on a one-row-per-namespace basis, (зберігаючи серіалізований dict) а не один рядок на одне середовище імен чи ключ. Це є більш ефективний підхід коли потрібно обробляти велику кількість середовищ імен з обмеженою кількістю ключів.
 
-Memcached Cache
-^^^^^^^^^^^^^^^
+Memcached Кеш
+^^^^^^^^^^^^^
 
-For large numbers of keys with expensive pre-key lookups memcached it the way to go.
+Для великої кількості ключів і коли дуже дорогий час їх пошуку, сам раз використати memcached кеш.
 
-If memcached is running on the the default port of 11211:
+Якщо memcached є запущений на порті 11211 котрий є по замовчуванню:
 
 .. code-block:: python
 
