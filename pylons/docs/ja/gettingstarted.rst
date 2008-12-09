@@ -49,6 +49,7 @@ Pylons には `virtual environment
 ラップ Python スクリプトが付属しています。そして Pylons は仮想環境にイ
 ンストールされます。
 
+
 .. admonition:: By The Way
     
     .. virtualenv is a useful tool to create isolated Python
@@ -63,6 +64,7 @@ Pylons には `virtual environment
     を system-wide の Python の中にばらまくことなく、 `easy_install
     <http://peak.telecommunity.com/DevCenter/EasyInstall>`_ を使用して
     Python ライブラリをインストールすることを簡単にします。
+
 
     .. The other great benefit is that no root access is required
     .. since all modules are kept under the desired directory. This
@@ -82,10 +84,12 @@ Pylons には `virtual environment
 
 1. `go-pylons.py <http://www.pylonshq.com/download/0.9.7/go-pylons.py>`_ スクリプトをダウンロードします。
 2. スクリプトを実行して、以下のように、仮想環境を作成するためのディレクトリを指定します:
+
     
     .. code-block:: bash
         
         $ python go-pylons.py mydevenv
+
 
 .. admonition:: Tip
     
@@ -95,9 +99,11 @@ Pylons には `virtual environment
     これら 2 つのステップは、 Unix システム上では curl を用いて以下の
     ショートカットでまとめて実行することができます:
 
+
     .. code-block:: bash
     
         $ curl http://pylonshq.com/download/0.9.7/go-pylons.py | python - mydevenv
+
     
     .. To isolate further from additional system-wide Python libraries, run
     .. with the no site packages option:
@@ -105,9 +111,11 @@ Pylons には `virtual environment
     system-wide の追加の Python ライブラリからも分離するためには、no
     site packages オプションを付けて実行します。
 
+
     .. code-block:: bash
     
         $ python go-pylons.py --no-site-packages mydevenv
+
 
 .. This will leave a functional virtualenv and Pylons installation.
 .. Activate the virtual environment (scripts may also be run by specifying the
@@ -122,9 +130,11 @@ Pylons には `virtual environment
 
     $ source mydevenv/bin/activate
 
+
 .. Or on Window to activate:
 
 Windows では、このように activate してください:
+
 
 .. code-block:: text
     
@@ -148,23 +158,28 @@ Pylons の最新の開発版ソースを取得するために、 `Mercurial
 <http://www.selenic.com/mercurial/wiki/index.cgi/BinaryPackages>`_ も利
 用可能です。
 
+
 .. Check out the latest code: 
 
 最新のコードをチェクアウトします:
 
+
 .. code-block:: bash 
 
     $ hg clone https://www.knowledgetap.com/hg/pylons-dev Pylons 
+
 
 .. To tell setuptools to use the version in the ``Pylons`` directory: 
 
 setuptools に ``Pylons`` というディレクトリに含まれるバージョンを使用す
 るように伝えるために:
 
+
 .. code-block:: bash 
 
     $ cd Pylons 
     $ python setup.py develop 
+
 
 .. The active version of Pylons is now the copy in this directory, and
 .. changes made there will be reflected for Pylons apps running.
@@ -184,9 +199,11 @@ Pylons プロジェクトを作成する
 以下のコマンドで ``helloworld`` という名前の新しいプロジェクトを作成し
 てください:
 
+
 .. code-block:: bash
 
     $ paster create -t pylons helloworld
+
 
 .. note:: 
     
@@ -200,9 +217,11 @@ Pylons プロジェクトを作成する
     ディレクトリに含まれている) ``paster`` コマンドにフルパス名を指定し
     なければならないことに注意します。
 
+
 .. Running this will prompt for three choices:
 
 これを実行すると、 3 つのプロンプトが表示されます:
+
 
 .. 1. which template language to use
 .. 2. whether or not to include :term:`SQLAlchemy` support
@@ -212,6 +231,7 @@ Pylons プロジェクトを作成する
 2. :term:`SQLAlchemy` サポートを含むかどうか
 3. :term:`Google App Engine` 開発のためのオプションを設定するか
 
+
 .. Hit enter at each prompt to accept the defaults (Mako templating,
 .. no :term:`SQLAlchemy`, no :term:`Google App Engine` settings).
 
@@ -219,9 +239,11 @@ Pylons プロジェクトを作成する
 てください (デフォルトでは Mako テンプレート、 :term:`SQLAlchemy` なし、
 :term:`Google App Engine` 設定なしです)
 
+
 .. The created directory structure with links to more information:
 
 作成されたディレクトリ構造と詳しい情報へのリンク:
+
 
 - helloworld
     - MANIFEST.in
@@ -235,11 +257,13 @@ Pylons プロジェクトを作成する
     - setup.py - :ref:`setup-config`
     - test.ini
 
+
 .. _helloworld_dir:
 
 .. The nested ``helloworld directory`` looks like this:
 
 入れ子の ``helloworld ディレクトリ`` はこんな風になっています:
+
 
 - helloworld
     - __init__.py
@@ -268,16 +292,19 @@ Pylons プロジェクトを作成する
 
 Web アプリケーションを起動する:
 
+
 .. code-block:: bash
 
     $ cd helloworld
     $ paster serve --reload development.ini
+
     
 .. The command loads the project's server configuration file in
 .. :file:`development.ini` and serves the Pylons application.
 
 このコマンドは、 :file:`development.ini` からプロジェクトのサーバ構成ファ
 イルを読み込んで、 Pylons アプリケーションを起動します。
+
 
 .. note::
     
@@ -311,9 +338,11 @@ Hello World
 基本的な hello world アプリケーションを作成するには、リクエストを扱うた
 めの :term:`controller` をプロジェクトに作成します。
 
+
 .. code-block:: bash
 
     $ paster controller hello
+
 
 .. Open the :file:`helloworld/controllers/hello.py` module that was created.
 .. The default controller will return just the string 'Hello World':
@@ -321,6 +350,7 @@ Hello World
 作成された :file:`helloworld/controllers/hello.py` モジュールを開いてく
 ださい。デフォルトコントローラは単に 'Hello World' 文字列を返すようになっ
 ています。
+
 
 .. code-block:: python
 
@@ -342,11 +372,13 @@ Hello World
             # or, Return a response
             return 'Hello World'
 
+
 .. At the top are some imports of common objects that are frequently used
 .. in controllers.
 
 先頭で、コントローラで頻繁に使用される一般的なオブジェクトのいくつかが
 インポートされています。
+
 
 .. Navigate to http://127.0.0.1:5000/hello/index where there should be
 .. a short text string saying "Hello World" (start up the app if
@@ -356,7 +388,9 @@ http://127.0.0.1:5000/hello/index を開いてください。そこには "Hello
 World" という短いテキスト文字列があるはずです。(必要ならアプリケーショ
 ンを立ち上げます):
 
+
 .. image:: _static/helloworld.png
+
 
 .. admonition:: How'd that get to /hello/index?
     
@@ -373,17 +407,20 @@ World" という短いテキスト文字列があるはずです。(必要なら
 :term:`environ` の中にある情報のいくつかをレンダリングするためのテンプ
 レートを加えます。
 
+
 .. First, create a :file:`hello.mako` file in the :file:`templates`
 .. directory with the following contents:
 
 まず最初に、 :file:`templates` ディレクトリに :file:`hello.mako` を以下
 の内容で作成してください:
 
+
 .. code-block:: mako
 
     Hello World, the environ variable looks like: <br />
     
     ${request.environ}
+
 
 .. The :term:`request` variable in templates is used to get
 .. information about the current request. `template globals
@@ -395,11 +432,13 @@ World" という短いテキスト文字列があるはずです。(必要なら
 数は、 `template グローバル変数
 <modules/templating.html#template-globals>`_ にリストされています。
 
+
 .. Next, update the :file:`controllers/hello.py` module so that the
 .. index method is as follows:
 
 次に、 :file:`controllers/hello.py` モジュールを更新して index メソッド
 を以下の通りにしてください:
+
 
 .. code-block:: python
 
@@ -408,8 +447,10 @@ World" という短いテキスト文字列があるはずです。(必要なら
         def index(self):
             return render('/hello.mako')
 
+
 .. Refreshing the page in the browser will now look similar to this:
 
 ブラウザでページをリフレッシュすると、今度はこのように見えるでしょう:
+
 
 .. image:: _static/hellotemplate.png
