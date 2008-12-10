@@ -11,6 +11,6 @@ class {{name}}Controller(BaseController):
 
     def index(self):
         # Return a rendered template
-        #   return render('/template.mako')
-        # or, Return a response
+        #return render('/{{tmpl_name}}.mako')
+        # or, return a response
         return 'Hello World'

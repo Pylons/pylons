@@ -206,6 +206,7 @@ class ControllerCommand(Command):
             file_op.template_vars.update(
                 {'name': controller_name,
                  'fname': os.path.join(directory, name),
+                 'tmpl_name': name,
                  'package':base_package,
                  'importstatement': importstatement})
             file_op.copy_file(template='controller.py_tmpl',
