@@ -12,21 +12,25 @@ import pylons
 __all__ = ['WSGIErrorsHandler']
 
 class WSGIErrorsHandler(logging.Handler):
-    """A handler class that writes logging records to
-    environ['wsgi.errors'].
 
-    This code is derived from CherryPy's 
+    """A handler class that writes logging records to
+    `environ['wsgi.errors']`.
+
+    This code is derived from CherryPy's
     :class:`cherrypy._cplogging.WSGIErrorHandler`.
-    
+
+    ``cache``
+        Whether the `wsgi.errors` stream is cached (instead of looked up
+        via `pylons.request.environ` per every logged message). Enabling
+        this option is not recommended (particularly for the use case of
+        logging to `wsgi.errors` outside of a request) as the behavior
+        of a cached `wsgi.errors` stream is not strictly defined. In
+        particular, `mod_wsgi <http://www.modwsgi.org>`_'s `wsgi.errors`
+        will raise an exception when used outside of a request.
+
     """
-    def __init__(self, cache=True, *args, **kwargs):
-        """Handle initialization
-        
-        ``cache``
-            Whether or not the wsgi.errors stream is cached (instead of
-            looked up via pylons.request.environ for logged message)
-        
-        """
+
+    def __init__(self, cache=False, *args, **kwargs):
         logging.Handler.__init__(self, *args, **kwargs)
         self.cache = cache
         self.cached_stream = None
@@ -36,7 +40,7 @@ class WSGIErrorsHandler(logging.Handler):
 
         Raises a TypeError when outside of a web request
         (pylons.request is not setup)
-        
+
         """
         if not self.cache:
             return pylons.request.environ.get('wsgi.errors')
