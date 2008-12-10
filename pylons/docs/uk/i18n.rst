@@ -446,7 +446,7 @@ In this example we choose ``fr`` as the main language but ``es`` as a fallback:
 
     import logging 
 
-    from pylons.i18n import set_lang 
+    from pylons.i18n import add_fallback, set_lang 
 
     from translate_demo.lib.base import * 
 
@@ -455,7 +455,8 @@ In this example we choose ``fr`` as the main language but ``es`` as a fallback:
     class HelloController(BaseController): 
 
         def index(self): 
-            set_lang(['fr', 'es']) 
+            set_lang('fr') 
+            add_fallback('es') 
             return "%s %s, %s" % (_('Hello'), _('World'), _('Hi!')) 
 
 If ``Hello`` is in the ``fr`` ``.mo`` file as ``Bonjour``, ``World`` is only in
@@ -464,14 +465,8 @@ multilingual message: ``Bonjour Mundo, Hi!``. This is a combination of the
 French, Spanish and original (English in this case, as defined in our source 
 code) words. 
 
-You can also add fallback languages after calling ``set_lang`` via the
-``pylons.i18n.add_fallback`` function. Translations will be tested in the order
-you add them.
-
-.. note:: 
-
-   Fallbacks are reset after calling ``set_lang(lang)`` -- that is, fallbacks
-   are associated with the currently selected langauge.
+You can add as many fallback languages with the ``add_fallback()`` function as 
+you like and they will be tested in the order you add them. 
 
 One case where using fallbacks in this way is particularly useful is when you 
 wish to display content based on the languages requested by the browser in the 
@@ -522,7 +517,7 @@ For a project using Genshi instead of Mako, the Mako line might be replaced with
 
 .. code-block:: python 
 
-    ('templates/**.html, 'genshi', None), 
+    ('templates/**.html, 'genshi, None), 
 
 See `Babel's documentation on Message Extraction 
 <http://babel.edgewall.org/wiki/Documentation/messages.html#message-extraction>`_ 

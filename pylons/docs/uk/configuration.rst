@@ -250,26 +250,21 @@ controller.
 Generating URLs
 ===============
 
-URLs can be generated using the helper method :func:`~routes.util.url_for`, which by default in a Pylons project will be under the :data:`h` global variable or may be directly imported when used in controllers:
-
-.. code-block:: python
-
-    from routes import url_for
-
+URLs can be generated using the helper method :func:`~routes.util.url`, which by default in a Pylons project will be under the :data:`url` global variable.
 Keyword arguments indicating the controller and action to use can be 
 passed directly in:
 
 .. code-block:: python
     
     # generates /content/view/2
-    url_for(controller='content', action='view', id=2)  
+    url(controller='content', action='view', id=2)  
 
 Inside templates and controllers, other variables may seem to creep into the URLs generated. This is due to `Routes memory <http://routes.groovie.org/manual.html#route-memory>`_ and can be disabled by specifying the controller with a ``/`` in front:
 
 .. code-block:: python
 
     # ALWAYS generates /content/view/2
-    url_for(controller='/content', action='view', id=2)   
+    url(controller='/content', action='view', id=2)   
 
 
 .. seealso::
