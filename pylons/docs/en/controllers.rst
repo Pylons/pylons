@@ -417,16 +417,16 @@ For example:
     class MyXML(XMLRPCController): 
         def userstatus(self): 
             return 'basic string' 
-        userstatus.signature = [ [docmeta:'string'] ] 
+        userstatus.signature = [ ['string'] ] 
 
         def userinfo(self, username, age=None): 
             user = LookUpUser(username) 
             response = {'username':user.name} 
             if age and age > 10: 
-                response[docmeta:'age'] = age 
+                response['age'] = age 
             return response 
-        userinfo.signature = [ [docmeta:'struct', 'string'], 
-                               [docmeta:'struct', 'string', 'int'] ] 
+        userinfo.signature = [ ['struct', 'string'], 
+                               ['struct', 'string', 'int'] ] 
 
 
 Since XML-RPC methods can take different sets of data, each set of valid arguments is its own list. The first value in the list is the type of the return argument. The rest of the arguments are the types of the data that must be passed in. 
@@ -479,7 +479,7 @@ This simple service ``test.battingOrder`` accepts a positive integer < 51 as the
     from pylons.controllers import XMLRPCController 
     from myapp.lib.base import * 
 
-    states = [docmeta:'Delaware', 'Pennsylvania', 'New Jersey', 
+    states = ['Delaware', 'Pennsylvania', 'New Jersey', 
              'Georgia', 'Connecticut', 'Massachusetts', 'Maryland', 
              'South Carolina', 'New Hampshire', 'Virginia', 'New York', 
              'North Carolina', 'Rhode Island', 'Vermont', 'Kentucky',
@@ -502,13 +502,13 @@ This simple service ``test.battingOrder`` accepts a positive integer < 51 as the
             # XML-RPC checks agreement for arity and parameter datatype, so 
             # by the time we get called, we know we have an int. 
             if posn > 0 and posn < 51: 
-                return states[docmeta:posn-1] 
+                return states[posn-1] 
             else: 
                 # Technically, the param value is correct: it is an int. 
                 # Raising an error is inappropriate, so instead we 
                 # return a facetious message as a string. 
                 return 'Out of cheese error.' 
-        test_battingOrder.signature = [ [docmeta:'string', 'int'] ] 
+        test_battingOrder.signature = [ ['string', 'int'] ] 
 
 
 Testing the service
@@ -522,7 +522,7 @@ For developers using OS X, there's an `XML/RPC client <http://www.ditchnet.org/x
     >>> import xmlrpclib 
     >>> srvr = xmlrpclib.Server("http://example.com/rpctest/") 
     >>> pprint(srvr.system.listMethods()) 
-    [docmeta:'system.listMethods', 
+    ['system.listMethods', 
     'system.methodHelp', 
     'system.methodSignature', 
     'test.battingOrder'] 
@@ -532,9 +532,9 @@ For developers using OS X, there's an `XML/RPC client <http://www.ditchnet.org/x
     the parameter "test.battingOrder"). The method 
     signature will be appended below ... 
 
-    Method signature: [docmeta:['string', 'int']] 
+    Method signature: [['string', 'int']] 
     >>> pprint(srvr.system.methodSignature('test.battingOrder')) 
-    [docmeta:['string', 'int']] 
+    [['string', 'int']] 
     >>> pprint(srvr.test.battingOrder(12)) 
     'North Carolina' 
 
