@@ -184,7 +184,6 @@ Hello World
     from pylons.controllers.util import abort, redirect_to, url_for
 
     from helloworld.lib.base import BaseController, render
-    # import helloworld.model as model
 
     log = logging.getLogger(__name__)
     
@@ -192,7 +191,7 @@ Hello World
 
         def index(self):
             # Return a rendered template
-            #   return render('/template.mako')
+            #return render('/hello.mako')
             # or, Return a response
             return 'Hello World'
 

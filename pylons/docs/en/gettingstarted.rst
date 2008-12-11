@@ -116,8 +116,8 @@ Create a new project named ``helloworld`` with the following command:
 Running this will prompt for three choices:
 
 1. which template language to use
-2. whether or not to include :term:`SQLAlchemy` support
-3. whether or not to set options for :term:`Google App Engine` development
+2. whether to include :term:`SQLAlchemy` support
+3. whether to set options for :term:`Google App Engine` development
 
 Hit enter at each prompt to accept the defaults (Mako templating, no :term:`SQLAlchemy`, no :term:`Google App Engine` settings). 
 
@@ -203,7 +203,6 @@ The default controller will return just the string 'Hello World':
     from pylons.controllers.util import abort, redirect_to
 
     from helloworld.lib.base import BaseController, render
-    # import helloworld.model as model
 
     log = logging.getLogger(__name__)
     
@@ -211,7 +210,7 @@ The default controller will return just the string 'Hello World':
 
         def index(self):
             # Return a rendered template
-            #   return render('/template.mako')
+            #return render('/hello.mako')
             # or, Return a response
             return 'Hello World'
 
