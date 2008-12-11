@@ -236,7 +236,7 @@ An Atom-Style REST Controller for Users
     import logging
 
     from formencode.api import Invalid
-    from routes import url_for
+    from pylons import url
     from simplejson import dumps
 
     from restmarks.lib.base import *
@@ -253,14 +253,14 @@ An Atom-Style REST Controller for Users
             """GET /users: All items in the collection.<br>
                 @param format the format passed from the URI.
             """
-            #url_for('users')
+            #url('users')
             users = model.User.select()
             if format=='json':
                 data = []
                 for user in users:
                     d = user._state['original'].data
                     del d['password']
-                    d['link'] = url_for('user', id=user.name)
+                    d['link'] = url('user', id=user.name)
                     data.append(d)
                 response.headers['content-type'] = 'text/javascript'
                 return dumps(data)
@@ -270,13 +270,13 @@ An Atom-Style REST Controller for Users
 
         def create(self):
             """POST /users: Create a new item."""
-            # url_for('users')
+            # url('users')
             user = model.User.get_by(name=request.params['name'])
             if user:
                 # The client tried to create a user that already exists
                 abort(409, '409 Conflict', 
                       headers=[('location', 
-                                 url_for('user', id=user.name)), ])
+                                 url('user', id=user.name)), ])
             else:
                 try:
                     # Validate the data that was sent to us
@@ -287,7 +287,7 @@ An Atom-Style REST Controller for Users
                 user = model.User(**params)
                 model.objectstore.flush()
                 response.headers['location'] = \
-                    url_for('user', id=user.name)
+                    url('user', id=user.name)
                 response.status_code = 201
                 c.user_name = user.name
                 return render('/users/created_user.mako')
@@ -296,7 +296,7 @@ An Atom-Style REST Controller for Users
             """GET /users/new: Form to create a new item.
                 @param format the format passed from the URI.
             """
-            # url_for('new_user')
+            # url('new_user')
             return render('/users/new_user.mako')
 
         def update(self, id):
@@ -306,9 +306,9 @@ An Atom-Style REST Controller for Users
             # Forms posted to this method should contain a hidden field:
             #    <input type="hidden" name="_method" value="PUT" />
             # Or using helpers:
-            #    h.form(url_for('user', id=ID),
+            #    h.form(url('user', id=ID),
             #           method='put')
-            # url_for('user', id=ID)
+            # url('user', id=ID)
             old_name = id
             new_name = request.params['name']
             user = model.User.get_by(name=id)
@@ -327,7 +327,7 @@ An Atom-Style REST Controller for Users
                     if user.name != old_name:
                         abort(301, '301 Moved Permanently',
                               [('Location', 
-                                url_for('users', id=user.name)),])
+                                url('users', id=user.name)),])
                     else:
                         return ''
 
@@ -338,9 +338,9 @@ An Atom-Style REST Controller for Users
             # Forms posted to this method should contain a hidden field:
             #    <input type="hidden" name="_method" value="DELETE" />
             # Or using helpers:
-            #    h.form(url_for('user', id=ID),
+            #    h.form(url('user', id=ID),
             #           method='delete')
-            # url_for('user', id=ID)
+            # url('user', id=ID)
             user = model.User.get_by(name=id)
             user.delete()
             model.objectstore.flush()
@@ -351,13 +351,13 @@ An Atom-Style REST Controller for Users
                 @param id the id (name) of the user to be updated.
                 @param format the format of the URI requested.
             """
-            # url_for('user', id=ID)
+            # url('user', id=ID)
             user = model.User.get_by(name=id)
             if user:
                 if format=='json':
                     data = user._state['original'].data
                     del data['password']
-                    data['link'] = url_for('user', id=user.name)
+                    data['link'] = url('user', id=user.name)
                     response.headers['content-type'] = 'text/javascript'
                     return dumps(data)
                 else:
@@ -371,7 +371,7 @@ An Atom-Style REST Controller for Users
                 @param id the id (name) of the user to be updated.
                 @param format the format of the URI requested.
             """
-            # url_for('edit_user', id=ID)
+            # url('edit_user', id=ID)
             user = model.User.get_by(name=id)
             if not user:
                 abort(404, '404 Not Found')

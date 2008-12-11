@@ -13,4 +13,3 @@ class Globals(object):
         'app_globals' variable
 
         """
-        pass

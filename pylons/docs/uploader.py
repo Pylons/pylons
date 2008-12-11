@@ -6,12 +6,12 @@ from os import path
 import httplib2
 import simplejson
 
-HERE_DIR = path.dirname(path.abspath(__file__))
+HERE_DIR = os.getcwd()
 BUILD_DIR = path.join(HERE_DIR, '_build')
 
-post_uri = 'http://localhost:5000/docs/upload'
-image_uri = 'http://localhost:5000/docs/upload_image'
-
+post_uri = 'http://localhost:5050/docs/upload'
+image_uri = 'http://localhost:5050/docs/upload_image'
+delete_uri = 'http://localhost:5050/docs/delete_revision'
 
 
 def scan_dir(parent, directory):
@@ -54,10 +54,17 @@ headers.setdefault('Accept', 'application/json')
 headers.setdefault('User-Agent', 'Doc Uploader')
 headers.setdefault('Content-Type', 'application/json')
 
+language = os.path.split(HERE_DIR)[-1]
+
+# Delete this revision, just in case
+del_uri = '%s/%s/%s' % (delete_uri, basedata['project'], basedata['version'])
+resp, data = http.request(del_uri, 'GET', headers=headers)
+
 for filename, filedoc in files:
     if not isinstance(filedoc, dict):
         continue
     filedoc['filename'] = filename
+    filedoc['language'] = language
     filedoc.update(basedata)
     content = simplejson.dumps(filedoc, ensure_ascii=False).encode('utf-8')
     
