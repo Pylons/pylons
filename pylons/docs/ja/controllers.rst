@@ -21,9 +21,9 @@ The controller interprets requests from the user and calls portions of the model
 Pylons uses a class, where the superclass provides the :term:`WSGI` interface
 and the subclass implements the application-specific controller logic.
 
-The Pylons WSGI Controller handles incoming web requests that are dispatched from the PylonsBaseWSGIApp.
+The Pylons WSGI Controller handles incoming web requests that are dispatched from the Pylons WSGI application ``PylonsApp``.
 
-These requests result in a new instance of the WSGIController being created, which is then called with the dict options from the Routes match. The standard WSGI response is then returned with start_response called as per the WSGI spec.
+These requests result in a new instance of the ``WSGIController`` being created, which is then called with the dict options from the Routes match. The standard WSGI response is then returned with start_response called as per the WSGI spec.
 
 Since Pylons controllers are actually called with the WSGI interface, normal WSGI applications can also be Pylons ‘controllers’.
 
@@ -35,22 +35,22 @@ Standard Controllers intended for subclassing by web developers
 Keeping methods private
 -----------------------
 
-Since the default route will map any controller and action, you will probably 
-want to prevent some methods in a controller from being callable from a URL.
+The default route maps any controller and action, so you will likely want to
+prevent some controller methods from being callable from a URL.
 
-Routes uses the default Python convention of private methods beginning with
+Pylons uses the default Python convention of private methods beginning with
 ``_``. To hide a method ``edit_generic`` in this class, just changing its name
 to begin with ``_`` will be sufficient:
 
 .. code-block:: python
 
-	class UserController(BaseController):
-		def index(self):
-			return Response("This is the index.")
-	
-		def _edit_generic(self):
-			"I can't be called from the web!"
-			return True
+    class UserController(BaseController):
+        def index(self):
+            return "This is the index."
+
+        def _edit_generic(self):
+            """I can't be called from the web!"""
+            return True
 
 Special methods
 ---------------
@@ -58,15 +58,15 @@ Special methods
 Special controller methods you may define:
 
 ``__before__``
-    This method will be run before your action is, and should be
-    used for setting up variables/objects, restricting access to
-    other actions, or other tasks which should be executed before
-    the action is called.
+    This method is called before your action is, and should be used for
+    setting up variables/objects, restricting access to other actions,
+    or other tasks which should be executed before the action is called.
 
 ``__after__``
-    Method to run after the action is run. This method will
-    *always* be run after your method, even if it raises an
-    Exception or redirects.
+    This method is called after the action is, unless an unexpected
+    exception was raised. Subclasses of :class:`~webob.HTTPException`
+    (such as those raised by ``redirect_to`` and ``abort``) are
+    expected; e.g. ``__after__`` will be called on redirects.
     
 Adding Controllers dynamically
 ------------------------------
@@ -105,7 +105,7 @@ Create a new controller file in your Pylons project directory:
 
 .. code-block:: python
 
-    paster controller wsgiapp
+    $ paster controller wsgiapp
 
 This sets up the basic imports that you may want available when using other WSGI applications.
 
@@ -150,17 +150,17 @@ Pylons' own WSGI Controller follows the WSGI spec for calling and return
 values
 
 The Pylons WSGI Controller handles incoming web requests that are 
-dispatched from the ``PylonsBaseWSGIApp``. These requests result in a
-new instance of the ``WSGIController`` being created, which is then
-called with the dict options from the Routes match. The standard
-WSGI response is then returned with :meth:`start_response` called as per
+dispatched from ``PylonsApp``. These requests result in a new
+instance of the ``WSGIController`` being created, which is then called
+with the dict options from the Routes match. The standard WSGI
+response is then returned with :meth:`start_response` called as per
 the WSGI spec.
 
 WSGIController methods
 ----------------------
 
 
-Special WSGIController methods you may define:
+Special ``WSGIController`` methods you may define:
 
 ``__before__``
     This method will be run before your action is, and should be
@@ -212,7 +212,7 @@ Example usage:
 
 .. code-block:: bash
 
-    yourproj% paster restcontroller comment comments
+    $ paster restcontroller comment comments
     Creating yourproj/yourproj/controllers/comments.py
     Creating yourproj/yourproj/tests/functional/test_comments.py
 
@@ -222,7 +222,7 @@ directories will be created for you:
 
 .. code-block:: bash
 
-    yourproj% paster restcontroller admin/tracback admin/trackbacks
+    $ paster restcontroller admin/tracback admin/trackbacks
     Creating yourproj/controllers/admin
     Creating yourproj/yourproj/controllers/admin/trackbacks.py
     Creating yourproj/yourproj/tests/functional/test_admin_trackbacks.py
@@ -255,7 +255,7 @@ An Atom-Style REST Controller for Users
             """
             #url('users')
             users = model.User.select()
-            if format=='json':
+            if format == 'json':
                 data = []
                 for user in users:
                     d = user._state['original'].data
@@ -275,19 +275,17 @@ An Atom-Style REST Controller for Users
             if user:
                 # The client tried to create a user that already exists
                 abort(409, '409 Conflict', 
-                      headers=[('location', 
-                                 url('user', id=user.name)), ])
+                      headers=[('location', url('user', id=user.name))])
             else:
                 try:
                     # Validate the data that was sent to us
                     params = model.forms.UserForm.to_python(request.params)
                 except Invalid, e:
                     # Something didn't validate correctly
-                    abort(400, '400 Bad Request -- '+str(e))
+                    abort(400, '400 Bad Request -- %s' % e)
                 user = model.User(**params)
                 model.objectstore.flush()
-                response.headers['location'] = \
-                    url('user', id=user.name)
+                response.headers['location'] = url('user', id=user.name)
                 response.status_code = 201
                 c.user_name = user.name
                 return render('/users/created_user.mako')
@@ -314,8 +312,7 @@ An Atom-Style REST Controller for Users
             user = model.User.get_by(name=id)
 
             if user:
-                if (old_name != new_name) and \
-                        model.User.get_by(name=new_name):
+                if (old_name != new_name) and model.User.get_by(name=new_name):
                     abort(409, '409 Conflict')
                 else:
                     params = model.forms.UserForm.to_python(request.params)
@@ -326,10 +323,9 @@ An Atom-Style REST Controller for Users
                     model.objectstore.flush()
                     if user.name != old_name:
                         abort(301, '301 Moved Permanently',
-                              [('Location', 
-                                url('users', id=user.name)),])
+                              [('Location', url('users', id=user.name))])
                     else:
-                        return ''
+                        return
 
         def delete(self, id):
             """DELETE /users/id: Delete an existing item.
@@ -344,7 +340,7 @@ An Atom-Style REST Controller for Users
             user = model.User.get_by(name=id)
             user.delete()
             model.objectstore.flush()
-            return ''
+            return
 
         def show(self, id, format='html'):
             """GET /users/id: Show a specific item.
@@ -417,16 +413,16 @@ For example:
     class MyXML(XMLRPCController): 
         def userstatus(self): 
             return 'basic string' 
-        userstatus.signature = [ [docmeta:'string'] ] 
+        userstatus.signature = [['string']] 
 
         def userinfo(self, username, age=None): 
             user = LookUpUser(username) 
-            response = {'username':user.name} 
+            result = {'username': user.name} 
             if age and age > 10: 
-                response[docmeta:'age'] = age 
-            return response 
-        userinfo.signature = [ [docmeta:'struct', 'string'], 
-                               [docmeta:'struct', 'string', 'int'] ] 
+                result['age'] = age 
+            return result 
+        userinfo.signature = [['struct', 'string'], 
+                              ['struct', 'string', 'int']]
 
 
 Since XML-RPC methods can take different sets of data, each set of valid arguments is its own list. The first value in the list is the type of the return argument. The rest of the arguments are the types of the data that must be passed in. 
@@ -473,23 +469,22 @@ This simple service ``test.battingOrder`` accepts a positive integer < 51 as the
 
 .. code-block:: python
  
-    import xmlrpclib 
-    import pylons 
-    from pylons import request 
-    from pylons.controllers import XMLRPCController 
-    from myapp.lib.base import * 
+    import xmlrpclib
 
-    states = [docmeta:'Delaware', 'Pennsylvania', 'New Jersey', 
-             'Georgia', 'Connecticut', 'Massachusetts', 'Maryland', 
-             'South Carolina', 'New Hampshire', 'Virginia', 'New York', 
-             'North Carolina', 'Rhode Island', 'Vermont', 'Kentucky',
-             'Tennessee', 'Ohio', 'Louisiana', 'Indiana', 'Mississippi', 
-             'Illinois', 'Alabama', 'Maine', 'Missouri', 'Arkansas',
-             'Michigan', 'Florida', 'Texas', 'Iowa', 'Wisconsin',
-             'California', 'Minnesota', 'Oregon', 'Kansas', 'West Virginia',
-             'Nevada', 'Nebraska', 'Colorado', 'North Dakota', 'South Dakota',
-             'Montana', 'Washington', 'Idaho', 'Wyoming', 'Utah', 'Oklahoma',
-             'New Mexico', 'Arizona', 'Alaska', 'Hawaii'] 
+    from pylons import request
+    from pylons.controllers import XMLRPCController
+
+    states = ['Delaware', 'Pennsylvania', 'New Jersey', 'Georgia',
+              'Connecticut', 'Massachusetts', 'Maryland', 'South Carolina',
+              'New Hampshire', 'Virginia', 'New York', 'North Carolina',
+              'Rhode Island', 'Vermont', 'Kentucky', 'Tennessee', 'Ohio',
+              'Louisiana', 'Indiana', 'Mississippi', 'Illinois', 'Alabama',
+              'Maine', 'Missouri', 'Arkansas', 'Michigan', 'Florida', 'Texas',
+              'Iowa', 'Wisconsin', 'California', 'Minnesota', 'Oregon',
+              'Kansas', 'West Virginia', 'Nevada', 'Nebraska', 'Colorado',
+              'North Dakota', 'South Dakota', 'Montana', 'Washington', 'Idaho',
+              'Wyoming', 'Utah', 'Oklahoma', 'New Mexico', 'Arizona', 'Alaska',
+              'Hawaii'] 
 
     class RpctestController(XMLRPCController): 
 
@@ -502,13 +497,13 @@ This simple service ``test.battingOrder`` accepts a positive integer < 51 as the
             # XML-RPC checks agreement for arity and parameter datatype, so 
             # by the time we get called, we know we have an int. 
             if posn > 0 and posn < 51: 
-                return states[docmeta:posn-1] 
+                return states[posn-1] 
             else: 
                 # Technically, the param value is correct: it is an int. 
                 # Raising an error is inappropriate, so instead we 
                 # return a facetious message as a string. 
                 return 'Out of cheese error.' 
-        test_battingOrder.signature = [ [docmeta:'string', 'int'] ] 
+        test_battingOrder.signature = [['string', 'int']] 
 
 
 Testing the service
@@ -522,21 +517,20 @@ For developers using OS X, there's an `XML/RPC client <http://www.ditchnet.org/x
     >>> import xmlrpclib 
     >>> srvr = xmlrpclib.Server("http://example.com/rpctest/") 
     >>> pprint(srvr.system.listMethods()) 
-    [docmeta:'system.listMethods', 
-    'system.methodHelp', 
-    'system.methodSignature', 
-    'test.battingOrder'] 
+    ['system.listMethods', 
+     'system.methodHelp', 
+     'system.methodSignature', 
+     'test.battingOrder'] 
     >>> print srvr.system.methodHelp('test.battingOrder') 
     This docstring becomes the content of the 
     returned value for system.methodHelp called with 
     the parameter "test.battingOrder"). The method 
     signature will be appended below ... 
 
-    Method signature: [docmeta:['string', 'int']] 
+    Method signature: [['string', 'int']] 
     >>> pprint(srvr.system.methodSignature('test.battingOrder')) 
-    [docmeta:['string', 'int']] 
+    [['string', 'int']] 
     >>> pprint(srvr.test.battingOrder(12)) 
     'North Carolina' 
 
 To debug XML-RPC servers from Python, create the client object using the optional verbose=1 parameter. You can then use the client as normal and watch as the XML-RPC request and response is displayed in the console. 
-
