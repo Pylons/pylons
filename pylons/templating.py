@@ -19,7 +19,9 @@ Usage
 
 Generally, one of the render functions will be imported in the
 controller. Variables intended for the template are attached to the
-:data:`c` object.
+:data:`c` object. The render functions return unicode (they actually
+return :class:`~webhelpers.html.literal` objects, a subclass of
+unicode).
 
 .. admonition :: Tip
     
@@ -37,13 +39,12 @@ Example of rendering a template with some variables::
 
     from sampleproject.lib.base import BaseController
 
-
     class SampleController(BaseController):
 
         def index(self):
             c.first_name = "Joe"
             c.last_name = "Smith"
-            return render('/some/template.html')
+            return render('/some/template.mako')
 
 And the accompanying Mako template:
 
@@ -267,7 +268,7 @@ def render_mako(template_name, extra_vars=None, cache_key=None,
         # Grab a template reference
         template = globs['app_globals'].mako_lookup.get_template(template_name)
         
-        return literal(template.render(**globs))
+        return literal(template.render_unicode(**globs))
     
     return cached_template(template_name, render_template, cache_key=cache_key,
                            cache_type=cache_type, cache_expire=cache_expire)
@@ -303,7 +304,7 @@ def render_mako_def(template_name, def_name, cache_key=None,
         template = globs['app_globals'].mako_lookup.get_template(
             template_name).get_def(def_name)
         
-        return literal(template.render(**globs))
+        return literal(template.render_unicode(**globs))
     
     return cached_template(template_name, render_template, cache_key=cache_key,
                            cache_type=cache_type, cache_expire=cache_expire)
@@ -329,7 +330,8 @@ def render_genshi(template_name, extra_vars=None, cache_key=None,
         # Grab a template reference
         template = globs['app_globals'].genshi_loader.load(template_name)
         
-        return literal(template.generate(**globs).render(method=method))
+        return literal(template.generate(**globs).render(method=method,
+                                                         encoding=None))
     
     return cached_template(template_name, render_template, cache_key=cache_key,
                            cache_type=cache_type, cache_expire=cache_expire,
