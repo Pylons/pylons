@@ -123,21 +123,17 @@ Edit your controller so it looks like this:
         start_response('200 OK', [('Content-type', 'text/plain')])
         return ["Hello World"]
 
-When hooking up other WSGI applications, they will expect the part of the URL that was used to get to this controller to have been moved into :envvar:`SCRIPT_NAME`. :mod:`Routes` can properly adjust the environ if a map route for this controller is added to the :file:`config/routing.py` file:
+When hooking up other WSGI applications, they will expect the part of the URL that was used to get to this controller to have been moved into :envvar:`SCRIPT_NAME`. :mod:`Routes <routes>` can properly adjust the environ if a map route for this controller is added to the :file:`config/routing.py` file:
 
 .. code-block:: python
 
     # CUSTOM ROUTES HERE
 
     # Map the WSGI application
-    map.connect('wsgiapp/*path_info', controller='wsgiapp')
+    map.connect('wsgiapp/{path_info:.*}', controller='wsgiapp')
 
 
 By specifying the ``path_info`` dynamic path, Routes will put everything leading up to the ``path_info`` in the :envvar:`SCRIPT_NAME` and the rest will go in the :envvar:`PATH_INFO`.
-
-.. warning::
-
-    Is this still true of Routes 2?
 
 
 Using the WSGI Controller to provide a WSGI service
