@@ -43,6 +43,7 @@ ii) кеш може мати ключі *keys* всередені цього п�
 
         def expensive_function(): 
             # do something that takes a lot of cpu/resources 
+            return expensive_call()
 
         # Get a cache for a specific namespace, you can name it whatever 
         # you want, in this case its 'my_function' 
@@ -51,7 +52,7 @@ ii) кеш може мати ключі *keys* всередені цього п�
         # Get the value, this will create the cache copy the first time 
         # and any time it expires (in seconds, so 3600 = one hour) 
         c.myvalue = mycache.get_value(key=day, createfunc=expensive_function, 
-        type="memory", expiretime=3600) 
+                                      type="memory", expiretime=3600)
 
         return render('/some/template.myt') 
 
@@ -95,10 +96,11 @@ ii) кеш може мати ключі *keys* всередені цього п�
 
         def feed(self): 
             # Cache for 20 mins to memory 
-            return render('/feed.myt', cache_type='memory', cache_expire=1200) 
+            return render('/feed.myt', cache_type='memory', cache_expire=1200)
 
         def home(self, user): 
-            # Cache this version of a page forever (until the cache dir is cleaned) 
+            # Cache this version of a page forever (until the cache dir
+            # is cleaned)
             return render('/home.myt', cache_key=user, cache_expire='never') 
 
 
@@ -119,13 +121,14 @@ Pylons також постачає `beaker_cache
 
     class SampleController(BaseController): 
 
-        # Cache this controller action forever (until the cache dir is cleaned) 
+        # Cache this controller action forever (until the cache dir is
+        # cleaned)
         @beaker_cache() 
         def home(self): 
             c.data = expensive_call() 
             return render('/home.myt') 
 
-        # Cache this controller action by its GET args for 10 mins to memory 
+        # Cache this controller action by its GET args for 10 mins to memory
         @beaker_cache(expire=600, type='memory', query_args=True) 
         def show(self, id): 
             c.data = expensive_call(id) 
@@ -212,18 +215,19 @@ DBMCache зберігає (наспарвді серіалізує) резуль
     cache = cm.get_cache('Some_Function_name')
     # the cache is setup but the dbm file is not created until needed 
     # so let's populate it with three values:
-    cache.get_value('x',createfunc=lambda:slooow('x'),expiretime=15)
-    cache.get_value('yy',createfunc=lambda:slooow('yy'),expiretime=15)
-    cache.get_value('zzz',createfunc=lambda:slooow('zzz'),expiretime=15)
+    cache.get_value('x', createfunc=lambda: slooow('x'), expiretime=15)
+    cache.get_value('yy', createfunc=lambda: slooow('yy'), expiretime=15)
+    cache.get_value('zzz', createfunc=lambda: slooow('zzz'), expiretime=15)
 
 Нічого особливо нового тут нема. Тепер як ми маємо кеш, ми можем його використовувати як написано в Beaker документації.
 
 .. code-block:: python
 
     import beaker.container as container
-    cc=container.ContainerContext()
-    nsm=cc.get_namespace_manager('Some_Function_name',container.DBMContainer,data_dir='beaker.cache')
-    filename=nsm.file
+    cc = container.ContainerContext()
+    nsm = cc.get_namespace_manager('Some_Function_name',
+                                   container.DBMContainer,data_dir='beaker.cache')
+    filename = nsm.file
 
 Тепер ми маємо назву файла. Назва файла це `sha` хеш стрічки, яка складається з  ім’я класу контейнера і ім’я функції (яка вказувалась в виклику `get_cache`).  Вона буде виглядати щось на подобі цього:
 
@@ -239,7 +243,7 @@ DBMCache зберігає (наспарвді серіалізує) резуль
     ## this file name can be used directly (for debug ONLY)
     import anydbm
     import pickle
-    db=anydbm.open(filename)
+    db = anydbm.open(filename)
     old_t, old_v = pickle.loads(db['zzz'])
 
 База даних містить лише old time і old value. Де знаходиться час закінчення дійсності і функція для створення/оновлення значення? Вони ніколи і не мали бути в базі даних. Зате знаходяться в `cache` об’єкті, який повернув метод `get_cache`.  
@@ -258,13 +262,14 @@ DBMCache зберігає (наспарвді серіалізує) резуль
     from beaker.cache import CacheManager
     #cm = CacheManager(type='dbm', data_dir='beaker.cache')
     cm = CacheManager(type='ext:database', 
-            url="sqlite:///beaker.cache/beaker.sqlite",data_dir='beaker.cache')
+                      url="sqlite:///beaker.cache/beaker.sqlite",
+                      data_dir='beaker.cache')
     cache = cm.get_cache('Some_Function_name')
     # the cache is setup but the dbm file is not created until needed 
     # so let's populate it with three values:
-    cache.get_value('x',createfunc=lambda:slooow('x'),expiretime=15)
-    cache.get_value('yy',createfunc=lambda:slooow('yy'),expiretime=15)
-    cache.get_value('zzz',createfunc=lambda:slooow('zzz'),expiretime=15)
+    cache.get_value('x', createfunc=lambda: slooow('x'), expiretime=15)
+    cache.get_value('yy', createfunc=lambda: slooow('yy'), expiretime=15)
+    cache.get_value('zzz', createfunc=lambda: slooow('zzz'), expiretime=15)
 
 
 Робота з цим кешем точно така сама як і з поданим вище, за однієї лише відмінності, в створенні `CacheManager`. Набагато простоіше переглядати кеші ззовні  beaker коду (знову ж таки тільки для навчання і для відлагодження, не для використання).
@@ -312,10 +317,11 @@ Memcached Кеш
 .. code-block:: python
 
     from beaker.cache import CacheManager
-    cm = CacheManager(type='ext:memcached',url='127.0.0.1:11211',lock_dir='beaker.cache')
+    cm = CacheManager(type='ext:memcached', url='127.0.0.1:11211',
+                      lock_dir='beaker.cache')
     cache = cm.get_cache('Some_Function_name')
     # the cache is setup but the dbm file is not created until needed 
     # so let's populate it with three values:
-    cache.get_value('x',createfunc=lambda:slooow('x'),expiretime=15)
-    cache.get_value('yy',createfunc=lambda:slooow('yy'),expiretime=15)
-    cache.get_value('zzz',createfunc=lambda:slooow('zzz'),expiretime=15)
+    cache.get_value('x', createfunc=lambda: slooow('x'), expiretime=15)
+    cache.get_value('yy', createfunc=lambda: slooow('yy'), expiretime=15)
+    cache.get_value('zzz', createfunc=lambda: slooow('zzz'), expiretime=15)
