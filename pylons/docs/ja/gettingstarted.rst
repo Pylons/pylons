@@ -356,11 +356,10 @@ Hello World
 
     import logging
 
-    from pylons import request, response, session, tmpl_context as c
-    from pylons.controllers.util import abort, redirect_to
+    from pylons import request, response, session, tmpl_context as c, url
+    from pylons.controllers.util import abort, redirect
 
     from helloworld.lib.base import BaseController, render
-    # import helloworld.model as model
 
     log = logging.getLogger(__name__)
     

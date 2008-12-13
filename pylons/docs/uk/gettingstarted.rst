@@ -180,8 +180,8 @@ Hello World
     import logging
 
     from pylons import request, response, session
-    from pylons import tmpl_context as c
-    from pylons.controllers.util import abort, redirect_to, url_for
+    from pylons import tmpl_context as c, url
+    from pylons.controllers.util import abort, redirect, url_for
 
     from helloworld.lib.base import BaseController, render
     # import helloworld.model as model

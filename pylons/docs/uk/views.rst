@@ -52,7 +52,7 @@ Using the default Mako template engine, this will cause Mako to look in the :fil
 Directly-supported template engines
 ===================================
 
-Pylons provides pre-configured options for using the `Mako`__, `Genshi`__ and `Jinja`__ template rendering engines. They are setup automatically during the creation of a new Pylons project, or can be added later manually.
+Pylons provides pre-configured options for using the `Mako`__, `Genshi`__ and `Jinja2`__ template rendering engines. They are setup automatically during the creation of a new Pylons project, or can be added later manually.
 
 
 .. __: http://www.makotemplates.org/
@@ -68,12 +68,10 @@ To pass objects to templates, the standard Pylons method is to attach them to th
 
     import logging
 
-    from pylons import request, response, session
-    from pylons import tmpl_context as c
-    from pylons.controllers.util import abort, redirect_to, url_for
+    from pylons import request, response, session, tmpl_context as c, url
+    from pylons.controllers.util import abort, redirect
 
     from helloworld.lib.base import BaseController, render
-    # import helloworld.model as model
 
     log = logging.getLogger(__name__)
     
