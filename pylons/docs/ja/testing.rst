@@ -241,13 +241,9 @@ Example:
 
     # testexample/lib/base.py 
 
-    from pylons import c, g, cache, request, response, session 
-    from pylons.controllers import WSGIController 
-    from pylons.decorators import jsonify, rest, validate 
-    from pylons.templating import render, render_response 
-    from pylons.helpers import abort, redirect_to, etag_cache 
-    import testexample.models as model 
-    import testexample.helpers as h 
+    from pylons import request
+    from pylons.controllers import WSGIController
+    from pylons.templating import render_mako as render
 
     class BaseController(WSGIController): 
         def __call__(self, environ, start_response): 
