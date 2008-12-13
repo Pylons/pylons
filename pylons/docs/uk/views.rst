@@ -21,13 +21,12 @@ More complex APIs are quite readily implemented via SOAP services, yet another t
 
 The growing adoption of RDF, the graph-based representation scheme that underpins the Semantic Web, brings a perspective that is strongly weighted towards machine-readability.
 
-.. NOTE: As much as I love RDF I think the following paragraph is too verbose for our intro docs, maybe we can put this elsewhere -pjenvey
-.. RDF model data is serialized into an undecorated, standardized format that can readily be processed and rendered by client applications of increasing sophistication, such as the MIT `Simile`__ project's "`Fresnel`__", "`Longwell`__" and "`Welkin`__" browser extensions.
+RDF model data is serialized into an undecorated, standardized format that can readily be processed and rendered by client applications of increasing sophistication, such as the MIT `Simile`__ project's "`Fresnel`__", "`Longwell`__" and "`Welkin`__" browser extensions.
 
-.. .. __: http://simile.mit.edu/
-.. .. __: http://simile.mit.edu/fresnel/
-.. .. __: http://simile.mit.edu/longwell/
-.. .. __: http://simile.mit.edu/welkin/
+.. __: http://simile.mit.edu/
+.. __: http://simile.mit.edu/fresnel/
+.. __: http://simile.mit.edu/longwell/
+.. __: http://simile.mit.edu/welkin/
 
 Handling all of these interfaces in an application is becoming increasingly challenging. One big advantage of MVC is that it makes it easier to create these interfaces and develop a web app that supports many different views and thereby provides a broad range of services.
 
@@ -43,21 +42,17 @@ Template rendering engines are a popular choice for handling the task of view pr
 
 To return a processed template, it must be rendered and returned by the controller::
     
-    from helloworld.lib.base import BaseController, render
-
     class HelloController(BaseController):
         def sample(self):
             return render('/sample.mako')
 
 Using the default Mako template engine, this will cause Mako to look in the :file:`helloworld/templates` directory (assuming the project is called 'helloworld') for a template filed called :file:`sample.mako`.
 
-The :func:`render` function used here is actually an alias defined in your projects' :file:`base.py` for Pylons' :func:`~pylons.templating.render_mako` function.
-
 
 Directly-supported template engines
 ===================================
 
-Pylons provides pre-configured options for using the `Mako`__, `Genshi`__ and `Jinja2`__ template rendering engines. They are setup automatically during the creation of a new Pylons project, or can be added later manually.
+Pylons provides pre-configured options for using the `Mako`__, `Genshi`__ and `Jinja`__ template rendering engines. They are setup automatically during the creation of a new Pylons project, or can be added later manually.
 
 
 .. __: http://www.makotemplates.org/
@@ -69,14 +64,16 @@ Pylons provides pre-configured options for using the `Mako`__, `Genshi`__ and `J
 Passing Variables to Templates
 ******************************
 
-To pass objects to templates, the standard Pylons method is to attach them to the :term:`tmpl_context` (aliased as `c` in controllers and templates, by default) object in the :ref:`controllers`::
+To pass objects to templates, the standard Pylons method is to attach them to the :term:`tmpl_context` object in the :ref:`controllers`::
 
     import logging
 
-    from pylons import request, response, session, tmpl_context as c
-    from pylons.controllers.util import abort, redirect_to
+    from pylons import request, response, session
+    from pylons import tmpl_context as c
+    from pylons.controllers.util import abort, redirect_to, url_for
 
     from helloworld.lib.base import BaseController, render
+    # import helloworld.model as model
 
     log = logging.getLogger(__name__)
     
@@ -146,24 +143,23 @@ A new Pylons project comes with the template engine setup inside the projects' :
 
 .. code-block:: python
 
-    # these imports are at the top
+    # this import is at the top
     from mako.lookup import TemplateLookup
-    from pylons.error import handle_mako_error
     
     # this section is inside the load_environment function
     # Create the Mako TemplateLookup, with the default auto-escaping
     config['pylons.app_globals'].mako_lookup = TemplateLookup(
         directories=paths['templates'],
-        error_handler=handle_mako_error,
         module_directory=os.path.join(app_conf['cache_dir'], 'templates'),
-        input_encoding='utf-8', default_filters=['escape'],
-        imports=['from webhelpers.html import escape'])
+        input_encoding='utf-8', output_encoding='utf-8',
+        imports=['from webhelpers.html import escape'],
+        default_filters=['escape'])
 
 
 Using Multiple Template Engines
 ===============================
 
-Since template engines are configured in the :file:`config/environment.py` section, then used by render functions, it's trivial to setup additional template engines, or even differently configured versions of a single template engine. However, custom render functions will frequently be needed to utilize the additional template engine objects.
+Since template engines are configured in the :file:`config/environment.py` section, then used by render functions, its trivial to setup additional template engines, or even differently configured versions of a single template engine. However, custom render functions will frequently be needed to utilize the additional template engine objects.
 
 Example of additional Mako template loader for a different templates directory for admins, which falls back to the normal templates directory::
     
@@ -177,17 +173,17 @@ Example of additional Mako template loader for a different templates directory f
     
     config['pylons.app_globals'].mako_admin_lookup = TemplateLookup(
         directories=paths['admin_templates'],
-        error_handler=handle_mako_error,
         module_directory=os.path.join(app_conf['cache_dir'], 'admintemplates'),
-        input_encoding='utf-8', default_filters=['escape'],
-        imports=['from webhelpers.html import escape'])
+        input_encoding='utf-8', output_encoding='utf-8',
+        imports=['from webhelpers.html import escape'],
+        default_filters=['escape'])
 
 That adds the additional template lookup instance, next a :ref:`custom render function <custom-render>` is needed that utilizes it::
     
     from pylons.templating import cached_template, pylons_globals
     
-    def render_mako_admin(template_name, extra_vars=None, cache_key=None, 
-                          cache_type=None, cache_expire=None):
+    def render_mako(template_name, extra_vars=None, cache_key=None, 
+                    cache_type=None, cache_expire=None):
         # Create a render callable for the cache function
         def render_template():
             # Pull in extra vars if needed
@@ -268,6 +264,32 @@ Templates to generate dynamic web content are stored in `myapp/templates`, stati
 
 Both are served from the server root, **if there is a name conflict the static files will be served in preference**
 
+Making templates unicode safe
+-----------------------------
+
+Edit :file:`config/environment.py` and add these lines just after `tmpl_options = {}` is declared,
+
+.. code-block:: python
+
+    tmpl_options['mako.input_encoding'] = 'UTF-8'
+    tmpl_options['mako.output_encoding'] = 'UTF-8'
+    tmpl_options['mako.default_filters'] = ['decode.utf8']
+
+
+then change the final `return` statement in the same file so that it reads,
+
+.. code-block:: python
+
+    return pylons.config.Config(tmpl_options, map, paths,
+        request_settings = dict(charset = 'utf-8', error = 'replace'))
+
+Also, ensure that all templates begin with the line:
+
+.. code-block:: html+mako
+
+    # -*- coding: utf-8 -*-
+
+
 Making a template hierarchy
 ===========================
 
@@ -278,6 +300,7 @@ In `myapp/templates` create a file named `base.mako` and edit it to appear as fo
 
 .. code-block:: html+mako
 
+    # -*- coding: utf-8 -*-
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html>
@@ -302,6 +325,7 @@ Create another file in `myapp/templates` called `my_action.mako` and edit it to 
 
 .. code-block:: html+mako
 
+    # -*- coding: utf-8 -*-
     <%inherit file="/base.mako" />
 
     <%def name="head_tags()">
@@ -330,7 +354,9 @@ In the controller action, use the following as a `return()` value,
     return render('/my_action.mako')
 
 
-Now run the action, usually by visiting something like ``http://localhost:5000/my_controller/my_action`` in a browser. Selecting 'View Source' in the browser should reveal the following output:
+Now run the action, usually by visiting something like ``http://localhost:5000/my_controller/my_action`` in a browser (if Pylons is running)
+
+Selecting 'View Source' in the browser should reveal the following output:
 
 .. code-block:: html
 

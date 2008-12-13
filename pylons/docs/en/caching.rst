@@ -36,15 +36,16 @@ Python structure that can be `pickled <http://docs.python.org/lib/module-pickle.
 
 Consider an action where it is desirable to cache some code that does a 
 time-consuming or resource-intensive lookup and returns an object that can be 
-pickled (list, dict, tuple, etc.): 
+pickled (list, dict, tuple, etc.):
 
-.. code-block:: python 
+.. code-block:: python
 
     def some_action(self, day): 
         # hypothetical action that uses a 'day' variable as its key 
 
         def expensive_function(): 
-            # do something that takes a lot of cpu/resources 
+            # do something that takes a lot of cpu/resources
+            return expensive_call()
 
         # Get a cache for a specific namespace, you can name it whatever 
         # you want, in this case its 'my_function' 
@@ -53,7 +54,7 @@ pickled (list, dict, tuple, etc.):
         # Get the value, this will create the cache copy the first time 
         # and any time it expires (in seconds, so 3600 = one hour) 
         c.myvalue = mycache.get_value(key=day, createfunc=expensive_function, 
-        type="memory", expiretime=3600) 
+                                      type="memory", expiretime=3600)
 
         return render('/some/template.myt') 
 
@@ -97,10 +98,11 @@ add the appropriate cache keyword to the `render` call.
 
         def feed(self): 
             # Cache for 20 mins to memory 
-            return render('/feed.myt', cache_type='memory', cache_expire=1200) 
+            return render('/feed.myt', cache_type='memory', cache_expire=1200)
 
         def home(self, user): 
-            # Cache this version of a page forever (until the cache dir is cleaned) 
+            # Cache this version of a page forever (until the cache dir
+            # is cleaned)
             return render('/home.myt', cache_key=user, cache_expire='never') 
 
 
@@ -121,13 +123,14 @@ The cache decorator takes the same cache arguments (minus their `cache_` prefix)
 
     class SampleController(BaseController): 
 
-        # Cache this controller action forever (until the cache dir is cleaned) 
+        # Cache this controller action forever (until the cache dir is
+        # cleaned)
         @beaker_cache() 
         def home(self): 
             c.data = expensive_call() 
             return render('/home.myt') 
 
-        # Cache this controller action by its GET args for 10 mins to memory 
+        # Cache this controller action by its GET args for 10 mins to memory
         @beaker_cache(expire=600, type='memory', query_args=True) 
         def show(self, id): 
             c.data = expensive_call(id) 
@@ -223,18 +226,19 @@ What may not be obvious is that the are two levels of keys.  They are essentiall
     cache = cm.get_cache('Some_Function_name')
     # the cache is setup but the dbm file is not created until needed 
     # so let's populate it with three values:
-    cache.get_value('x',createfunc=lambda:slooow('x'),expiretime=15)
-    cache.get_value('yy',createfunc=lambda:slooow('yy'),expiretime=15)
-    cache.get_value('zzz',createfunc=lambda:slooow('zzz'),expiretime=15)
+    cache.get_value('x', createfunc=lambda: slooow('x'), expiretime=15)
+    cache.get_value('yy', createfunc=lambda: slooow('yy'), expiretime=15)
+    cache.get_value('zzz', createfunc=lambda: slooow('zzz'), expiretime=15)
 
 Nothing much new yet.  After getting the cache we can use the cache as per the Beaker Documentation.
 
 .. code-block:: python
 
     import beaker.container as container
-    cc=container.ContainerContext()
-    nsm=cc.get_namespace_manager('Some_Function_name',container.DBMContainer,data_dir='beaker.cache')
-    filename=nsm.file
+    cc = container.ContainerContext()
+    nsm = cc.get_namespace_manager('Some_Function_name',
+                                   container.DBMContainer,data_dir='beaker.cache')
+    filename = nsm.file
 
 Now we have the file name.  The file name is a `sha` hash of a string which is a join of the container class name and the function name (used in the `get_cache` function call).  It would return something like:
 
@@ -250,7 +254,7 @@ With that file name you could look directly inside the cache database (but only 
     ## this file name can be used directly (for debug ONLY)
     import anydbm
     import pickle
-    db=anydbm.open(filename)
+    db = anydbm.open(filename)
     old_t, old_v = pickle.loads(db['zzz'])
 
 The database only contains the old time and old value.  Where did the expire time and the function to create/update the value go?.  They never make it to the database.  They reside in the `cache` object returned from `get_cache` call above.  
@@ -269,13 +273,14 @@ Using the `ext:database` cache type.
     from beaker.cache import CacheManager
     #cm = CacheManager(type='dbm', data_dir='beaker.cache')
     cm = CacheManager(type='ext:database', 
-            url="sqlite:///beaker.cache/beaker.sqlite",data_dir='beaker.cache')
+                      url="sqlite:///beaker.cache/beaker.sqlite",
+                      data_dir='beaker.cache')
     cache = cm.get_cache('Some_Function_name')
     # the cache is setup but the dbm file is not created until needed 
     # so let's populate it with three values:
-    cache.get_value('x',createfunc=lambda:slooow('x'),expiretime=15)
-    cache.get_value('yy',createfunc=lambda:slooow('yy'),expiretime=15)
-    cache.get_value('zzz',createfunc=lambda:slooow('zzz'),expiretime=15)
+    cache.get_value('x', createfunc=lambda: slooow('x'), expiretime=15)
+    cache.get_value('yy', createfunc=lambda: slooow('yy'), expiretime=15)
+    cache.get_value('zzz', createfunc=lambda: slooow('zzz'), expiretime=15)
 
 
 This is identical to the cache usage above with the only difference being the creation of the `CacheManager`.  It is much easier to view the caches outside the beaker code (again for edification and debugging, not for api usage).
@@ -323,10 +328,11 @@ If memcached is running on the the default port of 11211:
 .. code-block:: python
 
     from beaker.cache import CacheManager
-    cm = CacheManager(type='ext:memcached',url='127.0.0.1:11211',lock_dir='beaker.cache')
+    cm = CacheManager(type='ext:memcached', url='127.0.0.1:11211',
+                      lock_dir='beaker.cache')
     cache = cm.get_cache('Some_Function_name')
     # the cache is setup but the dbm file is not created until needed 
     # so let's populate it with three values:
-    cache.get_value('x',createfunc=lambda:slooow('x'),expiretime=15)
-    cache.get_value('yy',createfunc=lambda:slooow('yy'),expiretime=15)
-    cache.get_value('zzz',createfunc=lambda:slooow('zzz'),expiretime=15)
+    cache.get_value('x', createfunc=lambda: slooow('x'), expiretime=15)
+    cache.get_value('yy', createfunc=lambda: slooow('yy'), expiretime=15)
+    cache.get_value('zzz', createfunc=lambda: slooow('zzz'), expiretime=15)
