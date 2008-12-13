@@ -21,9 +21,9 @@ The controller interprets requests from the user and calls portions of the model
 Pylons uses a class, where the superclass provides the :term:`WSGI` interface
 and the subclass implements the application-specific controller logic.
 
-The Pylons WSGI Controller handles incoming web requests that are dispatched from the Pylons WSGI application ``PylonsApp``.
+The Pylons WSGI Controller handles incoming web requests that are dispatched from the Pylons WSGI application :class:`~pylons.wsgiapp.PylonsApp`.
 
-These requests result in a new instance of the ``WSGIController`` being created, which is then called with the dict options from the Routes match. The standard WSGI response is then returned with start_response called as per the WSGI spec.
+These requests result in a new instance of the :class:`~pylons.controllers.core.WSGIController` being created, which is then called with the dict options from the Routes match. The standard WSGI response is then returned with start_response called as per the WSGI spec.
 
 Since Pylons controllers are actually called with the WSGI interface, normal WSGI applications can also be Pylons ‘controllers’.
 
