@@ -2,15 +2,25 @@ Pylons Changelog
 ================
 
 0.9.7 (**tip**)
-* Changed to using WebTest instead of paste.fixture for app testing.
-* Added render_mako_def to render def blocks within a mako template.
-* Changes to cache_decorator and cached_template to support Beaker API
-  changes in version 1.1.  1.0.3 is still supported.
 * WARNING: A new option is available to determine whether or not an actions
   arguments should be automatically attached to 'c'. To turn off this implicit
   behavior in environment.py:
     config['pylons.c_attach_args'] = False
   This is set to True by default.
+* WARNING: Fixed a minor security hole in the default Pylons error page that
+  could result in an XSS security hole.
+* WARNING: Fixed a security hole in the default project template to use the
+  StaticURLParser to ensure arbitrary files can't be sent.
+* WARNING: Refactored PylonsApp to remove legacy PylonsApp, moved
+  session/cache and routes middleware into the project template. This will
+  require projects to be updated to include those 3 middleware in the projects
+  middleware.py.
+* Added redirect, preferred over redirect_to. Takes an explicit url instead of
+  url_for like arguments
+* Changed to using WebTest instead of paste.fixture for app testing.
+* Added render_mako_def to render def blocks within a mako template.
+* Changes to cache_decorator and cached_template to support Beaker API
+  changes in version 1.1.  1.0.3 is still supported.
 * Fix HEAD requests causing an Exception as if no content was returned
   by the controller. Fixes #507. Thanks mvtellingen, Petr Kobalicek.
 * Fix a crash when returning the result of ``etag_cache`` in a controller.
@@ -30,10 +40,6 @@ Pylons Changelog
 * Added option to specify the controller name with a __controller__ variable
   in the controller's module. This name will be used for the controller class
   rather than the default naming scheme.
-* WARNING: Fixed a minor security hole in the default Pylons error page that
-  could result in an XSS security hole.
-* WARNING: Fixed a security hole in the default project template to use the
-  StaticURLParser to ensure arbitrary files can't be sent.
 * setup.py egg_info now restores projects' paster_plugins.txt,
   allowing paster shell to work again after the egg-info directory was
   lost. fixes #282. Thanks sevkin.
@@ -106,10 +112,6 @@ Pylons Changelog
 * WSGIController now uses the environ references to response, request, and
   the c object for higher performance.
 * Added optional use of WebOb instead of paste.wsgiwrapper objects.
-* WARNING: Refactored PylonsApp to remove legacy PylonsApp, moved
-  session/cache and routes middleware into the project template. This will
-  require projects to be updated to include those 3 middleware in the projects
-  middleware.py.
 * Fixed bug with beaker_cache defaulting to dbm rather than the beaker
   cache app-wide default.
 * The --with-pylons nose plugin no longer requires a project to have been
