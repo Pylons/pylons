@@ -38,7 +38,7 @@ class WSGIController(object):
     ``__after__``
         This method is called after the action is, unless an unexpected
         exception was raised. Subclasses of
-        :class:`~webob.HTTPException` (such as those raised by
+        :class:`~webob.exc.HTTPException` (such as those raised by
         ``redirect_to`` and ``abort``) are expected; e.g. ``__after__``
         will be called on redirects.
         
