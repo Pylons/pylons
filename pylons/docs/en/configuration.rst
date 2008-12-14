@@ -196,8 +196,9 @@ controller:
 .. code-block :: python
     
     class ArticlesController(BaseController):
+
         def archives(self, year):
-            # etc.
+            ...
 
 The part of the URL that matched as the year is available by name in the
 function argument.
@@ -253,22 +254,34 @@ controller.
 Generating URLs
 ===============
 
-URLs can be generated using the helper method :func:`~routes.util.url`, which by default in a Pylons project will be under the :data:`~pylons.url` global variable.
-Keyword arguments indicating the controller and action to use can be 
-passed directly in:
+URLs are generated via the callable :class:`routes.util.URLGenerator`
+object. Pylons provides an instance of this special object at
+:data:`pylons.url`. It accepts keyword arguments indicating the desired
+controller, action and additional variables defined in a route.
 
 .. code-block:: python
     
     # generates /content/view/2
-    url(controller='content', action='view', id=2)  
+    url(controller='content', action='view', id=2)   
 
-Inside templates and controllers, other variables may seem to creep into the URLs generated. This is due to `Routes memory <http://routes.groovie.org/manual.html#route-memory>`_ and can be disabled by specifying the controller with a ``/`` in front:
+To generate the URL of the matched route of the current request, call
+:meth:`routes.util.URLGenerator.current`:
 
 .. code-block:: python
 
-    # ALWAYS generates /content/view/2
-    url(controller='/content', action='view', id=2)   
+    # Generates /content/view/3 during a request for /content/view/3
+    url.current()
 
+:meth:`routes.util.URLGenerator.current` also accepts the same arguments as
+`url()`. This uses `Routes memory
+<http://routes.groovie.org/manual.html#route-memory>`_ to generate a small
+change to the current URL without the need to specify all the relevant
+arguments:
+
+.. code-block:: python
+
+    # Generates /content/view/2 during a request for /content/view/3
+    url.current(id=2)
 
 .. seealso::
 
