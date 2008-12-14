@@ -1,82 +1,81 @@
 .. _configuration:
 
-=============
-Configuration
-=============
+============
+Конфіґурація
+============
 
-Pylons comes with two main ways to configure an application:
+В Pylons є два шляхи щоб сконфіґурувати програму:
 
-* The configuration file (:ref:`run-config`)
-* The application's ``config`` directory
+* Конфіґураційни файл (:ref:`run-config`)
+* Каталог ``config`` в вашій програмі
 
-The files in the ``config`` directory change certain aspects of how the application behaves. Any options that the webmaster should be able to change during deployment should be specified in a configuration file.
+Файли в каталозі ``config`` змінють певні аспекти в поведінці вашої програми. любі опції які вебмайстру прийдеться міняти під час розгортання, повинні бути визначені в конфіґураційному файлі.
 
 .. tip::
-    A good indicator of whether an option should be set in the ``config`` directory code vs. the configuration file is whether or not the option is necessary for the functioning of the application. If the application won't function without the setting, it belongs in the appropriate :file:`config/` directory file. If the option should be changed depending on deployment, it belongs in the :ref:`run-config`.
+    Хорошим індикатором в якому випадку пторібно використовувати ``config`` каталог, а в якому конфіґураційни файл, є те чи дана опція є обовязковою для функціонування програми чи ні. Якщо програма не буде працювати без даної опції, дана опція повинна бути визначена в файлі :file:`config/` каталога. Якщо опція повинна бути змінена під час розгортання програми, її потрібно визначити в :ref:`run-config` файлі.
 
-The applications :file:`config/` directory includes:
+Каталог :file:`config/` вашої програми включає:
 
-* :file:`config/environment.py` described in :ref:`environment-config`
-* :file:`config/middleware.py` described in :ref:`middleware-config`
-* :file:`config/routing.py` described in :ref:`url-config`
+* :file:`config/environment.py` описується в :ref:`environment-config`
+* :file:`config/middleware.py` описується в :ref:`middleware-config`
+* :file:`config/routing.py` описується в :ref:`url-config`
 
-Each of these files allows developers to change key aspects of how the application behaves.
+Кожен з цих файлів дозволяє розробникикам міняти ключові аспекти в поведінці програми.
  
 .. _run-config:
 
-*********************
-Runtime Configuration
-*********************
+********************
+Runtime Конфіґурація
+********************
 
-When a new project is created a sample configuration file called :file:`development.ini` is automatically produced as one of the project files. This default configuration file contains sensible options for development use, for example when developing a Pylons application it is very useful to be able to see a debug report every time an error occurs. The :file:`development.ini` file includes options to enable debug mode so these errors are shown.
+Коли ви створюєте новий проект, файл з назвою :file:`development.ini` автоматично створюється з усіма іншими файлами проекту. Цей конфіґураційний файл містить опції для використання під час розробки, наприклад дуже зручно під час розробки отримувати звіт про помилку кожного разу як вона трапляється. Даний :file:`development.ini` файл містить опції, які включають режим відлагодження, так що помилки починають відображатись.
 
-Since the configuration file is used to determine which application is run, multiple configuration files can be used to easily toggle sets of options. Typically a developer might have a ``development.ini`` configuration file for testing and a ``production.ini`` file produced by the :command:`paster make-config` command for testing the command produces sensible production output. A :file:`test.ini` configuration is also included in the project for test-specific options.
+Оскільки конфігураційний файл використовується для визначення того, які додатки запускати, багато конфіґураційних файлів можна використовувати для того щоб легко переключатись між різними наборами опцій. Типово розробник може мати ``development.ini`` кнфоґураційний файл для тестування, і ``production.ini`` файл створений командою :command:`paster make-config` for testing the command produces sensible production output. Також в проект включаєься :file:`test.ini` конфіґураційний файл, для специфічних для тестування опцій.
 
-To specify a configuration file to use when running the application, change the last part of the :command:`paster serve` to include the desired config file:
+Щоб вказати конфіґураційний файл який буде використовуатись під час виконння програми, змініть останню частину команди :command:`paster serve` включивши потрібний конфіґураційний файл:
 
 .. code-block :: bash 
 
     $ paster serve production.ini
 
 .. seealso::
-    Configuration file format **and options** are described in great detail in the `Paste Deploy documentation <http://pythonpaste.org/deploy/>`_.
+    Формат конфіґураційного файлу **і його опції** описані дуже детально в `Paste Deploy документації <http://pythonpaste.org/deploy/>`_.
 
 
-Getting Information From Configuration Files
-============================================
+Отримання інформації з конфіґураційного файлу
+=============================================
 
-All information from the configuration file is available in the ``pylons.config`` object. ``pylons.config`` also contains application configuration as defined in the project's :file:`config.environment` module. 
+Вся інформація з конфіґураційного файла є доступна в ``pylons.config`` обє’кті. Також даний об’єкт містить конфігурацію, яка визначена в :file:`config.environment` модулі, вашого проекту. 
 
 .. code-block :: python
 
     from pylons import config 
 
-``pylons.config`` behaves like a dictionary. For example, if the configuration file has an entry under the ``[app:main]`` block:
+``pylons.config`` поводиться як python словник. Для прикладу, якщо конфіґураційний файл містить записи всередині ``[app:main]`` блоку:
 
 .. code-block :: ini
 
     cache_dir = %(here)s/data
 
-That can then be read in the projects code:
+Тоді ці дані можуть бути прочитані в коді вашої програми:
 
 .. code-block :: python
 
     from pylons import config 
     cache_dir = config['cache_dir']
 
-Or the current debug status like this: 
+Або статус відлагодження, як це: 
 
 .. code-block :: python 
 
     debug = config['debug']
 
-Evaluating Non-string Data in Configuration Files
--------------------------------------------------
+Обробка не текстових даних в конфіґураційних файлах
+---------------------------------------------------
 
-By default, all the values in the configuration file are considered strings.
-To make it easier to handle boolean values, the Paste library comes with a
-function that will convert ``true`` and ``false`` to proper Python boolean
-values:
+По замовчуванню, всі значення вконфіґураційному файлі розглядаються як стрічки тексту.
+Щоб легко оперувати булевими значеннями, Paste бібіліотека містить функцію яка конвертує
+``true`` і ``false`` в правильні булеві значення:
 
 .. code-block :: python
     
@@ -84,64 +83,58 @@ values:
     
     debug = asbool(config['debug'])
 
-This is used already in the default projects' :ref:`middleware-config` to
-toggle middleware that should only be used in development mode (with
-``debug``) set to true.
+Такий підхід вже використовується в :ref:`middleware-config` проекту по замовчуванню  щоб вказати middleware, яке повинно працювати лише в режимі відлагодження, потрібно встановити опцію ``debug`` в ``true``.
 
 
-Production Configuration Files
-==============================
+Production Крнфіґураційні файли
+===============================
 
-To change the defaults of the configuration INI file that should be used when deploying the application, edit the :file:`config/deployment.ini_tmpl` file. This is the file that will be used as a template during deployment, so that the person handling deployment has a starting point of the minimum options the application needs set.
+Щоб вказати змінні по замовчуванні в конфіґураційному INI файлі, які повинні використовуватись під час розгортання вашої програми, відредагуйте файл :file:`config/deployment.ini_tmpl`. Цей файл буде використовуватись як шаблон під час розгортання програми, так що людина яка буде провдити розгортання буде мати встановлений мінімальний набіор опцій які вимагає ваша програма.
 
-One of the most important options that should be changed is the ``debug = true`` setting. The email options should be setup so that errors can be e-mailed to the appropriate developers or webmaster in the event of an application error.
+Одна з най більш важливих опцій яку потрібно зімнити це ``debug = true`` опція. Також email опції повинні бути правильно встановленні, так що помилки будуть відправлятись відповідному розробнику чи веб майстру, у випадку коли вони будуть виникати.
 
-Generating the Production Configuration
+Ґенерація Production конфіґурації
 ---------------------------------------
 
-To generate the production.ini file from the projects' :file:`config/deployment.ini_tmpl` it must first be installed either as an :term:`egg` or under development mode. Assuming the name of the Pylons application is ``helloworld``, run:
+Щоб зґенерувати production.ini файл з :file:`config/deployment.ini_tmpl` файла, він спочатку повинен бути встановлений як :term:`egg` or under development mode. Якщо вважати що назва вошої Pylons програми є ``helloworld``, виконайте:
 
 .. code-block :: bash
 
     $ paster make-config helloworld production.ini
 
 .. note::
-    This command will also work from inside the project when its being developed.
+    Дана команда також буде працювати всередині проекту під час його розробки.
 
-It is theresponsibility of the developer to ensure that a sensible set of default configuration values exist when the webmaster uses the ``paster make-config`` command. 
+Вся відповідальність лягає на розробника, який повинен бути впевненим що всі потрібні типові конфіґураційні значення існують коли він виконує ``paster make-config`` команду. 
 
 .. warning::
-    **Always** make sure that the ``debug`` is set to ``false`` when deploying a Pylons application.
+    **Завжди** перевіряйте чи значення ``debug`` встановлене в ``false``, коли ви розгортаєте Pylons програму.
 
 
 .. _environment-config:
 
-***********
-Environment
-***********
+**********
+Середовище
+**********
 
-The :file:`config/environment.py` module sets up the basic Pylons environment
-variables needed to run the application. Objects that should be setup once
-for the entire application should either be setup here, or in the
-:file:`lib/app_globals` :meth:`__init__.py` method.
+Модуль :file:`config/environment.py` встановлює базові змінні середовища Pylons,
+які потрібні для запуску програми. Кожен об’єкт, який встановлюється один раз для всієї програми
+повинен бути встановлений тут, або в
+:file:`lib/app_globals` :meth:`__init__.py` методі.
 
-It also calls the :ref:`url-config` function to setup how the URL's will
-be matched up to :ref:`controllers`, creates the :term:`app_globals`
-object, configures which module will be referred to as :term:`h`, and is
-where the template engine is setup.
+Він також викликає :ref:`url-config` функцію, щоб встановити як URL адреси будуть відповідати :ref:`controllers`, створює :term:`app_globals`
+об’єкт, визначає на який модуль буде ссилатись :term:`h`, і визначає де встановлений двигун шаблонів.
 
-When using SQLAlchemy it's recommended that the SQLAlchemy engine be setup
-in this module. The default SQLAlchemy configuration that Pylons comes
-with creates the engine here which is then used in :file:`model/__init__.py`.
+Коли ви використовуєте SQLAlchemy, ми рекомендуємо щоб він був встановлений в цьому модулі. Типова SQLAlchemy конфіґурація з якою постачається Pylons, створює тут двигун який потім використовується в :file:`model/__init__.py`.
 
 
 .. _url-config:
 
-*****************
-URL Configuration
-*****************
+****************
+URL Конфіґурація
+****************
 
-A Python library called Routes handles mapping URLs to controllers and their methods, or their :term:`action` as Routes refers to them. By default, Pylons sets up the following :term:`route`\s (found in :file:`config/routing.py`):
+Python бібілотека Routes, обробляє приєднані до контроллерів і їніх методів URL адреси, або їх :term:`action` як Routes що посилаються на них. По замовчуванню, Pylons встановлює наступні  :term:`route`\s (які знаходяться в :file:`config/routing.py`):
 
 .. code-block:: python
 
@@ -159,36 +152,29 @@ any text in the URL for that 'part'. A 'part' of the URL is the text between
 two forward slashes. Every part of the URL must be present for the
 :term:`route` to match, otherwise a 404 will be returned.
 
-The routes above are translated by the Routes library into regular expressions
-for high performance URL matching. By default, all the variable parts (except
-for the special case of ``{controller}``) become a matching regular expression
-of ``[^/]+`` to match anything except for a forward slash. This can be
-changed easily, for example to have the ``{id}`` only match digits:
+Подані тут шляхи транслюються Routes бібліотекою в регулярні вирази
+щоб забезпечити високу швидкодію в сівпадінні URL адрес. По замовчуванню, всі частини змінних (за винятком
+спеціального випадка ``{controller}``) співпадають регулярному виразу ``[^/]+``, що відпоідає любому символу окрім зворотнього слеша. це можна легко змінити,
+наприклад щоб частині ``{id}`` співпадали лише цифри:
 
 .. code-block :: python
     
     map.connect('/{controller}/{action}/{id:\d+}')
 
-If the desired regular expression includes the ``{}``, then it should be
-specified separately for the variable part. To limit the ``{id}`` to only
-match at least 2-4 digits:
+Якщо регулярний вираз містить ``{}``, далі потрібно вказати змінну для даної частини. Щоб обмежити ``{id}``, щоб він відповідав лише 2 або 4 цифрам:
 
 .. code-block :: python
     
     map.connect('/{controller}/{action}/{id}',  requirements=dict(id='\d{2,4}'))
 
-The controller and action can also be specified as keyword arguments so that
-they don't need to be included in the URL:
+Контроллер і action також можуть бути вказані як аргументи, так що тоді не потрібно включати їх в URL адресу:
 
 .. code-block :: python
     
     # Archives by 2 digit year -> /archives/08
     map.connect('/archives/{year:\d\d}', controller='articles',  action='archives')
 
-Any variable part, or keyword argument in the ``map.connect`` statement will
-be available for use in the
-action used. For the route above, which resolves to the `articles`
-controller:
+Люба змінна, або аргумент в операторі ``map.connect`` будуть доступні для використання в action. Наприклад для вищенаведеного маршруту:
 
 .. code-block :: python
     
@@ -196,13 +182,10 @@ controller:
         def archives(self, year):
             # etc.
 
-The part of the URL that matched as the year is available by name in the
-function argument.
+Частина в URL адресі, яка співпала як рік, є доступна по імені в аргументі функціїї.
 
 .. note::
-    Routes also includes the ability to attempt to 'minimize' the URL. This
-    behavior is generally not intuitive, and starting in Pylons 0.9.7 is
-    turned off by default with the ``map.minimization=False`` setting.
+    Routes також містять можливість мінімізації URL адерси. Цей режим в загальному не є дуже інтиютивним, і починаючи з Pylons 0.9.7 є по замовчуванню виключеним за допомогою  ``map.minimization=False`` опції.
 
 The default mapping can match to any controller and any of their
 actions which means the following URLs will match:
@@ -247,19 +230,18 @@ statement, as well as the raw URL should be matched.
 will result in ``/`` being handled by the ``index`` method of the ``main``
 controller.
 
-Generating URLs
-===============
+Ґенерація URL адрес
+===================
 
-URLs can be generated using the helper method :func:`~routes.util.url`, which by default in a Pylons project will be under the :data:`url` global variable.
-Keyword arguments indicating the controller and action to use can be 
-passed directly in:
+URL адреси можуть бути зґенеровані використовуючи допоміжний метод :func:`~routes.util.url`, який по замовчуванню в проекті Pylons буде в глобальній змінній :data:`url`.
+Аргументи що вказують на використання контроллера або action, можуть бути прописані всередині:
 
 .. code-block:: python
     
     # generates /content/view/2
     url(controller='content', action='view', id=2)  
 
-Inside templates and controllers, other variables may seem to creep into the URLs generated. This is due to `Routes memory <http://routes.groovie.org/manual.html#route-memory>`_ and can be disabled by specifying the controller with a ``/`` in front:
+Всередині шаблонів, контроллерів і інших змінних очевидно буде краще перейти до використання ґенераціїї URL адрес. Це належить до `Routes memory <http://routes.groovie.org/manual.html#route-memory>`_ і може бути вимкнено, вказавши контроллер з ``/`` на початку:
 
 .. code-block:: python
 
