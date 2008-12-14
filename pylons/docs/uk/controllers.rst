@@ -21,9 +21,9 @@ The controller interprets requests from the user and calls portions of the model
 Pylons uses a class, where the superclass provides the :term:`WSGI` interface
 and the subclass implements the application-specific controller logic.
 
-The Pylons WSGI Controller handles incoming web requests that are dispatched from the Pylons WSGI application ``PylonsApp``.
+The Pylons WSGI Controller handles incoming web requests that are dispatched from the Pylons WSGI application :class:`~pylons.wsgiapp.PylonsApp`.
 
-These requests result in a new instance of the ``WSGIController`` being created, which is then called with the dict options from the Routes match. The standard WSGI response is then returned with start_response called as per the WSGI spec.
+These requests result in a new instance of the :class:`~pylons.controllers.core.WSGIController` being created, which is then called with the dict options from the Routes match. The standard WSGI response is then returned with start_response called as per the WSGI spec.
 
 Since Pylons controllers are actually called with the WSGI interface, normal WSGI applications can also be Pylons ‘controllers’.
 
@@ -64,9 +64,10 @@ Special controller methods you may define:
 
 ``__after__``
     This method is called after the action is, unless an unexpected
-    exception was raised. Subclasses of :class:`~webob.HTTPException`
-    (such as those raised by ``redirect_to`` and ``abort``) are
-    expected; e.g. ``__after__`` will be called on redirects.
+    exception was raised. Subclasses of
+    :class:`~webob.exc.HTTPException` (such as those raised by
+    ``redirect_to`` and ``abort``) are expected; e.g. ``__after__``
+    will be called on redirects.
     
 Adding Controllers dynamically
 ------------------------------
@@ -123,21 +124,17 @@ Edit your controller so it looks like this:
         start_response('200 OK', [('Content-type', 'text/plain')])
         return ["Hello World"]
 
-When hooking up other WSGI applications, they will expect the part of the URL that was used to get to this controller to have been moved into :envvar:`SCRIPT_NAME`. :mod:`Routes` can properly adjust the environ if a map route for this controller is added to the :file:`config/routing.py` file:
+When hooking up other WSGI applications, they will expect the part of the URL that was used to get to this controller to have been moved into :envvar:`SCRIPT_NAME`. :mod:`Routes <routes>` can properly adjust the environ if a map route for this controller is added to the :file:`config/routing.py` file:
 
 .. code-block:: python
 
     # CUSTOM ROUTES HERE
 
     # Map the WSGI application
-    map.connect('wsgiapp/*path_info', controller='wsgiapp')
+    map.connect('wsgiapp/{path_info:.*}', controller='wsgiapp')
 
 
 By specifying the ``path_info`` dynamic path, Routes will put everything leading up to the ``path_info`` in the :envvar:`SCRIPT_NAME` and the rest will go in the :envvar:`PATH_INFO`.
-
-.. warning::
-
-    Is this still true of Routes 2?
 
 
 Using the WSGI Controller to provide a WSGI service
