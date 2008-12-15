@@ -56,6 +56,9 @@ RDF (セマンティックウェブを支援するグラフベースの表現ス
 増えていることは、機械可読性に関して強い重み付けがなされるという展望を
 もたらします。
 
+.. NOTE: As much as I love RDF I think the following paragraph is too
+.. verbose for our intro docs, maybe we can put this elsewhere
+.. -pjenvey
 
 .. RDF model data is serialized into an undecorated, standardized
 .. format that can readily be processed and rendered by client
@@ -63,16 +66,16 @@ RDF (セマンティックウェブを支援するグラフベースの表現ス
 .. `Simile`__ project's "`Fresnel`__", "`Longwell`__" and "`Welkin`__"
 .. browser extensions.
 
-RDF モデルデータは、飾りのない、標準化された形式にシリアライズされます。
-そのため、より洗練されたクライアントアプリケーション (たとえば MIT
-`Simile`__ プロジェクトの "`Fresnel`__", "`Longwell`__", "`Welkin`__"
-ブラウザ拡張など) で容易に処理およびレンダリングできます。
+.. RDF モデルデータは、飾りのない、標準化された形式にシリアライズされま
+.. す。そのため、より洗練されたクライアントアプリケーション (たとえば
+.. MIT `Simile`__ プロジェクトの "`Fresnel`__", "`Longwell`__",
+.. "`Welkin`__" ブラウザ拡張など) で容易に処理およびレンダリングできま
+.. す。
 
-
-.. __: http://simile.mit.edu/
-.. __: http://simile.mit.edu/fresnel/
-.. __: http://simile.mit.edu/longwell/
-.. __: http://simile.mit.edu/welkin/
+.. .. __: http://simile.mit.edu/
+.. .. __: http://simile.mit.edu/fresnel/
+.. .. __: http://simile.mit.edu/longwell/
+.. .. __: http://simile.mit.edu/welkin/
 
 
 .. Handling all of these interfaces in an application is becoming
@@ -125,6 +128,8 @@ RDF モデルデータは、飾りのない、標準化された形式にシリ�
 
 .. code-block:: python
     
+    from helloworld.lib.base import BaseController, render
+
     class HelloController(BaseController):
         def sample(self):
             return render('/sample.mako')
@@ -139,6 +144,15 @@ RDF モデルデータは、飾りのない、標準化された形式にシリ�
 :file:`helloworld/templates` ディレクトリから :file:`sample.mako` とい
 うテンプレートファイルを検索します。(ここで、プロジェクトが
 'helloworld' であると仮定します)
+
+
+.. The :func:`render` function used here is actually an alias defined
+.. in your projects' :file:`base.py` for Pylons'
+.. :func:`~pylons.templating.render_mako` function.
+
+ここで使用された :func:`render` 関数は、実際には Pylons の
+:func:`~pylons.templating.render_mako` 関数のためにプロジェクトの
+:file:`base.py` で定義された別名です。
 
 
 .. Directly-supported template engines
@@ -169,22 +183,23 @@ Pylons は `Mako`__ 、 `Genshi`__ 、 `Jinja2`__ テンプレートレンダリ
 ******************************
 
 .. To pass objects to templates, the standard Pylons method is to
-.. attach them to the :term:`tmpl_context` object in the
+.. attach them to the :term:`tmpl_context` (aliased as `c` in
+.. controllers and templates, by default) object in the
 .. :ref:`controllers`::
 
-オブジェクトをテンプレートに渡すために、標準の Pylons メソッドはそれら
-を :ref:`コントローラ <controllers>` の中で :term:`tmpl_context` オブジェ
-クトに追加します:
+オブジェクトをテンプレートに渡すために、 Pylons 標準の方法は、それらを
+:ref:`コントローラ <controllers>` の中で :term:`tmpl_context` オブジェ
+クト (それはコントローラとテンプレートの中ではデフォルトで `c` という別
+名にエイリアスされています) に追加することです:
 
 .. code-block:: python
 
     import logging
 
-    from pylons import request, response, session, tmpl_context as c
-    from pylons.controllers.util import abort, redirect_to
+    from pylons import request, response, session, tmpl_context as c, url
+    from pylons.controllers.util import abort, redirect
 
     from helloworld.lib.base import BaseController, render
-    # import helloworld.model as model
 
     log = logging.getLogger(__name__)
     
@@ -341,17 +356,18 @@ Pylons は `Mako`__ 、 `Genshi`__ 、 `Jinja2`__ テンプレートレンダリ
 
 .. code-block:: python
 
-    # this import is at the top
+    # these imports are at the top
     from mako.lookup import TemplateLookup
+    from pylons.error import handle_mako_error
     
     # this section is inside the load_environment function
     # Create the Mako TemplateLookup, with the default auto-escaping
     config['pylons.app_globals'].mako_lookup = TemplateLookup(
         directories=paths['templates'],
+        error_handler=handle_mako_error,
         module_directory=os.path.join(app_conf['cache_dir'], 'templates'),
-        input_encoding='utf-8', output_encoding='utf-8',
-        imports=['from webhelpers.html import escape'],
-        default_filters=['escape'])
+        input_encoding='utf-8', default_filters=['escape'],
+        imports=['from webhelpers.html import escape'])
 
 
 .. Using Multiple Template Engines
@@ -361,7 +377,7 @@ Pylons は `Mako`__ 、 `Genshi`__ 、 `Jinja2`__ テンプレートレンダリ
 
 .. Since template engines are configured in the
 .. :file:`config/environment.py` section, then used by render
-.. functions, its trivial to setup additional template engines, or
+.. functions, it's trivial to setup additional template engines, or
 .. even differently configured versions of a single template
 .. engine. However, custom render functions will frequently be needed
 .. to utilize the additional template engine objects.
@@ -393,10 +409,10 @@ admin に対して別のテンプレートディレクトリを使い、通常�
     
     config['pylons.app_globals'].mako_admin_lookup = TemplateLookup(
         directories=paths['admin_templates'],
+        error_handler=handle_mako_error,
         module_directory=os.path.join(app_conf['cache_dir'], 'admintemplates'),
-        input_encoding='utf-8', output_encoding='utf-8',
-        imports=['from webhelpers.html import escape'],
-        default_filters=['escape'])
+        input_encoding='utf-8', default_filters=['escape'],
+        imports=['from webhelpers.html import escape'])
 
 
 .. That adds the additional template lookup instance, next a
@@ -411,8 +427,8 @@ admin に対して別のテンプレートディレクトリを使い、通常�
     
     from pylons.templating import cached_template, pylons_globals
     
-    def render_mako(template_name, extra_vars=None, cache_key=None, 
-                    cache_type=None, cache_expire=None):
+    def render_mako_admin(template_name, extra_vars=None, cache_key=None, 
+                          cache_type=None, cache_expire=None):
         # Create a render callable for the cache function
         def render_template():
             # Pull in extra vars if needed
@@ -580,45 +596,46 @@ Mako によるテンプレート処理
 なファイルが優先的に serve されます**
 
 
-.. Making templates unicode safe
-
-テンプレートを unicode 対応にする
----------------------------------
-
-.. Edit :file:`config/environment.py` and add these lines just after
-.. `tmpl_options = {}` is declared,
-
-:file:`config/environment.py` を編集して、 `tmpl_options = {}` が宣言さ
-れているすぐ後に、これらの行を加えてください。
-
-
-.. code-block:: python
-
-    tmpl_options['mako.input_encoding'] = 'UTF-8'
-    tmpl_options['mako.output_encoding'] = 'UTF-8'
-    tmpl_options['mako.default_filters'] = ['decode.utf8']
-
-
-.. then change the final `return` statement in the same file so that
-.. it reads,
-
-そして、同じファイルの最後の `return` 文をこのように変えてください。
-
-
-.. code-block:: python
-
-    return pylons.config.Config(tmpl_options, map, paths,
-        request_settings = dict(charset = 'utf-8', error = 'replace'))
-
-
-.. Also, ensure that all templates begin with the line:
-
-また、すべてのテンプレートが確実にこの行で始まるようにしてください:
-
-
-.. code-block:: html+mako
-
-    # -*- coding: utf-8 -*-
+.. .. Making templates unicode safe
+.. 
+.. テンプレートを unicode 対応にする
+.. ---------------------------------
+.. 
+.. .. Edit :file:`config/environment.py` and add these lines just after
+.. .. `tmpl_options = {}` is declared,
+.. 
+.. :file:`config/environment.py` を編集して、 `tmpl_options = {}` が宣言さ
+.. れているすぐ後に、これらの行を加えてください。
+.. 
+.. 
+.. .. code-block:: python
+.. 
+..     tmpl_options['mako.input_encoding'] = 'UTF-8'
+..     tmpl_options['mako.output_encoding'] = 'UTF-8'
+..     tmpl_options['mako.default_filters'] = ['decode.utf8']
+.. 
+.. 
+.. .. then change the final `return` statement in the same file so that
+.. .. it reads,
+.. 
+.. そして、同じファイルの最後の `return` 文をこのように変えてください。
+.. 
+.. 
+.. .. code-block:: python
+.. 
+..     return pylons.config.Config(tmpl_options, map, paths,
+..         request_settings = dict(charset = 'utf-8', error = 'replace'))
+.. 
+.. 
+.. .. Also, ensure that all templates begin with the line:
+.. 
+.. また、すべてのテンプレートが確実にこの行で始まるようにしてください:
+.. 
+.. 
+.. .. code-block:: html+mako
+.. 
+..     # -*- coding: utf-8 -*-
+.. 
 
 
 .. Making a template hierarchy
@@ -640,7 +657,6 @@ Mako によるテンプレート処理
 
 .. code-block:: html+mako
 
-    # -*- coding: utf-8 -*-
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html>
@@ -689,7 +705,6 @@ Mako によるテンプレート処理
 
 .. code-block:: html+mako
 
-    # -*- coding: utf-8 -*-
     <%inherit file="/base.mako" />
 
     <%def name="head_tags()">
@@ -744,18 +759,14 @@ Mako によるテンプレート処理
 
 
 .. Now run the action, usually by visiting something like
-.. ``http://localhost:5000/my_controller/my_action`` in a browser (if
-.. Pylons is running)
+.. ``http://localhost:5000/my_controller/my_action`` in a
+.. browser. Selecting 'View Source' in the browser should reveal the
+.. following output:
 
 さあ、アクションを実行しましょう。通常ブラウザで
 ``http://localhost:5000/my_controller/my_action`` のようなページを訪問
-することになります (Pylons が動作していれば)。
-
-
-.. Selecting 'View Source' in the browser should reveal the following
-.. output:
-
-ブラウザで `View Source` を選択すると、以下の出力が明らかになるでしょう:
+することになります。ブラウザで `View Source` を選択すると、以下の出力が
+明らかになるでしょう:
 
 
 .. code-block:: html

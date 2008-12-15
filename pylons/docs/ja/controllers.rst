@@ -50,21 +50,25 @@ Pylons はクラスを使用します。その親クラスは :term:`WSGI` イ�
 
 
 .. The Pylons WSGI Controller handles incoming web requests that are
-.. dispatched from the PylonsBaseWSGIApp.
+.. dispatched from the Pylons WSGI application
+.. :class:`~pylons.wsgiapp.PylonsApp`.
 
-Pylons WSGI コントローラは PylonsBaseWSGIApp からディスパッチされて来る
-ウェブリクエストを扱います。
+Pylons WSGI コントローラは Pylons WSGI アプリケーション
+:class:`~pylons.wsgiapp.PylonsApp` からディスパッチされて来るウェブリク
+エストを扱います。
 
 
-.. These requests result in a new instance of the WSGIController being
-.. created, which is then called with the dict options from the Routes
+.. These requests result in a new instance of the
+.. :class:`~pylons.controllers.core.WSGIController` being created,
+.. which is then called with the dict options from the Routes
 .. match. The standard WSGI response is then returned with
 .. start_response called as per the WSGI spec.
 
-これらのリクエストによって WSGIController の新しいインスタンスが作られ
-ます。それは次に、 Routes マッチからの dict オプションと共に呼ばれます。
-そして、 WSGI 仕様に従って start_response が呼ばれるとともに標準の
-WSGI レスポンスが返ります。
+これらのリクエストによって
+:class:`~pylons.controllers.core.WSGIController` の新しいインスタンスが
+作られます。それは次に、 Routes マッチからの dict オプションと共に呼ば
+れます。そして、 WSGI 仕様に従って start_response が呼ばれるとともに標
+準のWSGI レスポンスが返ります。
 
 
 .. Since Pylons controllers are actually called with the WSGI
@@ -90,13 +94,13 @@ WSGI アプリケーションもまた Pylons `コントローラ` になるこ�
 メソッドをプライベートに保つ
 -----------------------------
 
-.. Since the default route will map any controller and action, you
-.. will probably want to prevent some methods in a controller from
-.. being callable from a URL.
+.. The default route maps any controller and action, so you will
+.. likely want to prevent some controller methods from being callable
+.. from a URL.
 
 デフォルトのルーティングはあらゆるコントローラとアクションをマッピング
-するので、おそらくコントローラのいくつかのメソッドは URL から呼べないよ
-うにしたいと思うでしょう。
+するので、おそらくコントローラメソッドのいくつかを URL から呼べないよう
+にしたいと思うでしょう。
 
 
 .. Routes uses the default Python convention of private methods
@@ -111,13 +115,13 @@ Routes は、プライベートなメソッドを ``_`` で始めるという Py
 
 .. code-block:: python
 
-	class UserController(BaseController):
-		def index(self):
-			return Response("This is the index.")
-	
-		def _edit_generic(self):
-			"I can't be called from the web!"
-			return True
+    class UserController(BaseController):
+        def index(self):
+            return "This is the index."
+
+        def _edit_generic(self):
+            """I can't be called from the web!"""
+            return True
 
 
 .. Special methods
@@ -131,24 +135,28 @@ Routes は、プライベートなメソッドを ``_`` で始めるという Py
 
 
 ``__before__``
-    .. This method will be run before your action is, and should be
-    .. used for setting up variables/objects, restricting access to
-    .. other actions, or other tasks which should be executed before
-    .. the action is called.
+    .. This method is called before your action is, and should be used
+    .. for setting up variables/objects, restricting access to other
+    .. actions, or other tasks which should be executed before the
+    .. action is called.
 
-    このメソッドは、アクションが実行される前に実行されます。変数/オブジェ
+    このメソッドは、アクションが実行される前に呼ばれます。変数/オブジェ
     クトをセットアップしたり、他のアクションへのアクセスを制限したり、
     またはアクションが呼ばれる前に実行すべき他のタスクのために使用でき
     ます。
 
 ``__after__``
-    .. Method to run after the action is run. This method will
-    .. *always* be run after your method, even if it raises an
-    .. Exception or redirects.
+    .. This method is called after the action is, unless an unexpected
+    .. exception was raised. Subclasses of
+    .. :class:`~webob.HTTPException` (such as those raised by
+    .. ``redirect_to`` and ``abort``) are expected; e.g. ``__after__``
+    .. will be called on redirects.
 
-    アクションが実行された後で実行されるメソッドです。このメソッドは、
-    たとえ例外が上がっても、リダイレクトしても、他のメソッドが呼ばれた
-    後に *必ず* 呼ばれます。
+    このメソッドは、予期しない例外が raise されない限り、アクションが実
+    行された後で実行されます。 :class:`~webob.HTTPException` のサブクラ
+    ス (例えば ``redirect_to`` や ``abort`` で raise されるもの) は予期
+    された例外です。従ってリダイレクトされた場合も ``__after__`` は呼ば
+    れます。
 
     
 .. Adding Controllers dynamically
@@ -251,7 +259,7 @@ Pylons プロジェクトディレクトリに新しいコントローラファ�
 
 .. code-block:: python
 
-    paster controller wsgiapp
+    $ paster controller wsgiapp
 
 
 .. This sets up the basic imports that you may want available when
@@ -281,15 +289,15 @@ Pylons プロジェクトディレクトリに新しいコントローラファ�
 
 .. When hooking up other WSGI applications, they will expect the part
 .. of the URL that was used to get to this controller to have been
-.. moved into :envvar:`SCRIPT_NAME`. :mod:`Routes` can properly adjust
-.. the environ if a map route for this controller is added to the
-.. :file:`config/routing.py` file:
+.. moved into :envvar:`SCRIPT_NAME`. :mod:`Routes <routes>` can
+.. properly adjust the environ if a map route for this controller is
+.. added to the :file:`config/routing.py` file:
 
 他の WSGI アプリケーションを接続するとき、それはこのコントローラを得る
 ために使用された URL の部分が :envvar:`SCRIPT_NAME` に移動されているこ
 とを期待します。このコントローラのためのマップルートが
-:file:`config/routing.py` ファイルに追加されるなら、 :mod:`Routes` は
-environ を 適切に調整することができます。
+:file:`config/routing.py` ファイルに追加されるなら、 :mod:`Routes
+<routes>` は environ を 適切に調整することができます。
 
 
 .. code-block:: python
@@ -297,7 +305,7 @@ environ を 適切に調整することができます。
     # CUSTOM ROUTES HERE
 
     # Map the WSGI application
-    map.connect('wsgiapp/*path_info', controller='wsgiapp')
+    map.connect('wsgiapp/{path_info:.*}', controller='wsgiapp')
 
 
 .. By specifying the ``path_info`` dynamic path, Routes will put
@@ -308,13 +316,6 @@ environ を 適切に調整することができます。
 ``path_info`` 変数を指定することによって、 Routes は ``path_info`` に
 leading up to するすべてを :envvar:`SCRIPT_NAME` に入れて、残りは
 :envvar:`PATH_INFO` に入るでしょう。
-
-
-.. warning::
-
-    .. Is this still true of Routes 2?
-
-    これは Routes 2 でも正しい?
 
 
 .. Using the WSGI Controller to provide a WSGI service
@@ -335,17 +336,18 @@ Pylons 自身の WSGI コントローラは、呼び出しと値の返却のた�
 
 
 .. The Pylons WSGI Controller handles incoming web requests that are
-.. dispatched from the ``PylonsBaseWSGIApp``. These requests result in
-.. a new instance of the ``WSGIController`` being created, which is
-.. then called with the dict options from the Routes match. The
-.. standard WSGI response is then returned with :meth:`start_response`
-.. called as per the WSGI spec.
+.. dispatched from ``PylonsApp``. These requests result in a new
+.. instance of the ``WSGIController`` being created, which is then
+.. called with the dict options from the Routes match. The standard
+.. WSGI response is then returned with :meth:`start_response` called
+.. as per the WSGI spec.
 
-Pylons の WSGI コントローラは ``PylonsBaseWSGIApp`` からディスパッチさ
-れて来るウェブリクエストを扱います。これらのリクエストによって
+
+Pylons の WSGI コントローラは ``PylonsApp`` からディスパッチされて来る
+ウェブリクエストを扱います。これらのリクエストによって
 ``WSGIController`` の新しいインスタンスが作成されます。次に、 Routes マッ
-チからの dict オプションを伴って呼ばれます。そして、 WSGI 仕様に従って
-:meth:`start_response` が呼ばれ、標準の WSGI 応答を返します
+チからの dict オプションを伴って呼ばれます。そして、 WSGI 仕様に従っ
+て:meth:`start_response` が呼ばれ、標準の WSGI 応答を返します
 
 
 .. WSGIController methods
@@ -353,9 +355,9 @@ Pylons の WSGI コントローラは ``PylonsBaseWSGIApp`` からディスパ�
 WSGIController のメソッド
 --------------------------
 
-.. Special WSGIController methods you may define:
+.. Special ``WSGIController`` methods you may define:
 
-WSGIController の以下の特殊メソッドを定義することができます:
+``WSGIController`` の以下の特殊メソッドを定義することができます:
 
 
 ``__before__``
@@ -468,7 +470,7 @@ RestController コマンドは REST ベースのディスパッチング
 
 .. code-block:: bash
 
-    yourproj% paster restcontroller admin/tracback admin/trackbacks
+    $ paster restcontroller admin/tracback admin/trackbacks
     Creating yourproj/controllers/admin
     Creating yourproj/yourproj/controllers/admin/trackbacks.py
     Creating yourproj/yourproj/tests/functional/test_admin_trackbacks.py
@@ -504,7 +506,7 @@ Atom スタイルのユーザ REST コントローラ
             """
             #url('users')
             users = model.User.select()
-            if format=='json':
+            if format == 'json':
                 data = []
                 for user in users:
                     d = user._state['original'].data
@@ -524,19 +526,17 @@ Atom スタイルのユーザ REST コントローラ
             if user:
                 # The client tried to create a user that already exists
                 abort(409, '409 Conflict', 
-                      headers=[('location', 
-                                 url('user', id=user.name)), ])
+                      headers=[('location', url('user', id=user.name))])
             else:
                 try:
                     # Validate the data that was sent to us
                     params = model.forms.UserForm.to_python(request.params)
                 except Invalid, e:
                     # Something didn't validate correctly
-                    abort(400, '400 Bad Request -- '+str(e))
+                    abort(400, '400 Bad Request -- %s' % e)
                 user = model.User(**params)
                 model.objectstore.flush()
-                response.headers['location'] = \
-                    url('user', id=user.name)
+                response.headers['location'] = url('user', id=user.name)
                 response.status_code = 201
                 c.user_name = user.name
                 return render('/users/created_user.mako')
@@ -563,8 +563,7 @@ Atom スタイルのユーザ REST コントローラ
             user = model.User.get_by(name=id)
 
             if user:
-                if (old_name != new_name) and \
-                        model.User.get_by(name=new_name):
+                if (old_name != new_name) and model.User.get_by(name=new_name):
                     abort(409, '409 Conflict')
                 else:
                     params = model.forms.UserForm.to_python(request.params)
@@ -575,10 +574,9 @@ Atom スタイルのユーザ REST コントローラ
                     model.objectstore.flush()
                     if user.name != old_name:
                         abort(301, '301 Moved Permanently',
-                              [('Location', 
-                                url('users', id=user.name)),])
+                              [('Location', url('users', id=user.name))])
                     else:
-                        return ''
+                        return
 
         def delete(self, id):
             """DELETE /users/id: Delete an existing item.
@@ -593,7 +591,7 @@ Atom スタイルのユーザ REST コントローラ
             user = model.User.get_by(name=id)
             user.delete()
             model.objectstore.flush()
-            return ''
+            return
 
         def show(self, id, format='html'):
             """GET /users/id: Show a specific item.
@@ -770,16 +768,16 @@ XML-RPC コントローラのメソッドは XML-RPC ボディに与えられた
     class MyXML(XMLRPCController): 
         def userstatus(self): 
             return 'basic string' 
-        userstatus.signature = [ ['string'] ] 
+        userstatus.signature = [['string']] 
 
         def userinfo(self, username, age=None): 
             user = LookUpUser(username) 
-            response = {'username':user.name} 
+            result = {'username': user.name} 
             if age and age > 10: 
-                response['age'] = age 
-            return response 
-        userinfo.signature = [ ['struct', 'string'], 
-                               ['struct', 'string', 'int'] ] 
+                result['age'] = age 
+            return result 
+        userinfo.signature = [['struct', 'string'], 
+                              ['struct', 'string', 'int']]
 
 
 .. Since XML-RPC methods can take different sets of data, each set of
@@ -871,23 +869,22 @@ XML-RPC 仕様に関する詳細を提供します。)
 
 .. code-block:: python
  
-    import xmlrpclib 
-    import pylons 
-    from pylons import request 
-    from pylons.controllers import XMLRPCController 
-    from myapp.lib.base import * 
+    import xmlrpclib
 
-    states = ['Delaware', 'Pennsylvania', 'New Jersey', 
-             'Georgia', 'Connecticut', 'Massachusetts', 'Maryland', 
-             'South Carolina', 'New Hampshire', 'Virginia', 'New York', 
-             'North Carolina', 'Rhode Island', 'Vermont', 'Kentucky',
-             'Tennessee', 'Ohio', 'Louisiana', 'Indiana', 'Mississippi', 
-             'Illinois', 'Alabama', 'Maine', 'Missouri', 'Arkansas',
-             'Michigan', 'Florida', 'Texas', 'Iowa', 'Wisconsin',
-             'California', 'Minnesota', 'Oregon', 'Kansas', 'West Virginia',
-             'Nevada', 'Nebraska', 'Colorado', 'North Dakota', 'South Dakota',
-             'Montana', 'Washington', 'Idaho', 'Wyoming', 'Utah', 'Oklahoma',
-             'New Mexico', 'Arizona', 'Alaska', 'Hawaii'] 
+    from pylons import request
+    from pylons.controllers import XMLRPCController
+
+    states = ['Delaware', 'Pennsylvania', 'New Jersey', 'Georgia',
+              'Connecticut', 'Massachusetts', 'Maryland', 'South Carolina',
+              'New Hampshire', 'Virginia', 'New York', 'North Carolina',
+              'Rhode Island', 'Vermont', 'Kentucky', 'Tennessee', 'Ohio',
+              'Louisiana', 'Indiana', 'Mississippi', 'Illinois', 'Alabama',
+              'Maine', 'Missouri', 'Arkansas', 'Michigan', 'Florida', 'Texas',
+              'Iowa', 'Wisconsin', 'California', 'Minnesota', 'Oregon',
+              'Kansas', 'West Virginia', 'Nevada', 'Nebraska', 'Colorado',
+              'North Dakota', 'South Dakota', 'Montana', 'Washington', 'Idaho',
+              'Wyoming', 'Utah', 'Oklahoma', 'New Mexico', 'Arizona', 'Alaska',
+              'Hawaii'] 
 
     class RpctestController(XMLRPCController): 
 
@@ -906,7 +903,7 @@ XML-RPC 仕様に関する詳細を提供します。)
                 # Raising an error is inappropriate, so instead we 
                 # return a facetious message as a string. 
                 return 'Out of cheese error.' 
-        test_battingOrder.signature = [ ['string', 'int'] ] 
+        test_battingOrder.signature = [['string', 'int']] 
 
 
 .. Testing the service
@@ -933,9 +930,9 @@ OS X を使用している開発者のために `XML/RPC クライアント
     >>> srvr = xmlrpclib.Server("http://example.com/rpctest/") 
     >>> pprint(srvr.system.listMethods()) 
     ['system.listMethods', 
-    'system.methodHelp', 
-    'system.methodSignature', 
-    'test.battingOrder'] 
+     'system.methodHelp', 
+     'system.methodSignature', 
+     'test.battingOrder'] 
     >>> print srvr.system.methodHelp('test.battingOrder') 
     This docstring becomes the content of the 
     returned value for system.methodHelp called with 

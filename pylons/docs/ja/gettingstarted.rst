@@ -224,11 +224,11 @@ Pylons プロジェクトを作成する
 
 
 .. 1. which template language to use
-.. 2. whether or not to include :term:`SQLAlchemy` support
-.. 3. whether or not to set options for :term:`Google App Engine` development
+.. 2. whether to include :term:`SQLAlchemy` support
+.. 3. whether to set options for :term:`Google App Engine` development
 
 1. どのテンプレート言語を使用するか
-2. :term:`SQLAlchemy` サポートを含むかどうか
+2. :term:`SQLAlchemy` サポートを含めるか
 3. :term:`Google App Engine` 開発のためのオプションを設定するか
 
 
@@ -356,11 +356,10 @@ Hello World
 
     import logging
 
-    from pylons import request, response, session, tmpl_context as c
-    from pylons.controllers.util import abort, redirect_to
+    from pylons import request, response, session, tmpl_context as c, url
+    from pylons.controllers.util import abort, redirect
 
     from helloworld.lib.base import BaseController, render
-    # import helloworld.model as model
 
     log = logging.getLogger(__name__)
     
@@ -368,7 +367,7 @@ Hello World
 
         def index(self):
             # Return a rendered template
-            #   return render('/template.mako')
+            #return render('/hello.mako')
             # or, Return a response
             return 'Hello World'
 

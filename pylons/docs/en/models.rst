@@ -93,7 +93,7 @@ Pylons can also work with other database systems, such as the following:
 Working with databases and SQLAlchemy
 =====================================
 
-This chapter shows how to set up your model for SQLAlchemy 0.4 (not 0.3). It's not the only way to use SQLAlchemy with Pylons, but it's a flexible approach that covers most situations, including applications with multiple databases. SQLAlchemy is a front end to several relational databases including MySQL, PostgreSQL, SQLite, MS-SQL, Oracle, etc. It allows you to work on three different levels, even in the same application: 
+This chapter describes how to set up your model for SQLAlchemy 0.4 (not 0.3). _(It has not been updated for SQLAlchemy 0.5-beta.)_ It's not the only way to use SQLAlchemy with Pylons, but it's a flexible approach that covers most situations, including applications with multiple databases. SQLAlchemy is a front end to several relational databases including MySQL, PostgreSQL, SQLite, MS-SQL, Oracle, etc. It allows you to work on three different levels, even in the same application: 
 
 * The object-relational mapper (ORM) lets you interact with the database using your own object classes rather than writing SQL code. 
 * The SQL expression language has many methods to create customized SQL statements, and the result cursor is more friendly than DBAPI's. 
@@ -189,7 +189,6 @@ Change *myapp/model/__init__.py* to read:
 
     def init_model(engine): 
         """Call me before using any of the tables or classes in the model.""" 
-
         sm = orm.sessionmaker(autoflush=True, transactional=True, bind=engine) 
 
         meta.engine = engine 
@@ -241,7 +240,7 @@ Relation example
 ^^^^^^^^^^^^^^^^
 
 
-Here's an example of a `Person` and an `Address` class with a many:many relationship on `people.my_addresses`. See `Relational Databases for Poeople in a Hurry <http://wiki.pylonshq.com/display/pylonscookbook/Relational+databases+for+people+in+a+hurry>`_ and the SQLAlchemy manual for details. 
+Here's an example of a `Person` and an `Address` class with a many:many relationship on `people.my_addresses`. See `Relational Databases for People in a Hurry <http://wiki.pylonshq.com/display/pylonscookbook/Relational+databases+for+people+in+a+hurry>`_ and the SQLAlchemy manual for details. 
 
 .. code-block:: python
 
@@ -412,23 +411,7 @@ And change the `.\_\_call\_\_` method to:
             meta.Session.remove() 
 
 
-*The .remove() method is very important!* It discards any leftover ORM data in the current web request. Otherwise the stray data will leak into the next request handled by this thread, potentially causing errors or data corruption. 
-
-Any per-request behaviors can be configured at this stage. For example, to use just a single database connection per request, which removes all connection pool checkin/checkout overhead, the per-request Session can be configured with a Connection: 
-
-.. code-block:: python
-
-    def __call__(self, environ, start_response): 
-        conn = meta.engine.connect() 
-        meta.Session.configure(bind=conn) 
-        try: 
-            return WSGIController.__call__(self, environ, start_response) 
-        finally: 
-            meta.Session.remove() 
-            conn.close() 
-
-
-Note that when using a session with transactional=True, the session holds onto a single connection through the lifespan of each transaction so the above optimization is not as significant. 
+The .remove() method is so that any leftover ORM data in the current web request is discarded. This usually happens automatically as a product of garbage collection but calling .remove() ensures this is the case.
 
 Building the database
 ---------------------

@@ -4,11 +4,11 @@
 Unit and functional testing
 ===========================
 
-Unit Testing with ``paste.fixture`` 
-=================================== 
+Unit Testing with :mod:`webtest`
+================================
 
 Pylons provides powerful unit testing capabilities for your web application 
-utilizing `paste.fixture <http://pythonpaste.org/testing-applications.html#the-tests-themselves>`_ 
+utilizing `webtest <http://pythonpaste.org/webtest/>`_ 
 to emulate requests to your web application. You can then ensure that the 
 response was handled appropriately and that the controller set things up 
 properly. 
@@ -183,16 +183,16 @@ Which provides the more useful failure message:
 Testing Pylons Objects 
 ====================== 
 
-Pylons will provide several additional attributes for the ``paste.fixture`` response object that let you access various objects that were created during the web request: 
+Pylons will provide several additional attributes for the :mod:`webtest` :class:`webtest.TestResponse` object that let you access various objects that were created during the web request: 
 
 ``session`` 
-Session object 
+    Session object 
 ``req`` 
-Request object 
+    Request object 
 ``c`` 
-Object containing variables passed to templates 
+    Object containing variables passed to templates 
 ``g`` 
-Globals object 
+    Globals object 
 
 To use them, merely access the attributes of the response *after* you've used 
 a get/post command: 
@@ -205,29 +205,35 @@ a get/post command:
 
 .. note:: 
 
-    The ``paste.fixture`` response object already has a TestRequest object 
-    assigned to it, therefore Pylons assigns its ``request`` object to the 
-    response as ``req``. 
+    The :class:`response <webtest.TestResponse>` object already has a
+    TestRequest object assigned to it, therefore Pylons assigns its
+    ``request`` object to the response as ``req``. 
 
 Testing Your Own Objects 
 ======================== 
 
-Paste's fixture testing allows you to designate your own objects that you'd 
+WebTest's fixture testing allows you to designate your own objects that you'd 
 like to access in your tests. This powerful functionality makes it easy to 
 test the value of objects that are normally only retained for the duration of 
 a single request. 
 
 Before making objects available for testing, its useful to know when your 
-application is being tested. Paste will provide an environ variable called 
+application is being tested. WebTest will provide an environ variable called 
 ``paste.testing`` that you can test for the presence and truth of so that your 
 application only populates the testing objects when it has to. 
 
-Populating the ``paste.fixture`` response object with your objects is done by 
+Populating the :mod:`webtest` response object with your objects is done by 
 adding them to the environ dict under the key ``paste.testing_variables``. 
 Pylons creates this dict before calling your application, so testing for its 
 existence and adding new values to it is recommended. All variables assigned 
 to the ``paste.testing_variables`` dict will be available on the response 
 object with the key being the attribute name. 
+
+.. note::
+
+    WebTest is an extracted stand-alone version of a Paste component called
+    paste.fixture. For backwards compatibility, WebTest continues to honor
+    the ``paste.testing_variables`` key in the environ.
 
 Example: 
 
@@ -235,13 +241,9 @@ Example:
 
     # testexample/lib/base.py 
 
-    from pylons import c, g, cache, request, response, session 
-    from pylons.controllers import WSGIController 
-    from pylons.decorators import jsonify, rest, validate 
-    from pylons.templating import render, render_response 
-    from pylons.helpers import abort, redirect_to, etag_cache 
-    import testexample.models as model 
-    import testexample.helpers as h 
+    from pylons import request
+    from pylons.controllers import WSGIController
+    from pylons.templating import render_mako as render
 
     class BaseController(WSGIController): 
         def __call__(self, environ, start_response): 
@@ -262,13 +264,14 @@ Example:
             assert response.email.name == 'Fred Smith' 
 
 
-More Details 
------------- 
+.. seealso::
 
-For more details on running tests using get/post, and testing the response, headers, etc., see the Paste document on web application testing: 
-
-`Testing Application with Paste, the Tests <http://pythonpaste.org/testing-applications.html#the-tests-themselves>`_ 
-
+    `WebTest Documentation <http://pythonpaste.org/webtest/>`_
+        Documentation covering webtest and its usage
+    
+    :mod:`WebTest Module docs <webtest>`
+        Module API reference for methods available for use when testing
+        the application
 
 .. _unit_testing:
 

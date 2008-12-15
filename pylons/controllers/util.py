@@ -11,12 +11,13 @@ below.
 Functions available:
 
 :func:`abort`, :func:`forward`, :func:`etag_cache`, 
-:func:`mimetype`, and :func:`redirect_to`
+:func:`mimetype`, :func:`redirect`, and :func:`redirect_to`
 """
 import base64
 import hmac
 import logging
 import mimetypes
+import warnings
 try:
     import cPickle as pickle
 except ImportError:
@@ -33,7 +34,8 @@ from webob.exc import status_map
 
 import pylons
 
-__all__ = ['abort', 'etag_cache', 'redirect_to', 'Request', 'Response']
+__all__ = ['abort', 'etag_cache', 'redirect', 'redirect_to', 'Request',
+           'Response']
 
 log = logging.getLogger(__name__)
 
@@ -202,18 +204,37 @@ def abort(status_code=None, detail="", headers=None, comment=None):
     raise exc.exception
 
 
+def redirect(url, code=302):
+    """Raises a redirect exception to the specified URL
+
+    Optionally, a code variable may be passed with the status code of
+    the redirect, ie::
+
+        redirect(url(controller='home', action='index'), code=303)
+
+    """
+    log.debug("Generating %s redirect" % code)
+    exc = status_map[code]
+    raise exc(location=url).exception
+
+
 def redirect_to(*args, **kargs):
     """Raises a redirect exception to the URL resolved by Routes'
     url_for function
     
     Optionally, a _code variable may be passed with the status code of
-    the redirect, ie::
+    the redirect, i.e.::
 
-        redirect_to('home_page', _code=303)
+        redirect_to(controller='home', action='index', _code=303)
     
+    .. warning::
+
+        This function is pending deprecation. Pass the result of
+        :func:`url` to :func:`redirect` instead.
+
     """
-    status_code = kargs.pop('_code', 302)
-    exc = status_map[status_code]
-    found = exc(location=url_for(*args, **kargs))
-    log.debug("Generating %s redirect" % status_code)
-    raise found.exception
+    warnings.warn('redirect_to is pending deprecation, use '
+                  'redirect(url(*args, **kwargs)) instead.',
+                  PendingDeprecationWarning, 2)
+    code = kargs.pop('_code', 302)
+    return redirect(url_for(*args, **kargs), code)

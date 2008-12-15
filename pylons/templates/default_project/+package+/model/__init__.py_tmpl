@@ -12,7 +12,7 @@ def init_model(engine):
     #reflected_table = sa.Table("Reflected", meta.metadata, autoload=True,
     #                           autoload_with=engine)
     #orm.mapper(Reflected, reflected_table)
-
+    #
     sm = orm.sessionmaker(autoflush=True, transactional=True, bind=engine)
 
     meta.engine = engine

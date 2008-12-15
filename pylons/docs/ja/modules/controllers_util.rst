@@ -17,4 +17,5 @@ Module Contents
 .. autofunction:: abort
 .. autofunction:: etag_cache
 .. autofunction:: forward
+.. autofunction:: redirect
 .. autofunction:: redirect_to

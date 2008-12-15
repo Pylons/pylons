@@ -68,7 +68,7 @@ Of course, the best way to solve this issue is to structure your code differentl
     def email(self): 
         # Code to perform some action based on the form data 
         # ... 
-        redirect_to(action='result') 
+        redirect(url(action='result'))
 
     def result(self): 
         return 'Your data was successfully submitted' 
@@ -288,12 +288,12 @@ The schema passes `c` to each validator in turn so that you can do things like t
 .. code-block:: python 
 
     class SimpleEmail(formencode.validators.Email): 
-    def _to_python(self, value, c): 
-        if not value.endswith(c.domain): 
-            raise formencode.validators.Invalid(
-                'Email addresses must end in: %s' % \ 
-                    c.domain, value, c) 
-        return formencode.validators.Email._to_python(self, value, c) 
+        def _to_python(self, value, c): 
+            if not value.endswith(c.domain): 
+                raise formencode.validators.Invalid(
+                    'Email addresses must end in: %s' % \ 
+                        c.domain, value, c) 
+            return formencode.validators.Email._to_python(self, value, c) 
 
 For this to work, make sure to change the `EmailForm` schema you've defined to use the new `SimpleEmail` validator. In other words, 
 

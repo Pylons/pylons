@@ -18,6 +18,7 @@ The applications :file:`config/` directory includes:
 
 * :file:`config/environment.py` described in :ref:`environment-config`
 * :file:`config/middleware.py` described in :ref:`middleware-config`
+* :file:`config/deployment.ini_tmpl` described in :ref:`production-config`
 * :file:`config/routing.py` described in :ref:`url-config`
 
 Each of these files allows developers to change key aspects of how the application behaves.
@@ -89,12 +90,14 @@ toggle middleware that should only be used in development mode (with
 ``debug``) set to true.
 
 
+.. _production-config:
+
 Production Configuration Files
 ==============================
 
 To change the defaults of the configuration INI file that should be used when deploying the application, edit the :file:`config/deployment.ini_tmpl` file. This is the file that will be used as a template during deployment, so that the person handling deployment has a starting point of the minimum options the application needs set.
 
-One of the most important options that should be changed is the ``debug = true`` setting. The email options should be setup so that errors can be e-mailed to the appropriate developers or webmaster in the event of an application error.
+One of the most important options set in the deployment ini is the ``debug = true`` setting. The email options should be setup so that errors can be e-mailed to the appropriate developers or webmaster in the event of an application error.
 
 Generating the Production Configuration
 ---------------------------------------
@@ -108,7 +111,7 @@ To generate the production.ini file from the projects' :file:`config/deployment.
 .. note::
     This command will also work from inside the project when its being developed.
 
-It is theresponsibility of the developer to ensure that a sensible set of default configuration values exist when the webmaster uses the ``paster make-config`` command. 
+It is the responsibility of the developer to ensure that a sensible set of default configuration values exist when the webmaster uses the ``paster make-config`` command. 
 
 .. warning::
     **Always** make sure that the ``debug`` is set to ``false`` when deploying a Pylons application.
@@ -250,7 +253,7 @@ controller.
 Generating URLs
 ===============
 
-URLs can be generated using the helper method :func:`~routes.util.url`, which by default in a Pylons project will be under the :data:`url` global variable.
+URLs can be generated using the helper method :func:`~routes.util.url`, which by default in a Pylons project will be under the :data:`~pylons.url` global variable.
 Keyword arguments indicating the controller and action to use can be 
 passed directly in:
 
@@ -293,12 +296,12 @@ Default middleware stack:
     # The Pylons WSGI app
     app = PylonsApp()
     
-    # CUSTOM MIDDLEWARE HERE (filtered by error handling middlewares)
-    
     # Routing/Session/Cache Middleware
     app = RoutesMiddleware(app, config['routes.map'])
     app = SessionMiddleware(app, config)
     app = CacheMiddleware(app, config)
+    
+    # CUSTOM MIDDLEWARE HERE (filtered by error handling middlewares)
     
     if asbool(full_stack):
         # Handle Python exceptions
@@ -314,10 +317,11 @@ Default middleware stack:
     # Establish the Registry for this application
     app = RegistryManager(app)
 
-    # Static files (If running in production, and Apache or another web 
-    # server is handling this static content, remove the following 3 lines)
-    static_app = StaticURLParser(config['pylons.paths']['static_files'])
-    app = Cascade([static_app, javascripts_app, app])
+    if asbool(static_files):
+        # Serve static files
+        static_app = StaticURLParser(config['pylons.paths']['static_files'])
+        app = Cascade([static_app, app])
+
     return app
     
 Since each piece of middleware wraps the one before it, the stack needs to be
@@ -326,10 +330,10 @@ very last middleware that wraps the WSGI Application, is the very first that
 will be called by the server.
 
 The last piece of middleware in the stack, called Cascade, is used to
-serve static content and JavaScript files during development. For top
-performance, consider wrapping the line that wraps the app with
-Cascade in an if block that checks to see if ``debug`` is set to true.
-Then have the webserver or a :term:`CDN` serve static files.
+serve static content files during development. For top performance,
+consider disabling the Cascade middleware via setting the
+``static_files = false`` in the configuration file. Then have the
+webserver or a :term:`CDN` serve static files.
 
 .. warning::
 
@@ -351,20 +355,20 @@ include it in :file:`config/middleware.py`::
     # The Pylons WSGI app
     app = PylonsApp()
     
-    # CUSTOM MIDDLEWARE HERE (filtered by error handling middlewares)
-    app = MyMiddleware(app)
-    
     # Routing/Session/Cache Middleware
     app = RoutesMiddleware(app, config['routes.map'])
     app = SessionMiddleware(app, config)
     app = CacheMiddleware(app, config)
     
+    # CUSTOM MIDDLEWARE HERE (filtered by error handling middlewares)
+    app = MyMiddleware(app)
+    
 The app object is simply passed as a parameter to the `MyMiddleware` middleware which in turn should return a wrapped WSGI application.
 
 Care should be taken when deciding in which layer to place custom
-middleware. In most cases middleware should be placed between the
-Pylons WSGI application instantiation and the Routes middleware; however,
-if the middleware should run *before* the session object or routing is handled::
+middleware. In most cases middleware should be placed before the Pylons WSGI
+application and its supporting Routes/Session/Cache middlewares, however if the
+middleware should run *after* the CacheMiddleware::
 
     # Routing/Session/Cache Middleware
     app = RoutesMiddleware(app, config['routes.map'])
@@ -445,7 +449,6 @@ important being the 'install_requires' option:
     
     install_requires=[
         "Pylons>=0.9.7",
-        "Mako",
     ],
     
 These lines indicate what packages are required for the proper functioning

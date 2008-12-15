@@ -40,7 +40,7 @@
     class DocsController(BaseController): 
         def view(self, url): 
             if request.path_info.endswith('docs'): 
-                redirect_to('/docs/') 
+                redirect(url('/docs/'))
             return render('/docs/' + url) 
 
 Оскільки ми хочем дослідити ``session`` і ``request``, ми повинні їх привязати. Далі наведено як наш Action буде виглядати: 
@@ -50,7 +50,7 @@
     def view(self, url): 
         raise "hi" 
         if request.path_info.endswith('docs'): 
-            redirect_to('/docs/') 
+            redirect(url('/docs/'))
         return render('/docs/' + url) 
 
 Ось як буде виглядати зворотнє трасування нашого прикладу(уривок доцільної частини): 

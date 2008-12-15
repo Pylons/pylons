@@ -327,22 +327,25 @@ Pylons は以下のような他のデータベース・システムとも動か�
 データベースと SQLAlchemy を使う
 =====================================
 
-.. This chapter shows how to set up your model for SQLAlchemy 0.4 (not
-.. 0.3). It's not the only way to use SQLAlchemy with Pylons, but it's
-.. a flexible approach that covers most situations, including
+.. This chapter describes how to set up your model for SQLAlchemy 0.4
+.. (not 0.3). _(It has not been updated for SQLAlchemy 0.5-beta.)_
+.. It's not the only way to use SQLAlchemy with Pylons, but it's a
+.. flexible approach that covers most situations, including
 .. applications with multiple databases. SQLAlchemy is a front end to
 .. several relational databases including MySQL, PostgreSQL, SQLite,
 .. MS-SQL, Oracle, etc. It allows you to work on three different
 .. levels, even in the same application:
 
 本章は、 SQLAlchemy 0.4 (0.3 ではありません) のためにどのようにモデルを
-セットアップするかを示します。これは Pylons と SQLAlchemy を使用する唯
-一の方法ではありませんが、複数のデータベースを使用するアプリケーション
-を含む、ほとんどの状況をカバーする柔軟なアプローチです。 SQLAlchemy は
-MySQL 、 PostgreSQL 、 SQLite 、 MS-SQL 、 Oracle などを含むいくつかの
-リレーショナルデータベースへのフロントエンドです。 SQLAlchemy は次のよ
-うな 3 つの異なったレベルで動かすことができ、しかも同じアプリケーション
-の中でそれらを混在させることもできます:
+セットアップするかを説明します。
+_(SQLAlchemy 0.5-beta のためにアップデートしていません)_
+これは Pylons と SQLAlchemy を使用する唯一の方法ではありませんが、複数
+のデータベースを使用するアプリケーションを含む、ほとんどの状況をカバー
+する柔軟なアプローチです。 SQLAlchemy はMySQL 、 PostgreSQL 、 SQLite
+、 MS-SQL 、 Oracle などを含むいくつかのリレーショナルデータベースへの
+フロントエンドです。 SQLAlchemy は次のような 3 つの異なったレベルで動か
+すことができ、しかも同じアプリケーションの中でそれらを混在させることも
+できます:
 
 
 .. * The object-relational mapper (ORM) lets you interact with the
@@ -549,7 +552,6 @@ Main model module
 
     def init_model(engine): 
         """Call me before using any of the tables or classes in the model.""" 
-
         sm = orm.sessionmaker(autoflush=True, transactional=True, bind=engine) 
 
         meta.engine = engine 
@@ -658,13 +660,13 @@ shell" でそれらにアクセスできます。 例:
 
 .. Here's an example of a `Person` and an `Address` class with a
 .. many:many relationship on `people.my_addresses`. See `Relational
-.. Databases for Poeople in a Hurry
+.. Databases for People in a Hurry
 .. <http://wiki.pylonshq.com/display/pylonscookbook/Relational+databases+for+people+in+a+hurry>`_
 .. and the SQLAlchemy manual for details.
 
 ここに、 `Person` クラスと `Address` クラス、そして
 `people.my_addresses` 上の多対他関連に関する例があります。詳細に関して
-は `Relational Databases for Poeople in a Hurry
+は `Relational Databases for People in a Hurry
 <http://wiki.pylonshq.com/display/pylonscookbook/Relational+databases+for+people+in+a+hurry>`_
 と SQLAlchemy マニュアルを見てください。
 
@@ -735,7 +737,6 @@ SQLAlchemy に既存のデータベースのテーブルからテーブル構造
 
     def init_model(engine): 
         """Call me before using any of the tables or classes in the model.""" 
-
         sm = orm.sessionmaker(autoflush=True, transactional=True, bind=engine) 
 
         meta.engine = engine 
@@ -963,48 +964,15 @@ Controller
             meta.Session.remove() 
 
 
-.. *The .remove() method is very important!* It discards any leftover
-.. ORM data in the current web request. Otherwise the stray data will
-.. leak into the next request handled by this thread, potentially
-.. causing errors or data corruption.
+.. The .remove() method is so that any leftover ORM data in the
+.. current web request is discarded. This usually happens
+.. automatically as a product of garbage collection but calling
+.. .remove() ensures this is the case.
 
-*.remove() メソッドは非常に重要です!* それは現在のウェブリクエストにお
-ける ORM データがのあらゆる残り物を捨てます。 さもなければ、はぐれたデー
-タはこのスレッドによって扱われた次のリクエストに漏れてしまい、潜在的に
-エラーやデータ汚染を引き起こすでしょう。
-
-
-.. Any per-request behaviors can be configured at this stage. For
-.. example, to use just a single database connection per request,
-.. which removes all connection pool checkin/checkout overhead, the
-.. per-request Session can be configured with a Connection:
-
-この段階では 1リクエストあたりのどんな振舞いも構成できます。例えば、1リ
-クエストあたり1つの単独のデータベースコネクションを使用する (それは、す
-べてのコネクションプールのチェックイン/チェックアウトオーバーヘッドを取
-り除きます) ために、リクエスト毎の Session を Connection と共に構成でき
-ます。
-
-
-.. code-block:: python
-
-    def __call__(self, environ, start_response): 
-        conn = meta.engine.connect() 
-        meta.Session.configure(bind=conn) 
-        try: 
-            return WSGIController.__call__(self, environ, start_response) 
-        finally: 
-            meta.Session.remove() 
-            conn.close() 
-
-
-.. Note that when using a session with transactional=True, the session
-.. holds onto a single connection through the lifespan of each
-.. transaction so the above optimization is not as significant.
-
-transactional=True とともにセッションを使用するときは、セッションはそれ
-ぞれのトランザクションの寿命を通して単一のコネクションを維持するので、
-上の最適化が重要ではないことに注意してください。
+.remove() メソッドは、現在のウェブリクエストにおける ORM データのあらゆ
+る残り物が捨てられるようにします。これは通常ガーベージコレクションの
+product として自動的に起こりますが、.remove() を呼ぶことでそれを確実に
+します。
 
 
 .. Building the database
