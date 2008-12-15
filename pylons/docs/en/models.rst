@@ -508,11 +508,11 @@ You can iterate over every person even more simply:
 
     print "All people" 
     for p in person_q: 
-    print p.name 
+        print p.name 
     print 
     print "All Mr Joneses:" 
     for p in person_q.filter(Person.name=='Mr Jones'): 
-    print p.name 
+        print p.name 
 
 
 To delete an entry use the following: 
@@ -575,7 +575,7 @@ To search on a joined object we can pass an entire object as a query:
 
 * All attributes must match in the query object. 
 
-Or we can can search on a joined objects' property, 
+Or we can search on a joined objects' property, 
 
 .. code-block:: python
 
@@ -584,7 +584,7 @@ Or we can can search on a joined objects' property,
         Address.address=='33 Pine Marten Lane, Pleasantville').all() 
 
 
-A shortcut for the above is to use `any()`: 
+A shortcut for the above is to use `any()`:
 
 .. code-block:: python
 
@@ -660,8 +660,8 @@ Use `meta.Session.execute()` to execute a non-ORM SQL query within the session's
     meta.Session.execute(delete) 
     meta.Session.commit() 
 
-# Database specific, use only if SQLAlchemy doesn't have methods to construct the desired query. 
-meta.Session.execute("ALTER TABLE Foo ADD new_column (VARCHAR(255)) NOT NULL") 
+    # Database specific, use only if SQLAlchemy doesn't have methods to construct the desired query. 
+    meta.Session.execute("ALTER TABLE Foo ADD new_column (VARCHAR(255)) NOT NULL") 
 
 
 .. warning:: The last example changes the database structure and may adversely interact with ORM operations. 
@@ -671,7 +671,7 @@ Further reading
 ^^^^^^^^^^^^^^^
 
 
-The Query object has may other features, including filtering on conditions, ordering the results, grouping, etc. These are excellently described in the SQLAlchemy manual. See especially the `Data Mapping <http://www.sqlalchemy.org/docs/datamapping.html>`_ and `Session / Unit of Work <http://www.sqlalchemy.org/docs/unitofwork.html>`_ chapters. 
+The Query object has many other features, including filtering on conditions, ordering the results, grouping, etc. These are excellently described in the SQLAlchemy manual. See especially the `Data Mapping <http://www.sqlalchemy.org/docs/datamapping.html>`_ and `Session / Unit of Work <http://www.sqlalchemy.org/docs/unitofwork.html>`_ chapters. 
 
 Testing Your Models
 -------------------
