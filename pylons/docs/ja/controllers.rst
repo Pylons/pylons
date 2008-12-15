@@ -148,15 +148,15 @@ Routes は、プライベートなメソッドを ``_`` で始めるという Py
 ``__after__``
     .. This method is called after the action is, unless an unexpected
     .. exception was raised. Subclasses of
-    .. :class:`~webob.HTTPException` (such as those raised by
+    .. :class:`~webob.exc.HTTPException` (such as those raised by
     .. ``redirect_to`` and ``abort``) are expected; e.g. ``__after__``
     .. will be called on redirects.
 
     このメソッドは、予期しない例外が raise されない限り、アクションが実
-    行された後で実行されます。 :class:`~webob.HTTPException` のサブクラ
-    ス (例えば ``redirect_to`` や ``abort`` で raise されるもの) は予期
-    された例外です。従ってリダイレクトされた場合も ``__after__`` は呼ば
-    れます。
+    行された後で実行されます。 :class:`~webob.exc.HTTPException` のサブ
+    クラス (例えば ``redirect_to`` や ``abort`` で raise されるもの) は
+    予期された例外です。従ってリダイレクトされた場合も ``__after__`` は
+    呼ばれます。
 
     
 .. Adding Controllers dynamically
