@@ -1,17 +1,24 @@
 import cPickle
 import mimetypes
 import os
+import sys
+import socket
 from os import path
 
 import httplib2
 import simplejson
 
+socket.setdefaulttimeout(60)
+
 HERE_DIR = os.getcwd()
 BUILD_DIR = path.join(HERE_DIR, '_build')
 
-post_uri = 'http://localhost:5050/docs/upload'
-image_uri = 'http://localhost:5050/docs/upload_image'
-delete_uri = 'http://localhost:5050/docs/delete_revision'
+#host = 'http://localhost:25050'
+host = 'http://beta.pylonshq.com'
+
+post_uri = '%s/docs/upload' % host
+image_uri = '%s/docs/upload_image' % host
+delete_uri = '%s/docs/delete_revision' % host
 
 
 def scan_dir(parent, directory):
@@ -39,7 +46,7 @@ def scan_images(directory):
     return files
 
 files = scan_dir('', path.join(BUILD_DIR, 'web'))
-http = http = httplib2.Http(timeout=10)
+http = httplib2.Http(timeout=60)
 
 basedata = {}
 # Find the metadata about versions and such
@@ -49,10 +56,15 @@ for filename, filedoc in files:
         basedata['project'] = filedoc['project']
         basedata['shorttitle'] = filedoc['shorttitle']
 
+if len(sys.argv) < 2:
+    raise Exception('Failed to specify doc-key')
+
+dockey = sys.argv[1]
 headers = {}
 headers.setdefault('Accept', 'application/json')
 headers.setdefault('User-Agent', 'Doc Uploader')
 headers.setdefault('Content-Type', 'application/json')
+headers.setdefault('Authkey', dockey)
 
 language = os.path.split(HERE_DIR)[-1]
 
@@ -67,7 +79,7 @@ for filename, filedoc in files:
     filedoc['language'] = language
     filedoc.update(basedata)
     content = simplejson.dumps(filedoc, ensure_ascii=False).encode('utf-8')
-    
+    headers['Content-Length'] = str(len(content))
     resp, data = http.request(post_uri, 'POST', body=content, headers=headers)
     status_code = int(resp.status)
     if status_code == 200:
