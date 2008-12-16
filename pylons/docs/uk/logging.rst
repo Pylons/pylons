@@ -18,8 +18,10 @@ For example, in the helloworld project's hello controller
 
     import logging 
 
-    from pylons import request, response, session, tmpl_context as c, url
-    from pylons.controllers.util import abort, redirect
+    from pylons import request, response, session, tmpl_context as c
+    from pylons.controllers.util import abort, redirect_to
+
+    from helloworld.lib.base import BaseController, render
 
     log = logging.getLogger(__name__) 
 
@@ -37,8 +39,10 @@ To log messages, simply use methods available on that Logger object:
 
     import logging 
 
-    from pylons import request, response, session, tmpl_context as c, url
-    from pylons.controllers.util import abort, redirect
+    from pylons import request, response, session, tmpl_context as c
+    from pylons.controllers.util import abort, redirect_to
+
+    from helloworld.lib.base import BaseController, render
 
     log = logging.getLogger(__name__) 
 

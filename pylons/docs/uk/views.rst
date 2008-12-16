@@ -73,7 +73,6 @@ To pass objects to templates, the standard Pylons method is to attach them to th
     from pylons.controllers.util import abort, redirect_to, url_for
 
     from helloworld.lib.base import BaseController, render
-    # import helloworld.model as model
 
     log = logging.getLogger(__name__)
     

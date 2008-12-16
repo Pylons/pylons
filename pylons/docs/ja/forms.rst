@@ -68,7 +68,7 @@ Of course, the best way to solve this issue is to structure your code differentl
     def email(self): 
         # Code to perform some action based on the form data 
         # ... 
-        redirect(url(action='result'))
+        redirect_to(action='result') 
 
     def result(self): 
         return 'Your data was successfully submitted' 
