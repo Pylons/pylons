@@ -26,7 +26,7 @@ For example, in the helloworld project's hello controller
     class HelloController(BaseController): 
 
         def index(self): 
-            # Return a... 
+            ...
 
 Python's special ``__name__`` variable refers to the current module's fully 
 qualified name; in this case, ``helloworld.controllers.hello``. 
