@@ -1,69 +1,64 @@
 .. _helpers:
 
-=======
-Helpers
-=======
+=========
+Помічники 
+=========
 
-Helpers are functions intended for usage in templates, to assist with common
-HTML and text manipulation, higher level constructs like a HTML
-tag builder (that safely escapes variables), and advanced functionality
-like Pagination of data sets.
+Помічники це функції для роботи з шаблонами, які прийшли на допомогу
+загальному HTML, і призначені для маніпулювання текстом, конструкціями вищого рівня такими
+як HTML тег builder (який безпечно екранує змінні), і більш досконалішою
+функціональністю такою як розбиття на сторінки набору даних.
 
-The majority of the helpers available in Pylons are provided by the
-:mod:`webhelpers` package. Some of these helpers are also used in controllers
-to prepare data for use in the template by other helpers, such as the
-:func:`~webhelpers.rails.secure_form_tag` function which has a corresponding 
-:func:`~pylons.decorators.secure.authenticate_form`.
+Більшість помічників які доступні у Pylons забезпечені пакетом 
+:mod:`webhelpers`. Деякі з них також використовуються у контролерах,
+для того щоб приготувати дані для подальшого використання в темплейтах іншими
+помічниками, такими як :func:`~webhelpers.rails.secure_form_tag` - функція
+яка в свою чергу має відповідну :func:`~pylons.decorators.secure.authenticate_form`.
 
-To make individual helpers available for use in templates under :term:`h`, the
-appropriate functions need to be imported in :file:`lib/helpers.py`. All the
-functions available in this file are then available under :term:`h` just like
-any other module reference.
+Для того щоб зробити власнний тег доступним для використання в шаблонах
+під :term:`h`, треба імпортувати потрібні функції у :file:`lib/helpers.py`.
+Всі функції які знаходяться в цьому файлі є доступними під 
+:term:`h` так як і інші модульні посилання.
 
-By customizing the :file:`lib/helpers.py` module you can quickly add custom
-functions and classes for use in your templates.
+Налаштовуючи модуль :file:`lib/helpers.py` ви можите швидко
+додати будь-які функції і класи для використання у своїх шаблонах.
 
-Helper functions are organized into modules by theme. All HTML generators are under the ``webhelpers_html`` package, except for a few third-party modules which are directly under ``webhelpers``. The webhelpers modules are separately documented, see :mod:`webhelpers`.
-
+Функції-помічники упорядковані в модулі за темою. Усі генератори
+HTML є у пакеті ``webhelpers_html``, за винятком кількох другорядних
+модулів які є прямо у  ``webhelpers``. Вони також окремо документовані,
+дивіться :mod:`webhelpers`.
 .. _pagination:
 
-Pagination
-==========
+Розбиття на сторінки
+====================
 
 .. note::
 
-    The `paginate` module is not compatible to the deprecated `pagination`
-    module that was provided with former versions of the Webhelpers package.
+	Модуль `paginate` не є відповідним застарілому `pagination`, що постачався з
+	попереднюю версією пакету Webhelpers.
 
+Мета розбивача сторінок
+-----------------------
 
-Purpose of a paginator
-----------------------
+Коли ви відображаєте велику кількість даних, наприклад результат  SQL запиту
+і не можите зазвичай відобразити всі результати на одній сторінці. Їх буде
+аж надто багато. Тоді ви ділите дані на менші куски. Це саме те що робить розбивач сторінок (paginator).
+Він показує одну сторінку з шматком даних в момент часу. Уявіть що ви надаєте телефонний довідник компанії
+через інтернет і дозволяти користувачам пошук по ньому. Припустимо що пошук видав 23 результати.
+Можливо ви вирішите показати не більше десяти на сторінку. Отже, перша сторінка міститиме 1-10 результатів,
+друга 11-20 і третя відповідно 21-23. І ви також показуєе навігаційний елемент, щось схоже на 
+``Page 1 of 3: [1] 2 3``, який дозволить користувачу переключатись між доступними сторінками.
 
-When you display large amounts of data like a result from an SQL query then
-usually you cannot display all the results on a single page. It would simply be
-too much. So you divide the data into smaller chunks. This is what a paginator
-does. It shows one page of chunk of data at a time. Imagine you are providing a
-company phonebook through the web and let the user search the entries. Assume
-the search result contains 23 entries. You may decide to display no more than 10
-entries per page. The first page contains entries 1-10, the second 11-20 and the
-third 21-23. And you also show a navigational element like
-``Page 1 of 3: [1] 2 3`` that allows the user to switch between the available
-pages.
+Клас ``Page`` 
+-------------
 
+Пакет :mod:`webhelpers` надає модуль *нумерування*, який вживається для цієї мети. Він може створити сторінки
+з простого Python-списку негірше ніж SQLAlchemy запити чи SQLAlchemy обєкти-вибірки.
+Модуль надає обєкт ``Page`` що представляє собою єдину сторінку з більшого набору результатів.
+Така ``Page`` в основному поводиться як список елементів на цій сторінці. Давайте 
+попередній приклад з 23 елементів розібємо на 3 сторінки ::
 
-The ``Page`` class
-------------------
-
-The :mod:`webhelpers` package provides a *paginate* module that can be used
-for this purpose. It can create pages from simple Python lists as well as
-SQLAlchemy queries and SQLAlchemy select objects. The module provides a ``Page``
-object that represents a single page of items from a larger result set. Such a
-``Page`` mainly behaves like a list of items on that page. Let's take the above
-example of 23 items spread across 3 pages:
-
-.. code-block :: pycon
-       
-    # Create a list of items from 1 to 23
+   # Create a list of items from 1 to 23
     >>> items = range(1,24)
     
     # Import the paginate module
@@ -107,46 +102,41 @@ example of 23 items spread across 3 pages:
         This is entry 19
         This is entry 20
 
-There are further parameters to invoking a ``Page`` object. Please see
+
+За додатковими параметрами виклику обєкта ``Page`` дивіться тут
 :class:`webhelpers.paginate.Page`
 
 .. note::
+	Номера сторінок та елементів починаються з 1. Якщо ви доступаєтесь до
+	елементів на сторінці за їхнім індексом  зверніть увагу що перший елемент-
+	це ``item[1]``, а не ``item[0]``.
 
-    Page numbers and item numbers start from 1. If you are accessing the
-    items on the page by their index please note that the first item is
-    ``item[1]`` instead of ``item[0]``.
 
+Перемикання між сторінками, використовуючи `pager`
+--------------------------------------------------
 
-Switching between pages using a `pager`
----------------------------------------
+Користувачу потрібний спосіб для отримання іншої сторінки. Це зазвичай зроблено списком лінків,
+наприклад, ``Page 3 of 41 - 1 2 [3] 4 5 .. 41``. Такий список можна створити
+за допомогою Page's :meth:`~webhelpers.paginate.Page.pager` методів. Звернимось до нашого
+прикладу знову ::
 
-The user needs a way to get to another page. This is usually done with a list
-of links like ``Page 3 of 41 - 1 2 [3] 4 5 .. 41``. Such a list can be
-created by the Page's :meth:`~webhelpers.paginate.Page.pager` method.
-Take the above example again:
-
-.. code-block:: pycon
-
-    >>> page2.pager()
+   >>> page2.pager()
     
         <a class="pager_link" href="/content?page=1">1</a>
         <span class="pager_curpage">2</span>
         <a class="pager_link" href="/content?page=3">3</a>
 
-Without the HTML tags it looks like ``1 [2] 3``. The links point to a URL
-where the respective page is found. And the current page (2) is highlighted.
+Без  HTML це виглядає як ``1 [2] 3``. Лінк вказує на URL де знайдена необхідна сторінка.
+Також виділено поточну сторінку (2).
 
-The appearance of a pager can be customized. By default the format string
-is ``~2~`` which means it shows adjacent pages from the current page with
-a maximal radius of 2. In a larger set this would look like
-``1 .. 34 35 [36] 37 38 .. 176``. The radius of 2 means that two pages before
-and after the current page 36 are shown.
-
-Several special variables can be used in the format string. See
-:meth:`~webhelpers.paginate.Page.pager` for a complete list. Some examples
-for a pager of 20 pages while being on page 10 currently:
-
-.. code-block:: pycon
+Вигляд пейджера можна налаштувати . За замовчуванням формат стрічки є ``~2~`` ,
+що означає показувати суміжні сторінки від поточної сторінки з максимальним радіусом 2.
+В більшій множині це виглядатиме так ``1 .. 34 35 [36] 37 38 .. 176``. Радіус двох означає,
+що показано дві сторінки до поточної і дві після.
+ 
+Декілька спеціальних змінних можна використати в форматі стрічки.
+Дивіться :meth:`~webhelpers.paginate.Page.pager` за повним списком.
+Деякі приклади для пейджера з 20 сторінок (знаходячись на 10 сторінці)::
 
     >>> page.pager()
     
@@ -169,14 +159,13 @@ for a pager of 20 pages while being on page 10 currently:
         Items 91 - 100 / 1 .. 8 9 [10] 11 12 .. 20
 
 
-Paging over an SQLAlchemy query
+Пейджинг через SQLAlchemy запит
 -------------------------------
 
-If the data to page over comes from a database via SQLAlchemy then the
-``paginate`` module can access a ``query`` object directly. This is useful
-when using ORM-mapped models. Example:
-
-.. code-block:: pycon
+Якщо дані до сторінки over comes from базу диних через
+SQLAlchemy, тоді модуль ``paginate`` може прямо доступитись 
+до ``query`` обєкту. Це зручно при використанні ORM-mapped моделі.
+Приклад::
 
     >>> employee_query = Session.query(Employee)
     >>> page2 = webhelpers.paginate.Page(
@@ -196,22 +185,20 @@ when using ORM-mapped models. Example:
         Thomas
         Tim
 
-The `paginate` module is smart enough to only query the database for the
-objets that are needed on this page. E.g. if a page consists of the items
-11-20 then SQLAlchemy will be asked to fetch exactly that 10 rows
-through `LIMIT` and `OFFSET` in the actual SQL query. So you must not load
-the complete result set into memory and pass that. Instead always pass
-a `query` when creating a `Page`.
+Модуль `paginate` є достатньо розумним для того щоб запитувати в бази даних 
+лише ті обєкти, що потрібні на цій сторінці. Наприклад, якщо сторінка складається із
+10-20 елементів тоді SQLAlchemy попросять вибрати точно тих
+10 рядків через `LIMIT` і `OFFSET` у фактичному SQL запиті.
+Отже, вам не потрібно завантажувати повний результат в памятьі передавати його.
+Натомість,створюючи `Page` завжди передавайте `query`.
 
 
-Paging over an SQLAlchemy select
+Пейджинг через SQLAlchemy select
 --------------------------------
 
-SQLAlchemy also allows to run arbitrary SELECTs on database tables.
-This is useful for non-ORM queries. `paginate` can use such select
-objects, too. Example:
-
-.. code-block:: pycon
+SQLAlchemy також дозволяє запустити довільний селект на таблицю
+бази дних. Це корисно для не-ORM запитів. `paginate` може також використовувати
+такі селект обєкти. Приклад::
 
     >>> selection = sqlalchemy.select([Employee.c.first_name])
     >>> page2 = webhelpers.paginate.Page(
@@ -232,65 +219,63 @@ objects, too. Example:
         Thomas
         Tim
 
-The only difference to using SQLAlchemy *query* objects is that you need to
-pass an SQLAlchemy *session* via the ``sqlalchemy_session`` parameter.
-A bare ``select`` does not have a database connection assigned. But the session
-has.
+Єдиною різницею у використанні SQLAlchemy *query* обєктів є необхідність передачі
+SQLAlchemy *сесію* через ``sqlalchemy_session`` параметр.
+Сам по собі чистий ``select`` не має призначеного з'єднання. Зате, сесія має.
 
 
-Usage in a Pylons controller and template
------------------------------------------
+Використання в Pylons контролера і шаблонів
+-------------------------------------------
 
-A simple example to begin with.
+Маленький приклад для початку.
 
-Controller:
-
-.. code-block:: python
+Controller::
 
     def list(self):
         c.employees = webhelpers.paginate.Page(
             model.Session.query(model.Employee),
             page = int(request.params['page']),
-            items_per_page = 5)
+            items_per_page = 5
+            )
         return render('/employees/list.mako')
 
 Template:
 
 .. code-block:: mako
 
-    ${c.employees.pager('Page $page: $link_previous $link_next ~4~')}
+    ${ c.employees.pager('Page $page: $link_previous $link_next ~4~') }
     <ul>
     % for employee in c.employees:
-        <li>${employee.first_name} ${employee.last_name}</li>
+        <li>${ employee.first_name } ${ employee.last_name}</li>
     % endfor
     </ul>
+	
+`pager()` створює посилання на попереднє URL і лише
+встановлює *page* параметри, відповідно. Ось чому вам необхідно
+надіслати номер сторінки, яку запитують  (``request.params['page']``), коли
+ви створюєте `Page`.
 
-The `pager()` creates links to the previous URL and just sets the
-*page* parameter appropriately. That's why you need to pass the requested page
-number (``request.params['page']``) when you create a `Page`.
 
-
-Partial updates with AJAX
+Часткові оновлення з AJAX
 -------------------------
 
-Updating a page partially is easy. All it takes is a little Javascript
-that - instead of loading the complete page - updates just the part
-of the page containing the paginated items. The ``render()`` method accepts an
-``onclick`` parameter for that purpose. This value is added as an ``onclick``
-parameter to the A-HREF tags. So the ``href`` parameter points to a URL
-that loads the complete page while the ``onclick`` parameter provides Javascript
-that loads a partial page. An example (using the jQuery Javascript library for
-simplification) may help explain that.
+Легко оновити частину сторінки. Потрібно лише використати
+Javascript, який замість повного завантаження оновлює лише
+частину сторінки, яка містить "paginated" елементи. Метод
+``render()`` приймає параметром ``onclick`` для цієї мети. Це значення 
+додано як ``onclick`` параметр тегів A-HREF. Отже, параметр ``href`` вказує на
+URL, що завантажує цілу сторінку, натомість ``onclick`` параметр забезпечує
+Javascript, що завантажує частину сторінки. Приклад (використовується бібліотека 
+Javascript jQuery для простоти) допоможе зрозуміти це.
 
-Controller:
-
-.. code-block:: python
+Controller::
 
     def list(self):
         c.employees = webhelpers.paginate.Page(
             model.Session.query(model.Employee),
             page = int(request.params['page']),
-            items_per_page = 5)
+            items_per_page = 5
+            )
         if 'partial' in request.params:
             # Render the partial page
             return render('/employees/list-partial.mako')
@@ -304,7 +289,7 @@ Template ``list-full.mako``:
 
     <html>
         <head>
-            ${webhelpers.html.tags.javascript_link('/public/jQuery.js')}
+            ${ webhelpers.html.tags.javascript_link('/public/jQuery.js') }
         </head>
         <body>
             <div id="page-area">
@@ -317,71 +302,71 @@ Template ``list-partial.mako``:
 
 .. code-block:: mako
 
-    ${c.employees.pager(
+    ${ c.employees.pager(
         'Page $page: $link_previous $link_next ~4~',
-        onclick="$('#my-page-area').load('%s'); return false;")}
+        onclick="$('#my-page-area').load('%s'); return false;"
+        ) }
     <ul>
     % for employee in c.employees:
-        <li>${employee.first_name} ${employee.last_name}</li>
+        <li>${ employee.first_name } ${ employee.last_name}</li>
     % endfor
     </ul>
 
-To avoid code duplication in the template the full template includes the partial
-template. If a partial page load is requested then just the
-``list-partial.mako`` gets rendered. And if a full page load is requested then
-the ``list-full.mako`` is rendered which in turn includes the
-``list-partial.mako``.
+Для уникнення дублювання коду в темплейті - повний темплейт включає частковий 
+темплейт. Коли запитується частковве завантаженння - виконується
+``list-partial.mako``. І коли запитується повне
+завантаження сторінки - тоді ``list-full.mako`` виконується, який
+в свою чергу містить ``list-partial.mako``.
 
-The ``%s`` variable in the ``onclick`` string gets replaced with a URL pointing
-to the respective page with a ``partial=1`` added (the name of the parameter can be customized through the ``partial_param`` parameter). Example:
+Змінна ``%s`` у  стрічці ``onclick`` замінюється URL, яка вказує на
+відповідну сторінку з додаванням  ``partial=1`` (налаштувати імя
+параметрів можна через параметер ``partial_param``) Приклад :
 
 * ``href`` parameter points to ``/employees/list?page=3``
 * ``onclick`` parameter contains Javascript loading
   ``/employees/list?page=3&partial=1``
 
-jQuery's syntax to load a URL into a certain DOM object (e.g. a DIV) is simply:
-
-.. code-block:: javascript
+jQuery's синтаксис завантаження URL у певний DOM обєкт (e.g. a DIV) ::
 
     $('#some-id').load('/the/url')
 
-The advantage of this technique is that it degrades gracefully. If the user does
-not have Javascript enabled then a full page is loaded. And if Javascript works
-then a partial load is done through the ``onclick`` action.
+Переваги цієї техніки в тому що вона граціозно погіршується. Якщо користувач
+не має влюченого Javascript - тоді завантажується повна сторінка. І якщо Javascript
+працює - часткове завантаження відбувається за допомогою ``onclick`` події.
 
 
 .. _secure-forms:
 
-Secure Form Tag Helpers
-=======================
+Безпечні помічники тега форми
+=============================
 
-For prevention of Cross-site request forgery (CSRF) attacks.
+Для запобігяння атак Підробки міжсайтових запитів (CSRF). 
 
-Generates form tags that include client-specific authorization tokens to be
-verified by the destined web app.
+Генерують форми, які містять клієнтську авторизацію, що перевіряється призначеною
+web app.
 
-Authorization tokens are stored in the client's session. The web app can then
-verify the request's submitted authorization token with the value in the
-client's session.
+Ознаки авторизації зберігаються в клієнтській сесії. Потім web app
+може перевіряти авторизацію представлену запитом із значенням у клєнтській сесії.
 
-This ensures the request came from the originating page. See the wikipedia entry
-for `Cross-site request forgery`__ for more information.
+Це гарантує, що запит прийшов від початкової сторінки.
+Дивіться у Вікепедії про  `Cross-site request forgery` за додатковою інформацією.
 
 .. __: http://en.wikipedia.org/wiki/Cross-site_request_forgery
 
-Pylons provides an ``authenticate_form`` decorator that does this verfication
-on the behalf of controllers.
+Pylons надає декоратор ``authenticate_form``, що виконує цю перевірку від імені контролерів.
+Ці хелпери залежать від пайлінівського обєкту ``session``. Більшість з них
+можна легко перенести на інший фреймворк, замінюючи виклики API.
 
-These helpers depend on Pylons' ``session`` object.  Most of them can be easily 
-ported to another framework by changing the API calls.
+Помічники зроблені таким чином, що розробникам повинно бути легко
+створити свої власні хелпери, для використання у викликах AJAX.
 
-The helpers are implemented in such a way that it should be easy for developers
-to create their own helpers if using helpers for AJAX calls.
+:func:`authentication_token` повертає поточний маркер автентифікації, створюючи його
+і зберігаючи у сесії, якщо він ще не існує.
 
-:func:`authentication_token` returns the current authentication token, creating one
-and storing it in the session if it doesn't already exist.
+:func:`auth_token_hidden_field` створює приховане поле, що містить
+ознаку автентифікації.
 
-:func:`auth_token_hidden_field` creates a hidden field containing the authentication token.
+:func:`secure_form` є :func:`form` плюс :func:`auth_token_hidden_field`.
 
-:func:`secure_form` is :func:`form` plus :func:`auth_token_hidden_field`.
+
 
