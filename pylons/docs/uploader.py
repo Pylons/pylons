@@ -72,8 +72,8 @@ headers.setdefault('Authkey', dockey)
 language = os.path.split(HERE_DIR)[-1]
 
 # Delete this revision, just in case
-del_uri = '%s/%s/%s' % (delete_uri, basedata['project'], basedata['version'])
-resp, data = http.request(del_uri, 'GET', headers=headers)
+# del_uri = '%s/%s/%s' % (delete_uri, basedata['project'], basedata['version'])
+# resp, data = http.request(del_uri, 'GET', headers=headers)
 
 for filename, filedoc in files:
     if not isinstance(filedoc, dict):
