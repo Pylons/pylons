@@ -1,6 +1,7 @@
 .. _concepts:
 
 .. Concepts of Pylons
+
 ======================
 Pylons のコンセプト
 ======================
@@ -35,6 +36,7 @@ Middleware` のコンセプトへの基本的な introduction として機能し
 
 
 .. The 'Why' of a Pylons Project
+
 *****************************
 Pylons プロジェクトの 'Why'
 *****************************
@@ -98,6 +100,7 @@ remarkable amount of simplicity を維持しています。
 
 
 .. WSGI Applications
+
 *********************
 WSGI アプリケーション
 *********************
@@ -165,9 +168,10 @@ WSGI インタフェース、すなわち上に示されるように 2 引数の
 返すことに対して `make_app` 関数が責任を持ちます。
 
 
+.. WSGI Middleware
+
 .. _wsgi-middleware:
 
-.. WSGI Middleware
 *******************
 WSGI ミドルウェア
 *******************
@@ -271,6 +275,7 @@ Session, Routes, Cache ミドルウェアのようないくつかの層は、単
 
 
 .. Controller Dispatch
+
 *************************
 コントローラディスパッチ
 *************************
@@ -390,6 +395,7 @@ Pylons プロジェクトの中には、 `.egg-info` で終わるディレクト
 
 
 .. Loading the Application
+
 *************************
 アプリケーションのロード
 *************************
