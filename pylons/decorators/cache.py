@@ -126,7 +126,7 @@ def create_cache_key(func, key_dict=None, self=None):
         cache_key = " ".join(["%s=%s" % (k, v) for k, v
                               in key_dict.iteritems()])
     else:
-        if hasattr(self, 'im_func'):
+        if hasattr(func, 'im_func'):
             cache_key = func.im_func.__name__
         else:
             cache_key = func.__name__
