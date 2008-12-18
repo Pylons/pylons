@@ -19,7 +19,7 @@ Minimal Steps to run a 0.9.6 project under 0.9.7
 
 Add the following lines to ``config/environment.py``:
 
-.. code-block:: Python
+.. code-block:: python
     
     # Add these imports to the top
     from beaker.middleware import CacheMiddleware, SessionMiddleware
@@ -33,7 +33,7 @@ Add the following lines to ``config/environment.py``:
 
 The Rails helpers from WebHelpers are no longer automatically imported in the webhelpers package. To use them 'lib/helpers.py' should be changed to import them:
 
-.. code-block:: Python
+.. code-block:: python
 
     from webhelpers.rails import *
 
