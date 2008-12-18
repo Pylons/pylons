@@ -146,9 +146,6 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
                     except formencode.Invalid, error:
                         errors[field] = error
         if errors:
-            # Turn off exception catching in dispatch_call
-            self._catch_dispatch_exception = False
-            
             log.debug("Errors found in validation, parsing form with htmlfill "
                       "for errors")
             request.environ['REQUEST_METHOD'] = 'GET'
