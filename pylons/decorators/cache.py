@@ -125,11 +125,10 @@ def create_cache_key(func, key_dict=None, self=None):
     if key_dict:
         cache_key = " ".join(["%s=%s" % (k, v) for k, v
                               in key_dict.iteritems()])
+    elif hasattr(func, 'im_func'):
+        cache_key = func.im_func.__name__
     else:
-        if hasattr(func, 'im_func'):
-            cache_key = func.im_func.__name__
-        else:
-            cache_key = func.__name__
+        cache_key = func.__name__
     
     if self:
         return '%s.%s' % (func.__module__, self.__class__.__name__), cache_key
