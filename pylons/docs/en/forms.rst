@@ -38,7 +38,7 @@ If the server is still running (see the Getting Started Guide) you can visit htt
 
 In Pylons all form variables can be accessed from the :data:`request.params` object which behaves like a dictionary. The keys are the names of the fields in the form and the value is a string with all the characters entity decoded. For example note how the `@` character was converted by the browser to `%40` in the URL and was converted back ready for use in :data:`request.params`. 
 
-.. Note:: `request` is actually a `WSGIRequest` object `documented here <http://pythonpaste.org/class-paste.wsgiwrappers.WSGIRequest.html#params>`_ and `request.params` is a `MultiDict` with `documentation here <http://pythonpaste.org/class-paste.util.multidict.MultiDict.html>`_. 
+.. Note:: `request` and `response` are objects from the `WebOb` library.  Full documentation on their attributes and methods is `here <http://pythonpaste.org/webob/>`_.
 
 If you have two fields with the same name in the form then using the dictionary interface will return the first string. You can get all the strings returned as a list by using the `.getall()` method. If you only expect one value and want to enforce this you should use `.getone()` which raises an error if more than one value with the same name is submitted. 
 
