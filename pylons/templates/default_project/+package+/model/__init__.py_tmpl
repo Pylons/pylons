@@ -1,25 +1,42 @@
 {{if sqlalchemy}}
 """The application's model objects"""
 import sqlalchemy as sa
-from sqlalchemy import orm
+import sqlalchemy.orm as orm
+import sqlalchemy.ext.declarative as declarative
 
 from {{package}}.model import meta
 
+_Base = declarative.declarative_base()
+
 def init_model(engine):
     """Call me before using any of the tables or classes in the model"""
-    ## Reflected tables must be defined and mapped here
-    #global reflected_table
-    #reflected_table = sa.Table("Reflected", meta.metadata, autoload=True,
-    #                           autoload_with=engine)
-    #orm.mapper(Reflected, reflected_table)
+
+    #### REFLECTED TABLES must be defined and mapped here!!!
+    # (Their ORM classes may be defined at the global level.)
     #
-    sm = orm.sessionmaker(autoflush=True, transactional=True, bind=engine)
+    #global reflected_table
+    #reflected_table = sa.Table("reflected", meta.metadata, autoload=True,
+    #    autoload_with=engine)
+    #orm.mapper(Reflected, reflected_table)
+    
+    sm = orm.sessionmaker(bind=engine)
 
-    meta.engine = engine
     meta.Session = orm.scoped_session(sm)
+    meta.engine = engine
 
 
-## Non-reflected tables may be defined and mapped at module level
+#### NON-REFLECTED tables may be defined and mapped here.
+
+
+#### Using the Declarative extension.
+#
+# class Person(_Base):
+#     __tablename__ = "persons"
+#     id = sa.Column(sa.types.Integer, primary_key=True)
+
+
+#### Not using the Declarative extension.
+#
 #foo_table = sa.Table("Foo", meta.metadata,
 #    sa.Column("id", sa.types.Integer, primary_key=True),
 #    sa.Column("bar", sa.types.String(255), nullable=False),
@@ -31,10 +48,4 @@ def init_model(engine):
 #orm.mapper(Foo, foo_table)
 
 
-## Classes for reflected tables may be defined here, but the table and
-## mapping itself must be done in the init_model function
-#reflected_table = None
-#
-#class Reflected(object):
-#    pass
 {{endif}}
