@@ -2,7 +2,7 @@
 """SQLAlchemy Metadata and Session object"""
 from sqlalchemy import MetaData
 
-__all__ = ['Session', 'metadata']
+__all__ = ['Session', 'metadata', 'engine']
 
 # SQLAlchemy database engine.  Updated by model.init_model()
 engine = None

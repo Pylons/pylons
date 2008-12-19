@@ -1,10 +1,9 @@
-{{if sqlalchemy}}
 """The application's model objects"""
 import sqlalchemy as sa
 import sqlalchemy.orm as orm
 import sqlalchemy.ext.declarative as declarative
 
-from {{package}}.model import meta
+from tmpapp.model import meta
 
 _Base = declarative.declarative_base()
 
@@ -27,6 +26,10 @@ def init_model(engine):
 
 #### NON-REFLECTED tables may be defined and mapped here.
 
+class Simple(_Base):
+    __tablename__ = "simple"
+    id = sa.Column(sa.types.Integer, primary_key=True)
+    name = sa.Column(sa.types.String(100))
 
 #### Using the Declarative extension.
 #
@@ -47,5 +50,3 @@ def init_model(engine):
 #
 #orm.mapper(Foo, foo_table)
 
-
-{{endif}}
