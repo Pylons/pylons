@@ -79,8 +79,10 @@ def beaker_cache(key="cache_default", expire="never", type=None,
         else:
             key_dict = None
 
-        namespace, cache_key = create_cache_key(func, key_dict,
-                                                args[0] if args else None)
+        self = None
+        if args:
+            self = args[0]
+        namespace, cache_key = create_cache_key(func, key_dict, self)
 
         if type:
             b_kwargs['type'] = type
