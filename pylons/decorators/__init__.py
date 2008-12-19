@@ -16,6 +16,7 @@ from decorator import decorator
 from formencode import api, htmlfill, variabledecode
 from webob import UnicodeMultiDict
 
+from pylons.decorators.util import get_pylons
 from pylons.i18n import _ as pylons_gettext
 
 __all__ = ['jsonify', 'validate']
@@ -30,8 +31,8 @@ def jsonify(func, *args, **kwargs):
     and output it.
     
     """
-    self = args[0]
-    self._py_object.response.headers['Content-Type'] = 'application/json'
+    pylons = get_pylons(args)
+    pylons.response.headers['Content-Type'] = 'application/json'
     data = func(*args, **kwargs)
     if isinstance(data, list):
         msg = "JSON responses with Array envelopes are susceptible to " \

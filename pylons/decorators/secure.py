@@ -5,6 +5,7 @@ from decorator import decorator
 from webhelpers.html import secure_form
 
 from pylons.controllers.util import abort, redirect_to
+from pylons.decorators.util import get_pylons
 
 __all__ = ['authenticate_form', 'https']
 
@@ -32,8 +33,7 @@ def authenticate_form(func, *args, **kwargs):
     For use with the ``webhelpers.html.secure_form`` helper functions.
     
     """
-    self = args[0]
-    request = self._py_object.request
+    request = get_pylons(args).request
     if authenticated_form(request.POST):
         del request.POST[secure_form.token_key]
         return func(*args, **kwargs)
@@ -71,8 +71,7 @@ def https(*redirect_args, **redirect_kwargs):
     """
     def wrapper(func, *args, **kwargs):
         """Decorator Wrapper function"""
-        self = args[0]
-        request = self._py_object.request
+        request = get_pylons(args).request
         if request.scheme.lower() == 'https':
             return func(*args, **kwargs)
         else:
