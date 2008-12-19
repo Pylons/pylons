@@ -79,7 +79,7 @@ The Model
 
 Pylons uses a Model View Controller architecture; we'll start by creating the model. We could use any system we like for the model including `SQLObject <http://www.sqlobject.org>`_ or `SQLAlchemy <http://www.sqlalchemy.org>`_. SQLAlchemy is the default for current versions of Pylons, and we'll use it for QuickWiki. 
 
-.. Note:: SQLAlchemy is a Python SQL toolkit and Object Relational Mapper that is fast becoming the default choice for many Python programmers. 
+.. Note:: SQLAlchemy is a Python SQL toolkit and Object Relational Mapper that is quite popular among many Python programmers. 
 
 SQLAlchemy provides a full suite of well known enterprise-level persistence patterns, designed for efficient and high-performance database access, adapted into a simple and Pythonic domain language. There is full and detailed documentation available on the SQLAlchemy website at http://sqlalchemy.org/docs/ and you should really read this before you get heavily into SQLAlchemy. 
 
