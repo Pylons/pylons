@@ -80,7 +80,7 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
     install_requires=[
         "Routes>=1.10.1", "WebHelpers>=0.6.3", "Beaker>=1.1.2",
         "Paste>=1.7.2", "PasteDeploy>=1.3.2", "PasteScript>=1.7.3",
-        "FormEncode>=1.2", "simplejson>=2.0.6", "decorator>=2.3.2",
+        "FormEncode>=1.2.1", "simplejson>=2.0.6", "decorator>=2.3.2",
         "nose>=0.10.4", "Mako>=0.2.3", "WebOb>=0.9.4", "WebError>=0.10",
         "WebTest>=1.1", "Tempita>=0.2",
     ],
