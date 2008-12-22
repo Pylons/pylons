@@ -18,15 +18,15 @@ For example, in the helloworld project's hello controller
 
     import logging 
 
-    from pylons import request, response, session, tmpl_context as c, url
-    from pylons.controllers.util import abort, redirect
+    from pylons import request, response, session, tmpl_context as c
+    from pylons.controllers.util import abort, redirect_to
 
     log = logging.getLogger(__name__) 
 
     class HelloController(BaseController): 
 
         def index(self): 
-            # Return a... 
+            ...
 
 Python's special ``__name__`` variable refers to the current module's fully 
 qualified name; in this case, ``helloworld.controllers.hello``. 
@@ -37,8 +37,8 @@ To log messages, simply use methods available on that Logger object:
 
     import logging 
 
-    from pylons import request, response, session, tmpl_context as c, url
-    from pylons.controllers.util import abort, redirect
+    from pylons import request, response, session, tmpl_context as c
+    from pylons.controllers.util import abort, redirect_to
 
     log = logging.getLogger(__name__) 
 

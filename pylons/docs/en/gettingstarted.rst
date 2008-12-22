@@ -5,7 +5,7 @@ Getting Started
 ===============
 
 This section is intended to get Pylons up and running as fast as
-possible and provide a quick overview of a project. Links are provided
+possible and provide a quick overview of the project. Links are provided
 throughout to encourage exploration of the various aspects of Pylons.
 
 
@@ -28,7 +28,7 @@ To avoid conflicts with system-installed Python libraries, Pylons comes with a
 boot-strap Python script that sets up a `virtual environment <http://pypi.python.org/pypi/virtualenv>`_. Pylons will then be
 installed under the virtual environment.
 
-.. admonition:: By The Way
+.. admonition:: By the Way
     
     virtualenv is a useful tool to create isolated Python environments. In 
     addition to isolating packages from possible system conflicts, it makes
@@ -57,7 +57,7 @@ installed under the virtual environment.
         $ curl http://pylonshq.com/download/0.9.7/go-pylons.py | python - mydevenv
     
     To isolate further from additional system-wide Python libraries, run
-    with the no site packages option:
+    with the --no-site-packages option:
     
     .. code-block:: bash
     
@@ -111,17 +111,17 @@ Create a new project named ``helloworld`` with the following command:
 
 .. note:: 
     
-    Windows users must configure their ``PATH`` as described in :ref:`windows_notes`, otherwise they must specify the full path name to the ``paster`` command (including the virtual environment bin dir).
+    Windows users must configure their ``PATH`` as described in :ref:`windows_notes`, otherwise they must specify the full path to the ``paster`` command (including the virtual environment bin directory).
 
 Running this will prompt for three choices:
 
-1. which template language to use
+1. which templating engine to use
 2. whether to include :term:`SQLAlchemy` support
-3. whether to set options for :term:`Google App Engine` development
+3. whether to set :term:`Google App Engine` specific options
 
 Hit enter at each prompt to accept the defaults (Mako templating, no :term:`SQLAlchemy`, no :term:`Google App Engine` settings). 
 
-The created directory structure with links to more information:
+Here is the created directory structure with links to more information:
 
 - helloworld
     - MANIFEST.in
@@ -129,7 +129,7 @@ The created directory structure with links to more information:
     - development.ini - :ref:`run-config`
     - docs
     - ez_setup.py
-    - helloworld (See nested :ref:`helloworld directory <helloworld_dir>`)
+    - helloworld (See the nested :ref:`helloworld directory <helloworld_dir>`)
     - helloworld.egg-info
     - setup.cfg
     - setup.py - :ref:`setup-config`
@@ -199,8 +199,8 @@ The default controller will return just the string 'Hello World':
 
     import logging
 
-    from pylons import request, response, session, tmpl_context as c, url
-    from pylons.controllers.util import abort, redirect
+    from pylons import request, response, session, tmpl_context as c
+    from pylons.controllers.util import abort, redirect_to
 
     from helloworld.lib.base import BaseController, render
 
@@ -214,14 +214,13 @@ The default controller will return just the string 'Hello World':
             # or, Return a response
             return 'Hello World'
 
-At the top are some imports of common objects that are frequently used
-in controllers.
+At the top of the module, some commonly used objects are imported automatically.
 
 Navigate to http://127.0.0.1:5000/hello/index where there should be a short text string saying "Hello World" (start up the app if needed):
 
 .. image:: _static/helloworld.png
 
-.. admonition:: How'd that get to /hello/index?
+.. admonition:: Tip
     
     :ref:`url-config` explains how URL's get mapped to controllers and
     their methods.
@@ -237,7 +236,7 @@ directory with the following contents:
     
     ${request.environ}
 
-The :term:`request` variable in templates is used to get information about the current request.`template globals <modules/templating.html#template-globals>`_ lists all the variables Pylons makes available for use in templates.
+The :term:`request` variable in templates is used to get information about the current request. `template globals <modules/templating.html#template-globals>`_ lists all the variables Pylons makes available for use in templates.
 
 Next, update the :file:`controllers/hello.py` module so that the
 index method is as follows:

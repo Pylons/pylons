@@ -21,6 +21,13 @@ class CacheController(WSGIController):
         return 'Counter=%s' % pylons.g.counter
     test_default_cache_decorator = beaker_cache(key=None)(test_default_cache_decorator)
 
+    def test_default_cache_decorator_func(self):
+        def func():
+            pylons.g.counter += 1
+            return 'Counter=%s' % pylons.g.counter
+        func = beaker_cache(key=None)(func)
+        return func()
+
     def test_dbm_cache_decorator(self):
         pylons.g.counter += 1
         return 'Counter=%s' % pylons.g.counter
@@ -135,6 +142,12 @@ class TestCacheDecorator(TestWSGIController):
         assert 'Counter=2' in response
         response = self.get_response(action='test_get_cache_default', _url="/?param=1243")
         assert 'Counter=8' in response
+
+        response = self.get_response(action='test_default_cache_decorator_func')
+        assert 'text/html' in response.header_dict['content-type']
+        assert 'Counter=9' in response
+        response = self.get_response(action='test_default_cache_decorator_func')
+        assert 'Counter=9' in response
     
     def test_dbm_cache_decorator(self):
         sap.g.counter = 0

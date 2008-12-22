@@ -32,7 +32,9 @@ def scan_dir(parent, directory):
             files.extend(scan_dir(new_parent, full_name))
         else:
             if name.endswith('.fpickle') or name.endswith('.pickle'):
-                data = cPickle.load(open(full_name, 'r'))
+                fp = open(full_name, 'r')
+                data = cPickle.load(fp)
+                fp.close()
                 files.append(
                     ('/'.join([parent, name]), data)
                 )
@@ -46,6 +48,7 @@ def scan_images(directory):
     return files
 
 files = scan_dir('', path.join(BUILD_DIR, 'web'))
+images = scan_images(path.join(BUILD_DIR, 'web', '_images'))
 http = httplib2.Http(timeout=60)
 
 basedata = {}
@@ -69,8 +72,8 @@ headers.setdefault('Authkey', dockey)
 language = os.path.split(HERE_DIR)[-1]
 
 # Delete this revision, just in case
-del_uri = '%s/%s/%s' % (delete_uri, basedata['project'], basedata['version'])
-resp, data = http.request(del_uri, 'GET', headers=headers)
+# del_uri = '%s/%s/%s' % (delete_uri, basedata['project'], basedata['version'])
+# resp, data = http.request(del_uri, 'GET', headers=headers)
 
 for filename, filedoc in files:
     if not isinstance(filedoc, dict):
@@ -87,9 +90,12 @@ for filename, filedoc in files:
     else:
         print "FAILED: %s" % filename
 
-for filename in scan_images(path.join(BUILD_DIR, 'web', '_images')):
+for filename in images:
     headers['Content-Type'] = mimetypes.guess_type(filename)
-    file_content = open(path.join(BUILD_DIR, 'web', '_images', filename), 'r').read()
+    fp = open(path.join(BUILD_DIR, 'web', '_images', filename), 'r')
+    file_content = fp.read()
+    fp.close()
+    headers['Content-Length'] = str(len(file_content))
     resp, data = http.request(image_uri + '?version=%s&project=%s&name=%s' %
                               (basedata['version'], basedata['project'], filename),
                               body=file_content, headers=headers)
