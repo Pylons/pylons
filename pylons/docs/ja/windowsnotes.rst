@@ -1,6 +1,6 @@
-.. _windows_notes:
-
 .. Windows Notes
+
+.. _windows_notes:
 
 =======================
 Windows における注意点
