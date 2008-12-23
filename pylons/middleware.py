@@ -49,7 +49,7 @@ var TRACEBACK = {
 </div>
 <div class="clearfix">&nbsp;</div>
 <div class="overviewtab">
-<h3>Looking for help?</h3>
+<b>Looking for help?</b>
 
 <p>Here are a few tips for troubleshooting if the above traceback isn't
 helping out.</p>
@@ -84,7 +84,7 @@ PylonsHQ website in this browser.</p>
 
 </div>
 <div id="pylons_logo">\
-<img src="{{prefix}}/media/pylons/img/pylons-tower120.png" /></div>
+<img src="{{prefix}}/media/pylons/img/pylons-powered-02.png" /></div>
 <div class="credits">Pylons version %s</div>"""
 
 class StaticJavascripts(object):
