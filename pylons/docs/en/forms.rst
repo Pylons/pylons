@@ -79,16 +79,28 @@ In this case once the form is submitted the data is saved and an HTTP redirect o
 Using the Helpers 
 ================= 
 
-Creating forms can also be done using Pylons' `built in helpers <http://pylonshq.com/WebHelpers/module-index.html>`_. Here is the same form created in the previous section but this time using the helpers: 
+Creating forms can also be done using WebHelpers, which comes with Pylons. Here is the same form created in the previous section but this time using the helpers: 
 
 .. code-block:: html+mako 
 
     ${h.form(h.url(action='email'), method='get')} 
-    Email Address: ${h.text_field('email')} 
+    Email Address: ${h.text('email')} 
     ${h.submit('Submit')} 
     ${h.end_form()} 
 
-You can also make use of the built-in script.aculo.us functionality or override the default behavior of any of the helpers by defining a new function of the same name at the bottom of your project's `lib/helpers.py` file. 
+Before doing this you'll have to import the helpers you want to use into your
+project's `lib/helpers.py` file; then they'll be available under Pylons' ``h``
+global.  Most projects will want to import at least these:
+
+.. code-block:: python
+
+   from webhelpers.html import escape, HTML, literal, url_escape
+   from webhelpers.html.tags import *
+
+There are many other helpers for text formatting, container objects,
+statistics, and for dividing large query results into pages.  See the
+WebHelpers documentation to choose the helpers you'll need.
+
 
 .. _file_uploads:
 
