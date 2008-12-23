@@ -19,20 +19,10 @@ port = 5000
 use = egg:{{project}}
 full_stack = true
 static_files = true
-{{if google_app_engine}}
-beaker.session.key = {{package}}
-beaker.session.secret = somesecret
-beaker.session.type = google
-beaker.session.table_name = beaker_session
-beaker.cache.type = google
-beaker.cache.table_name = beaker_cache
 
-{{else}}
 cache_dir = %(here)s/data
 beaker.session.key = {{package}}
 beaker.session.secret = somesecret
-
-{{endif}}
 
 # If you'd like to fine-tune the individual locations of the cache data dirs
 # for the Cache data, or the Session saves, un-comment the desired settings
