@@ -113,13 +113,12 @@ Create a new project named ``helloworld`` with the following command:
     
     Windows users must configure their ``PATH`` as described in :ref:`windows_notes`, otherwise they must specify the full path to the ``paster`` command (including the virtual environment bin directory).
 
-Running this will prompt for three choices:
+Running this will prompt for two choices:
 
 1. which templating engine to use
 2. whether to include :term:`SQLAlchemy` support
-3. whether to set :term:`Google App Engine` specific options
 
-Hit enter at each prompt to accept the defaults (Mako templating, no :term:`SQLAlchemy`, no :term:`Google App Engine` settings). 
+Hit enter at each prompt to accept the defaults (Mako templating, no :term:`SQLAlchemy`). 
 
 Here is the created directory structure with links to more information:
 
