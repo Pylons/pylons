@@ -99,7 +99,7 @@ global.  Most projects will want to import at least these:
 
 There are many other helpers for text formatting, container objects,
 statistics, and for dividing large query results into pages.  See the
-WebHelpers documentation to choose the helpers you'll need.
+:mod:`WebHelpers documentation <webhelpers>` to choose the helpers you'll need.
 
 
 .. _file_uploads:
