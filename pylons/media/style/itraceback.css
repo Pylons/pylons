@@ -110,36 +110,6 @@ p.query {
     #supportnav li.active a { background-position: right -40px; }
 * html #supportnav { margin-bottom: 0; }
     
-/*
-
-ul#supportnav li a
-{
-    border: 1px solid #fff;
-    color: #000;
-    margin-right: 29px;
-    text-decoration: underline;
-    padding-left: 8px;
-    padding-right: 8px;
-}
-ul#supportnav  li a#highlight , ul#supportnav li a#highlight:hover
-{
-    color: #555;
-}
-
-ul#supportnav li a:hover
-{
-    color: #b11;
-}
-
-ul#supportnav li.active a,  ul#supportnav li.active a:hover
-{
-    color: #b00;
-    border: 1px solid #eee;
-    border-bottom: 1px solid #eee;
-    background-color: #eee;
-}
-
-*/
 div.searchresults div.result {
 	margin-bottom: 5px;
 	padding: 2px 0px 2px 4px;
