@@ -6,7 +6,7 @@
 
 .. Pylons comes with two main ways to configure an application:
 
-Pylons にはアプリケーションを設定する 2 つの主な方法があります:
+Pylons でアプリケーションを設定する方法は主に 2 つあります:
 
 
 .. * The configuration file (:ref:`run-config`)
@@ -14,6 +14,7 @@ Pylons にはアプリケーションを設定する 2 つの主な方法があ�
 
 * 設定ファイル (:ref:`run-config`)
 * アプリケーションの ``config`` ディレクトリ
+
 
 .. The files in the ``config`` directory change certain aspects of how
 .. the application behaves. Any options that the webmaster should be
@@ -48,6 +49,7 @@ Pylons にはアプリケーションを設定する 2 つの主な方法があ�
 アプリケーションの :file:`config/` ディレクトリは以下のファイルを含んで
 います:
 
+
 .. * :file:`config/environment.py` described in :ref:`environment-config`
 .. * :file:`config/middleware.py` described in :ref:`middleware-config`
 .. * :file:`config/deployment.ini_tmpl` described in :ref:`production-config`
@@ -57,6 +59,7 @@ Pylons にはアプリケーションを設定する 2 つの主な方法があ�
 * :file:`config/middleware.py` は :ref:`middleware-config` で説明されます
 * :file:`config/deployment.ini_tmpl` は :ref:`production-config` で説明されます
 * :file:`config/routing.py` は :ref:`url-config` で説明されます
+
 
 .. Each of these files allows developers to change key aspects of how
 .. the application behaves.
@@ -83,9 +86,9 @@ Pylons にはアプリケーションを設定する 2 つの主な方法があ�
 
 新しいプロジェクトが作られるとき、プロジェクトのファイルの 1 つとして
 :file:`development.ini` と呼ばれる設定ファイルのサンプルが自動的に生成
-されます。このデフォルトの設定ファイルは開発で使用するのに適切なオプショ
-ンを含んでいます。例えば、 Pylons アプリケーションの開発中は、エラーが
-発生する度にデバッグレポートを見ることができると非常に便利です。
+されます。このデフォルトの設定ファイルは開発のために使用するのに適切な
+オプションを含んでいます。例えば、 Pylons アプリケーションの開発中は、
+エラーが発生する度にデバッグレポートを見ることができると非常に便利です。
 :file:`development.ini` ファイルはデバッグモードを有効にするオプション
 を含んでいるので、このようなエラーが表示されます。
 
@@ -99,11 +102,11 @@ Pylons にはアプリケーションを設定する 2 つの主な方法があ�
 .. production output. A :file:`test.ini` configuration is also
 .. included in the project for test-specific options.
 
-どのアプリケーションが実行されるかを決定するために設定ファイルが使用さ
-れるので、複数の設定ファイルを使用することで簡単にオプションのセットを
-切り換えることができます。典型的に、開発者はテスト (訳注: 開発) のため
-の ``development.ini`` 設定ファイルと :command:`paster make-config` コ
-マンドで生成された ``production.ini`` ファイルを使います。
+どのアプリケーションを実行するかを決定するために設定ファイルが使われる
+ので、複数の設定ファイルを使用することで簡単にオプションのセットを切り
+換えることができます。典型的に、開発者はテスト (訳注: 開発) のための
+``development.ini`` 設定ファイルと :command:`paster make-config` コマン
+ドで生成された ``production.ini`` ファイルを使います。
 ``production.ini`` ファイルは :command:`paster make-config` コマンドが
 適切なプロダクション用ファイルを生成することをテストするために使用され
 ます。また、 :file:`test.ini` 設定は、テスト専用のオプションのためにプ
@@ -130,9 +133,9 @@ Pylons にはアプリケーションを設定する 2 つの主な方法があ�
     .. great detail in the `Paste Deploy documentation
     .. <http://pythonpaste.org/deploy/>`_.
 
-    設定ファイル形式 **とオプション** は、 `Paste Deploy documentation
-    <http://pythonpaste.org/deploy/>`_ で丹念に説明されています。
-
+    設定ファイルのフォーマット **とオプション** は、 `Paste Deploy
+    documentation <http://pythonpaste.org/deploy/>`_ で丹念に説明されて
+    います。
 
 
 .. Getting Information From Configuration Files
@@ -159,8 +162,8 @@ Pylons にはアプリケーションを設定する 2 つの主な方法があ�
 .. ``pylons.config`` behaves like a dictionary. For example, if the
 .. configuration file has an entry under the ``[app:main]`` block:
 
-``pylons.config`` は辞書のように振る舞います。例えば
-設定ファイルの ``[app:main]`` ブロックの中に以下のエントリがある場合:
+``pylons.config`` は辞書のように振る舞います。例えば設定ファイルの
+``[app:main]`` ブロックの中に以下のエントリがある場合:
 
 
 .. code-block :: ini
@@ -181,7 +184,7 @@ Pylons にはアプリケーションを設定する 2 つの主な方法があ�
 
 .. Or the current debug status like this: 
 
-あるいは現在のデバッグ状態の場合は:
+あるいは現在のデバッグ状態については:
 
 
 .. code-block :: python 
@@ -216,9 +219,9 @@ Pylons にはアプリケーションを設定する 2 つの主な方法があ�
 .. :ref:`middleware-config` to toggle middleware that should only be
 .. used in development mode (with ``debug``) set to true.
 
-これは既に、デフォルトプロジェクトの :ref:`middleware-config` の中で、
-開発モード (``debug`` で表される) が true にセットされているときだけ使
-用されるミドルウェアを切り換えるために使用されています。
+この関数は、既にデフォルトプロジェクトの :ref:`middleware-config` の中
+で、開発モード (``debug`` で表される) が true にセットされているときだ
+け使用されるミドルウェアを切り換えるために使用されています。
 
 
 .. Production Configuration Files
@@ -235,7 +238,7 @@ Pylons にはアプリケーションを設定する 2 つの主な方法があ�
 .. handling deployment has a starting point of the minimum options the
 .. application needs set.
 
-アプリケーションをデプロイするときに使用すべき設定 INI ファイルのデフォ
+アプリケーションをデプロイするときに使用される設定 INI ファイルのデフォ
 ルトを変えるには、 :file:`config/deployment.ini_tmpl` ファイルを編集し
 てください。このファイルはデプロイの際にテンプレートとして使用されて、
 デプロイを行う人にとってアプリケーションに設定する必要のある最小限のオ
@@ -248,9 +251,9 @@ Pylons にはアプリケーションを設定する 2 つの主な方法があ�
 .. in the event of an application error.
 
 deployment ini で設定される中で最も重要なオプションの 1 つは、 ``debug
-= true`` という設定です。アプリケーションエラーが発生した場合、適切な開
-発者またはウェブ管理者にエラーをメールできるように、メールオプションが
-セットアップされるべきです。
+= true`` という設定です。アプリケーションエラーが発生した場合に適切な開
+発者またはウェブ管理者にメールが送られるように、メールオプションがセッ
+トアップされるべきです。
 
 
 .. Generating the Production Configuration
@@ -286,7 +289,7 @@ deployment ini で設定される中で最も重要なオプションの 1 つ�
 .. set of default configuration values exist when the webmaster uses
 .. the ``paster make-config`` command.
 
-ウェブ管理者が ``paster make-config`` コマンドを使用したとき、適切なデ
+ウェブ管理者が ``paster make-config`` コマンドを使用したときに適切なデ
 フォルト設定値が存在することを保証するのは、開発者の責任です。
 
 
@@ -295,7 +298,7 @@ deployment ini で設定される中で最も重要なオプションの 1 つ�
     .. **Always** make sure that the ``debug`` is set to ``false``
     .. when deploying a Pylons application.
 
-    **常に** Pylons アプリケーションをデプロイするとき、確実に
+    **常に** Pylons アプリケーションをデプロイするときは、確実に
     ``debug`` を ``false`` に設定するようにしてください。
 
 
@@ -315,7 +318,7 @@ deployment ini で設定される中で最も重要なオプションの 1 つ�
 のに必要とされる基本的な Pylons 環境変数をセットアップします。アプリケー
 ション全体のために一度だけセットアップされるオブジェクトは、ここか、も
 しくは :file:`lib/app_globals` の :meth:`__init__.py` メソッドでセット
-アップするべきです。
+アップすべきです。
 
 
 .. It also calls the :ref:`url-config` function to setup how the URL's
@@ -355,10 +358,10 @@ URL 設定
 .. them. By default, Pylons sets up the following :term:`route`\s
 .. (found in :file:`config/routing.py`):
 
-Routes と呼ばれる Python ライブラリが URL をコントローラとそのメソッド
-(Routes はそれを :term:`action` と呼びます) に写像します。デフォルトで、
-Pylons は以下の :term:`route` をセットアップします (それらは
-:file:`config/routing.py` で見つかります):
+Routes と呼ばれる Python ライブラリが、 URL からコントローラとそのメソッ
+ド (Routes はそれを :term:`action` と呼びます) へのマッピングを扱います。
+デフォルトで、 Pylons は以下の :term:`route` をセットアップします (それ
+らは :file:`config/routing.py` で見つかります):
 
 
 .. code-block:: python
@@ -428,8 +431,8 @@ Pylons は以下の :term:`route` をセットアップします (それらは
 .. The controller and action can also be specified as keyword
 .. arguments so that they don't need to be included in the URL:
 
-また、キーワード引数としてコントローラとアクションを指定できるので、そ
-れらは URL に含まれている必要はありません:
+また、キーワード引数としてコントローラとアクションを指定することができ、
+その場合にはそれらが URL に含まれている必要はありません:
 
 
 .. code-block :: python
@@ -476,7 +479,7 @@ year とマッチした URL 部分は、関数引数の中で名前によって�
 .. The default mapping can match to any controller and any of their
 .. actions which means the following URLs will match:
 
-デフォルトのマッピングは、どんなコントローラのどんなアクションにもマッ
+デフォルトのマッピングは、あらゆるコントローラのあらゆるアクションにマッ
 チします。これは以下の URL がマッチすることを意味します:
 
 
@@ -497,8 +500,8 @@ year とマッチした URL 部分は、関数引数の中で名前によって�
 .. Controllers can be organized into directories as well. For example,
 .. if the admins should have a separate ``comments`` controller:
 
-また、コントローラをディレクトリに分けることができます。例えば管理画面
-用に別の ``comments`` コントローラが必要なら:
+また、コントローラをディレクトリにまとめることができます。例えば管理画
+面用に別の ``comments`` コントローラが必要なら:
 
 
 .. code-block:: bash
@@ -540,8 +543,8 @@ year とマッチした URL 部分は、関数引数の中で名前によって�
 .. :meth:`map.connect` statement, as well as the raw URL should be
 .. matched.
 
-:meth:`map.connect` 文で、生の URL がマッチするのと同様、コントローラと
-アクションを直接指定できます:
+:meth:`map.connect` 文において、生の URL がマッチするのと同時に、コント
+ローラとアクションを直接指定することができます:
 
 
 .. code-block:: python
@@ -569,8 +572,8 @@ URL を生成する
 
 URL は callable な :class:`routes.util.URLGenerator` オブジェクトを通し
 て生成されます。Pylons は :data:`pylons.url` でこの特別なオブジェクトの
-インスタンスを提供します。それは、 route で定義された希望のコントローラ、
-アクション、および追加の変数を示すキーワード引数を受け入れます。
+インスタンスを提供します。このオブジェクトはキーワード引数として route
+で定義されたコントローラ、アクション、および追加の変数を受け取ります。
 
 
 .. code-block:: python
@@ -599,8 +602,8 @@ URL は callable な :class:`routes.util.URLGenerator` オブジェクトを通�
 .. the relevant arguments:
 
 :meth:`routes.util.URLGenerator.current` は ``url()`` と同じ引数を受け
-取ります。これは、現在の URL に対する小さな変更をすべての関連する引数を
-指定する必要性なしで生成するために `Routes memory
+取ります。これは、関連するすべての引数を指定することなく現在の URL に対
+する小さな変更を生成するために `Routes memory
 <http://routes.groovie.org/manual.html#route-memory>`_ を使用します。
 
 
@@ -699,11 +702,10 @@ Application をラップする最後のミドルウェアは、サーバによ�
 .. the webserver or a :term:`CDN` serve static files.
 
 スタックの中のミドルウェアの最後の断片は Cascade と呼ばれ、開発の間、静
-的な内容ファイルを serve するのに使用されます。
-
-最高の性能のためには、設定ファイルの中で ``static_files = false`` と設
-定することで Cascade ミドルウェアを無効にすることを考慮してください。そ
-して、ウェブサーバあるいは :term:`CDN` が静的なファイルを serve します。
+的な内容ファイルを返すのに使用されます。最高の性能のためには、設定ファ
+イルの中で ``static_files = false`` と設定することで Cascade ミドルウェ
+アを無効にすることを考慮してください。そして、ウェブサーバあるいは
+:term:`CDN` が静的なファイルを返します。
 
 
 .. warning::
@@ -829,8 +831,8 @@ ErrorHandler とStatusCodeRedirect が層として含まれているかどうか
 .. There are two kinds of 'Application Setup' that are occasionally
 .. referenced with regards to a project using Pylons.
 
-Pylons を使用するプロジェクトに関して言及されることのある 'アプリケーショ
-ン・セットアップ' には 2 種類あります。
+Pylons を使用するプロジェクトに関して、言及されることのある 'アプリケー
+ション・セットアップ' には 2 種類あります。
 
 
 .. * Setting up a new application
@@ -851,7 +853,7 @@ Pylons を使用するプロジェクトに関して言及されることのあ�
 
 プロジェクトの新しいインスタンスをより簡単にセットアップできるように、
 基本的なデータベース・スキーマをセットアップしたり、必要なデフォルト値
-を生成したりといった、セットアップスクリプトを作成できます。
+を生成したりといった、セットアップ・スクリプトを作成できます。
 
 
 .. In a Pylons project, the setup script to be run is located in the
@@ -859,10 +861,10 @@ Pylons を使用するプロジェクトに関して言及されることのあ�
 .. projects configuration to make it easier to write application setup
 .. steps:
 
-Pylons プロジェクトでは、実行されるセットアップスクリプトはプロジェクト
-の :file:`websetup.py` ファイルに配置されています。アプリケーション・セッ
-トアップ手順をより簡単に書けるように、デフォルトのスクリプトはプロジェ
-クト設定を読み込みます:
+Pylons プロジェクトでは、実行されるセットアップ・スクリプトはプロジェク
+トの :file:`websetup.py` ファイルに配置されています。アプリケーション・
+セットアップ手順をより簡単に書けるように、デフォルトのスクリプトはプロ
+ジェクト設定を読み込みます:
 
 
 .. code-block :: python
@@ -876,6 +878,7 @@ Pylons プロジェクトでは、実行されるセットアップスクリプ�
     def setup_app(command, conf, vars):
         """Place any commands to setup helloworld here"""
         load_environment(conf.global_conf, conf.local_conf)
+
 
 .. note::
 
@@ -891,7 +894,7 @@ Pylons プロジェクトでは、実行されるセットアップスクリプ�
 
 .. To run the setup script using the development configuration:
 
-開発設定を使用してセットアップスクリプトを実行するには:
+開発設定を使用してセットアップ・スクリプトを実行するには:
 
 
 .. code-block :: bash
@@ -942,10 +945,10 @@ Pylons を用いて新たに作成されたプロジェクトは標準の Python
 .. this package is active in the system (without requiring the
 .. traditional :command:`python setup.py install`).
 
-依存性の要求が満たされるように必要に応じてパッケージをアップデートする
-ことに加えて、このコマンドはパッケージがシステムで確実にアクティブにな
-るようにします (伝統的な :command:`python setup.py install` を必要とせ
-ずに)。
+このコマンドは、依存性の要求が満たされるように必要に応じてパッケージを
+アップデートすることに加えて、パッケージがシステムで確実にアクティブに
+なるようにします (伝統的な :command:`python setup.py install` を必要と
+せずに)。
 
 
 .. seealso::
