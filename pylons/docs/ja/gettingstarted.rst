@@ -5,15 +5,17 @@ Getting Started
 ===================
 
 .. This section is intended to get Pylons up and running as fast as
-.. possible and provide a quick overview of a project. Links are provided
-.. throughout to encourage exploration of the various aspects of Pylons.
+.. possible and provide a quick overview of the project. Links are
+.. provided throughout to encourage exploration of the various aspects
+.. of Pylons.
 
 このセクションでは、できるだけ早く Pylons を始められるようになることと、
-プロジェクトの quick overview を提供することを意図しています。Pylons の
-種々な側面の探検を奨励するために、リンクが提供されます。
+そのプロジェクトの quick overview を提供することを意図しています。
+Pylons の種々な側面の探検を奨励するために、リンクが提供されます。
 
 
 .. Requirements
+
 ******************
 動作条件
 ******************
@@ -24,6 +26,7 @@ Getting Started
 
 
 .. Installing
+
 **************
 インストール
 **************
@@ -50,7 +53,7 @@ Pylons には `virtual environment
 ンストールされます。
 
 
-.. admonition:: By The Way
+.. admonition:: By the Way
     
     .. virtualenv is a useful tool to create isolated Python
     .. environments. In addition to isolating packages from possible
@@ -106,10 +109,10 @@ Pylons には `virtual environment
 
     
     .. To isolate further from additional system-wide Python libraries, run
-    .. with the no site packages option:
+    .. with the --no-site-packages option:
 
-    system-wide の追加の Python ライブラリからも分離するためには、no
-    site packages オプションを付けて実行します。
+    system-wide の追加の Python ライブラリからも分離するためには、
+    \-\-no-site-packages オプションを付けて実行します。
 
 
     .. code-block:: bash
@@ -190,6 +193,7 @@ setuptools に ``Pylons`` というディレクトリに含まれるバージョ
 
 
 .. Creating a Pylons Project
+
 *******************************
 Pylons プロジェクトを作成する
 *******************************
@@ -209,37 +213,40 @@ Pylons プロジェクトを作成する
     
     .. Windows users must configure their ``PATH`` as described in
     .. :ref:`windows_notes`, otherwise they must specify the full path
-    .. name to the ``paster`` command (including the virtual
-    .. environment bin dir).
+    .. to the ``paster`` command (including the virtual environment
+    .. bin directory).
 
     Window ユーザーは、 :ref:`windows_notes` で説明されているように
     ``PATH`` を構成しなければなりません。さもなければ、 (仮想環境 bin
-    ディレクトリに含まれている) ``paster`` コマンドにフルパス名を指定し
-    なければならないことに注意します。
+    ディレクトリに含まれている) ``paster`` コマンドにフルパスを指定する
+    必要があります。
 
 
-.. Running this will prompt for two choices:
+.. Running this will prompt for three choices:
 
-これを実行すると、 2 つのプロンプトが表示されます:
+これを実行すると、 3 つのプロンプトが表示されます:
 
 
-.. 1. which template language to use
+.. 1. which templating engine to use
 .. 2. whether to include :term:`SQLAlchemy` support
+.. 3. whether to set :term:`Google App Engine` specific options
 
-1. どのテンプレート言語を使用するか
+1. どのテンプレートエンジンを使用するか
 2. :term:`SQLAlchemy` サポートを含めるか
+3. :term:`Google App Engine` 固有のオプションを設定するか
 
 
 .. Hit enter at each prompt to accept the defaults (Mako templating,
 .. no :term:`SQLAlchemy`, no :term:`Google App Engine` settings).
 
 それぞれのプロンプトについて、デフォルトを受け入れるなら Enter キーを打っ
-てください (デフォルトでは Mako テンプレート、 :term:`SQLAlchemy` なし)
+てください (デフォルトでは Mako テンプレート、 :term:`SQLAlchemy` なし、
+:term:`Google App Engine` 設定なしです)
 
 
-.. The created directory structure with links to more information:
+.. Here is the created directory structure with links to more information:
 
-作成されたディレクトリ構造と詳しい情報へのリンク:
+これは作成されたディレクトリ構造と詳しい情報へのリンクです:
 
 
 - helloworld
@@ -248,7 +255,7 @@ Pylons プロジェクトを作成する
     - development.ini - :ref:`run-config`
     - docs
     - ez_setup.py
-    - helloworld (See nested :ref:`helloworld directory <helloworld_dir>`)
+    - helloworld (入れ子の :ref:`helloworld ディレクトリ <helloworld_dir>` 参照)
     - helloworld.egg-info
     - setup.cfg
     - setup.py - :ref:`setup-config`
@@ -281,6 +288,7 @@ Pylons プロジェクトを作成する
 
 
 .. Running the application
+
 *****************************
 アプリケーションを実行する
 *****************************
@@ -369,11 +377,11 @@ Hello World
             return 'Hello World'
 
 
-.. At the top are some imports of common objects that are frequently used
-.. in controllers.
+.. At the top of the module, some commonly used objects are imported
+.. automatically.
 
-先頭で、コントローラで頻繁に使用される一般的なオブジェクトのいくつかが
-インポートされています。
+モジュールの先頭で、コントローラで共通に使用されるいくつかのオブジェク
+トが自動的にインポートされています。
 
 
 .. Navigate to http://127.0.0.1:5000/hello/index where there should be
@@ -387,8 +395,7 @@ World" という短いテキスト文字列があるはずです。(必要なら
 
 .. image:: _static/helloworld.png
 
-
-.. admonition:: How'd that get to /hello/index?
+.. admonition:: Tip
     
     .. :ref:`url-config` explains how URL's get mapped to controllers
     .. and their methods.
