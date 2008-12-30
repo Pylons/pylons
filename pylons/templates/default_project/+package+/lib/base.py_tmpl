@@ -22,7 +22,4 @@ class BaseController(WSGIController):
         try:
             return WSGIController.__call__(self, environ, start_response)
         finally:
-            meta.Session.remove()
-        {{else}}
-        return WSGIController.__call__(self, environ, start_response)
-        {{endif}}
+            meta.Session.remove(){{else}}        return WSGIController.__call__(self, environ, start_response){{endif}}
