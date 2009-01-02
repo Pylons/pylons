@@ -222,26 +222,23 @@ Pylons プロジェクトを作成する
     必要があります。
 
 
-.. Running this will prompt for three choices:
+.. Running this will prompt for two choices:
 
-これを実行すると、 3 つのプロンプトが表示されます:
+これを実行すると、 2 つのプロンプトが表示されます:
 
 
 .. 1. which templating engine to use
 .. 2. whether to include :term:`SQLAlchemy` support
-.. 3. whether to set :term:`Google App Engine` specific options
 
 1. どのテンプレートエンジンを使用するか
 2. :term:`SQLAlchemy` サポートを含めるか
-3. :term:`Google App Engine` 固有のオプションを設定するか
 
 
 .. Hit enter at each prompt to accept the defaults (Mako templating,
 .. no :term:`SQLAlchemy`, no :term:`Google App Engine` settings).
 
 それぞれのプロンプトについて、デフォルトを受け入れるなら Enter キーを打っ
-てください (デフォルトでは Mako テンプレート、 :term:`SQLAlchemy` なし、
-:term:`Google App Engine` 設定なしです)
+てください (デフォルトでは Mako テンプレート、 :term:`SQLAlchemy` なしです)
 
 
 .. Here is the created directory structure with links to more information:
