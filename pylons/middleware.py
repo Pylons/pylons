@@ -231,7 +231,7 @@ error_document_template = literal("""\
 <link rel="stylesheet" href="%(prefix)s/error/style/black.css" type="text/css" media="screen" />
 
 <!-- Favorite Icons -->
-<link rel="icon" href="%(prefix)s/error/img/icon-16.png" type="image/png" />
+<link rel="icon" href="%(prefix)s/error/img/favicon.ico" type="image/png" />
 
 <style type="text/css">
         .red {

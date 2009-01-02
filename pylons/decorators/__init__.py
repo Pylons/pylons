@@ -26,9 +26,9 @@ log = logging.getLogger(__name__)
 def jsonify(func, *args, **kwargs):
     """Action decorator that formats output for JSON
 
-    Given a function that will return content, this decorator will
-    turn the result into JSON, with a content-type of 'text/javascript'
-    and output it.
+    Given a function that will return content, this decorator will turn
+    the result into JSON, with a content-type of 'application/json' and
+    output it.
     
     """
     pylons = get_pylons(args)
