@@ -25,15 +25,14 @@ Installing
     Python 2.3, see :ref:`python23_installation`.
 
 To avoid conflicts with system-installed Python libraries, Pylons comes with a
-boot-strap Python script that sets up a `virtual environment <http://pypi.python.org/pypi/virtualenv>`_. Pylons will then be
-installed under the virtual environment.
+boot-strap Python script that sets up a "virtual" Python environment. Pylons will then be installed under the virtual environment.
 
 .. admonition:: By the Way
     
-    virtualenv is a useful tool to create isolated Python environments. In 
-    addition to isolating packages from possible system conflicts, it makes
-    it easy to install Python libraries using `easy_install <http://peak.telecommunity.com/DevCenter/EasyInstall>`_ without dumping lots
-    of packages into the system-wide Python.
+    :term:`virtualenv` is a useful tool to create isolated Python environments.
+    In addition to isolating packages from possible system conflicts, it makes
+    it easy to install Python libraries using :term:`easy_install` without
+    dumping lots of packages into the system-wide Python.
     
     The other great benefit is that no root access is required since all
     modules are kept under the desired directory. This makes it easy

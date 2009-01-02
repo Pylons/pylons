@@ -53,6 +53,19 @@ Glossary
         logic to prepare data for display, then renders a template with
         the data and returns it to the user. See :ref:`controllers`.
 
+    easy_install
+        A tool that lets you download, build, install and manage Python packages
+        and their dependencies. `easy_install`_ is the end-user facing component
+        of :term:`setuptools`.
+
+        Pylons can be installed with ``easy_install``, and applications built
+        with Pylons can easily be deployed this way as well.
+
+        .. seealso::
+            Pylons :ref:`package_and_deploy`
+
+        .. _easy_install: http://peak.telecommunity.com/DevCenter/EasyInstall
+
     egg
         Python egg's are bundled Python packages, generally installed by
         a package called :term:`setuptools`. Unlike normal Python package
@@ -142,12 +155,10 @@ Glossary
             `Building and Distributing Packages with setuptools <http://peak.telecommunity.com/DevCenter/setuptools>`_
 
     SQLAlchemy
-        One of the most popular Python database object-relation mappers
-        (:term:`ORM`\'s). `SQLAlchemy <http://www.sqlalchemy.org/>`_ is the
-        default :term:`ORM` recommended in Pylons. SQLAlchemy at the ORM
-        level can look
-        similar to Rails ActiveRecord, but uses the
-        `DataMapper <http://www.martinfowler.com/eaaCatalog/dataMapper.html>`_
+        One of the most popular Python database object-relational mappers
+        (:term:`ORM`). `SQLAlchemy <http://www.sqlalchemy.org/>`_ is the default
+        ORM recommended in Pylons. SQLAlchemy at the ORM level can look similar
+        to Rails ActiveRecord, but uses the `DataMapper <http://www.martinfowler.com/eaaCatalog/dataMapper.html>`_
         pattern for additional flexibility with the ability to map simple to
         extremely complex databases.
 
@@ -160,6 +171,26 @@ Glossary
     UI
         User interface. The means of communication between a person
         and a software program or operating system.
+
+    virtualenv
+        A tool to create isolated Python environments, designed to supersede the
+        ``workingenv`` package and `virtual python`_ configurations. In addition
+        to isolating packages from possible system conflicts, `virtualenv`_
+        makes it easy to install Python libraries using :term:`easy_install`
+        without dumping lots of packages into the system-wide Python.
+
+        The other great benefit is that no root access is required since all
+        modules are kept under the desired directory. This makes it easy
+        to setup a working Pylons install on shared hosting providers and other
+        systems where system-wide access is unavailable.
+
+        ``virtualenv`` is employed automatically by the ``go-pylons.py`` script
+        described in :ref:`getting_started`. The Pylons wiki has more
+        information on `working with virtualenv`_.
+
+        .. _virtual python: http://peak.telecommunity.com/DevCenter/EasyInstall#creating-a-virtual-python
+        .. _virtualenv: http://pypi.python.org/pypi/virtualenv
+        .. _working with virtualenv: http://wiki.pylonshq.com/display/pylonscookbook/Using+a+Virtualenv+Sandbox
 
     web server gateway interface
         A specification for web servers and application servers to

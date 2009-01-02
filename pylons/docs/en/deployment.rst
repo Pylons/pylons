@@ -135,7 +135,9 @@ Running your application
 
 In order to run your application your users will need to install it as described above but then generate a config file and setup your application before deploying it. This is described in :ref:`run-config`.
 
-Packaging and deployment
+.. _package_and_deploy:
+
+Packaging and Deployment
 ========================
 
 This document describes how a developer can take advantage of Pylons' application setup functionality to allow webmasters to easily setup their application. 
