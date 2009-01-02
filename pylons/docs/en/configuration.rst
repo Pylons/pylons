@@ -126,7 +126,7 @@ Environment
 The :file:`config/environment.py` module sets up the basic Pylons environment
 variables needed to run the application. Objects that should be setup once
 for the entire application should either be setup here, or in the
-:file:`lib/app_globals` :meth:`__init__.py` method.
+:file:`lib/app_globals` :meth:`__init__` method.
 
 It also calls the :ref:`url-config` function to setup how the URL's will
 be matched up to :ref:`controllers`, creates the :term:`app_globals`
