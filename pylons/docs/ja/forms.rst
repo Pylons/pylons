@@ -251,12 +251,12 @@ Here's the longer way to use the `EmailForm` schema:
 
     def email(self): 
         schema = EmailForm() 
-    try: 
-        form_result = schema.to_python(request.params) 
-    except formencode.validators.Invalid, error: 
-        return 'Invalid: %s' % error 
-    else: 
-        return 'Your email is: %s' % form_result.get('email') 
+        try: 
+            form_result = schema.to_python(request.params) 
+        except formencode.validators.Invalid, error: 
+            return 'Invalid: %s' % error 
+        else: 
+            return 'Your email is: %s' % form_result.get('email') 
 
 If the values entered are valid, the schema's `to_python()` method returns a
 dictionary of the validated and coerced `form_result`. This means that you can
