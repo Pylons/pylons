@@ -42,31 +42,29 @@ Pylons の種々な側面の探検を奨励するために、リンクが提供�
 
 
 .. To avoid conflicts with system-installed Python libraries, Pylons
-.. comes with a boot-strap Python script that sets up a `virtual
-.. environment <http://pypi.python.org/pypi/virtualenv>`_. Pylons will
-.. then be installed under the virtual environment.
+.. comes with a boot-strap Python script that sets up a "virtual"
+.. Python environment. Pylons will then be installed under the virtual
+.. environment.
 
 システムにインストールされた Python ライブラリとの衝突を避けるために、
-Pylons には `virtual environment
-<http://pypi.python.org/pypi/virtualenv>`_ をセットアップするブートスト
-ラップ Python スクリプトが付属しています。そして Pylons は仮想環境にイ
-ンストールされます。
+Pylons には "仮想" Python 環境をセットアップするブートストラップ
+Python スクリプトが付属しています。そして Pylons は仮想環境にインストー
+ルされます。
 
 
 .. admonition:: By the Way
     
-    .. virtualenv is a useful tool to create isolated Python
+    .. :term:`virtualenv` is a useful tool to create isolated Python
     .. environments. In addition to isolating packages from possible
     .. system conflicts, it makes it easy to install Python libraries
-    .. using `easy_install
-    .. <http://peak.telecommunity.com/DevCenter/EasyInstall>`_ without
-    .. dumping lots of packages into the system-wide Python.
+    .. using :term:`easy_install` without dumping lots of packages
+    .. into the system-wide Python.
 
-    virtualenv は独立した Python 環境を作成する便利なツールです。潜在的
-    なシステム衝突からパッケージを隔離することに加え、多くのパッケージ
-    を system-wide の Python の中にばらまくことなく、 `easy_install
-    <http://peak.telecommunity.com/DevCenter/EasyInstall>`_ を使用して
-    Python ライブラリをインストールすることを簡単にします。
+    :term:virtualenv は独立した Python 環境を作成する便利なツールです。
+    潜在的なシステム衝突からパッケージを隔離することに加え、多くのパッ
+    ケージを system-wide の Python の中にばらまくことなく、
+    :term:`easy_install` を使用して Python ライブラリをインストールする
+    ことを簡単にします。
 
 
     .. The other great benefit is that no root access is required

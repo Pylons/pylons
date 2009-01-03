@@ -130,6 +130,20 @@
         :ref:`controllers` を参照してください。
 
 
+    easy_install
+        A tool that lets you download, build, install and manage Python packages
+        and their dependencies. `easy_install`_ is the end-user facing component
+        of :term:`setuptools`.
+
+        Pylons can be installed with ``easy_install``, and applications built
+        with Pylons can easily be deployed this way as well.
+
+        .. seealso::
+            Pylons :ref:`deployment`
+
+        .. _easy_install: http://peak.telecommunity.com/DevCenter/EasyInstall
+
+
     .. egg
     ..     Python egg's are bundled Python packages, generally
     ..     installed by a package called :term:`setuptools`. Unlike
@@ -353,8 +367,8 @@
 
     .. SQLAlchemy
     ..     One of the most popular Python database object-relation
-    ..     mappers (:term:`ORM`\'s). `SQLAlchemy
-    ..     <http://www.sqlalchemy.org/>`_ is the default :term:`ORM`
+    ..     mappers (:term:`ORM`). `SQLAlchemy
+    ..     <http://www.sqlalchemy.org/>`_ is the default ORM
     ..     recommended in Pylons. SQLAlchemy at the ORM level can look
     ..     similar to Rails ActiveRecord, but uses the `DataMapper
     ..     <http://www.martinfowler.com/eaaCatalog/dataMapper.html>`_
@@ -365,7 +379,7 @@
         最もポピュラーな Python データベース・オブジェクト・リレーショ
         ン・マッパー (:term:`ORM`) の 1 つ。 `SQLAlchemy
         <http://www.sqlalchemy.org/>`_ は Pylons が推奨するデフォルトの
-        :term:`ORM` です。 ORM レベルにおける SQLAlchemy は Rails の
+        ORM です。 ORM レベルにおける SQLAlchemy は Rails の
         ActiveRecord と同様に見えますが、簡単なデータベースから非常に複
         雑なものまでマップすることのできる追加の柔軟性のために
         `DataMapper
@@ -394,6 +408,27 @@
     UI
         ユーザーインタフェース。 人とソフトウェアプログラム、またはオペ
         レーティングシステムとの間のコミュニケーション手段。
+
+
+    virtualenv
+        A tool to create isolated Python environments, designed to supersede the
+        ``workingenv`` package and `virtual python`_ configurations. In addition
+        to isolating packages from possible system conflicts, `virtualenv`_
+        makes it easy to install Python libraries using :term:`easy_install`
+        without dumping lots of packages into the system-wide Python.
+
+        The other great benefit is that no root access is required since all
+        modules are kept under the desired directory. This makes it easy
+        to setup a working Pylons install on shared hosting providers and other
+        systems where system-wide access is unavailable.
+
+        ``virtualenv`` is employed automatically by the ``go-pylons.py`` script
+        described in :ref:`getting_started`. The Pylons wiki has more
+        information on `working with virtualenv`_.
+
+        .. _virtual python: http://peak.telecommunity.com/DevCenter/EasyInstall#creating-a-virtual-python
+        .. _virtualenv: http://pypi.python.org/pypi/virtualenv
+        .. _working with virtualenv: http://wiki.pylonshq.com/display/pylonscookbook/Using+a+Virtualenv+Sandbox
 
 
     .. web server gateway interface
