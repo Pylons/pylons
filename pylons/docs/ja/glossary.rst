@@ -27,7 +27,7 @@
        ミュニケーション手段。
 
 
-    .. app_globals        
+    .. app_globals
     ..     The ``app_globals`` object is created on application
     ..     instantiation by the :class:`Globals` class in a projects
     ..     :file:`lib/app_globals.py` module.
@@ -41,7 +41,7 @@
     ..     attach db connections or other objects which ensure their
     ..     own access is thread-safe.
 
-    app_globals        
+    app_globals
         ``app_globals`` オブジェクトは、 :file:`lib/app_globals.py` モ
         ジュールの :class:`Globals` クラスからアプリケーションインスタ
         ンス化によって作られます。
@@ -68,7 +68,7 @@
         使用されます。
 
 
-    .. caching        
+    .. caching
     ..     The storage of the results of expensive or length
     ..     computations for later re-use at a point more quickly
     ..     accessed by the end user.
@@ -136,7 +136,7 @@
     ..     normal Python package installs, egg's allow a few
     ..     additional features, such as package dependencies, and
     ..     dynamic discovery.
-    ..        
+    ..
     ..     .. seealso::
     ..         `The Quick Guide to Python Eggs
     ..         <http://peak.telecommunity.com/DevCenter/PythonEggs>`_
@@ -208,7 +208,7 @@
     ..     implemented in Python. Building Pylons applications for App
     ..     Engine is facilitated by Ian Bicking's `appengine-monkey
     ..     project <http://code.google.com/p/appengine-monkey/>`_.
-    ..        
+    ..
     ..     .. seealso::
     ..         `What is Google App Engine? - Official Doc
     ..         <http://code.google.com/appengine/docs/whatisgoogleappengine.html>`_
@@ -373,13 +373,13 @@
         ンを使用します。
 
 
-    .. tmpl_context        
+    .. tmpl_context
     ..     The ``tmpl_context`` is available in the :mod:`pylons`
     ..     module, and refers to the template context. Objects
     ..     attached to it are available in the template namespace as
     ..     either ``tmpl_context`` or ``c`` for convenience.
 
-    tmpl_context        
+    tmpl_context
         ``tmpl_context`` は :mod:`pylons` モジュールから利用可能で、テ
         ンプレートコンテキストを参照します。 テンプレートコンテキストに
         取り付けられたオブジェクトは、テンプレート名前空間では
@@ -423,7 +423,7 @@
     ..     applications to modify the environ, and/or the content of
     ..     other WSGI applications by being placed in between the
     ..     request and the other WSGI application.
-    ..        
+    ..
     ..     .. seealso::
     ..         :ref:`WSGI Middleware in Concepts of Pylons <wsgi-middleware>`
     ..         :ref:`WSGI Middleware Configuration <middleware-config>`
