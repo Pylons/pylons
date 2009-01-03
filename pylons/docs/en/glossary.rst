@@ -62,7 +62,7 @@ Glossary
         with Pylons can easily be deployed this way as well.
 
         .. seealso::
-            Pylons :ref:`package_and_deploy`
+            Pylons :ref:`deployment`
 
         .. _easy_install: http://peak.telecommunity.com/DevCenter/EasyInstall
 
