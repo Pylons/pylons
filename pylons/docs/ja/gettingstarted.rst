@@ -61,10 +61,10 @@ Python スクリプトが付属しています。そして Pylons は仮想環�
     .. into the system-wide Python.
 
     :term:virtualenv は独立した Python 環境を作成する便利なツールです。
-    潜在的なシステム衝突からパッケージを隔離することに加え、多くのパッ
-    ケージを system-wide の Python の中にばらまくことなく、
-    :term:`easy_install` を使用して Python ライブラリをインストールする
-    ことを簡単にします。
+    潜在的なシステム衝突の可能性からパッケージを隔離することに加え、多
+    くのパッケージを system-wide の Python の中にばらまくことなく、
+    :term:`easy_install` を使用して Python ライブラリを簡単にインストー
+    ルできるようにします。
 
 
     .. The other great benefit is that no root access is required

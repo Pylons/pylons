@@ -130,13 +130,28 @@
         :ref:`controllers` を参照してください。
 
 
-    easy_install
-        A tool that lets you download, build, install and manage Python packages
-        and their dependencies. `easy_install`_ is the end-user facing component
-        of :term:`setuptools`.
+    .. easy_install
+    ..     A tool that lets you download, build, install and manage
+    ..     Python packages and their dependencies. `easy_install`_ is
+    ..     the end-user facing component of :term:`setuptools`.
+    ..
+    ..     Pylons can be installed with ``easy_install``, and
+    ..     applications built with Pylons can easily be deployed this
+    ..     way as well.
+    ..
+    ..     .. seealso::
+    ..         Pylons :ref:`deployment`
+    ..
+    ..     .. _easy_install: http://peak.telecommunity.com/DevCenter/EasyInstall
 
-        Pylons can be installed with ``easy_install``, and applications built
-        with Pylons can easily be deployed this way as well.
+    easy_install
+        Python パッケージとその依存パッケージのダウンロード、ビルド、イ
+        ンストール、管理を行うことのできるツール。 `easy_install`_ は
+        :term:`setuptools` のエンドユーザ向けコンポーネントです。
+
+        Pylons は ``easy_install`` を使ってインストールすることができま
+        す。そして、 Pylons を用いて組み立てられたアプリケーションも、
+        同様に easy_install によって容易に配布することができます。
 
         .. seealso::
             Pylons :ref:`deployment`
@@ -410,21 +425,47 @@
         レーティングシステムとの間のコミュニケーション手段。
 
 
+    .. virtualenv
+    ..     A tool to create isolated Python environments, designed to
+    ..     supersede the ``workingenv`` package and `virtual python`_
+    ..     configurations. In addition to isolating packages from
+    ..     possible system conflicts, `virtualenv`_ makes it easy to
+    ..     install Python libraries using :term:`easy_install` without
+    ..     dumping lots of packages into the system-wide Python.
+    ..
+    ..     The other great benefit is that no root access is required
+    ..     since all modules are kept under the desired
+    ..     directory. This makes it easy to setup a working Pylons
+    ..     install on shared hosting providers and other systems where
+    ..     system-wide access is unavailable.
+    ..
+    ..     ``virtualenv`` is employed automatically by the
+    ..     ``go-pylons.py`` script described in
+    ..     :ref:`getting_started`. The Pylons wiki has more
+    ..     information on `working with virtualenv`_.
+    ..
+    ..     .. _virtual python: http://peak.telecommunity.com/DevCenter/EasyInstall#creating-a-virtual-python
+    ..     .. _virtualenv: http://pypi.python.org/pypi/virtualenv
+    ..     .. _working with virtualenv: http://wiki.pylonshq.com/display/pylonscookbook/Using+a+Virtualenv+Sandbox
+
     virtualenv
-        A tool to create isolated Python environments, designed to supersede the
-        ``workingenv`` package and `virtual python`_ configurations. In addition
-        to isolating packages from possible system conflicts, `virtualenv`_
-        makes it easy to install Python libraries using :term:`easy_install`
-        without dumping lots of packages into the system-wide Python.
+        ``workingenv`` パッケージと `virtual python`_ 構成に取って代わ
+        るように設計された、独立した Python 環境を作成するためのツール。
+        潜在的なシステム衝突の可能性からパッケージを隔離することに加え、
+        `virtualenv`_ は多くのパッケージを system-wide の Python の中に
+        ばらまくことなく、 :term:`easy_install` を使用して Python ライ
+        ブラリを簡単にインストールできるようにします。
 
-        The other great benefit is that no root access is required since all
-        modules are kept under the desired directory. This makes it easy
-        to setup a working Pylons install on shared hosting providers and other
-        systems where system-wide access is unavailable.
+        もう一つのすばらしい利点は、すべてのモジュールを好きなディレク
+        トリの下に置くことができるので、 root アクセスは全く必要でない
+        ということです。これによって、共有ホスティングプロバイダーや、
+        system-wide へのアクセスが入手できない他のシステムに、動作する
+        Pylons インストールをセットアップすることが簡単になります。
 
-        ``virtualenv`` is employed automatically by the ``go-pylons.py`` script
-        described in :ref:`getting_started`. The Pylons wiki has more
-        information on `working with virtualenv`_.
+        ``virtualenv`` は :ref:`getting_started` で説明された
+        ``go-pylons.py`` スクリプトによって自動的に使われます。 Pylons
+        wiki には、 `working with virtualenv`_ に関するより詳しい情報が
+        あります。
 
         .. _virtual python: http://peak.telecommunity.com/DevCenter/EasyInstall#creating-a-virtual-python
         .. _virtualenv: http://pypi.python.org/pypi/virtualenv
