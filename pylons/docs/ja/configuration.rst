@@ -311,14 +311,14 @@ deployment ini で設定される中で最も重要なオプションの 1 つ�
 .. The :file:`config/environment.py` module sets up the basic Pylons
 .. environment variables needed to run the application. Objects that
 .. should be setup once for the entire application should either be
-.. setup here, or in the :file:`lib/app_globals` :meth:`__init__.py`
+.. setup here, or in the :file:`lib/app_globals` :meth:`__init__`
 .. method.
 
 :file:`config/environment.py` モジュールは、アプリケーションを実行する
 のに必要とされる基本的な Pylons 環境変数をセットアップします。アプリケー
 ション全体のために一度だけセットアップされるオブジェクトは、ここか、も
-しくは :file:`lib/app_globals` の :meth:`__init__.py` メソッドでセット
-アップすべきです。
+しくは :file:`lib/app_globals` の :meth:`__init__` メソッドでセットアッ
+プすべきです。
 
 
 .. It also calls the :ref:`url-config` function to setup how the URL's

@@ -197,7 +197,7 @@ when using ORM-mapped models. Example:
         Tim
 
 The `paginate` module is smart enough to only query the database for the
-objets that are needed on this page. E.g. if a page consists of the items
+objects that are needed on this page. E.g. if a page consists of the items
 11-20 then SQLAlchemy will be asked to fetch exactly that 10 rows
 through `LIMIT` and `OFFSET` in the actual SQL query. So you must not load
 the complete result set into memory and pass that. Instead always pass
@@ -275,7 +275,7 @@ Partial updates with AJAX
 
 Updating a page partially is easy. All it takes is a little Javascript
 that - instead of loading the complete page - updates just the part
-of the page containing the paginated items. The ``render()`` method accepts an
+of the page containing the paginated items. The ``pager()`` method accepts an
 ``onclick`` parameter for that purpose. This value is added as an ``onclick``
 parameter to the A-HREF tags. So the ``href`` parameter points to a URL
 that loads the complete page while the ``onclick`` parameter provides Javascript
@@ -369,7 +369,7 @@ for `Cross-site request forgery`__ for more information.
 
 .. __: http://en.wikipedia.org/wiki/Cross-site_request_forgery
 
-Pylons provides an ``authenticate_form`` decorator that does this verfication
+Pylons provides an ``authenticate_form`` decorator that does this verification
 on the behalf of controllers.
 
 These helpers depend on Pylons' ``session`` object.  Most of them can be easily 

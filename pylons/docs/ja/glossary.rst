@@ -27,7 +27,7 @@
        ミュニケーション手段。
 
 
-    .. app_globals        
+    .. app_globals
     ..     The ``app_globals`` object is created on application
     ..     instantiation by the :class:`Globals` class in a projects
     ..     :file:`lib/app_globals.py` module.
@@ -41,7 +41,7 @@
     ..     attach db connections or other objects which ensure their
     ..     own access is thread-safe.
 
-    app_globals        
+    app_globals
         ``app_globals`` オブジェクトは、 :file:`lib/app_globals.py` モ
         ジュールの :class:`Globals` クラスからアプリケーションインスタ
         ンス化によって作られます。
@@ -68,7 +68,7 @@
         使用されます。
 
 
-    .. caching        
+    .. caching
     ..     The storage of the results of expensive or length
     ..     computations for later re-use at a point more quickly
     ..     accessed by the end user.
@@ -130,13 +130,42 @@
         :ref:`controllers` を参照してください。
 
 
+    .. easy_install
+    ..     A tool that lets you download, build, install and manage
+    ..     Python packages and their dependencies. `easy_install`_ is
+    ..     the end-user facing component of :term:`setuptools`.
+    ..
+    ..     Pylons can be installed with ``easy_install``, and
+    ..     applications built with Pylons can easily be deployed this
+    ..     way as well.
+    ..
+    ..     .. seealso::
+    ..         Pylons :ref:`deployment`
+    ..
+    ..     .. _easy_install: http://peak.telecommunity.com/DevCenter/EasyInstall
+
+    easy_install
+        Python パッケージとその依存パッケージのダウンロード、ビルド、イ
+        ンストール、管理を行うことのできるツール。 `easy_install`_ は
+        :term:`setuptools` のエンドユーザ向けコンポーネントです。
+
+        Pylons は ``easy_install`` を使ってインストールすることができま
+        す。そして、 Pylons を用いて組み立てられたアプリケーションも、
+        同様に easy_install によって容易に配布することができます。
+
+        .. seealso::
+            Pylons :ref:`deployment`
+
+        .. _easy_install: http://peak.telecommunity.com/DevCenter/EasyInstall
+
+
     .. egg
     ..     Python egg's are bundled Python packages, generally
     ..     installed by a package called :term:`setuptools`. Unlike
     ..     normal Python package installs, egg's allow a few
     ..     additional features, such as package dependencies, and
     ..     dynamic discovery.
-    ..        
+    ..
     ..     .. seealso::
     ..         `The Quick Guide to Python Eggs
     ..         <http://peak.telecommunity.com/DevCenter/PythonEggs>`_
@@ -208,7 +237,7 @@
     ..     implemented in Python. Building Pylons applications for App
     ..     Engine is facilitated by Ian Bicking's `appengine-monkey
     ..     project <http://code.google.com/p/appengine-monkey/>`_.
-    ..        
+    ..
     ..     .. seealso::
     ..         `What is Google App Engine? - Official Doc
     ..         <http://code.google.com/appengine/docs/whatisgoogleappengine.html>`_
@@ -353,8 +382,8 @@
 
     .. SQLAlchemy
     ..     One of the most popular Python database object-relation
-    ..     mappers (:term:`ORM`\'s). `SQLAlchemy
-    ..     <http://www.sqlalchemy.org/>`_ is the default :term:`ORM`
+    ..     mappers (:term:`ORM`). `SQLAlchemy
+    ..     <http://www.sqlalchemy.org/>`_ is the default ORM
     ..     recommended in Pylons. SQLAlchemy at the ORM level can look
     ..     similar to Rails ActiveRecord, but uses the `DataMapper
     ..     <http://www.martinfowler.com/eaaCatalog/dataMapper.html>`_
@@ -365,7 +394,7 @@
         最もポピュラーな Python データベース・オブジェクト・リレーショ
         ン・マッパー (:term:`ORM`) の 1 つ。 `SQLAlchemy
         <http://www.sqlalchemy.org/>`_ は Pylons が推奨するデフォルトの
-        :term:`ORM` です。 ORM レベルにおける SQLAlchemy は Rails の
+        ORM です。 ORM レベルにおける SQLAlchemy は Rails の
         ActiveRecord と同様に見えますが、簡単なデータベースから非常に複
         雑なものまでマップすることのできる追加の柔軟性のために
         `DataMapper
@@ -373,13 +402,13 @@
         ンを使用します。
 
 
-    .. tmpl_context        
+    .. tmpl_context
     ..     The ``tmpl_context`` is available in the :mod:`pylons`
     ..     module, and refers to the template context. Objects
     ..     attached to it are available in the template namespace as
     ..     either ``tmpl_context`` or ``c`` for convenience.
 
-    tmpl_context        
+    tmpl_context
         ``tmpl_context`` は :mod:`pylons` モジュールから利用可能で、テ
         ンプレートコンテキストを参照します。 テンプレートコンテキストに
         取り付けられたオブジェクトは、テンプレート名前空間では
@@ -394,6 +423,53 @@
     UI
         ユーザーインタフェース。 人とソフトウェアプログラム、またはオペ
         レーティングシステムとの間のコミュニケーション手段。
+
+
+    .. virtualenv
+    ..     A tool to create isolated Python environments, designed to
+    ..     supersede the ``workingenv`` package and `virtual python`_
+    ..     configurations. In addition to isolating packages from
+    ..     possible system conflicts, `virtualenv`_ makes it easy to
+    ..     install Python libraries using :term:`easy_install` without
+    ..     dumping lots of packages into the system-wide Python.
+    ..
+    ..     The other great benefit is that no root access is required
+    ..     since all modules are kept under the desired
+    ..     directory. This makes it easy to setup a working Pylons
+    ..     install on shared hosting providers and other systems where
+    ..     system-wide access is unavailable.
+    ..
+    ..     ``virtualenv`` is employed automatically by the
+    ..     ``go-pylons.py`` script described in
+    ..     :ref:`getting_started`. The Pylons wiki has more
+    ..     information on `working with virtualenv`_.
+    ..
+    ..     .. _virtual python: http://peak.telecommunity.com/DevCenter/EasyInstall#creating-a-virtual-python
+    ..     .. _virtualenv: http://pypi.python.org/pypi/virtualenv
+    ..     .. _working with virtualenv: http://wiki.pylonshq.com/display/pylonscookbook/Using+a+Virtualenv+Sandbox
+
+    virtualenv
+        ``workingenv`` パッケージと `virtual python`_ 構成に取って代わ
+        るように設計された、独立した Python 環境を作成するためのツール。
+        潜在的なシステム衝突の可能性からパッケージを隔離することに加え、
+        `virtualenv`_ は多くのパッケージを system-wide の Python の中に
+        ばらまくことなく、 :term:`easy_install` を使用して Python ライ
+        ブラリを簡単にインストールできるようにします。
+
+        もう一つのすばらしい利点は、すべてのモジュールを好きなディレク
+        トリの下に置くことができるので、 root アクセスは全く必要でない
+        ということです。これによって、共有ホスティングプロバイダーや、
+        system-wide へのアクセスが入手できない他のシステムに、動作する
+        Pylons インストールをセットアップすることが簡単になります。
+
+        ``virtualenv`` は :ref:`getting_started` で説明された
+        ``go-pylons.py`` スクリプトによって自動的に使われます。 Pylons
+        wiki には、 `working with virtualenv`_ に関するより詳しい情報が
+        あります。
+
+        .. _virtual python: http://peak.telecommunity.com/DevCenter/EasyInstall#creating-a-virtual-python
+        .. _virtualenv: http://pypi.python.org/pypi/virtualenv
+        .. _working with virtualenv: http://wiki.pylonshq.com/display/pylonscookbook/Using+a+Virtualenv+Sandbox
 
 
     .. web server gateway interface
@@ -423,7 +499,7 @@
     ..     applications to modify the environ, and/or the content of
     ..     other WSGI applications by being placed in between the
     ..     request and the other WSGI application.
-    ..        
+    ..
     ..     .. seealso::
     ..         :ref:`WSGI Middleware in Concepts of Pylons <wsgi-middleware>`
     ..         :ref:`WSGI Middleware Configuration <middleware-config>`
