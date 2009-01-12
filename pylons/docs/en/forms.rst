@@ -34,7 +34,7 @@ Add a new template called `form.mako` in the `templates` directory that contains
     <input type="submit" name="submit" value="Submit" /> 
     </form> 
 
-If the server is still running (see the Getting Started Guide) you can visit http://localhost:5000/hello/form and you will see the form. Try entering the email address `test@example.com` and clicking Submit. The URL should change to ``http://localhost:5000/hello/email?email=test%40example.com`` and you should see the text `Your email is test@example.com`. 
+If the server is still running (see the :ref:`Getting Started Guide <getting_started>`) you can visit http://localhost:5000/hello/form and you will see the form. Try entering the email address `test@example.com` and clicking Submit. The URL should change to ``http://localhost:5000/hello/email?email=test%40example.com`` and you should see the text `Your email is test@example.com`. 
 
 In Pylons all form variables can be accessed from the :data:`request.params` object which behaves like a dictionary. The keys are the names of the fields in the form and the value is a string with all the characters entity decoded. For example note how the `@` character was converted by the browser to `%40` in the URL and was converted back ready for use in :data:`request.params`. 
 
@@ -241,7 +241,7 @@ to find HTML fields and replace them with the values were originally submitted.
 Validation the Long Way 
 -----------------------
 
-The `validate` decorator covers up a bit of work, and depending on your needs its possible you could need direct access to FormEncode abilities it smoothes over. 
+The `validate` decorator covers up a bit of work, and depending on your needs it's possible you could need direct access to FormEncode abilities it smoothes over. 
 
 Here's the longer way to use the `EmailForm` schema: 
 
@@ -269,19 +269,18 @@ field for age in years and we had used a `formencode.validators.Int()`
 validator, the value in `form_result` for the age would also be the correct
 type; in this case a Python integer.
 
-.. note:: 
-    FormEncode comes with a useful set of validators but you can also easily
-    create your own. If you do create your own validators you will find it very
-    useful that all FormEncode schemas' `.to_python()` methods take a second
-    argument named `state`. This means you can pass the Pylons `c` object
-    into your validators so that you can set any variables that your validators
-    need in order to validate a particular field as an attribute of the `c`
-    object. It can then be passed as the `c` object to the schema as follows:
+FormEncode comes with a useful set of validators but you can also easily
+create your own. If you do create your own validators you will find it very
+useful that all FormEncode schemas' `.to_python()` methods take a second
+argument named `state`. This means you can pass the Pylons `c` object
+into your validators so that you can set any variables that your validators
+need in order to validate a particular field as an attribute of the `c`
+object. It can then be passed as the `c` object to the schema as follows:
 
-    .. code-block:: python 
+.. code-block:: python 
 
-        c.domain = 'example.com' 
-        form_result = schema.to_python(request.params, c) 
+    c.domain = 'example.com' 
+    form_result = schema.to_python(request.params, c) 
 
 The schema passes `c` to each validator in turn so that you can do things like this: 
 
