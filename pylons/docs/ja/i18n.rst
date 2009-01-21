@@ -355,9 +355,9 @@ distutils が認識できないオプションに対して警告を出さない�
 .. code-block:: python
 
     message_extractors = {'translate_demo': [
-                            ('**.py', 'python', None),
-                            ('templates/**.mako', 'mako', None),
-                            ('public/**', 'ignore', None)]},
+            ('**.py', 'python', None),
+            ('templates/**.mako', 'mako', None),
+            ('public/**', 'ignore', None)]},
 
 
 .. We'll use Babel to extract messages to a ``.pot`` file in your
@@ -908,10 +908,9 @@ setup.py ファイルで定義されます:
 .. code-block:: python
 
     message_extractors = {'translate_demo': [
-    ('public/**', 'ignore', None),
-    ('**.py', 'python', None),
-    ('templates/**.mako', 'mako', None),
-    ]},
+            ('**.py', 'python', None),
+            ('templates/**.mako', 'mako', None),
+            ('public/**', 'ignore', None)]},
 
 
 .. For a project using Genshi instead of Mako, the Mako line might be
@@ -1125,7 +1124,8 @@ Pylons は、 ``ungettext()`` 関数も提供しています。それは複数�
 
 .. code-block:: python
 
-    ungettext('There is %(num)d file here', 'There are %(num)d files here', n) % {'num': n}
+    ungettext('There is %(num)d file here', 'There are %(num)d files here',
+              n) % {'num': n}
 
 
 .. Plural forms have a different type of entry in ``.pot``/``.po``
