@@ -14,7 +14,7 @@ HERE_DIR = os.getcwd()
 BUILD_DIR = path.join(HERE_DIR, '_build')
 
 #host = 'http://localhost:25050'
-host = 'http://beta.pylonshq.com'
+host = 'http://pylonshq.com'
 
 post_uri = '%s/docs/upload' % host
 image_uri = '%s/docs/upload_image' % host
