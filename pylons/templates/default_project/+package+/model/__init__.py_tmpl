@@ -13,10 +13,8 @@ def init_model(engine):
     #                           autoload_with=engine)
     #orm.mapper(Reflected, reflected_table)
     #
-    sm = orm.sessionmaker(autoflush=True, transactional=True, bind=engine)
-
+    meta.Session.configure(bind=engine)
     meta.engine = engine
-    meta.Session = orm.scoped_session(sm)
 
 
 ## Non-reflected tables may be defined and mapped at module level

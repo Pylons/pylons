@@ -7,7 +7,6 @@
 
 .. currentmodule:: webhelpers.containers
 
-
 .. autoclass:: NotGiven
     :members:
 .. autoclass:: DumbObject
