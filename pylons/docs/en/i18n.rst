@@ -68,7 +68,7 @@ http://pylonshq.com/docs/module-pylons.i18n.translation.html
 
 In our example we want the string ``'Hello'`` to appear in three different 
 languages: English, French and Spanish. We also want to display the word 
-``'Hello'`` in the default language. We'll then go on to use some pural words 
+``'Hello'`` in the default language. We'll then go on to use some plural words 
 too. 
 
 Lets call our project ``translate_demo``: 
@@ -154,7 +154,7 @@ running.
 GNU gettext provides a suite of command line programs for extracting messages 
 from source code and working with the associated gettext catalogs. The `Babel 
 <http://babel.edgewall.org/>`_ project provides pure Python alternative 
-versions of these tools. Unlike the GNU gettext tool `xgettext`', Babel 
+versions of these tools. Unlike the GNU gettext tool `xgettext`, Babel 
 supports extracting translatable strings from Python templating languages 
 (currently Mako and Genshi). 
 
@@ -179,10 +179,10 @@ uncommented before proceeding with the rest of this walk through:
 
 .. code-block :: python 
 
-    message_extractors = {'translate_demo': [ 
-                            ('**.py', 'python', None), 
-                            ('templates/**.mako', 'mako', None), 
-                            ('public/**', 'ignore', None)]}, 
+    message_extractors = {'translate_demo': [
+            ('**.py', 'python', None),
+            ('templates/**.mako', 'mako', None),
+            ('public/**', 'ignore', None)]},
 
 
 We'll use Babel to extract messages to a ``.pot`` file in your project's 
@@ -471,7 +471,7 @@ you add them.
 .. note:: 
 
    Fallbacks are reset after calling ``set_lang(lang)`` -- that is, fallbacks
-   are associated with the currently selected langauge.
+   are associated with the currently selected language.
 
 One case where using fallbacks in this way is particularly useful is when you 
 wish to display content based on the languages requested by the browser in the 
@@ -479,7 +479,7 @@ wish to display content based on the languages requested by the browser in the
 languages so it is useful to be add fallbacks in the order specified by the 
 browser so that you always try to display words in the language of preference 
 and search the other languages in order if a translation cannot be found. The 
-languages defined in the ``HTTP_ACCEPT_LANGAUGE`` header are available in 
+languages defined in the ``HTTP_ACCEPT_LANGUAGE`` header are available in 
 Pylons as ``request.languages`` and can be used like this: 
 
 .. code-block:: python 
@@ -512,11 +512,10 @@ setup.py file:
 
 .. code-block:: python 
 
-    message_extractors = {'translate_demo': [ 
-    ('public/**', 'ignore', None), 
-    ('**.py', 'python', None), 
-    ('templates/**.mako', 'mako', None), 
-    ]}, 
+    message_extractors = {'translate_demo': [
+            ('**.py', 'python', None),
+            ('templates/**.mako', 'mako', None),
+            ('public/**', 'ignore', None)]},
 
 For a project using Genshi instead of Mako, the Mako line might be replaced with: 
 
@@ -643,8 +642,8 @@ internationalizing plural words, and can be used as follows:
 
 .. code-block:: python 
 
-    ungettext('There is %(num)d file here', 'There are %(num)d files here', 
-    n) % {'num': n} 
+    ungettext('There is %(num)d file here', 'There are %(num)d files here',
+              n) % {'num': n}
 
 Plural forms have a different type of entry in ``.pot``/``.po`` files, as 
 described in `The Format of PO Files 

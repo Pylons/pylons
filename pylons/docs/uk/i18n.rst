@@ -179,10 +179,10 @@ uncommented before proceeding with the rest of this walk through:
 
 .. code-block :: python 
 
-    message_extractors = {'translate_demo': [ 
-                            ('**.py', 'python', None), 
-                            ('templates/**.mako', 'mako', None), 
-                            ('public/**', 'ignore', None)]}, 
+    message_extractors = {'translate_demo': [
+            ('**.py', 'python', None),
+            ('templates/**.mako', 'mako', None),
+            ('public/**', 'ignore', None)]},
 
 
 We'll use Babel to extract messages to a ``.pot`` file in your project's 
@@ -507,11 +507,10 @@ setup.py file:
 
 .. code-block:: python 
 
-    message_extractors = {'translate_demo': [ 
-    ('public/**', 'ignore', None), 
-    ('**.py', 'python', None), 
-    ('templates/**.mako', 'mako', None), 
-    ]}, 
+    message_extractors = {'translate_demo': [
+            ('**.py', 'python', None),
+            ('templates/**.mako', 'mako', None),
+            ('public/**', 'ignore', None)]},
 
 For a project using Genshi instead of Mako, the Mako line might be replaced with: 
 
@@ -638,8 +637,8 @@ internationalizing plural words, and can be used as follows:
 
 .. code-block:: python 
 
-    ungettext('There is %(num)d file here', 'There are %(num)d files here', 
-    n) % {'num': n} 
+    ungettext('There is %(num)d file here', 'There are %(num)d files here',
+              n) % {'num': n}
 
 Plural forms have a different type of entry in ``.pot``/``.po`` files, as 
 described in `The Format of PO Files 
