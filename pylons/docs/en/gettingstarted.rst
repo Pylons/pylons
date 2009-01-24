@@ -234,7 +234,7 @@ directory with the following contents:
     
     ${request.environ}
 
-The :term:`request` variable in templates is used to get information about the current request. `template globals <modules/templating.html#template-globals>`_ lists all the variables Pylons makes available for use in templates.
+The :term:`request` variable in templates is used to get information about the current request. `template globals <modules/templating/#template-globals>`_ lists all the variables Pylons makes available for use in templates.
 
 Next, update the :file:`controllers/hello.py` module so that the
 index method is as follows:
