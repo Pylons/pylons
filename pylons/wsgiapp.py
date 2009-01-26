@@ -84,6 +84,12 @@ class PylonsApp(object):
                 self.buffet.prepare(e['engine'],
                                     template_root=e['template_root'],
                                     alias=e['alias'], **e['template_options'])
+        else:
+            self.buffet = None
+        
+        # Cache some options for use during requests
+        self._session_key = self.environ_config.get('session', 'beaker.session')
+        self._cache_key = self.environ_config.get('cache', 'beaker.cache')
     
     def __call__(self, environ, start_response):
         """Setup and handle a web request
@@ -163,11 +169,11 @@ class PylonsApp(object):
         registry.register(pylons.c, pylons_obj.c)
         registry.register(pylons.translator, pylons_obj.translator)
         
-        if hasattr(pylons_obj, 'buffet'):
+        if self.buffet:
             registry.register(pylons.buffet, self.buffet)
-        if hasattr(pylons_obj, 'session'):
+        if 'session' in pylons_obj.__dict__:
             registry.register(pylons.session, pylons_obj.session)
-        if hasattr(pylons_obj, 'cache'):
+        if 'cache' in pylons_obj.__dict__:
             registry.register(pylons.cache, pylons_obj.cache)
         
         if 'routes.url' in environ:
@@ -201,7 +207,7 @@ class PylonsApp(object):
         pylons_obj.g = pylons_obj.app_globals = self.globals
         pylons_obj.h = self.helpers
         
-        if hasattr(self, 'buffet'):
+        if self.buffet:
             pylons_obj.buffet = self.buffet
         
         environ['pylons.pylons'] = pylons_obj
@@ -218,14 +224,10 @@ class PylonsApp(object):
         pylons_obj.c = c
         
         econf = self.config['pylons.environ_config']
-        if econf.get('session') and econf['session'] in environ:
-            pylons_obj.session = environ[econf['session']]
-        elif 'beaker.session' in environ:
-            pylons_obj.session = environ['beaker.session']
-        if econf.get('cache') and econf['cache'] in environ:
-            pylons_obj.cache = environ[econf['cache']]
-        elif 'beaker.cache' in environ:
-            pylons_obj.cache = environ['beaker.cache']
+        if self._session_key in environ:
+            pylons_obj.session = environ[self._session_key]
+        if self._cache_key in environ:
+            pylons_obj.cache = environ[self._cache_key]
         
         # Load the globals with the registry if around
         if 'paste.registry' in environ:
