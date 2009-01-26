@@ -210,7 +210,18 @@ class WSGIController(object):
             py_response = self._py_object.response
             # If its not a WSGI response, and we have content, it needs to
             # be wrapped in the response object
-            if hasattr(response, 'wsgi_response'):
+            if isinstance(response, str):
+                if log_debug:
+                    log.debug("Controller returned a string "
+                              ", writing it to pylons.response")
+                py_response.body = py_response.body + response
+            elif isinstance(response, unicode):
+                if log_debug:
+                    log.debug("Controller returned a unicode string "
+                              ", writing it to pylons.response")
+                py_response.unicode_body = py_response.unicode_body + \
+                        response
+            elif hasattr(response, 'wsgi_response'):
                 # It's either a legacy WSGIResponse object, or an exception
                 # that got tossed.
                 if log_debug:
@@ -241,15 +252,9 @@ class WSGIController(object):
                     log.debug("Controller returned None")
             else:
                 if log_debug:
-                    log.debug("Assuming controller returned a basestring or "
-                              "buffer, writing it to pylons.response")
-                if isinstance(response, str):
-                    py_response.body = py_response.body + response
-                elif isinstance(response, unicode):
-                    py_response.unicode_body = py_response.unicode_body + \
-                        response
-                else:
-                    py_response.body = response
+                    log.debug("Assuming controller returned a buffer "
+                              ", writing it to pylons.response")
+                py_response.body = response
             response = py_response
         
         if hasattr(self, '__after__'):
