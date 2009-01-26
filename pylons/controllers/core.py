@@ -143,8 +143,9 @@ class WSGIController(object):
         Routes"""
         log_debug = self._pylons_log_debug
         req = self._py_object.request
-        action = req.environ['pylons.routes_dict'].get('action')
-        if not action:
+        try:
+            action = req.environ['pylons.routes_dict']['action']
+        except KeyError:
             raise Exception("No action matched from Routes, unable to"
                             "determine action dispatch.")
         action_method = action.replace('-', '_')
@@ -239,8 +240,12 @@ class WSGIController(object):
                         response.headers.add(name, value)
                     else:
                         response.headers.setdefault(name, value)
-                registry = environ['paste.registry']
-                registry.replace(pylons.response, response)
+                try:
+                    registry = environ['paste.registry']
+                    registry.replace(pylons.response, response)
+                except KeyError:
+                    # Ignore the case when someone removes the registry
+                    pass
                 py_response = response
             elif isinstance(response, types.GeneratorType):
                 if log_debug:
