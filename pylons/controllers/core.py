@@ -179,11 +179,15 @@ class WSGIController(object):
         self._py_object = environ['pylons.pylons']
 
         # Keep private methods private
-        if environ['pylons.routes_dict'].get('action', '')[:1] in ('_', '-'):
-            if log_debug:
-                log.debug("Action starts with _, private action not allowed. "
-                          "Returning a 404 response")
-            return HTTPNotFound()(environ, start_response)
+        try:
+            if environ['pylons.routes_dict']['action'][:1] in ('_', '-'):
+                if log_debug:
+                    log.debug("Action starts with _, private action not allowed. "
+                              "Returning a 404 response")
+                return HTTPNotFound()(environ, start_response)
+        except KeyError:
+            # The check later will notice that there's no action
+            pass
 
         start_response_called = []
         def repl_start_response(status, headers, exc_info=None):
