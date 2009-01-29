@@ -38,7 +38,7 @@ If the server is still running (see the :ref:`Getting Started Guide <getting_sta
 
 In Pylons all form variables can be accessed from the :data:`request.params` object which behaves like a dictionary. The keys are the names of the fields in the form and the value is a string with all the characters entity decoded. For example note how the `@` character was converted by the browser to `%40` in the URL and was converted back ready for use in :data:`request.params`. 
 
-.. Note:: `request` is actually a `WSGIRequest` object `documented here <http://pythonpaste.org/class-paste.wsgiwrappers.WSGIRequest.html#params>`_ and `request.params` is a `MultiDict` with `documentation here <http://pythonpaste.org/class-paste.util.multidict.MultiDict.html>`_. 
+.. Note:: `request` and `response` are objects from the `WebOb` library.  Full documentation on their attributes and methods is `here <http://pythonpaste.org/webob/>`_.
 
 If you have two fields with the same name in the form then using the dictionary interface will return the first string. You can get all the strings returned as a list by using the `.getall()` method. If you only expect one value and want to enforce this you should use `.getone()` which raises an error if more than one value with the same name is submitted. 
 
@@ -79,16 +79,28 @@ In this case once the form is submitted the data is saved and an HTTP redirect o
 Using the Helpers 
 ================= 
 
-Creating forms can also be done using Pylons' `built in helpers <http://pylonshq.com/WebHelpers/module-index.html>`_. Here is the same form created in the previous section but this time using the helpers: 
+Creating forms can also be done using WebHelpers, which comes with Pylons. Here is the same form created in the previous section but this time using the helpers: 
 
 .. code-block:: html+mako 
 
     ${h.form(h.url(action='email'), method='get')} 
-    Email Address: ${h.text_field('email')} 
+    Email Address: ${h.text('email')} 
     ${h.submit('Submit')} 
     ${h.end_form()} 
 
-You can also make use of the built-in script.aculo.us functionality or override the default behavior of any of the helpers by defining a new function of the same name at the bottom of your project's `lib/helpers.py` file. 
+Before doing this you'll have to import the helpers you want to use into your
+project's `lib/helpers.py` file; then they'll be available under Pylons' ``h``
+global.  Most projects will want to import at least these:
+
+.. code-block:: python
+
+   from webhelpers.html import escape, HTML, literal, url_escape
+   from webhelpers.html.tags import *
+
+There are many other helpers for text formatting, container objects,
+statistics, and for dividing large query results into pages.  See the
+:mod:`WebHelpers documentation <webhelpers>` to choose the helpers you'll need.
+
 
 .. _file_uploads:
 
