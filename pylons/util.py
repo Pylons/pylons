@@ -92,7 +92,7 @@ def call_wsgi_application(application, environ, catch_exc_info=False):
         captured[:] = [status, headers, exc_info]
         return output.append
     app_iter = application(environ, start_response)
-    if (not captured or output):
+    if not captured or output:
         try:
             output.extend(app_iter)
         finally:
