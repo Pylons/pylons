@@ -10,12 +10,13 @@ from paste.recursive import RecursiveMiddleware
 from paste.urlparser import StaticURLParser
 from weberror.evalexception import EvalException
 from weberror.errormiddleware import ErrorMiddleware
-from webob import Request
+from webob import Request, Response
 from webhelpers.html import literal
 
 import pylons
 import pylons.legacy
 from pylons.error import template_error_formatters
+from pylons.util import call_wsgi_application
 
 __all__ = ['ErrorDocuments', 'ErrorHandler', 'StaticJavascripts',
            'error_document_template', 'error_mapper', 'footer_html',
@@ -190,21 +191,25 @@ class StatusCodeRedirect(object):
         
         """
         self.app = app
-        self.errors = errors
         self.error_path = path
+        
+        # Transform errors to str for comparison
+        self.errors = tuple([str(x) for x in errors])
     
     def __call__(self, environ, start_response):
-        req = Request(environ)
-        new_req = req.copy_get()
-        resp = orig_resp = req.get_response(self.app, catch_exc_info=True)
-        if resp.status_int in self.errors and \
-           'pylons.status_code_redirect' not in environ and self.error_path:
-            new_req.path_info = self.error_path
-            new_req.environ['pylons.original_response'] = resp
-            new_req.environ['pylons.original_request'] = req
-            resp = new_req.get_response(self.app, catch_exc_info=True)
-            resp.status = orig_resp.status
-        return resp(environ, start_response)
+        status, headers, app_iter, exc_info = call_wsgi_application(
+            self.app, environ, catch_exc_info=True)
+        if status[:3] in self.errors and \
+            'pylons.status_code_redirect' not in environ and self.error_path:
+            environ['PATH_INFO'] = self.error_path
+            
+            # Create a response object
+            environ['pylons.original_response'] = Response(
+                status=status, headerlist=headers, app_iter=app_iter)
+            return self.app(environ, start_response)
+        else:
+            start_response(status, headers, exc_info)
+            return app_iter
 
 
 def ErrorDocuments(app, global_conf=None, mapper=None, **kw):

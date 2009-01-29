@@ -277,9 +277,6 @@ class WSGIController(object):
                 environ['paste.testing_variables']['response'] = response
             if log_debug:
                 log.debug("Calling Response object to return WSGI data")
-            
-            # Save a reference to the original responze object
-            environ['pylons.orig_response'] = response
             return response(environ, self.start_response)
         
         if log_debug:
