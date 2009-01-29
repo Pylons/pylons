@@ -17,7 +17,7 @@ Pylons 0.9.7 changes several implicit behaviors of 0.9.6, as well as toggling so
 Minimal Steps to run a 0.9.6 project under 0.9.7
 ------------------------------------------------
 
-Add the following lines to ``config/environment.py``:
+Add the following lines to ``config/middleware.py``:
 
 .. code-block:: python
     
