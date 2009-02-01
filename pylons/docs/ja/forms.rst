@@ -96,18 +96,13 @@ Pylons では、すべてのフォーム変数は辞書のように振る舞う
 
 .. Note::
 
-    .. `request` is actually a `WSGIRequest` object `documented here
-    .. <http://pythonpaste.org/class-paste.wsgiwrappers.WSGIRequest.html#params>`_
-    .. and `request.params` is a `MultiDict` with `documentation here
-    .. <http://pythonpaste.org/class-paste.util.multidict.MultiDict.html>`_.
+    .. `request` and `response` are objects from the `WebOb` library.
+    .. Full documentation on their attributes and methods is `here
+    .. <http://pythonpaste.org/webob/>`_.
 
-    `request` は実際には `ここで文書化される
-    <http://pythonpaste.org/class-paste.wsgiwrappers.WSGIRequest.html#params>`_
-    `WSGIRequest` オブジェクトです。また、 `request.params` は `ここに
-    文書のある
-    <http://pythonpaste.org/class-paste.util.multidict.MultiDict.html>`_
-    `MultiDict` です。
-
+    `request` と `response` は `WebOb` ライブラリのオブジェクトです。そ
+    の属性とメソッドの完全なドキュメントは `ここ
+    <http://pythonpaste.org/webob/>`_ にあります。
 
 
 .. If you have two fields with the same name in the form then using
@@ -228,33 +223,49 @@ http://localhost:5000/hello/email です。データは URL の代わりにリ�
 helpers を使う
 ================= 
 
-.. Creating forms can also be done using Pylons' `built in helpers
-.. <http://pylonshq.com/WebHelpers/module-index.html>`_. Here is the
-.. same form created in the previous section but this time using the
-.. helpers:
+.. Creating forms can also be done using WebHelpers, which comes with
+.. Pylons. Here is the same form created in the previous section but
+.. this time using the helpers:
 
-また、 Pylons の `組み込みの helpers
-<http://pylonshq.com/WebHelpers/module-index.html>`_ を使用してフォーム
-を作成することができます。これは前のセクションで作成したのと同じフォー
+また、フォームを作成するのに WebHelpers を使用することができます。それ
+は Pylons に付属しています。これは前のセクションで作成したのと同じフォー
 ムですが、今回は helpers を使用しています:
 
 
 .. code-block:: html+mako 
 
     ${h.form(h.url(action='email'), method='get')} 
-    Email Address: ${h.text_field('email')} 
+    Email Address: ${h.text('email')} 
     ${h.submit('Submit')} 
     ${h.end_form()} 
 
 
-.. You can also make use of the built-in script.aculo.us functionality
-.. or override the default behavior of any of the helpers by defining
-.. a new function of the same name at the bottom of your project's
-.. `lib/helpers.py` file.
+.. Before doing this you'll have to import the helpers you want to use
+.. into your project's `lib/helpers.py` file; then they'll be
+.. available under Pylons' ``h`` global.  Most projects will want to
+.. import at least these:
 
-組み込みの script.aculo.us の機能を利用したり、プロジェクトの
-`lib/helpers.py` ファイルの最後で同じ名前の新しい関数を定義することによっ
-て helpers のデフォルトの振舞いをオーバーライドすることもできます。
+これをする前に、使用したい helper をプロジェクトの `lib/helpers.py` ファ
+イルの中にインポートする必要があるでしょう。そうすれば、それらは
+Pylons の ``h`` グローバル変数の下で利用可能になります。 ほとんどのプロ
+ジェクトでは少なくともこれらをインポートするとよいでしょう:
+
+
+.. code-block:: python
+
+   from webhelpers.html import escape, HTML, literal, url_escape
+   from webhelpers.html.tags import *
+
+
+.. There are many other helpers for text formatting, container
+.. objects, statistics, and for dividing large query results into
+.. pages.  See the :mod:`WebHelpers documentation <webhelpers>`
+.. documentation to choose the helpers you'll need.
+
+他にもテキスト整形やコンテナーオブジェクト、統計、および巨大なクエリ結
+果をページに分割するための多くの helper があります。 :mod:`WebHelpers
+のドキュメント <webhelpers>` を見て、あなたが必要とする helper を選んで
+ください。
 
 
 .. _file_uploads:
