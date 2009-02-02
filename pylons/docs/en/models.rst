@@ -151,7 +151,7 @@ definitions and ORM classes, and an ``init_model()`` function which must be
 called at application startup.  *meta.py* is merely a container for
 SQLAlchemy's housekeeping objects (``Session``, ``metadata``, and ``engine``),
 which not all applications will use.  If your application is small, you can put
-your the table definitions in **__init__.py** for simplicity.  If your
+your table definitions in *__init__.py* for simplicity.  If your
 application has many tables or multiple databases, you may prefer to split them
 up into multiple modules within the model.
 
@@ -164,7 +164,7 @@ the default model with the comments removed:
 
 .. code-block:: python
 
-    import sqalqlchemy as sa
+    import sqlalchemy as sa
     import sqlalchemy.orm as orm
 
     from myapp.model import meta
@@ -204,7 +204,7 @@ database.)  Here's the second example with reflection:
 
 .. code-block:: python
 
-    import sqalqlchemy as sa
+    import sqlalchemy as sa
     import sqlalchemy.orm as orm
 
     from myapp.model import meta
@@ -225,7 +225,7 @@ database.)  Here's the second example with reflection:
 
 Note how ``t_persons`` and the ``orm.mapper()`` call moved into ``init_model``,
 while the ``Person`` class didn't have to.  Also note the ``global t_persons``
-statement.  This tells Python that ``t_persons`` is a a global variable outside
+statement.  This tells Python that ``t_persons`` is a global variable outside
 the function.  ``global`` is required when assigning to a global variable
 inside a function.  It's not required if you're merely modifying a mutable
 object in place, which is why ``meta`` doesn't have to be declared global.
@@ -235,7 +235,7 @@ the ORM class in one step:
 
 .. code-block:: python
 
-    import sqalqlchemy as sa
+    import sqlalchemy as sa
     import sqlalchemy.orm as orm
     import sqlalchemy.ext.declarative as declarative
 
@@ -311,7 +311,6 @@ You now have everything necessary to use the model in a standalone script such a
     >>> from myapp import model 
     >>> model.init_model(engine) 
 
-i
 Now you can use the tables, classes, and Session as described in the SQLAlchemy
 manual.  For example:
 
@@ -604,7 +603,7 @@ To search on a joined object we can pass an entire object as a query:
         person_q.filter(Person.my_addresses.contains(search_address)).all() 
 
 
-* All attributes must match in the query object. 
+All attributes must match in the query object. 
 
 Or we can search on a joined objects' property, 
 
