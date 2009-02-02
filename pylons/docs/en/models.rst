@@ -177,7 +177,7 @@ the default model with the comments removed:
     t_persons = sa.Table("persons", meta.metadata,
         sa.Column("id", sa.types.Integer, primary_key=True),
         sa.Column("name", sa.types.String(100), primary_key=True),
-        sa.Column("email", sa.types.String(100),
+        sa.Column("email", sa.types.String(100)),
         )
 
     class Person(object):
@@ -722,6 +722,7 @@ Normal model usage works fine in model tests, however to use the metadata you mu
 
         def test_index(self): 
             # test your models 
+            pass
 
 
 .. note:: Notice that the tests inherit from TestController. This is to ensure that the application is setup so that the models will work. 
