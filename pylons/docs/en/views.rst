@@ -110,6 +110,8 @@ Switching to the strict version of the :term:`tmpl_context` object can be done i
     config['pylons.strict_c'] = True
 
 
+.. _template-globals:
+
 **************************
 Default Template Variables
 **************************
