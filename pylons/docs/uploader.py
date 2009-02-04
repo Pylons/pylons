@@ -38,6 +38,15 @@ def scan_dir(parent, directory):
                 files.append(
                     ('/'.join([parent, name]), data)
                 )
+            elif name == 'objects.inv':
+                fp = open(full_name, 'r')
+                data = {}
+                data['current_page_name'] = 'objects.inv'
+                data['content'] = fp.read()
+                fp.close()
+                files.append(
+                    ('/'.join([parent, name]), data)
+                )
     return files
 
 def scan_images(directory):
