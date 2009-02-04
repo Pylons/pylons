@@ -136,8 +136,8 @@ SQLAlchemy
 .. each, making it possible to port a program from one engine to
 .. another by simply changing the connection string.  Although its API
 .. is still changing gradually, SQLAlchemy is well tested, widely
-.. deployed, has good documentation, and its mailing list is quick
-.. with answers.  :ref:`Using SQLAlchemy with Pylons
+.. deployed, has excellent documentation, and its mailing list is quick
+.. with answers.  :ref:`Using SQLAlchemy
 .. <working_with_sqlalchemy>` describes the recommended way to
 .. configure a Pylons application for SQLAlchemy.
 
@@ -150,12 +150,60 @@ SQLAlchemy
 を理解します。これにより、単にコネクション文字列を変えることによって、
 あるエンジンから別のエンジンにプログラムを移植することが可能になります。
 そのAPI はまだ徐々に変化していますが、 SQLAlchemy は十分テストされ、広
-く普及しており、良いドキュメンテーションがあります。そして、メーリング
-リストでは素早く答えが返ってきます。 :ref:`Using SQLAlchemy with
-Pylons <working_with_sqlalchemy>` は、 Pylons アプリケーションを構成す
-るお勧めの方法を述べます。
+く普及しており、素晴らしいドキュメンテーションがあります。そして、メー
+リングリストでは素早く答えが返ってきます。 :ref:`Using SQLAlchemy
+<working_with_sqlalchemy>` は、 Pylons アプリケーションを構成するお勧め
+の方法を述べます。
 
 
+.. SQLAlchemy lets you work at three different levels, and you can
+.. even use multiple levels in the same program:
+
+SQLAlchemy は次のような 3 つの異なったレベルで動かすことができ、しかも
+同じアプリケーションの中で複数のレベルを混在させることもできます:
+
+
+.. * The object-relational mapper (ORM) lets you interact with the
+..   database using your own object classes rather than writing SQL code.
+.. * The SQL expression language has many methods to create customized
+..   SQL statements, and the result cursor is more friendly than DBAPI's.
+.. * The low-level execute methods accept literal SQL strings if you find
+..   something the SQL builder can't do, such as adding a column to an
+..   existing table or modifying the column's type. If they return
+..   results, you still get the benefit of SQLAlchemy's result cursor.
+
+* オブジェクトリレーションマッパー (ORM) は、 SQL コードを書く代わりに
+  オブジェクトクラスを使用してデータベースと対話することを可能にします。
+* SQL 式言語には、カスタマイズされた SQL 文を作成するための多くのメソッ
+  ドがあり、結果のカーソルは DBAPI のものより使いやすいです。
+* 低レベル execute メソッドは、 SQL ビルダーができないこと(既存のテーブ
+  ルにカラムを追加することや、カラムの型を変更することなど) が見つかっ
+  た場合に、リテラルの SQL 文字列を受け付けます。それらが結果を返すなら、
+  あなたはまだ SQLAlchemy の結果カーソルの利益を得ています。
+
+
+.. The first two levels are *database neutral*, meaning they hide the
+.. differences between the databases' SQL dialects. Changing to a
+.. different database is merely a matter of supplying a new connection
+.. URL. Of course there are limits to this, but SQLAlchemy is 90%
+.. easier than rewriting all your SQL queries.
+
+最初の 2 つのレベルは *データベース中立* です。その意味は、それらはデー
+タベースの SQL 方言の違いを隠すということです。異なるデータベースに変更
+するのは、単に新しいコネクション URL を与えるだけです。 これに対する限
+界がもちろんありますが、 SQLAlchemy はすべての SQL クエリを書き直すより
+90% 簡単です。
+
+
+.. The `SQLAlchemy manual <http://www.sqlalchemy.org/docs/>`_ should be
+.. your next stop for questions not covered here. It's very well written
+.. and thorough.
+
+`SQLAlchemy マニュアル <http://www.sqlalchemy.org/docs/>`_ はここで
+カバーされなかった質問のために次に読むべきです。 それは、非常に良く書か
+れており網羅的です。
+
+ 
 .. SQLAlchemy add-ons
 
 SQLAlchemy 拡張
@@ -173,18 +221,18 @@ SQLAlchemy 拡張
 か、 "active record" スタイルのアクセスをサポートすることで、より高レベ
 ルの ORM を提供します。 *製品アプリケーションでこれらのショートカットを
 使用する前に、「通常のやり方」で物事を行う方法を学ぶ時間を取ってくださ
-い* 。これらの add-ons が裏舞台で何をしているのかを理解することで、デー
+い* 。これらの add-ons が舞台裏で何をしているのかを理解することで、デー
 タベースエラーの障害調査をしなければならない場合や、または add-on の層
 での制限に対処しなければならない場合に役に立つでしょう。
 
 
 .. `SQLSoup
-.. <http://www.sqlalchemy.org/docs/04/plugins.html#plugins_sqlsoup>`_,
+.. <http://www.sqlalchemy.org/docs/05/plugins.html#plugins_sqlsoup>`_,
 .. an extension to SQLAlchemy, provides a quick way to generate ORM
 .. classes based on existing database tables.
 
 `SQLSoup
-<http://www.sqlalchemy.org/docs/04/plugins.html#plugins_sqlsoup>`_ は
+<http://www.sqlalchemy.org/docs/05/plugins.html#plugins_sqlsoup>`_ は
 SQLAlchemy の拡張で、既存のデータベースのテーブルに基づいて ORM クラス
 を生成する迅速な方法を提供します。
 
@@ -198,30 +246,11 @@ SQLAlchemy の上で `Elixir <http://elixir.ematia.de/>`_ 層を使用すると�
 いかもしれません。
 
 
-.. In addition, you can check the `Pylons Cookbook
-.. <http://wiki.pylonshq.com/display/pylonscookbook/Home>`_ for a
-.. tutorial, or look at the pylons-discuss list archive, especially
-.. `this thread
-.. <http://groups.google.com/group/pylons-discuss/browse_thread/thread/5be6a0c084a96412?hl=en>`_.
-
-さらに、 `Pylons Cookbook
-<http://wiki.pylonshq.com/display/pylonscookbook/Home>`_ でチュートリア
-ルをチェックするか、または pylons-discuss リストアーカイブ (特に `この
-スレッド
-<http://groups.google.com/group/pylons-discuss/browse_thread/thread/5be6a0c084a96412?hl=en>`_)
-を見てください。
-
-
 .. `Tesla <http://code.google.com/p/tesla-pylons-elixir/>`_ is a
-.. framework built on top of Pylons and Elixir/SQLAlchemy.  `Tutorial
-.. <http://code.google.com/p/tesla-pylons-elixir/wiki/GettingStarted>`_
-.. (not sure if it's current?)
+.. framework built on top of Pylons and Elixir/SQLAlchemy.
 
 `Tesla <http://code.google.com/p/tesla-pylons-elixir/>`_ は Pylons と
-Elixir/SQLAlchemy の上に築き上げられたフレームワークです。 `チュートリ
-アル
-<http://code.google.com/p/tesla-pylons-elixir/wiki/GettingStarted>`_
-(これは最新のもの?)
+Elixir/SQLAlchemy の上に築き上げられたフレームワークです。
 
 
 .. Non-SQLAlchemy libraries
@@ -288,9 +317,20 @@ pickle 形式で保存できます。階層データをテーブル、リレー�
 スすることができます。
 
 
-`Durus <http://www.mems-exchange.org/software/durus/>`_
-
 `ZODB <http://wiki.zope.org/ZODB/FrontPage>`_
+
+`Durus <http://www.mems-exchange.org/software/durus/>`_ [#]_
+
+.. .. [#] Durus is not thread safe, so you should use its server mode
+..    if your application writes to the database.  Do not share
+..    connections between threads.  ZODB is thread safe, so it may be
+..    a more convenient alternative.
+
+.. [#] Durus はスレッド・セーフではないので、アプリケーションがデータベー
+   スに書き込むなら Durus のサーバモードを使用するべきです。スレッド間
+   でコネクションを共有してはいけません。 ZODB はスレッド・セーフなので、
+   それはより便利な代替手段になるかもしれません。
+
 
 .. Other databases
 
@@ -320,107 +360,17 @@ Pylons は以下のような他のデータベース・システムとも動か�
 としています。
 
 
-.. Working with databases and SQLAlchemy
+.. The Datastore database in Google App Engine.
+
+Google App Engine の Datastore データベース。
+
+
+.. Working with SQLAlchemy
 
 .. _working_with_sqlalchemy:
 
-データベースと SQLAlchemy を使う
-=====================================
-
-.. This chapter describes how to set up your model for SQLAlchemy 0.4
-.. (not 0.3). _(It has not been updated for SQLAlchemy 0.5-beta.)_
-.. It's not the only way to use SQLAlchemy with Pylons, but it's a
-.. flexible approach that covers most situations, including
-.. applications with multiple databases. SQLAlchemy is a front end to
-.. several relational databases including MySQL, PostgreSQL, SQLite,
-.. MS-SQL, Oracle, etc. It allows you to work on three different
-.. levels, even in the same application:
-
-本章は、 SQLAlchemy 0.4 (0.3 ではありません) のためにどのようにモデルを
-セットアップするかを説明します。
-_(SQLAlchemy 0.5-beta のためにアップデートしていません)_
-これは Pylons と SQLAlchemy を使用する唯一の方法ではありませんが、複数
-のデータベースを使用するアプリケーションを含む、ほとんどの状況をカバー
-する柔軟なアプローチです。 SQLAlchemy はMySQL 、 PostgreSQL 、 SQLite
-、 MS-SQL 、 Oracle などを含むいくつかのリレーショナルデータベースへの
-フロントエンドです。 SQLAlchemy は次のような 3 つの異なったレベルで動か
-すことができ、しかも同じアプリケーションの中でそれらを混在させることも
-できます:
-
-
-.. * The object-relational mapper (ORM) lets you interact with the
-..   database using your own object classes rather than writing SQL code.
-.. * The SQL expression language has many methods to create customized
-..   SQL statements, and the result cursor is more friendly than DBAPI's.
-.. * The low-level execute methods accept literal SQL strings if you find
-..   something the SQL builder can't do, such as adding a column to an
-..   existing table or modifying the column's type. If they return
-..   results, you still get the benefit of SQLAlchemy's result cursor.
-
-* オブジェクトリレーションマッパー (ORM) は、 SQL コードを書く代わりに
-  オブジェクトクラスを使用してデータベースと対話することを可能にします。
-* SQL 式言語には、カスタマイズされた SQL 文を作成するための多くのメソッ
-  ドがあり、結果のカーソルは DBAPI のものより使いやすいです。
-* 低レベル execute メソッドは、 SQL ビルダーができないこと(既存のテーブ
-  ルにカラムを追加することや、カラムの型を変更することなど) が見つかっ
-  た場合に、リテラルの SQL 文字列を受け付けます。それらが結果を返すなら、
-  あなたはまだ SQLAlchemy の結果カーソルの利益を得ています。
-
-
-.. The first two levels are *database neutral*, meaning they hide the
-.. differences between the databases' SQL dialects. Changing to a
-.. different database is merely a matter of supplying a new connection
-.. URL. Of course there are limits to this, but SQLAlchemy is 90%
-.. easier than rewriting all your SQL queries.
-
-最初の 2 つのレベルは *データベース中立* です。その意味は、それらはデー
-タベースの SQL 方言の違いを隠すということです。異なるデータベースに変更
-するのは、単に新しいコネクション URL を与えるだけです。 これに対する限
-界がもちろんありますが、 SQLAlchemy はすべての SQL クエリを書き直すより
-90% 簡単です。
-
-
-.. The `SQLAlchemy manual <http://www.sqlalchemy.org/docs/04/>`_
-.. should be your next stop for questions not covered here. It's very
-.. well written and thorough.
-
-`SQLAlchemy マニュアル <http://www.sqlalchemy.org/docs/04/>`_ はここで
-カバーされなかった質問のために次に読むべきです。 それは、非常に良く書か
-れており網羅的です。
-
-
-.. Throughout this chapter, `myapp` refers to your Pylons
-.. application's package directory (e.g., MyApp-1.0.1.egg/myapp).
-
-本章中では、 `myapp` はあなたの Pylons アプリケーションのパッケージディ
-レクトリ (例えば MyApp-1.0.1.egg/myapp) を指します。
-
-
-.. The Pylons development version (which will become Pylons 0.9.7)
-.. will ask when you create your application whether you intend to use
-.. SQLAlchemy, and will preconfigure it for you. In this case, you'll
-.. find that many of the steps below are already done. Pylons 0.9.6
-.. does not do this, so you'll have to make all the changes by
-.. hand. Under the Attachments tab on this page you'll find a Pylons
-.. 0.9.6.1 application containing the code here. The application won't
-.. *do* anything because we've neglected the user interface, but you
-.. can examine the code or paste it into your own application. The
-.. `Pylons Cookbook
-.. <http://wiki.pylonshq.com/display/pylonscookbook/Home>`_ contains
-.. more advanced database tutorials.
-
-Pylons の開発バージョン (いずれ Pylons 0.9.7 になる) は、アプリケーショ
-ンを作成する時に SQLAlchemy を使用するかどうかを尋ね、あらかじめそれを
-設定します。この場合、以下のステップの多くが既に完了しているのがわかる
-でしょう。 Pylons 0.9.6 はこれをしないので、あなたは手ですべての変更を
-行わなければなりません。 このページの Attachments タブの下には、ここに
-掲載したコードを含む Pylons 0.9.6.1 アプリケーションがあります。ユーザー
-インタフェースを怠っているので、このアプリケーションは何もしませんが、
-あなたは、コードを調べたり、あなた自身のアプリケーションにそれを貼りつ
-けることができます。 `Pylons Cookbook
-<http://wiki.pylonshq.com/display/pylonscookbook/Home>`_ は、より高度な
-データベースチュートリアルを含んでいます。
-
+SQLAlchemy を使う
+=======================
 
 .. Install SQLAlchemy
 
@@ -482,175 +432,196 @@ SQLAlchemy のどのバージョンがインストールされているかを確
 Python シェルに行き、 sqlalchemy.__version__ を見てください:
 
 
-.. code-block:: pycon
+.. code-block:: python
 
     >>> import sqlalchemy 
     >>> sqlalchemy.__version__ 
-    0.4.3 
+    0.5.0
 
 
-.. These instructions assume SQLAlchemy 0.4.2p3 or newer. They will
-.. not work with SQLAlchemy 0.3.
+Defining tables and ORM classes
+-------------------------------
 
-これらの指示は、SQLAlchemy 0.4.2p3 か、より新しいと仮定します。 それは
-SQLAlchemy 0.3 と共に働かないでしょう。
+.. When you answer "yes" to the SQLAlchemy question when creating a
+.. Pylons project, it configures a simple default model.  The model
+.. consists of two files: *__init__.py* and *meta.py*.  *__init__.py*
+.. contains your table definitions and ORM classes, and an
+.. ``init_model()`` function which must be called at application
+.. startup.  *meta.py* is merely a container for SQLAlchemy's
+.. housekeeping objects (``Session``, ``metadata``, and ``engine``),
+.. which not all applications will use.  If your application is small,
+.. you can put your table definitions in *__init__.py* for simplicity.
+.. If your application has many tables or multiple databases, you may
+.. prefer to split them up into multiple modules within the model.
 
-
-Model
------
-
-Metadata 
-^^^^^^^^
-
-.. Create *myapp/model/meta.py* containing: 
-
-*myapp/model/meta.py* をこのように作成してください:
-
-
-.. code-block:: python
-
-    """SQLAlchemy Metadata and Session object""" 
-    from sqlalchemy import MetaData 
-
-    __all__ = ['engine', 'metadata', 'Session'] 
-
-    # SQLAlchemy database engine. Updated by model.init_model(). 
-    engine = None 
-
-    # SQLAlchemy session manager. Updated by model.init_model(). 
-    Session = None 
-
-    # Global metadata. If you have multiple databases with overlapping table 
-    # names, you'll need a metadata for each database. 
-    metadata = MetaData() 
+Pylons プロジェクトを作るときに SQLAlchemy の質問に "yes" と答えた場合、
+簡単なデフォルトモデルが構成されます。 モデルは 2 つのファイルから成り
+ます: *__init__.py* と *meta.py* です。 *__init__.py* はテーブル定義と
+ORM のクラス、およびアプリケーション開始時に呼ばなければならない
+``init_model()`` 関数を含んでいます。 *meta.py* は単に SQLAlchemy のハ
+ウスキーピングのオブジェクト (``Session``, ``metadata``, ``engine``) の
+ためのコンテナです。これらはすべてのアプリケーションで使用するわけでは
+ないでしょう。アプリケーションが小さいなら、簡潔さのためにテーブル定義
+を *__init__.py* に入れることができます。アプリケーションに多くのテーブ
+ルや複数のデータベースがあるなら、それらをモデルの中の複数のモジュール
+に分けると良いかもしれません。
 
 
-.. A SQLAlchemy `engine` is a pool of connections to a particular
-.. database. The `metadata` is an object that will contain your table
-.. definitions. The `Session` is used with the object-relational
-.. mapper.
+.. As of the Pylons 0.9.7 release, SQLAlchemy 0.4.8 is the current
+.. production version, while SQLAlchemy 0.5rc4 is the almost-released
+.. new version.  The default Pylons model was written for SQLAlchemy
+.. 0.4, but also works on 0.5 with a slight change to the
+.. *sessionmaker* arguments.  Here's a sample *model/__init__.py* with
+.. a "persons" table, which is based on the default model with the
+.. comments removed:
 
-SQLAlchemy `engine` は特定のデータベースとのコネクションプールです。
-`metadata` はテーブル定義を含むオブジェクトです。 `Session` はオブジェ
-クト・リレーション・マッパーと共に使用されます。
-
-
-Main model module 
-^^^^^^^^^^^^^^^^^
-
-.. Change *myapp/model/__init__.py* to read: 
-
-*myapp/model/__init__.py* をこのように修正してください:
+Pylons 0.9.7 リリースの時点では SQLAlchemy 0.4.8 が最新の製品バージョン
+です。その一方で、 SQLAlchemy 0.5rc4 がもうすぐリリースされる新しいバー
+ジョンです。デフォルトの Pylons モデルは、SQLAlchemy 0.4 のために書かれ
+ましたが、 *sessionmaker* 引数に小さな変更を加えることで 0.5 でも動きま
+す。ここに、サンプルの *model/__init__.py* と "persons" テーブルがあり
+ます (which is based on the default model with the comments removed):
 
 
 .. code-block:: python
 
-    import sqlalchemy as sa 
-    from sqlalchemy import orm 
+    import sqlalchemy as sa
+    import sqlalchemy.orm as orm
 
-    from myapp.model import meta 
+    from myapp.model import meta
 
-    def init_model(engine): 
-        """Call me before using any of the tables or classes in the model.""" 
-        sm = orm.sessionmaker(autoflush=True, transactional=True, bind=engine) 
+    def init_model(engine):
+        sm = orm.sessionmaker(transactional=True, autoflush=True, bind=engine)
+        meta.Session = orm.scoped_session(sm)
+        meta.engine = engine
 
-        meta.engine = engine 
-        meta.Session = orm.scoped_session(sm) 
+    t_persons = sa.Table("persons", meta.metadata,
+        sa.Column("id", sa.types.Integer, primary_key=True),
+        sa.Column("name", sa.types.String(100), primary_key=True),
+        sa.Column("email", sa.types.String(100)),
+        )
 
+    class Person(object):
+        pass
 
-.. Note that this function sets attributes in a different module. The
-.. reason is that these attributes depend on a live database engine,
-.. which may not exist when the model is imported. So we call this
-.. function to complete the initialization.
-
-この関数が異なるモジュールに属性を設定することに注意してください。 理由
-は、これらの属性はが生きたデータベースエンジンに依存するということです。
-モデルがインポートされているとき、エンジンは存在しないかもしれません。
-それで、初期化を終了するためにこの関数を呼びます。
+    orm.mapper(Person, t_persons)
 
 
-.. `transactional=True` means all ORM operations will be done within a
-.. database transaction. `autoflush=True` means SQLAlchemy will
-.. automatically call `Session.flush()` to write the changes to the
-.. database whenever we commit the transaction by calling
-.. `Session.commit()`. The `transactional` and `autoflush` options are
-.. normally either both true or both false.
+.. SQLAlchemy 0.5 users should change the *sessionmaker* line to this:
 
-`transactional=True` は、すべての ORM 操作をデータベース・トランザクショ
-ンの中で行うことを意味します。 `autoflush=True` は `Session.commit()`
-を呼んでトランザクションをコミットするときはいつでも、変更をデータベー
-スに書き込むために SQLAlchemy が 自動的に `Session.flush()` を呼ぶこと
-を意味します。 `transactional` と `autoflush` は通常、両方 true か両方
-false にします。
-
-
-.. `bind=engine` tells the ORM session to use that database for all
-.. operations. If you're using multiple databases it gets a little
-.. more complicated, as we'll see below.
-
-`bind=engine` は、すべての操作にそのデータベースを使用するように ORM セッ
-ションに伝えます。 複数のデータベースを使用しているなら、以下に見るよう
-に、それはもう少し複雑になります。
-
-
-.. You may of course use other `sessionmaker` or `scoped_session`
-.. arguments if you wish.
-
-もちろん、望むなら他の `sessionmaker` または `scoped_session` 引数を使
-用できます。
-
-
-.. Tables and ORM classes 
-
-テーブルと ORM クラス
-^^^^^^^^^^^^^^^^^^^^^^
-
-.. If you have only a couple simple tables you can put them in the
-.. main model module directly. Otherwise you can put them in separate
-.. modules, one per table, one per group of tables, or however you
-.. wish. Here's a simple table and its ORM class:
-
-いくつかの単純なテーブルだけであれば、主モデルモジュールにそれらを直接
-入れることができます。 そうでなければ、それらを別々のモジュールに入れる
-ことができます。 1 テーブルあたり 1 つ、テーブルグループあたり 1 つ、ま
-たは好きなようにどんな風にでも分割できます。ここに、単純なテーブルとそ
-の ORM のクラスがあります:
+SQLAlchemy 0.5 ユーザは sessionmaker の行をこのように変更する必要があり
+ます:
 
 
 .. code-block:: python
 
-    import sqlalchemy as sa 
-    from sqlalchemy import orm 
-
-    from myapp.model import meta 
-
-    t_dictionary = sa.Table("Dictionary", meta.metadata, 
-        sa.Column("id", sa.types.Integer, primary_key=True), 
-        sa.Column("term", sa.types.String(100), nullable=False), 
-        sa.Column("definition", sa.types.String, nullable=False), 
-        ) 
-
-    class Dictionary(object): 
-        pass 
-
-    orm.mapper(Dictionary, t_dictionary) 
+    sm = orm.sessionmaker(bind=engine)
 
 
-.. If you've put your tables into separate modules, you can optionally
-.. import them into the main model module. This is not required but it
-.. allows you to access them in your controllers and in "paster shell"
-.. by just importing the model. Examples:
+.. This model has one table, "persons", assigned to the variable
+.. ``t_persons``.  ``Person`` is an ORM class which is tied to the
+.. table via the mapper.
 
-テーブルを別々のモジュールに入れたなら、任意にそれらを主モデルモジュー
-ルにインポートすることができます。 これは必要ではありませんが、そうする
-ことで単にモデルをインポートすることによって、コントローラと "paster
-shell" でそれらにアクセスできます。 例:
+このモデルには、 変数 ``t_persons`` に割り当てられた 1 個のテーブル
+"persons" があります。 ``Person`` はマッパーを通してテーブルに結びつけ
+られた ORM のクラスです。
+
+
+.. If the table already exists, you can read its column definitions
+.. from the database rather than specifying them manually; this is
+.. called *reflecting* the table.  The advantage is you don't have to
+.. specify the column types in Python code.  Reflecting must be done
+.. inside ``init_model()`` because it depends on a live database
+.. engine, which is not available when the module is imported.  (An
+.. *engine* is a SQLAlchemy object that knows how to connect to a
+.. particular database.)  Here's the second example with reflection:
+
+テーブルが既に存在しているなら、手動でカラム定義を指定する代わりにデー
+タベースからそれを読むことができます。 これはテーブルの *リフレクション*
+と呼ばれます。 利点は Python コードでカラムタイプを指定する必要がないと
+いうことです。リフレクションは生きたデータベースエンジンを必要とするた
+め、 ``init_model()`` の中で行わなければなりません。モジュールがインポー
+トされるときにエンジンは利用可能でないからです (*エンジン* とは、特定の
+データベースにどのように接続すればよいかを知っている SQLAlchemy のオブ
+ジェクトです)。ここに、リフレクションを使用した 2 番目の例があります:
 
 
 .. code-block:: python
 
-    from myapp.model import dictionary 
-    from myapp.model.dictionary import Dictionary 
+    import sqlalchemy as sa
+    import sqlalchemy.orm as orm
+
+    from myapp.model import meta
+
+    def init_model(engine):
+        global t_persons
+
+        sm = orm.sessionmaker(transactional=True, autoflush=True, bind=engine)
+        meta.Session = orm.scoped_session(sm)
+        meta.engine = engine
+
+        t_persons = sa.Table(meta.metadata, autoload=True, autoload_with=engine)
+
+        orm.mapper(Person, t_persons)
+
+    class Person(object):
+        pass
+
+
+.. Note how ``t_persons`` and the ``orm.mapper()`` call moved into
+.. ``init_model``, while the ``Person`` class didn't have to.  Also
+.. note the ``global t_persons`` statement.  This tells Python that
+.. ``t_persons`` is a global variable outside the function.
+.. ``global`` is required when assigning to a global variable inside a
+.. function.  It's not required if you're merely modifying a mutable
+.. object in place, which is why ``meta`` doesn't have to be declared
+.. global.
+
+``t_persons`` と ``orm.mapper()`` 呼び出しがどのように
+``init_model()`` に移動されたか、その一方で ``Person`` クラスを移動する
+必要がなかったことに注意してください。また、 ``global t_persons`` 文に
+注意してください。これは ``t_persons`` が関数外の大域変数であると
+Python に伝えます。関数内部で大域変数に代入するときは ``global`` が必要
+です。単に mutable なオブジェクトを in place で変更するだけなら、それは
+必要ではありません (これは ``meta`` を global と宣言する必要がない理由
+です)。
+
+
+.. SQLAlchemy 0.5 has an optional Declarative syntax which defines the
+.. table and the ORM class in one step:
+
+SQLAlchemy 0.5 には、 1 ステップでテーブルと ORM クラスを定義するための
+オプションの Declarative (宣言的) 構文があります:
+
+
+.. code-block:: python
+
+    import sqlalchemy as sa
+    import sqlalchemy.orm as orm
+    import sqlalchemy.ext.declarative as declarative
+
+    from myapp.model import meta
+
+    _Base = declarative_base()
+
+    def init_model(engine):
+        sm = orm.sessionmaker(bind=engine)
+        meta.Session = orm.scoped_session(sm)
+        meta.engine = engine
+
+    class Person(_Base):
+        __tablename__ = "persons"
+
+        id = sa.Column(sa.types.Integer, primary_key=True)
+        name = sa.Column(sa.types.String(100))
+        email = sa.Column(sa.types.String(100))
+
+
+.. A full summary of changes in SQLAlchemy 0.5 and upgrade
+.. instructions is at http://www.sqlalchemy.org/trac/wiki/05Migration .
+
+SQLAlchemy 0.5 における変更の完全な概要 (full summary) とアップグレード
+手順が http://www.sqlalchemy.org/trac/wiki/05Migration にあります。
 
 
 .. Relation example 
@@ -673,26 +644,21 @@ shell" でそれらにアクセスできます。 例:
 
 .. code-block:: python
 
-    import sqlalchemy as sa 
-    from sqlalchemy import orm 
-
-    from myapp.model import meta 
-
     t_people = sa.Table('people', meta.metadata, 
         sa.Column('id', sa.types.Integer, primary_key=True), 
         sa.Column('name', sa.types.String(100)), 
-        sa.Column('email', sa.types.String(100)) 
+        sa.Column('email', sa.types.String(100)),
         ) 
 
     t_addresses_people = sa.Table('addresses_people', meta.metadata, 
         sa.Column('id', sa.types.Integer, primary_key=True), 
         sa.Column('person_id', sa.types.Integer, sa.ForeignKey('people.id')), 
-        sa.Column('address_id', sa.types.Integer, sa.ForeignKey('addresses.id')) 
+        sa.Column('address_id', sa.types.Integer, sa.ForeignKey('addresses.id')),
         ) 
 
     t_addresses = sa.Table('addresses', meta.metadata, 
         sa.Column('id', sa.types.Integer, primary_key=True), 
-        sa.Column('address', sa.types.String(100)) 
+        sa.Column('address', sa.types.String(100)),
         ) 
 
     class Person(object): 
@@ -705,46 +671,6 @@ shell" でそれらにアクセスできます。 例:
     orm.mapper(Person, t_people, properties = { 
         'my_addresses' : orm.relation(Address, secondary = t_addresses_people), 
         }) 
-
-
-.. Reflecting tables 
-
-テーブルのリフレクション
-^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. If you want SQLAlchemy to read the table structure from existing
-.. database tables so you don't have to specify the columns, you'll
-.. have to put the table definitions and the mapper calls inside
-.. `init_model` because they depend on a live database connection. The
-.. ORM class defintions do not have to be in `init_model`. So you
-.. could do something like:
-
-SQLAlchemy に既存のデータベースのテーブルからテーブル構造を読んで欲しい
-なら、カラムを指定する必要はありません。そして、テーブル定義とマッパー
-呼び出しを `init_model` の中に置かなければならないでしょう。なぜなら、
-それが生きたデータベースコネクションを必要としているからです。 ORM のク
-ラス定義は `init_model` にある必要はありません。従って、以下のようにで
-きます。
-
-
-.. code-block:: python
-
-    import sqlalchemy as sa 
-    from sqlalchemy import orm 
-
-    from myapp.model import meta 
-    from myapp.model import records 
-
-    def init_model(engine): 
-        """Call me before using any of the tables or classes in the model.""" 
-        sm = orm.sessionmaker(autoflush=True, transactional=True, bind=engine) 
-
-        meta.engine = engine 
-        meta.Session = orm.scoped_session(sm) 
-
-    records.t_record = sa.Table("Record", meta.metadata, 
-                                autoload=True, autoload_with=engine) 
-    orm.mapper(records.Record, records.t_record) 
 
 
 .. Using the model standalone 
@@ -765,7 +691,7 @@ SQLAlchemy に既存のデータベースのテーブルからテーブル構造
 いうデータベースを使用します:
 
 
-.. code-block:: pycon
+.. code-block:: python
 
     % python 
     Python 2.5.1 (r251:54863, Oct 5 2007, 13:36:32) 
@@ -778,10 +704,54 @@ SQLAlchemy に既存のデータベースのテーブルからテーブル構造
 
 
 .. Now you can use the tables, classes, and Session as described in
-.. the SLQAlchemy manual.
+.. the SLQAlchemy manual.  For example:
 
 すると、 SLQAlchemy マニュアルで説明されるようにテーブル、クラス、およ
-び Session を使用できます。
+び Session を使用できます。例えば:
+
+
+.. code-block:: python
+
+    #!/usr/bin/env python
+    import sqlalchemy as sa
+    import tmpapp.model as model
+    import tmpapp.model.meta as meta
+
+    DB_URL = "sqlite:///test.sqlite" 
+
+    engine = sa.create_engine(DB_URL)
+    model.init_model(engine)
+
+    # Create all tables, overwriting them if they exist.
+    if hasattr(model, "_Base"):
+        # SQLAlchemy 0.5 Declarative syntax
+        model._Base.metadata.drop_all(bind=engine, checkfirst=True)
+        model._Base.metadata.create_all(bind=engine)
+    else:
+        # SQLAlchemy 0.4 and 0.5 syntax without Declarative
+        meta.metadata.drop_all(bind=engine, checkfirst=True)
+        meta.metadataa.create_all(bind=engine)
+
+    # Create two records and insert them into the database using the ORM.
+    a = model.Person()
+    a.name = "Aaa"
+    a.email = "aaa@example.com"
+    meta.Session.save(a)
+
+    b = model.Person()
+    b.name = "Bbb"
+    b.email = "bbb@example.com"
+    meta.Session.save(b)
+
+    meta.Session.commit()
+
+    # Display all records in the persons table.
+    print "Database data:"
+    for p in meta.Session.query(model.Person):
+        print "id:", p.id
+        print "name:", p.name
+        print "email:", p.email
+        print
 
 
 .. The config file
@@ -936,8 +906,10 @@ PostgreSQL の設定
 数呼び出しの間で一貫している限り、接頭語は何でも構いません。
 
 
-Controller
-----------
+.. Controller
+
+コントローラ
+------------
 
 .. Add the following to the top of *myapp/lib/base.py* (the base
 .. controller):
@@ -997,7 +969,22 @@ product として自動的に起こりますが、.remove() を呼ぶことで�
 
     from myapp.model import meta 
     log.info("Creating tables") 
+    meta.metadata.drop_all(bind=meta.engine, checkfirst=True)
     meta.metadata.create_all(bind=meta.engine) 
+    log.info("Successfully setup") 
+
+
+.. Or for SQLAlchemy 0.5 with the Declarative syntax:
+
+または、 SQLAlchemy 0.5 の Declarative 構文に対しては:
+
+
+.. code-block:: python
+
+    from myapp import model
+    log.info("Creating tables") 
+    model._Base.metadata.drop_all(bind=meta.engine, checkfirst=True)
+    model._Base.metadata.create_all(bind=meta.engine) 
     log.info("Successfully setup") 
 
 
@@ -1016,16 +1003,17 @@ product として自動的に起こりますが、.remove() を呼ぶことで�
 データのクエリと修正
 ------------------------------
 
-    .. *Important:* this section assumes you're putting the code in a
-    ..  high-level model function. If you're putting it directly into
-    ..  a controller method, you'll have to put a `model.` prefix in
-    ..  front of every object defined in the model, or import the
-    ..  objects individually. Also note that the `Session` object here
-    ..  (capital s) is not the same as the Beaker `session` object
-    ..  (lowercase s) in controllers.
+.. important::  
 
-.. warning::
-    *重要:* このセクションは、コードを高レベルのモデル関数に入れること
+    .. this section assumes you're putting the code in a high-level
+    .. model function. If you're putting it directly into a controller
+    .. method, you'll have to put a `model.` prefix in front of every
+    .. object defined in the model, or import the objects
+    .. individually. Also note that the `Session` object here (capital
+    .. s) is not the same as the Beaker `session` object (lowercase s)
+    .. in controllers.
+
+    このセクションは、コードを高レベルのモデル関数に入れること
     を想定しています。 コントローラメソッドに直接コードを入れるなら、
     モデルで定義されたあらゆるオブジェクトの前に `model.` を置くか、オ
     ブジェクトを個別にインポートする必要があるでしょう。また、ここでの
@@ -1211,7 +1199,7 @@ join されたオブジェクトを対象に検索するために、クエリと
 
 .. * All attributes must match in the query object. 
 
-* クエリオブジェクトのすべての属性がマッチしなければなりません。
+クエリオブジェクトのすべての属性がマッチしなければなりません。
 
 
 .. Or we can can search on a joined objects' property, 
@@ -1410,6 +1398,7 @@ of Work <http://www.sqlalchemy.org/docs/unitofwork.html>`_ の章を見てく
 
         def test_index(self): 
             # test your models 
+            pass
 
 
 .. note::
@@ -1627,37 +1616,6 @@ SQLAlchemy のセッションと Pylons のセッションを混同しないで�
 これを可能にして、通常それらは一緒に使用されるはずです。
 
 
-Contextual session mapper 
-^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. If you're looking for the equivalent of SQLAlchemy 0.3's
-.. "assign_mapper" function, here's the syntax:
-
-SQLAlchemy 0.3 の "assign_mapper" 関数の同等物を探しているなら、このよ
-うな構文があります:
-
-
-.. code-block:: python
-
-    # Instead of the regular mapper calls. 
-    meta.Session.mapper(MyClass, table1) 
-
-
-.. See `Associating Classes and Mappers with a Contextual Session
-.. <http://www.sqlalchemy.org/docs/04/session.html#unitofwork_contextual_associating>`_
-.. for a description of what it does. This method enables magical
-.. behavior which can surprise unwary users, so make sure you
-.. understand mappers, queries, sessions, and scoped_session() before
-.. doing this.
-
-これが何をするかに関する説明は、 `Associating Classes and Mappers with
-a Contextual Session
-<http://www.sqlalchemy.org/docs/04/session.html#unitofwork_contextual_associating>`_
-を見てください。 この方法が不注意なユーザを驚かせる不思議な振舞いを可能
-にするので、これを行う前に、マッパー、クエリ、セッション、および
-scoped_session() について必ず理解してください。
-
-
 Fancy classes
 -------------
 
@@ -1867,8 +1825,8 @@ SQLAlchemy には、同様の方法で構成できる他のロガーがいくつ
 ..    between application instances.
 
 1) `meta` モジュールの代わりに ``pylons.g`` (別名
- ``config["pylons.g"]``) にエンジンを取り付けます。 globals オブジェク
- トはアプリケーションインスタンスの間で共有されません。
+   ``config["pylons.g"]``) にエンジンを取り付けます。 globals オブジェ
+   クトはアプリケーションインスタンスの間で共有されません。
 
 
 .. 2) Add a scoping function. This prevents the application instances

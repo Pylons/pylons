@@ -51,9 +51,9 @@ Pylons 0.9.7 は 0.9.6 におけるいくつかの暗黙的な振る舞いを変
 0.9.6 プロジェクトを 0.9.7 で動かす最短の方法
 ------------------------------------------------
 
-.. Add the following lines to ``config/environment.py``:
+.. Add the following lines to ``config/middleware.py``:
 
-以下の行を ``config/environment.py`` に追加してください:
+以下の行を ``config/middleware.py`` に追加してください:
 
 
 .. code-block:: python
