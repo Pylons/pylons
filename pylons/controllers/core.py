@@ -78,9 +78,9 @@ class WSGIController(object):
             self.__class__._cached_argspecs = cached_argspecs = {}
         
         try:
-            argspec = cached_argspecs[func.__name__]
+            argspec = cached_argspecs[func.im_func]
         except KeyError:
-            argspec = cached_argspecs[func.__name__] = inspect.getargspec(func)
+            argspec = cached_argspecs[func.im_func] = inspect.getargspec(func)
         kargs = self._get_method_args()
                 
         log_debug = self._pylons_log_debug
@@ -183,7 +183,7 @@ class WSGIController(object):
     def __call__(self, environ, start_response):
         """The main call handler that is called to return a response"""
         log_debug = self._pylons_log_debug
-        
+                
         # Keep a local reference to the req/response objects
         self._py_object = environ['pylons.pylons']
 
