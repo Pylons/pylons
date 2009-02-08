@@ -215,7 +215,11 @@ class PylonsApp(object):
         environ['pylons.environ_config'] = self.environ_config
         
         # Setup the translator object
-        pylons_obj.translator = _get_translator(self.config.get('lang'))
+        try:
+            lang = self.config['lang']
+        except KeyError:
+            lang = None
+        pylons_obj.translator = _get_translator(lang, pylons_config=self.config)
         
         if self.config['pylons.strict_c']:
             c = ContextObj()
@@ -304,7 +308,7 @@ class PylonsApp(object):
             return HTTPNotFound()(environ, start_response)
 
         # If it's a class, instantiate it
-        if inspect.isclass(controller):
+        if hasattr(controller, '__bases__'):
             if log_debug:
                 log.debug("Controller appears to be a class, instantiating")
             controller = controller()
