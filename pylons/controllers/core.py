@@ -71,7 +71,16 @@ class WSGIController(object):
         decorator preserved the function signature.
         
         """
-        argspec = inspect.getargspec(func)
+        # Check to see if the class has a cache of argspecs yet
+        try:
+            cached_argspecs = self.__class__._cached_argspecs
+        except AttributeError:
+            self.__class__._cached_argspecs = cached_argspecs = {}
+        
+        try:
+            argspec = cached_argspecs[func.__name__]
+        except KeyError:
+            argspec = cached_argspecs[func.__name__] = inspect.getargspec(func)
         kargs = self._get_method_args()
                 
         log_debug = self._pylons_log_debug

@@ -64,6 +64,9 @@ class PylonsApp(object):
         self.controller_classes = {}
         self.log_debug = False
         
+        if 'lang' not in self.config:
+            self.config['lang'] = None
+        
         # Create the redirect function we'll use and save it
         def redirect_to(url):
             log.debug("Raising redirect to %s", url)
@@ -215,10 +218,7 @@ class PylonsApp(object):
         environ['pylons.environ_config'] = self.environ_config
         
         # Setup the translator object
-        try:
-            lang = self.config['lang']
-        except KeyError:
-            lang = None
+        lang = self.config['lang']
         pylons_obj.translator = _get_translator(lang, pylons_config=self.config)
         
         if self.config['pylons.strict_c']:
