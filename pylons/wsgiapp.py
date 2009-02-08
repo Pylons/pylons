@@ -63,9 +63,7 @@ class PylonsApp(object):
         self.response_options = config['pylons.response_options']
         self.controller_classes = {}
         self.log_debug = False
-        
-        if 'lang' not in self.config:
-            self.config['lang'] = None
+        self.config.setdefault('lang', None)
         
         # Create the redirect function we'll use and save it
         def redirect_to(url):
