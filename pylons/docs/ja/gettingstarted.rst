@@ -421,14 +421,13 @@ World" という短いテキスト文字列があるはずです。(必要なら
 
 
 .. The :term:`request` variable in templates is used to get
-.. information about the current request. `template globals
-.. <../modules/templating/#template-globals>`_ lists all the
-.. variables Pylons makes available for use in templates.
+.. information about the current request. :ref:`Template globals
+.. <template-globals>` lists all the variables Pylons makes available
+.. for use in templates.
 
 テンプレートの中の :term:`request` 変数は、現在のリクエストの情報を得る
 ために使用されます。 Pylons においてテンプレートの中で使えるすべての変
-数は、 `template グローバル変数
-<../modules/templating/#template-globals>`_ にリストされています。
+数は、 `template グローバル変数 <template-globals>` にリストされています。
 
 
 .. Next, update the :file:`controllers/hello.py` module so that the

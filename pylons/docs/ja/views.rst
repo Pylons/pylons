@@ -275,6 +275,8 @@ Pylons は `Mako`__ 、 `Genshi`__ 、 `Jinja2`__ テンプレートレンダリ
 
 .. Default Template Variables
 
+.. _template-globals:
+
 **************************
 デフォルトテンプレート変数
 **************************
