@@ -151,10 +151,15 @@ def _get_translator(lang, **kwargs):
     name"""
     if not lang:
         return NullTranslations()
-    conf = pylons.config.current_conf()
+    if 'pylons_config' in kwargs:
+        conf = kwargs.pop('pylons_config')
+    else:
+        conf = pylons.config.current_conf()
     # XXX: root_path is deprecated
-    rootdir = conf['pylons.paths'].get('root',
-                                       conf['pylons.paths'].get('root_path'))
+    try:
+        rootdir = conf['pylons.paths']['root']
+    except KeyError:
+        rootdir = conf['pylons.paths'].get('root_path')
     localedir = os.path.join(rootdir, 'i18n')
     if not isinstance(lang, list):
         lang = [lang]
