@@ -260,19 +260,14 @@ class WSGIController(object):
                     # Ignore the case when someone removes the registry
                     pass
                 py_response = response
-            elif isinstance(response, types.GeneratorType):
-                if log_debug:
-                    log.debug("Controller returned a generator, setting it as "
-                              "the pylons.response content")
-                py_response.app_iter = response
             elif response is None:
                 if log_debug:
                     log.debug("Controller returned None")
             else:
                 if log_debug:
-                    log.debug("Assuming controller returned a buffer "
-                              ", writing it to pylons.response")
-                py_response.body = response
+                    log.debug("Assuming controller returned an iterable, "
+                              "setting it as pylons.response.app_iter")
+                py_response.app_iter = response
             response = py_response
         
         if hasattr(self, '__after__'):

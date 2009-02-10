@@ -47,6 +47,8 @@ class BasicWSGIController(WSGIController):
         items.sort()
         return str(items)
 
+    def list(self):
+        return ['from', ' a ', 'list']
 
 class FilteredWSGIController(WSGIController):
     def __init__(self):
@@ -144,6 +146,10 @@ class TestBasicWSGI(TestWSGIController):
         assert "[('foo', u'bar'), ('snafu', u'snafoo')]" in resp, str(resp)
         resp = self.app.put('/?foo=bar', params=dict(snafu='snafoo'))
         assert "[('foo', u'bar'), ('snafu', u'snafoo')]" in resp, str(resp)
+
+    def test_list(self):
+        self.baseenviron['pylons.routes_dict']['action'] = 'list'
+        assert 'from a list' in self.app.get('/')
 
 class TestFilteredWSGI(TestWSGIController):
     def __init__(self, *args, **kargs):

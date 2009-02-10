@@ -34,7 +34,7 @@ def jsonify(func, *args, **kwargs):
     pylons = get_pylons(args)
     pylons.response.headers['Content-Type'] = 'application/json'
     data = func(*args, **kwargs)
-    if isinstance(data, list):
+    if isinstance(data, (list, tuple)):
         msg = "JSON responses with Array envelopes are susceptible to " \
               "cross-site data leak attacks, see " \
               "http://pylonshq.com/warnings/JSONArray"
