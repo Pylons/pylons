@@ -14,6 +14,7 @@ Functions available:
 :func:`mimetype`, :func:`redirect`, and :func:`redirect_to`
 """
 import base64
+import binascii
 import hmac
 import logging
 import mimetypes
@@ -75,16 +76,14 @@ class Request(WebObRequest):
         """
         cookie = self.str_cookies.get(name)
         if not cookie:
-            return None
+            return
         try:
             sig, pickled = cookie[:40], base64.decodestring(cookie[40:])
-        except:
+        except binascii.Error:
             # Badly formed data can make base64 die
-            return None
+            return
         if hmac.new(secret, pickled, sha1).hexdigest() == sig:
             return pickle.loads(pickled)
-        else:
-            return None
 
 
 class Response(WebObResponse):
@@ -126,6 +125,7 @@ class Response(WebObResponse):
         pickled = pickle.dumps(data, pickle.HIGHEST_PROTOCOL)
         sig = hmac.new(secret, pickled, sha1).hexdigest()
         self.set_cookie(name, sig + base64.encodestring(pickled), **kwargs)
+
 
 def etag_cache(key=None):
     """Use the HTTP Entity Tag cache for Browser side caching
