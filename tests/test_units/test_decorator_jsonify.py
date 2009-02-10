@@ -13,6 +13,10 @@ class CacheController(WSGIController):
     def test_bad_json(self):
         return ["this is neat"]
     test_bad_json = jsonify(test_bad_json)
+
+    def test_bad_json2(self):
+        return ("this is neat",)
+    test_bad_json2 = jsonify(test_bad_json2)
     
     def test_good_json(self):
         return dict(fred=42)
@@ -35,10 +39,11 @@ class TestJsonifyDecorator(TestWSGIController):
         warnings.simplefilter('always', Warning)
 
     def test_bad_json(self):
-        try:
-            response = self.get_response(action='test_bad_json')
-        except Warning, msg:
-            assert 'JSON responses with Array envelopes are' in msg[0]
+        for action in 'test_bad_json', 'test_bad_json2':
+            try:
+                response = self.get_response(action=action)
+            except Warning, msg:
+                assert 'JSON responses with Array envelopes are' in msg[0]
     
     def test_good_json(self):
         response = self.get_response(action='test_good_json')
