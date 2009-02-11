@@ -1,7 +1,7 @@
 .. _controllers:
 
 ===========
-Controllers
+Контролери
 ===========
 
 .. image:: _static/pylon2.jpg
@@ -10,73 +10,76 @@ Controllers
    :height: 450px
    :width: 368px
 
-In the :term:`MVC` paradigm the *controller* interprets the inputs, commanding
-the model and/or the view to change as appropriate. Under Pylons, this concept
-is extended slightly in that a Pylons controller is not directly interpreting
-the clients request, but is acting to determine the appropriate way to
-assemble data from the model, and render it with the correct template.
+В парадигмі :term:`MVC`, *controller* інтерпритує ввід, який керується моделю чи/або 
+виглядом( view в патерні MVC) для відповідних змін. В Pylons ця концепція злегка розширена,
+а саме в тому що контролери Pylons не прямо взємодіють з  запитом клієнта, а діють так 
+щоб визначити правильний шлях збирання даних із моделі і відобразити їх правильним шаблоном.
 
-The controller interprets requests from the user and calls portions of the model and view as necessary to fulfill the request. So when the user clicks a Web link or submits an HTML form, the controller itself doesn’t output anything or perform any real processing. It takes the request and determines which model components to invoke and which formatting to apply to the resulting data.
+Контролери інтерпрритують запит від користувача і викликають частину моделі і частину
+відображення, як небхідність виконання запиту.
 
-Pylons uses a class, where the superclass provides the :term:`WSGI` interface
-and the subclass implements the application-specific controller logic.
+Pylons використовує клас, батьківський клас якого забезпечує інтерфейс :term:`WSGI`,
+а породжений клас імплементовує специфічну для застосування логіку контролера.
 
-The Pylons WSGI Controller handles incoming web requests that are dispatched from the Pylons WSGI application :class:`~pylons.wsgiapp.PylonsApp`.
+Pylons WSGI Controller обробляє вхідні веб запити, надіслані PylonsBaseWSGIApp.
 
-These requests result in a new instance of the :class:`~pylons.controllers.core.WSGIController` being created, which is then called with the dict options from the Routes match. The standard WSGI response is then returned with start_response called as per the WSGI spec.
+Результат запиту створюється у новій змінній  WSGIController, яку потім викликано з dict опцією із відпвідності Маршрутів. Потім повертається стандартна WSGI відповідь за допомогою
+виклику start_response.
 
-Since Pylons controllers are actually called with the WSGI interface, normal WSGI applications can also be Pylons ‘controllers’.
+Так як Pylons контролери фактично викликаються через WSGI інтерфейс, звичайна
+WSGI програма також може бути Pylons ‘controllers’. 
 
-Standard Controllers
-====================
+Стандартні Контролери
+=====================
 
-Standard Controllers intended for subclassing by web developers
+Стандартні контролери призначені для наслідування веб розробниками. 
 
-Keeping methods private
------------------------
+Зберігання методів приватними
+-----------------------------
 
-The default route maps any controller and action, so you will likely want to
-prevent some controller methods from being callable from a URL.
+Так як звичайний маршрут проектуватиме будь який контролер і подію, ви
+ймовірно захочите заборонити виклик деяких методів контролера із URL.
 
-Pylons uses the default Python convention of private methods beginning with
-``_``. To hide a method ``edit_generic`` in this class, just changing its name
-to begin with ``_`` will be sufficient:
+За замовчуванням маршрути використовують Python конвеншн приватних методів,
+починаючи їх з ``_``. Щоб приховати метод ``edit_generic`` у цьому класі, просто
+змінити імя, починаючи його із ``_`` буде достатньо.
 
 .. code-block:: python
 
-    class UserController(BaseController):
-        def index(self):
-            return "This is the index."
+	class UserController(BaseController):
+		def index(self):
+			return Response("This is the index.")
+	
+		def _edit_generic(self):
+			"I can't be called from the web!"
+			return True
 
-        def _edit_generic(self):
-            """I can't be called from the web!"""
-            return True
+Спеціальні методи
+-----------------
 
-Special methods
----------------
-
-Special controller methods you may define:
+Спеціальні методи контролера, які ви можите визначити:
 
 ``__before__``
-    This method is called before your action is, and should be used for
-    setting up variables/objects, restricting access to other actions,
-    or other tasks which should be executed before the action is called.
+    Цей метод виконається перед настанням вашої події, і повинен 
+    використовуватись для ініціалізації змінних/обєктів, обмежуючи доступ до
+    інших подій, або інших завдань, які мають виконатися перед
+    даною подією.
 
 ``__after__``
-    This method is called after the action is, unless an unexpected
-    exception was raised. Subclasses of
-    :class:`~webob.exc.HTTPException` (such as those raised by
-    ``redirect_to`` and ``abort``) are expected; e.g. ``__after__``
-    will be called on redirects.
-    
-Adding Controllers dynamically
-------------------------------
+    Метод, який працюватиме після того, як дія виконається. Цей метод 
+    *завжди* працюватиме після вашого методу, навіть якщо він спричинить 
+    виняткову ситуацію чи редірект.
+	
+Додавання контролерів динамічно
+-------------------------------
 
-It is possible for an application to add controllers without restarting the application. This requires telling Routes to re-scan the controllers directory.
+Програма може додати контролери без перезавантаження. Потрібно сказати Маршрутам повторно проглянути каталог контролерів.
 
-New controllers may be added from the command line with the paster command (recommended as that also creates the test harness file), or any other means of creating the controller file.
+Нові контролери можна додати з командного рядка за допогою команди paster (рекомедовано, оскільки одразу створюється файл використання тестів),
+або будь-яким іншим засобом створення файлу контролера.
 
-For Routes to become aware of new controllers present in the controller directory, an internal flag is toggled to indicate that Routes should rescan the directory:
+Для того щоб Маршрути взнали, що є нові контролери в каталозі контролерів, піднято внутрішній прапорець,
+що вказує, що Маршрути повинні повторно проглянути каталог:
 
 .. code-block:: python
 
@@ -84,33 +87,35 @@ For Routes to become aware of new controllers present in the controller director
 
     mapper = request_config().mapper
     mapper._created_regs = False
-
-
-On the next request, Routes will rescan the controllers directory and those routes that use the ``:controller`` dynamic part of the path will be able to match the new controller.
-
+	
+На наступному запиті, Маршрути переглянуть каталог контролерів, і ті маршрути, які використовують
+``:controller`` динамічну частину шляху, зможуть підібрати нового контролера.
+	
 
 Attaching WSGI apps
 -------------------
 
 .. note::
 
-    This recipe assumes a basic level of familiarity with the WSGI Specification (PEP 333)
+	Для використання цього методу потрібна базова обізнаність із WSGI Specification (PEP 333)
 
-WSGI runs deep through Pylons, and is present in many parts of the architecture. Since Pylons controllers are actually called with the WSGI interface, normal WSGI applications can also be Pylons 'controllers'. 
+WSGI виконується повністю через Pylons і присутня у багатьох частинах архітетури. Так як контролери Pylons викликаються
+фактично із WSGI інтерфейсом, звичйна WSGI програма також може бути Pylons 'controllers'.
 
-Optionally, if a full WSGI app should be mounted and handle the remainder of the URL, Routes can automatically move the right part of the URL into the :envvar:`SCRIPT_NAME`, so that the WSGI application can properly handle its :envvar:`PATH_INFO` part.
+Дадотково, якщо повну програму WSGI потрібно змонтувати і обробити залишок URL, Маршрути можуть автоматично модифікувати правильну частину 
+URL у :envvar:`SCRIPT_NAME`,так  що WSGI програма може коректно обробити свою  :envvar:`PATH_INFO` частину.
 
-This recipe will demonstrate adding a basic WSGI app as a Pylons controller. 
+Цей метод демонструватиме додавання базової WSGI програми як Pylons контролера.
 
-Create a new controller file in your Pylons project directory:
+Створіть новий контролер файл у вашому каталозі проекту Pylons:
 
 .. code-block:: python
 
-    $ paster controller wsgiapp
+    paster controller wsgiapp
 
-This sets up the basic imports that you may want available when using other WSGI applications.
+Це налаштує базовий імпорт який може вам знадобитися використовуючи інші WSGI програми.
 
-Edit your controller so it looks like this:
+Відредагуйте свого контролера, так щоб він виглядав ось так:
 
 .. code-block:: python
 
@@ -124,108 +129,104 @@ Edit your controller so it looks like this:
         start_response('200 OK', [('Content-type', 'text/plain')])
         return ["Hello World"]
 
-When hooking up other WSGI applications, they will expect the part of the URL that was used to get to this controller to have been moved into :envvar:`SCRIPT_NAME`. :mod:`Routes <routes>` can properly adjust the environ if a map route for this controller is added to the :file:`config/routing.py` file:
+Коли підєднюватимите інші програми WSGI, вони очікуватимуть частину URL, ту що використоувалась для
+доступу до цього контролера, для того щоб перемістити її у :envvar:`SCRIPT_NAME`.
+ :mod:`Routes`, може коректно реголювати environ, якщо мапу маршруту для цього контролера додано до файлу file:`config/routing.py`:
 
 .. code-block:: python
 
     # CUSTOM ROUTES HERE
 
     # Map the WSGI application
-    map.connect('wsgiapp/{path_info:.*}', controller='wsgiapp')
+    map.connect('wsgiapp/*path_info', controller='wsgiapp')
+
+Визначаючи динамічний шлях ``path_info``, Маршрути будуть класти усе що передує ``path_info`` у :envvar:`SCRIPT_NAME`,
+а решта буде йти у :envvar:`PATH_INFO`.
+
+.. warning::
+
+   Чи це все ще правда про Routes 2?
 
 
-By specifying the ``path_info`` dynamic path, Routes will put everything leading up to the ``path_info`` in the :envvar:`SCRIPT_NAME` and the rest will go in the :envvar:`PATH_INFO`.
+Використання Контролера WSGI для забезпечення WSGI сервісу
+==========================================================
 
-
-Using the WSGI Controller to provide a WSGI service
-===================================================
-
-The Pylons WSGI Controller
+Pylons WSGI Контролер
 --------------------------
 
-Pylons' own WSGI Controller follows the WSGI spec for calling and return
-values
+Власний Pylons' WSGI Controller наслідує WSGI специфікацію для виклику і повернення значень
 
-The Pylons WSGI Controller handles incoming web requests that are 
-dispatched from ``PylonsApp``. These requests result in a new
-instance of the ``WSGIController`` being created, which is then called
-with the dict options from the Routes match. The standard WSGI
-response is then returned with :meth:`start_response` called as per
-the WSGI spec.
-
-WSGIController methods
-----------------------
+Pylons WSGI Controller обробляє вхідні веб-запити, відпраленні від ``PylonsBaseWSGIApp``.
+Ці запити утворюють нову змінну ``WSGIController``, яка потім виклакається із dict опцією з
+відбору Маршрутів. Стандартна WSGI відповідь потім повертається з :meth:`start_response`,
+визваної відповідно до специфікації WSGI.
 
 
-Special ``WSGIController`` methods you may define:
+Методи WSGIController 
+---------------------
+
+Спеціальні методи WSGIController, які ви можите визначити 
 
 ``__before__``
-    This method will be run before your action is, and should be
-    used for setting up variables/objects, restricting access to
-    other actions, or other tasks which should be executed before
-    the action is called.
+    Цей метод виконається перед настанням вашої події, і повинен 
+    використовуватись для ініціалізації змінних/обєктів, обмежуючи доступ до
+    інших подій, або інших завдань, які мають виконатися перед
+    даною подією.
+
 ``__after__``
-    Method to run after the action is run. This method will
-    *always* be run after your method, even if it raises an
-    Exception or redirects.
-    
-Each action to be called is inspected with :meth:`_inspect_call` so
-that it is only passed the arguments in the Routes match dict that
-it asks for. The arguments passed into the action can be customized
-by overriding the :meth:`_get_method_args` function which is
-expected to return a dict.
+    Метод, який працюватиме після того, як дія виконається. Цей метод 
+    *завжди* працюватиме після вашого методу, навіть якщо він спричинить 
+    виняткову ситуацію чи редірект.
 
-In the event that an action is not found to handle the request, the
-Controller will raise an "Action Not Found" error if in debug mode,
-otherwise a ``404 Not Found`` error will be returned.
+Кожна дія, яку буде викликано, перевіряється за допомогою 
+:meth:`_inspect_call`. так що вона передає лише ті аргументи у вибірку словника Маршрутів, які
+вимагаються . Аргументи, які передані в подію можуть бути налаштованні, перевизначаючи функцію 
+:meth:`_get_method_args`, яка повинна повернути словник.
 
+У випадку якщо дії для обробки певного запиту не знайдено, Контроллер буде повертати помилку "Action Not Found" режимі відлагодження, інакше буде повернута помилка ``404 Not Found``.
+ 
 .. _rest_controller:
 
-Using the REST Controller with a RESTful API
-============================================
+Використання Контролера REST разом із RESTful API
+=================================================
 
-Using the paster restcontroller temlate
----------------------------------------
+Виористання шаблону paster restcontroller
+-----------------------------------------
 
 .. code-block:: bash
 
     $ paster restcontroller --help
 
-Create a REST Controller and accompanying functional test
+Створення REST контролера і супровідного фунціонального тесту
 
-The RestController command will create a REST-based Controller file
-for use with the :meth:`~routes.base.Mapper.resource`
-REST-based dispatching. This template includes the methods that
-:meth:`~routes.base.Mapper.resource` dispatches to in
-addition to doc strings for clarification on when the methods will
-be called.
+Команда RestController створить REST-базований Controller файл для використння із :meth:`~routes.base.Mapper.resource`.
+REST-базованою дисптчиризацією. Цей шаблон містить метод, який :meth:`~routes.base.Mapper.resource` диспатчить у додаткову
+стрічку документацї для зястосування, де метод буде викликано.
 
-The first argument should be the singular form of the REST
-resource. The second argument is the plural form of the word. If
-its a nested controller, put the directory information in front as
-shown in the second example below.
+Перший аргумент повинен бути формою однини ресурсу REST. Другий аргументє формою множинни слова.
+Якщо це вкладений контролер, розмістіть інформацію про каталог спереду як показано у наступному прикладі нижче:
 
 Example usage:
 
 .. code-block:: bash
 
-    $ paster restcontroller comment comments
+    yourproj% paster restcontroller comment comments
     Creating yourproj/yourproj/controllers/comments.py
     Creating yourproj/yourproj/tests/functional/test_comments.py
 
-If you'd like to have controllers underneath a directory, just
-include the path as the controller name and the necessary
-directories will be created for you:
+Ящо ви бажаєте мати контролер внизу директорії,
+просто включіть шлях, як ім’я контролера і потрібні вам каталоги будуть створенні для вас:
 
 .. code-block:: bash
 
-    $ paster restcontroller admin/tracback admin/trackbacks
+    yourproj% paster restcontroller admin/tracback admin/trackbacks
     Creating yourproj/controllers/admin
     Creating yourproj/yourproj/controllers/admin/trackbacks.py
     Creating yourproj/yourproj/tests/functional/test_admin_trackbacks.py
 
-An Atom-Style REST Controller for Users
----------------------------------------
+	
+Контролер атомного стилю REST для користувачів
+----------------------------------------------
 
 .. code-block:: python
 
@@ -252,7 +253,7 @@ An Atom-Style REST Controller for Users
             """
             #url('users')
             users = model.User.select()
-            if format == 'json':
+            if format=='json':
                 data = []
                 for user in users:
                     d = user._state['original'].data
@@ -272,17 +273,19 @@ An Atom-Style REST Controller for Users
             if user:
                 # The client tried to create a user that already exists
                 abort(409, '409 Conflict', 
-                      headers=[('location', url('user', id=user.name))])
+                      headers=[('location', 
+                                 url('user', id=user.name)), ])
             else:
                 try:
                     # Validate the data that was sent to us
                     params = model.forms.UserForm.to_python(request.params)
                 except Invalid, e:
                     # Something didn't validate correctly
-                    abort(400, '400 Bad Request -- %s' % e)
+                    abort(400, '400 Bad Request -- '+str(e))
                 user = model.User(**params)
                 model.objectstore.flush()
-                response.headers['location'] = url('user', id=user.name)
+                response.headers['location'] = \
+                    url('user', id=user.name)
                 response.status_code = 201
                 c.user_name = user.name
                 return render('/users/created_user.mako')
@@ -309,7 +312,8 @@ An Atom-Style REST Controller for Users
             user = model.User.get_by(name=id)
 
             if user:
-                if (old_name != new_name) and model.User.get_by(name=new_name):
+                if (old_name != new_name) and \
+                        model.User.get_by(name=new_name):
                     abort(409, '409 Conflict')
                 else:
                     params = model.forms.UserForm.to_python(request.params)
@@ -320,9 +324,10 @@ An Atom-Style REST Controller for Users
                     model.objectstore.flush()
                     if user.name != old_name:
                         abort(301, '301 Moved Permanently',
-                              [('Location', url('users', id=user.name))])
+                              [('Location', 
+                                url('users', id=user.name)),])
                     else:
-                        return
+                        return ''
 
         def delete(self, id):
             """DELETE /users/id: Delete an existing item.
@@ -337,7 +342,7 @@ An Atom-Style REST Controller for Users
             user = model.User.get_by(name=id)
             user.delete()
             model.objectstore.flush()
-            return
+            return ''
 
         def show(self, id, format='html'):
             """GET /users/id: Show a specific item.
@@ -374,59 +379,77 @@ An Atom-Style REST Controller for Users
 
 .. _xmlrpc_controller:
 
-Using the XML-RPC Controller for XML-RPC requests
-================================================= 
+Використання Контролера Xml-Rpc для запитів Xml-Rpc
+===================================================
 
-In order to deploy this controller you will need at least a passing familiarity with XML-RPC itself. We will first review the basics of XML-RPC and then describe the workings of the ``Pylons XMLRPCController``. Finally, we will show an example of how to use the controller to implement a simple web service. 
+Для того щоб розгорнути цей контролер вам необхідне як мінімум швидкоплинне знайомство із Xml-Rpc
+Ми спочатку розглядатимемо основи Xml-Rpc а потім опишемо роботу ``Pylons XMLRPCController``. Зрештою, ми покажемо приклад як використовувати
+контролер для написання простого веб сервісу.
 
-After you've read this document, you may be interested in reading the companion document: "A blog publishing web service in XML-RPC" which takes the subject further, covering details of the MetaWeblog API (a popular XML-RPC service) and demonstrating how to construct some basic service methods to act as the core of a MetaWeblog blog publishing service. 
+Після того, як ви прочитали цей документ, ви, можливо, зацікаитесь в читанні супровідного документа: "A blog publishing web service in XML-RPC" ,
+який продовжує тему, покриваючи деталі MetaWeblog API ( відомого XML-RPC сервісу) і, демонструє як сконструювати деякі основні сервісні методи,
+щоб поводитись як базовий MetaWeblog blog видавничий сервіс. 
 
-A brief introduction to XML-RPC
-------------------------------- 
+Коротке введення в Xml-Rpc
+--------------------------
 
-XML-RPC is a specification that describes a Remote Procedure Call (RPC) interface by which an application can use the Internet to execute a specified procedure call on a remote XML-RPC server. The name of the procedure to be called and any required parameter values are "marshalled" into XML. The XML forms the body of a POST request which is despatched via HTTP to the XML-RPC server. At the server, the procedure is executed, the returned value(s) is/are marshalled into XML and despatched back to the application. XML-RPC is designed to be as simple as possible, while allowing complex data structures to be transmitted, processed and returned. 
+Xml-Rpc - специфікація, яка описує інтерфейс Віддаленої Процедури Виклику (RPC), програма може
+використовувати Інтернет щоб виконувати вказаний виклик процедури на віддаленому сервері Xml-Rpc. 
+Імя процедури, яку буде викликано і будь-які значення обов'язкових параметрів "розміщенні" у XML.
+Xml формує тіло POST запиту, який послається через HTTP до XML-RPC сервера .
+На сервері процедура виконується, поверненені значення  розміщують в Xml і посилають назад програмі.
+XML-RPC призначений бути одначасно і простим, і також дозволяти передавати, обробляти і повертати складні структури даних.
+	
+XML-RPC Котролер, що говорить WSGI 
+----------------------------------
 
-XML-RPC Controller that speaks WSGI 
------------------------------------
+Pylons використовує власну бібліотеку xmlrpclib, щоб надати
+спеціалізований клас :class:`XMLRPCController` , який дає повний діапазон засобів самоаналізу XML-RPC для
+використання у ваших методах сервісу і забезпечує основу для побудови множини спеціалізованих методів
+сервісу. Ці методи надають корисний веб сервіс --- такий як інтерфейс опублікування блогу. 
 
-Pylons uses Python's xmlrpclib library to provide a specialised :class:`XMLRPCController` class that gives you the full range of these XML-RPC Introspection facilities for use in your service methods and provides the foundation for constructing a set of specialised service methods that provide a useful web service --- such as a blog publishing interface. 
+Ці контролери обробляють XML-RPC відповіді і поводяться відповідно до  `XML-RPC Specification <http://www.xmlrpc.com/spec>`_ 
+так само добре як із `XML-RPC Introspection <http://scripts.incutio.com/xmlrpc/introspection.html>`_ специфікацією.
 
-This controller handles XML-RPC responses and complies with the `XML-RPC Specification <http://www.xmlrpc.com/spec>`_ as well as the `XML-RPC Introspection <http://scripts.incutio.com/xmlrpc/introspection.html>`_ specification. 
+Частиною  базової функціональності XML-RPC сервера є  надання трьох стандартних процедур самоаналізу або
+по-іншому "service methods". Клас Pylons :class:`XMLRPCController` надає ці стандартні методи
+готовими для вас.
 
-As part of its basic functionality an XML-RPC server provides three standard introspection procedures or "service methods" as they are called. The Pylons :class:`XMLRPCController` class provides these standard service methods ready-made for you: 
+* :meth:`system.listMethods` Повертає список  XML-RPC методів для цього XML-RPC ресурсу 
+* :meth:`system.methodSignature` Повертає масив масивів для валідного підпису методу. Перше значення кожного масиву є значення, яке цей метод повертає. Результатом є масив щоб вказати множинні підписи, що метод може мати. 
+* :meth:`system.methodHelp` Повертає документацію методу 
 
-* :meth:`system.listMethods` Returns a list of XML-RPC methods for this XML-RPC resource 
-* :meth:`system.methodSignature` Returns an array of arrays for the valid signatures for a method. The first value of each array is the return value of the method. The result is an array to indicate multiple signatures a method may be capable of. 
-* :meth:`system.methodHelp` Returns the documentation for a method 
+За замовчуванням, методи з іменнем, яке містить крапку перекладаються на ім'я з підкресленням. Наприклад,
+``system.methodHelp`` обробляється методом :meth:`system_methodHelp`.
 
-By default, methods with names containing a dot are translated to use an underscore. For example, the ``system.methodHelp`` is handled by the method :meth:`system_methodHelp`. 
+Методи у XML-RPC контролері буде визвано з методом заданим у тілі XML-RPC. Методи можна анотувати з атрибутом
+підпису для того щоб оголосити валідні аргументи і типи .
 
-Methods in the XML-RPC controller will be called with the method given in the XML-RPC body. Methods may be annotated with a signature attribute to declare the valid arguments and return types. 
-
-For example:
+Наприклад:
 
 .. code-block:: python
 
     class MyXML(XMLRPCController): 
         def userstatus(self): 
             return 'basic string' 
-        userstatus.signature = [['string']] 
+        userstatus.signature = [ [docmeta:'string'] ] 
 
         def userinfo(self, username, age=None): 
             user = LookUpUser(username) 
-            result = {'username': user.name} 
+            response = {'username':user.name} 
             if age and age > 10: 
-                result['age'] = age 
-            return result 
-        userinfo.signature = [['struct', 'string'], 
-                              ['struct', 'string', 'int']]
+                response[docmeta:'age'] = age 
+            return response 
+        userinfo.signature = [ [docmeta:'struct', 'string'], 
+                               [docmeta:'struct', 'string', 'int'] ] 
+							   
+Так як, XML-RPC методи можуть приймати різні множинни даних, кожна безліч дійсних параметрів - її власний список. 
+Перше значення в списку - тип повернутого параметра. Решта частини параметрів - типи даних, які потрібно передати.
 
+У останньому методі в прикладі вище, з тих пір, як метод може довільно узяти ціле значення,
+обидві множини дійсних списків параметрів повинні бути надані. 
 
-Since XML-RPC methods can take different sets of data, each set of valid arguments is its own list. The first value in the list is the type of the return argument. The rest of the arguments are the types of the data that must be passed in. 
-
-In the last method in the example above, since the method can optionally take an integer value, both sets of valid parameter lists should be provided. 
-
-Valid types that can be checked in the signature and their corresponding Python types: 
+Дійсні типи, які можна перевірити в підписі і відповідних типах Пітона:
 
 +--------------------+--------------------+
 | XMLRPC             | Python             |
@@ -448,40 +471,42 @@ Valid types that can be checked in the signature and their corresponding Python 
 | base64             | xmlrpclib.Binary   |
 +--------------------+--------------------+
 
-Note, requiring a signature is optional. 
+Відзначте, вимога підпису необов'язкова.
 
-Also note that a convenient fault handler function is provided. 
+Також відзначте, що надано зручну функцію обробника дефекту.
 
 .. code-block:: python 
 
     def xmlrpc_fault(code, message): 
         """Convenience method to return a Pylons response XMLRPC Fault""" 
 
-(The `XML-RPC Home page <http://www.xmlrpc.com/>`_ and the `XML-RPC HOW-TO <http://www.faqs.org/docs/Linux-HOWTO/XML-RPC-HOWTO.html>`_ both provide further detail on the XML-RPC specification.) 
+( `XML-RPC Home page <http://www.xmlrpc.com/>`_ і `XML-RPC HOW-TO <http://www.faqs.org/docs/Linux-HOWTO/XML-RPC-HOWTO.html>`_ обидва надають подальші деталі по XML-RPC специфікації.) 		
 
-A simple XML-RPC service  
-------------------------
+Просте обслуговування Xml-Rpc
+-----------------------------
 
-This simple service ``test.battingOrder`` accepts a positive integer < 51 as the parameter ``posn`` and returns a string containing the name of the US state occupying that ranking in the order of ratifying the constitution / joining the union. 
+Цей простий сервіс ``test.battingOrder`` приймає додатнє ціле число < 51 як парамитр ``posn`` і
+повертає стрічку, яка містить назву штату, що міститься в цьому рангу в порядку ратифікованому конституцією цього штату.
 
 .. code-block:: python
  
-    import xmlrpclib
+    import xmlrpclib 
+    import pylons 
+    from pylons import request 
+    from pylons.controllers import XMLRPCController 
+    from myapp.lib.base import * 
 
-    from pylons import request
-    from pylons.controllers import XMLRPCController
-
-    states = ['Delaware', 'Pennsylvania', 'New Jersey', 'Georgia',
-              'Connecticut', 'Massachusetts', 'Maryland', 'South Carolina',
-              'New Hampshire', 'Virginia', 'New York', 'North Carolina',
-              'Rhode Island', 'Vermont', 'Kentucky', 'Tennessee', 'Ohio',
-              'Louisiana', 'Indiana', 'Mississippi', 'Illinois', 'Alabama',
-              'Maine', 'Missouri', 'Arkansas', 'Michigan', 'Florida', 'Texas',
-              'Iowa', 'Wisconsin', 'California', 'Minnesota', 'Oregon',
-              'Kansas', 'West Virginia', 'Nevada', 'Nebraska', 'Colorado',
-              'North Dakota', 'South Dakota', 'Montana', 'Washington', 'Idaho',
-              'Wyoming', 'Utah', 'Oklahoma', 'New Mexico', 'Arizona', 'Alaska',
-              'Hawaii'] 
+    states = [docmeta:'Delaware', 'Pennsylvania', 'New Jersey', 
+             'Georgia', 'Connecticut', 'Massachusetts', 'Maryland', 
+             'South Carolina', 'New Hampshire', 'Virginia', 'New York', 
+             'North Carolina', 'Rhode Island', 'Vermont', 'Kentucky',
+             'Tennessee', 'Ohio', 'Louisiana', 'Indiana', 'Mississippi', 
+             'Illinois', 'Alabama', 'Maine', 'Missouri', 'Arkansas',
+             'Michigan', 'Florida', 'Texas', 'Iowa', 'Wisconsin',
+             'California', 'Minnesota', 'Oregon', 'Kansas', 'West Virginia',
+             'Nevada', 'Nebraska', 'Colorado', 'North Dakota', 'South Dakota',
+             'Montana', 'Washington', 'Idaho', 'Wyoming', 'Utah', 'Oklahoma',
+             'New Mexico', 'Arizona', 'Alaska', 'Hawaii'] 
 
     class RpctestController(XMLRPCController): 
 
@@ -494,19 +519,20 @@ This simple service ``test.battingOrder`` accepts a positive integer < 51 as the
             # XML-RPC checks agreement for arity and parameter datatype, so 
             # by the time we get called, we know we have an int. 
             if posn > 0 and posn < 51: 
-                return states[posn-1] 
+                return states[docmeta:posn-1] 
             else: 
                 # Technically, the param value is correct: it is an int. 
                 # Raising an error is inappropriate, so instead we 
                 # return a facetious message as a string. 
                 return 'Out of cheese error.' 
-        test_battingOrder.signature = [['string', 'int']] 
+        test_battingOrder.signature = [ [docmeta:'string', 'int'] ] 
 
+		
+Тестування сервісу
+------------------
 
-Testing the service
--------------------
-
-For developers using OS X, there's an `XML/RPC client <http://www.ditchnet.org/xmlrpc/>`_ that is an extremely useful diagnostic tool when developing XML-RPC (it's free ... but not entirely bug-free). Or, you can just use the Python interpreter: 
+Для розробників, які використовують OS X, є `XML/RPC client <http://www.ditchnet.org/xmlrpc/>`- вони є надзвичайно корисним діагностичним інструментом,
+при розробці XML-RPC (який є безкошьовним ... але не зовсім вільним від недоліків). Або ви можите просто використовувати Python інтерпретатор: 
 
 .. code-block:: pycon
 
@@ -514,20 +540,23 @@ For developers using OS X, there's an `XML/RPC client <http://www.ditchnet.org/x
     >>> import xmlrpclib 
     >>> srvr = xmlrpclib.Server("http://example.com/rpctest/") 
     >>> pprint(srvr.system.listMethods()) 
-    ['system.listMethods', 
-     'system.methodHelp', 
-     'system.methodSignature', 
-     'test.battingOrder'] 
+    [docmeta:'system.listMethods', 
+    'system.methodHelp', 
+    'system.methodSignature', 
+    'test.battingOrder'] 
     >>> print srvr.system.methodHelp('test.battingOrder') 
     This docstring becomes the content of the 
     returned value for system.methodHelp called with 
     the parameter "test.battingOrder"). The method 
     signature will be appended below ... 
 
-    Method signature: [['string', 'int']] 
+    Method signature: [docmeta:['string', 'int']] 
     >>> pprint(srvr.system.methodSignature('test.battingOrder')) 
-    [['string', 'int']] 
+    [docmeta:['string', 'int']] 
     >>> pprint(srvr.test.battingOrder(12)) 
     'North Carolina' 
 
-To debug XML-RPC servers from Python, create the client object using the optional verbose=1 parameter. You can then use the client as normal and watch as the XML-RPC request and response is displayed in the console. 
+Для відлагодки XML-RPC серверів за допомогою Python, створіть клієнтський обєкт
+використовуючи необов'язковий параметр verbose=1. Потім можна використовувати клієнта як зазвичай
+і спостерігати як XML-RPC запит і відповідь відображені в консолі. 
+
