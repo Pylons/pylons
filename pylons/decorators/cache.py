@@ -141,7 +141,7 @@ def create_cache_key(func, key_dict=None, self=None):
         kls = getattr(self, '__class__', None)
     
     if kls:
-        return '%s.%s' % (func.__module__, kls.__name__), cache_key
+        return '%s.%s' % (kls.__module__, kls.__name__), cache_key
     else:
         return func.__module__, cache_key
 
