@@ -13,7 +13,7 @@ Controllers
 In the :term:`MVC` paradigm the *controller* interprets the inputs, commanding
 the model and/or the view to change as appropriate. Under Pylons, this concept
 is extended slightly in that a Pylons controller is not directly interpreting
-the clients request, but is acting to determine the appropriate way to
+the client's request, but is acting to determine the appropriate way to
 assemble data from the model, and render it with the correct template.
 
 The controller interprets requests from the user and calls portions of the model and view as necessary to fulfill the request. So when the user clicks a Web link or submits an HTML form, the controller itself doesn’t output anything or perform any real processing. It takes the request and determines which model components to invoke and which formatting to apply to the resulting data.

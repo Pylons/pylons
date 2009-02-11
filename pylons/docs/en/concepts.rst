@@ -74,7 +74,7 @@ a class) with two arguments, and handling a response as shown above, is used
 throughout Pylons as a standard interface for passing control to the next
 component.
 
-Inside a new projects :file:`config/middleware.py`, the `make_app` function is
+Inside a new project's :file:`config/middleware.py`, the `make_app` function is
 responsible for creating a WSGI application, wrapping it in WSGI middleware
 (explained below) and returning it so that it may handle requests from a
 HTTP server.
@@ -112,7 +112,7 @@ base WSGI application. In Pylons, the 'base' WSGI Application is the
 `environ` dict that was passed in (from the Routes Middleware).
 
 To see how this functionality is created, consider a small class that
-looks at the `HTTP_REFERER` header to see if its Google:
+looks at the `HTTP_REFERER` header to see if it's Google:
 
 .. code-block :: python
     
@@ -135,7 +135,7 @@ are built up in the `WSGI Stack` that is configured for a new Pylons project.
 Some of the layers, like the Session, Routes, and Cache middleware, only add
 objects to the `environ` dict, or add HTTP headers to the response (the Session middleware for example adds the session cookie header). Others, such
 as the Status Code Redirect, and the Error Handler may fully intercept the
-request entirely, and change how its responded to.
+request entirely, and change how it's responded to.
 
 
 *******************
@@ -153,12 +153,12 @@ HelloController). Upon finding a controller, its then called like any other
 WSGI application using the same WSGI interface that
 :class:`~pylons.wsgiapp.PylonsApp` was called with.
  
-This is why the BaseController that resides in a projects
+This is why the BaseController that resides in a project's
 :file:`lib/base.py` module inherits from
 :class:`~pylons.controllers.core.WSGIController` and has a `__call__`
 method that takes the `environ` and `start_response`. The
 :class:`~pylons.controllers.core.WSGIController` locates a method in the
-class the corresponds to the `action` that Routes found, calls it, and 
+class that corresponds to the `action` that Routes found, calls it, and 
 returns the response completing the request.
 
 
