@@ -2,14 +2,13 @@
 import inspect
 import logging
 import time
-
-from decorator import decorator
-from paste.deploy.converters import asbool
-
 try:
     set
 except NameError:
     from sets import Set as set
+
+from decorator import decorator
+from paste.deploy.converters import asbool
 
 from pylons.decorators.util import get_pylons
     
@@ -66,7 +65,7 @@ def beaker_cache(key="cache_default", expire="never", type=None,
 
         if key:
             if query_args:
-                key_dict = dict(pylons.request.GET)
+                key_dict = pylons.request.GET.mixed()
             else:
                 key_dict = kwargs.copy()
                 key_dict.update(_make_dict_from_args(func, args))
@@ -128,16 +127,15 @@ def create_cache_key(func, key_dict=None, self=None):
             
     """
     kls = None
-
-    if key_dict:
-        cache_key = " ".join(["%s=%s" % (k, v) for k, v
-                              in key_dict.iteritems()])
-    elif hasattr(func, 'im_func'):
+    if hasattr(func, 'im_func'):
         kls = func.im_class
         func = func.im_func
         cache_key = func.__name__
     else:
         cache_key = func.__name__
+    if key_dict:
+        cache_key += " " + " ".join(["%s=%s" % (k, v) for k, v
+                                     in key_dict.iteritems()])
 
     if not kls and self:
         kls = getattr(self, '__class__', None)

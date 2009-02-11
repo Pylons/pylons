@@ -80,6 +80,10 @@ class CacheController(WSGIController):
         return "Hello folks, time is %s" % time.time()
     test_header_cache = beaker_cache(cache_headers=('content-type','content-length', 'x-powered-by'))(test_header_cache)
 
+    def test_cache_key_dupe(self):
+        return "Hello folks, time is %s" % time.time()
+    test_cache_key_dupe = beaker_cache(query_args=True)(test_cache_key_dupe)
+
 cache_dir = os.path.join(data_dir, 'cache')
 
 try:
@@ -138,16 +142,16 @@ class TestCacheDecorator(TestWSGIController):
         
         response = self.get_response(action='test_get_cache_default', _url='/?param=1243')
         assert 'Counter=8' in response
-        response = self.get_response(action='test_get_cache_default', _url="/?param=123")
-        assert 'Counter=2' in response
         response = self.get_response(action='test_get_cache_default', _url="/?param=1243")
         assert 'Counter=8' in response
+        response = self.get_response(action='test_get_cache_default', _url="/?param=123")
+        assert 'Counter=9' in response
 
         response = self.get_response(action='test_default_cache_decorator_func')
         assert 'text/html' in response.header_dict['content-type']
-        assert 'Counter=9' in response
+        assert 'Counter=10' in response
         response = self.get_response(action='test_default_cache_decorator_func')
-        assert 'Counter=9' in response
+        assert 'Counter=10' in response
     
     def test_dbm_cache_decorator(self):
         sap.g.counter = 0
@@ -184,7 +188,14 @@ class TestCacheDecorator(TestWSGIController):
         response = self.get_response(action='test_invalidate_cache')
         response = self.get_response(action='test_default_cache_decorator')
         assert 'Counter=2' in response
-        
+
+    def test_cache_key_dupe(self):
+        response = self.get_response(action='test_cache_key_dupe',
+                                     _url='/test_cache_key_dupe?id=1')
+        time.sleep(0.1)
+        response2 = self.get_response(action='test_cache_key_dupe',
+                                      _url='/test_cache_key_dupe?id=2&id=1')
+        assert str(response) != str(response2)
         
     def test_header_cache(self):
         response = self.get_response(action='test_header_cache')
