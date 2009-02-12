@@ -201,13 +201,16 @@ class StatusCodeRedirect(object):
             self.app, environ, catch_exc_info=True)
         if status[:3] in self.errors and \
             'pylons.status_code_redirect' not in environ and self.error_path:
-            environ['PATH_INFO'] = self.error_path
+            # Create a new environ to avoid touching the original request data
+            new_environ = environ.copy()
+            new_environ['PATH_INFO'] = self.error_path
             
             # Create a response object
             environ['pylons.original_response'] = Response(
                 status=status, headerlist=headers, app_iter=app_iter)
+            
             newstatus, headers, app_iter, exc_info = call_wsgi_application(
-                    self.app, environ, catch_exc_info=True)
+                    self.app, new_environ, catch_exc_info=True)
         start_response(status, headers, exc_info)
         return app_iter
 
