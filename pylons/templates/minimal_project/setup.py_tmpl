@@ -13,7 +13,7 @@ setup(
     author_email={{repr(author_email)}},
     url={{repr(url)}},
     install_requires=[
-        "Pylons>=0.9.7rc5",
+        "Pylons>=0.9.7dev",
 {{if sqlalchemy}}
         "SQLAlchemy>=0.4",
 {{endif}}
