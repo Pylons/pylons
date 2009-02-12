@@ -206,10 +206,10 @@ class StatusCodeRedirect(object):
             # Create a response object
             environ['pylons.original_response'] = Response(
                 status=status, headerlist=headers, app_iter=app_iter)
-            return self.app(environ, start_response)
-        else:
-            start_response(status, headers, exc_info)
-            return app_iter
+            newstatus, headers, app_iter, exc_info = call_wsgi_application(
+                    self.app, environ, catch_exc_info=True)
+        start_response(status, headers, exc_info)
+        return app_iter
 
 
 def ErrorDocuments(app, global_conf=None, mapper=None, **kw):
