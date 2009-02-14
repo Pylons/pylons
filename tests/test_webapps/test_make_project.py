@@ -30,7 +30,7 @@ testenv = TestFileEnvironment(
     environ=test_environ)
 
 projenv = None
-    
+
 def _get_script_name(script):
     if sys.platform == 'win32':
         script += '.exe'
@@ -123,26 +123,19 @@ def _do_proj_test(copydict, emptyfiles=None):
         projenv.writefile(newfile, frompath=original)
     for fi in emptyfiles:
         projenv.writefile(fi)
-    for k, v in sys.modules.items():
-        if not v:
-            continue
-        try:
-            if 'ProjectName' in v.__file__:
-                del sys.modules[k]
-        except AttributeError:
-            pass
-    here_dir = os.getcwd()
-    test_dir = os.path.join(testenv.cwd, 'ProjectName').replace('\\','/')
-    os.chdir(test_dir)
-    sys.path.append(test_dir)
-    nose.run(argv=['nosetests', '-d', test_dir])
     
-    sys.path.pop(-1)
-    os.chdir(here_dir)
+    # here_dir = os.getcwd()
+    # test_dir = os.path.join(testenv.cwd, 'ProjectName').replace('\\','/')
+    # os.chdir(test_dir)
+    # sys.path.append(test_dir)
+    # nose.run(argv=['nosetests', '-d', test_dir])
+    # 
+    # sys.path.pop(-1)
+    # os.chdir(here_dir)
     
-    # res = projenv.run(_get_script_name('nosetests')+' -d',
-    #                   expect_stderr=True,
-    #                   cwd=os.path.join(testenv.cwd, 'ProjectName').replace('\\','/'))
+    res = projenv.run(_get_script_name('nosetests')+' -d --with-coverage --cover-package=pylons',
+                      expect_stderr=True,
+                      cwd=os.path.join(testenv.cwd, 'ProjectName').replace('\\','/'))
 
 def do_nosetests():
     _do_proj_test({'development.ini':'development.ini'})
