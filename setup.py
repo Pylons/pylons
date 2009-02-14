@@ -11,7 +11,7 @@ version = '0.9.7'
 
 tests_require = ['nose']
 if not sys.platform.startswith('java'):
-    tests_require.extend(['Genshi', 'Jinja2'])
+    tests_require.extend(['Genshi', 'Jinja2', 'coverage>=2.85'])
 
 setup(
     name="Pylons",

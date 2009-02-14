@@ -5,6 +5,9 @@ import time
 from shutil import rmtree
 
 import pkg_resources
+import nose
+import nose.config
+import pylons
 from nose import SkipTest
 from paste.fixture import *
 
@@ -110,15 +113,36 @@ def _do_proj_test(copydict, emptyfiles=None):
         # http://bugs.jython.org/issue1024 (the issue actually describes
         # this test)
         time.sleep(1)
+    
+    if pylons.test.pylonsapp:
+        pylons.test.pylonsapp = None
+    
     if not emptyfiles:
         emptyfiles = []
     for original, newfile in copydict.iteritems():
         projenv.writefile(newfile, frompath=original)
     for fi in emptyfiles:
         projenv.writefile(fi)
-    res = projenv.run(_get_script_name('nosetests')+' -d',
-                      expect_stderr=True,
-                      cwd=os.path.join(testenv.cwd, 'ProjectName').replace('\\','/'))
+    for k, v in sys.modules.items():
+        if not v:
+            continue
+        try:
+            if 'ProjectName' in v.__file__:
+                del sys.modules[k]
+        except AttributeError:
+            pass
+    here_dir = os.getcwd()
+    test_dir = os.path.join(testenv.cwd, 'ProjectName').replace('\\','/')
+    os.chdir(test_dir)
+    sys.path.append(test_dir)
+    nose.run(argv=['nosetests', '-d', test_dir])
+    
+    sys.path.pop(-1)
+    os.chdir(here_dir)
+    
+    # res = projenv.run(_get_script_name('nosetests')+' -d',
+    #                   expect_stderr=True,
+    #                   cwd=os.path.join(testenv.cwd, 'ProjectName').replace('\\','/'))
 
 def do_nosetests():
     _do_proj_test({'development.ini':'development.ini'})
@@ -154,7 +178,7 @@ def do_genshi():
         'functional_sample_controller_sample2.py':'projectname/tests/functional/test_sample2.py'
     }
     copydict.update(reset)
-    empty = ['projectname/templates/__init__.py']
+    empty = ['projectname/templates/__init__.py', 'projectname/tests/functional/test_cache.py']
     _do_proj_test(copydict, empty)
 
 def do_two_engines():
@@ -186,7 +210,8 @@ def do_jinja2():
          'projectname/templates/__init__.py',
          'projectname/tests/functional/test_sample.py',
          'projectname/tests/functional/test_sample2.py',
-         'projectname/tests/functional/test_sample3.py'
+         'projectname/tests/functional/test_sample3.py',
+         'projectname/tests/functional/test_cache.py'
      ]
     _do_proj_test(copydict, empty)
 
