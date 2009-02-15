@@ -5,11 +5,10 @@ import types
 import warnings
 
 from paste.httpexceptions import HTTPException as LegacyHTTPException
-from webob.exc import HTTPException, HTTPNotFound, status_map
+from webob.exc import HTTPException, HTTPNotFound
 
 import pylons
 import pylons.legacy
-from pylons.controllers.util import Response
 
 __all__ = ['WSGIController']
 
@@ -94,7 +93,8 @@ class WSGIController(object):
             args = kargs
         else:
             args = {}
-            argnames = argspec[0][isinstance(func, types.MethodType) and 1 or 0:]
+            argnames = argspec[0][isinstance(func, types.MethodType)
+                                  and 1 or 0:]
             for name in argnames:
                 if name in kargs:
                     if self._py_object.config['pylons.c_attach_args']:
@@ -191,8 +191,8 @@ class WSGIController(object):
         try:
             if environ['pylons.routes_dict']['action'][:1] in ('_', '-'):
                 if log_debug:
-                    log.debug("Action starts with _, private action not allowed. "
-                              "Returning a 404 response")
+                    log.debug("Action starts with _, private action not "
+                              "allowed. Returning a 404 response")
                 return HTTPNotFound()(environ, start_response)
         except KeyError:
             # The check later will notice that there's no action
