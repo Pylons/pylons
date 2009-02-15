@@ -10,7 +10,7 @@ from paste.recursive import RecursiveMiddleware
 from paste.urlparser import StaticURLParser
 from weberror.evalexception import EvalException
 from weberror.errormiddleware import ErrorMiddleware
-from webob import Request, Response
+from webob import Response
 from webhelpers.html import literal
 
 import pylons
@@ -200,7 +200,7 @@ class StatusCodeRedirect(object):
         status, headers, app_iter, exc_info = call_wsgi_application(
             self.app, environ, catch_exc_info=True)
         if status[:3] in self.errors and \
-            'pylons.status_code_redirect' not in environ and self.error_path:            
+            'pylons.status_code_redirect' not in environ and self.error_path:
             # Create a response object
             environ['pylons.original_response'] = Response(
                 status=status, headerlist=headers, app_iter=app_iter)

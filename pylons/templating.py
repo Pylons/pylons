@@ -125,16 +125,16 @@ commands and hook into Buffet to make rendering content easy.
 import logging
 import os
 import warnings
-
 try:
     from cStringIO import StringIO
 except ImportError:
     from StringIO import StringIO
+
 import pkg_resources
+from webhelpers.html import literal
 
 import pylons
 import pylons.legacy
-from webhelpers.html import literal
 
 __all__ = ['Buffet', 'MyghtyTemplatePlugin', 'render', 'render_genshi', 
            'render_jinja2', 'render_mako', 'render_response']

@@ -6,7 +6,6 @@ by Paste, though any WSGI server could create and call the WSGI app as
 well.
 
 """
-import inspect
 import logging
 import sys
 

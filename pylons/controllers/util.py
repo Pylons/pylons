@@ -17,7 +17,6 @@ import base64
 import binascii
 import hmac
 import logging
-import mimetypes
 try:
     import cPickle as pickle
 except ImportError:

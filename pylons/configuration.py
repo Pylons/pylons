@@ -20,10 +20,10 @@ import warnings
 
 from paste.config import DispatchingConfig
 from paste.deploy.converters import asbool
+from webhelpers.mimehelper import MIMETypes
 
 import pylons.legacy
 import pylons.templating
-from webhelpers.mimehelper import MIMETypes
 
 
 default_template_engine = 'mako'

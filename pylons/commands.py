@@ -48,11 +48,10 @@ import paste.deploy.config
 from paste.deploy import loadapp, appconfig
 from paste.script.command import Command, BadCommand
 from paste.script.filemaker import FileOp
-from paste.script.pluginlib import find_egg_info_dir
 from tempita import paste_script_template_renderer
 
-import pylons.util as util
 import pylons
+import pylons.util as util
 
 __all__ = ['ControllerCommand', 'RestControllerCommand', 'ShellCommand']
 
@@ -188,9 +187,11 @@ class ControllerCommand(Command):
 
             # Determine the module's import statement
             if is_minimal_template(base_package):
-                importstatement = "from %s.controllers import BaseController" % base_package
+                importstatement = ('from %s.controllers import BaseController'
+                                   % base_package)
             else:
-                importstatement = "from %s.lib.base import BaseController" % base_package
+                importstatement = ('from %s.lib.base import BaseController' %
+                                   base_package)
             if defines_render(base_package):
                 importstatement += ', render'
 
@@ -297,9 +298,11 @@ class RestControllerCommand(Command):
 
             # Determine the module's import statement
             if is_minimal_template(base_package):
-                importstatement = "from %s.controllers import BaseController" % base_package
+                importstatement = ('from %s.controllers import BaseController'
+                                   % base_package)
             else:
-                importstatement = "from %s.lib.base import BaseController" % base_package
+                importstatement = ('from %s.lib.base import BaseController' %
+                                   base_package)
             if defines_render(base_package):
                 importstatement += ', render'
             
@@ -392,7 +395,8 @@ class ShellCommand(Command):
                       action='count',
                       dest='quiet',
                       default=0,
-                      help="Do not load logging configuration from the config file")
+                      help=("Do not load logging configuration from the "
+                            "config file"))
 
     def command(self):
         """Main command to create a new shell"""

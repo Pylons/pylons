@@ -1,7 +1,6 @@
 """The base WSGI XMLRPCController"""
 import inspect
 import logging
-import sys
 import types
 import xmlrpclib
 
@@ -241,7 +240,8 @@ class XMLRPCController(WSGIController):
         for method in dir(self):
             meth = getattr(self, method)
 
-            if not method.startswith('_') and isinstance(meth, types.MethodType):
+            if not method.startswith('_') and isinstance(meth,
+                                                         types.MethodType):
                 methods.append(self._publish_method_name(method))
         return methods
     system_listMethods.signature = [['array']]
