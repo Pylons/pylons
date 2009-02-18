@@ -19,4 +19,7 @@
 
 .. autofunction:: url_for
 .. autoclass:: URLGenerator
+    :members:
+    
+    .. automethod:: __call__
 .. autofunction:: redirect_to
