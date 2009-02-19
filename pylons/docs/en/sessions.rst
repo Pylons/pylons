@@ -384,7 +384,7 @@ The error above is because the entity is not being detached from its original se
 serialize, you have to manually shuttle the object to and from the appropriate sessions.
 
 Three ways to get an object out of serialization and back into an SA  
-session are:
+Session are:
 
 1. A mapped class that has a :func:`__getstate__` which only copies desired properties and won't copy SA session pointers:
 
@@ -392,18 +392,18 @@ session are:
 
          beaker.put(key, obj)
          ...
-         obj  = beaker.get(key)
-         session.save_or_update(obj)
+         obj = beaker.get(key)
+         Session.add(obj)
 
 2. A regular old mapped class.  Add an :func:`expunge` step.
 
     .. code-block:: python
 
-         session.expunge(obj)
+         Session.expunge(obj)
          beaker.put(key, obj)
          ...
-         obj  = beaker.get(key)
-         session.save_or_update(obj)
+         obj = beaker.get(key)
+         Session.add(obj)
 
 3. Don't worry about :func:`__getstate__` or :func:`expunge` on the original object, use :func:`merge`. This is "cleaner" than the :func:`expunge` method shown above but will usually force a load of the object from the database and therefore is not necessarily as "efficient", also it copies the state of the given object to the target object which may be error-prone.
 
@@ -412,6 +412,6 @@ session are:
         beaker.put(key, obj)
         ...
         obj = beaker.get(key)
-        obj = session.merge(obj)
+        obj = Session.merge(obj)
 
 
