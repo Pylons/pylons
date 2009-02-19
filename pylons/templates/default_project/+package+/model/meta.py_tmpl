@@ -3,7 +3,7 @@
 from sqlalchemy import MetaData
 from sqlalchemy.orm import sessionmaker, scoped_session
 
-__all__ = ['Session', 'metadata', 'engine']
+__all__ = ['Session', 'engine', 'metadata']
 
 # SQLAlchemy database engine.  Updated by model.init_model()
 engine = None
