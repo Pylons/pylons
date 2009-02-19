@@ -430,7 +430,7 @@ Controller
 ----------
 
 
-The paster create SQLAlchemy options adds the following to the top of
+The paster create SQLAlchemy option adds the following to the top of
 *myapp/lib/base.py* (the base controller):
 
 .. code-block:: python
