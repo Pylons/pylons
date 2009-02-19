@@ -15,7 +15,7 @@ setup(
     install_requires=[
         "Pylons>=0.9.7dev",
 {{if sqlalchemy}}
-        "SQLAlchemy>=0.4",
+        "SQLAlchemy>=0.5",
 {{endif}}
 {{if template_engine == 'genshi'}}
         "Genshi>=0.4",
