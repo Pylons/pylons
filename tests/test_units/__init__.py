@@ -29,9 +29,10 @@ class TestWSGIController(TestCase):
         pylons.c._pop_object()
     
     def get_response(self, **kargs):
+        test_args = kargs.pop('test_args', {})
         url = kargs.pop('_url', '/')
         self.environ['pylons.routes_dict'].update(kargs)
-        return self.app.get(url, extra_environ=self.environ)
+        return self.app.get(url, extra_environ=self.environ, **test_args)
 
     def post_response(self, **kargs):
         url = kargs.pop('_url', '/')
