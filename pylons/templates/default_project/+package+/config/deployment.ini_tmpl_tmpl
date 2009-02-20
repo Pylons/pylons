@@ -18,6 +18,7 @@ port = 5000
 use = egg:{{project}}
 full_stack = true
 static_files = true
+
 cache_dir = %(here)s/data
 beaker.session.key = {{package}}
 beaker.session.secret = ${app_instance_secret}
@@ -33,7 +34,6 @@ app_instance_uuid = ${app_instance_uuid}
 
 # SQLAlchemy database URL
 sqlalchemy.url = sqlite:///production.db
-sqlalchemy.echo = False
 
 {{endif}}
 

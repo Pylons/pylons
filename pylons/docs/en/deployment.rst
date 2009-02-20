@@ -275,11 +275,11 @@ PrefixMiddleware
 
 ``PrefixMiddleware`` provides a way to manually override the root prefix (``SCRIPT_NAME``) of your application for certain situations. 
 
-When running an application under a prefix (such as '``/james``') in FastCGI/apache, the ``SCRIPT_NAME`` environment variable is automatically set to to the appropriate value: '``/james``'. Pylons' URL generating functions such as ``url_for`` always take the ``SCRIPT_NAME`` value into account. 
+When running an application under a prefix (such as '``/james``') in FastCGI/apache, the ``SCRIPT_NAME`` environment variable is automatically set to to the appropriate value: '``/james``'. Pylons' URL generators such as ``url`` always take the ``SCRIPT_NAME`` value into account. 
 
 One situation where ``PrefixMiddleware`` is required is when an application is accessed via a reverse proxy with a prefix. The application is accessed through the reverse proxy via the the URL prefix '``/james``', whereas the reverse proxy forwards those requests to the application at the prefix '``/``'. 
 
-The reverse proxy, being an entirely separate web server, has no way of specifying the ``SCRIPT_NAME`` variable; it must be manually set by a ``PrefixMiddleware`` instance. Without setting ``SCRIPT_NAME``, ``url_for`` will generate URLs such as: '``/purchase_orders/1``', when it should be generating: '``/james/purchase_orders/1``'. 
+The reverse proxy, being an entirely separate web server, has no way of specifying the ``SCRIPT_NAME`` variable; it must be manually set by a ``PrefixMiddleware`` instance. Without setting ``SCRIPT_NAME``, ``url`` will generate URLs such as: '``/purchase_orders/1``', when it should be generating: '``/james/purchase_orders/1``'. 
 
 To filter your application through a ``PrefixMiddleware`` instance, add the following to the '``[app:main]``' section of your .ini file: 
 
