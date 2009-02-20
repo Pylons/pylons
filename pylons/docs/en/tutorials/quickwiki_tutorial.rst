@@ -397,7 +397,7 @@ Before we can add the actions we want to be able to route the requests to them c
                 action='edit')
     map.connect('save_page', '/pages/save/{title}', controller='pages',
                 action='save', conditions=dict(method='POST'))
-    map.connect('delete_page', '/pages/delete/{title}', controller='pages',
+    map.connect('delete_page', '/pages/delete', controller='pages',
                 action='delete')
 
     # A bonus example - the specified defaults allow visiting
@@ -698,14 +698,22 @@ The :meth:`index` action simply gets all the pages from the database. Create the
 
     <%def name="header()">Title List</%def>
 
+    ${h.secure_form(url('delete_page'))}
+
     <ul id="titles">
       % for title in c.titles:
       <li>
-        ${title} [${h.link_to('visit', url('show_page', title=title))} -
-        ${h.link_to('delete', url('delete_page', title=title))}]
+        ${h.link_to(title, url('show_page', title=title))} -
+        ${h.checkbox('title', title)}
       </li>
       % endfor
     </ul>
+
+    ${h.submit('delete', 'Delete')}
+
+    ${h.end_form()}
+
+This displays a form listing a link to all pages along with a checkbox. When submitted, the selected titles will be sent to a :meth:`delete` action we'll create in the next step.
 
 We need to edit :file:`templates/base.mako` to add a link to the title list in the footer, but while we're at it, let's introduce a Mako function to make the footer a little smarter. Edit :file:`base.mako` like this: 
 
@@ -762,18 +770,39 @@ If you visit ``http://127.0.0.1:5000/pages`` you should see the full titles list
 :meth:`delete` 
 ----------------
 
-We need to add a :meth:`delete` action that deletes a page, then returns us to the list of titles excluding the one that was deleted: 
+We need to add a :meth:`delete` action that deletes pages submitted from :file:`templates/index.mako`, then returns us back to the list of titles (excluding those that were deleted): 
 
 .. code-block :: python 
 
-    def delete(self, title):
-        page = self.page_q.filter_by(title=title).one()
-        Session.delete(page)
+    @authenticate_form
+    def delete(self):
+        titles = request.POST.getall('title')
+        pages = self.page_q.filter(Page.title.in_(titles))
+        for page in pages:
+            Session.delete(page)
         Session.commit()
-        flash('Deleted %s.' % title)
+        # flash only after a successful commit
+        for title in titles:
+            flash('Deleted %s.' % title)
         redirect_to('pages')
 
-The title of the page is used to identify and load the object which is then deleted. The change is saved with :func:`model.Session.commit` before the list of remaining titles is re-rendered by the template :file:`templates/index.mako`. 
+Again we use the :func:`@authenticate_form` decorator along with :func:`secure_form` used in :file:`templates/index.mako`. We're expecting potentially multiple titles, so we use ``request.POST.getall(key)`` to return a list of titles. The titles are used to identify and load the :class:`Page` objects, which are then deleted.
+
+We use the SQL ``IN`` operator to match multiple titles in one query. We can do this via the more flexible :meth:`filter` method which can accept an :meth:`in_` clause created via the title column's attribute.
+
+The :meth:`filter_by` method we used in previous methods is a shortcut for the most typical filtering clauses. For example, the :meth:`show` method's:
+
+.. code-block :: python 
+
+    self.page_q.filter_by(title=title)
+
+is equivalent to:
+
+.. code-block :: python 
+
+    self.page_q.filter(Page.title == title)
+
+After deleting the pages, the changes are committed, and only after successfully committing do we flash deletion messages. That way if there was a problem with the commit no flash messages are shown. Finally we redirect back to the index page, which re-renders the list of remaining titles.
 
 Visit ``http://127.0.0.1:5000/index`` and have a go at deleting some pages. You may need to go back to the FrontPage and create some more if you get carried away! 
 
