@@ -96,7 +96,7 @@ The default imports already present in :file:`model/__init__.py` provide some SQ
 
 .. code-block :: python 
     
-    pages_table = Table('pages', meta.metadata, 
+    pages_table = sa.Table('pages', meta.metadata, 
                     sa.Column('title', sa.types.Unicode(40), primary_key=True), 
                     sa.Column('content', sa.types.Unicode(), default='') 
                     )
@@ -113,9 +113,9 @@ We now define a table called ``pages`` which has two columns, ``title`` (the pri
 
 .. code-block :: python 
 
-    pages_table = Table('pages', metadata, autoload=True) 
+    pages_table = sa.Table('pages', metadata, autoload=True) 
 
-`SQLAlchemy table reflection docs <http://www.sqlalchemy.org/docs/04/metadata.html#metadata_tables_reflecting>`_ 
+`SQLAlchemy table reflection documentation <http://www.sqlalchemy.org/docs/04/metadata.html#metadata_tables_reflecting>`_ 
 
 .. note :: A primary key is a unique ID for each row in a database table. In the example above we are using the page title as a natural primary key. Some people prefer to use integer primary keys for all tables, so-called surrogate primary keys. The author of this tutorial uses both methods in his own code and is not advocating one method over the other, it is important that you choose the best database structure for your application. See the Pylons Cookbook for `a quick general overview of relational databases <http://wiki.pylonshq.com/display/pylonscookbook/Relational+databases+for+people+in+a+hurry>`_ if you're not familiar with these concepts. 
 
@@ -264,7 +264,7 @@ Edit ``websetup.py``, used by the ``paster setup-app`` command, to look like thi
         log.info("Successfully set up.")
 
 
-You can see that ``environment.py``'s :func:`load_environment` function is called, so our engine is ready for binding and we can import the model. A SQLAlchemy :class:`MetaData` object -- which provides some utility methods for operating on database schema -- usually needs to be connected to an engine, so the line  
+You can see that :file:`config/environment.py`'s :func:`load_environment` function is called, so our engine is ready for binding and we can import the model. A SQLAlchemy :class:`MetaData` object -- which provides some utility methods for operating on database schema -- usually needs to be connected to an engine, so the line  
 
 .. code-block :: python
 
@@ -363,7 +363,7 @@ We'll setup all our other templates to inherit from this one: they will be autom
 
 If you are interested in learning some of the features of Mako templates have a look at the comprehensive `Mako Documentation <http://www.makotemplates.org/docs/>`_. For now we just need to understand that :func:`next.body` is replaced with the child template and that anything within ``${...}`` brackets is executed and replaced with the result. By default, the replacement content is HTML-escaped in order to meet modern standards of basic protection from accidentally making the app vulnerable to XSS exploit.
 
-This :file:`base.mako` also makes use of various helper functions attached to the ``h`` object. These are described in the `WebHelpers documentation <http://pylonshq.com/WebHelpers/module-index.html>`_. We need to add some helpers to the ``h`` by importing them in the ``lib/helpers.py`` module (some are for later use):
+This :file:`base.mako` also makes use of various helper functions attached to the ``h`` object. These are described in the `WebHelpers documentation <http://pylonshq.com/WebHelpers/module-index.html>`_. We need to add some helpers to the ``h`` by importing them in the :file:`lib/helpers.py` module (some are for later use):
 
 .. code-block :: python
 
@@ -382,7 +382,7 @@ Note that the :file:`helpers` module is available to templates as 'h', this is a
 Routing 
 ======= 
 
-Before we can add the actions we want to be able to route the requests to them correctly. Edit ``config/routing.py`` and adjust the 'Custom Routes' section to look like this: 
+Before we can add the actions we want to be able to route the requests to them correctly. Edit :file:`config/routing.py` and adjust the 'Custom Routes' section to look like this: 
 
 .. code-block :: python 
 
@@ -406,7 +406,7 @@ Before we can add the actions we want to be able to route the requests to them c
 
     return map
 
-Note that the default route has been replaced. This tells Pylons to route the root URL ``/`` to the :meth:`show()` method of the :class:`PageController` class in :file:`page.py` and specify the ``title`` argument as ``FrontPage``. It also says that any URL of the form ``/SomePage`` should be routed to the same method but the ``title`` argument will contain the value of the first part of the URL, in this case ``SomePage``. Any other URLs that can't be matched by these maps are routed to the error controller as usual where they will result in a 404 error page being displayed. 
+Note that the default route has been replaced. This tells Pylons to route the root URL ``/`` to the :meth:`show()` method of the :class:`PageController` class in :file:`controllers/pages.py` and specify the ``title`` argument as ``'FrontPage'``. It also says that any URL of the form ``/SomePage`` should be routed to the same method but the ``title`` argument will contain the value of the first part of the URL, in this case ``SomePage``. Any other URLs that can't be matched by these maps are routed to the error controller as usual where they will result in a 404 error page being displayed. 
 
 One of the main benefits of using the Routes system is that you can also create URLs automatically, simply by specifying the routing arguments. For example if I want the URL for the page ``FrontPage`` I can create it with this code: 
 
@@ -421,11 +421,11 @@ Full information on the powerful things you can do to route requests to controll
 Controllers 
 =========== 
 
-Quick Recap: We've setup the model, configured the application, added the routes and setup the base template in :file:`base.mako`, now we need to write the application logic and we do this with controllers. In your project's root directory, add a controller called ``page`` to your project with this command: 
+Quick Recap: We've setup the model, configured the application, added the routes and setup the base template in :file:`base.mako`, now we need to write the application logic and we do this with controllers. In your project's root directory, add a controller called ``pages`` to your project with this command: 
 
 .. code-block :: bash 
 
-    $ paster controller page 
+    $ paster controller pages
 
 If you are using Subversion, this will automatically be detected and the new controller and tests will be automatically added to your subversion repository.
 
@@ -449,23 +449,24 @@ deletes a page
 :meth:`show` 
 --------------- 
 
-Let's get to work on the new controller in :file:`page.py`. First we'll import the :class:`Page` class from our model class to save some typing later on. Add this line with the imports at the top of the file: 
+Let's get to work on the new controller in :file:`controllers/pages.py`. First we'll import the :class:`Page` class from our :mod:`model`, and the :class:`Session` class from the :mod:`model.meta` module. We'll also import the ``wikiwords`` regular expression object, which we'll use in the :meth:`show` method. Add this line with the imports at the top of the file: 
 
 .. code-block :: python 
 
-    from quickwiki.model import Page 
+    from quickwiki.model import Page, wikiwords
+    from quickwiki.model.meta import Session
 
-This is also done in the :file:`base.py` file for the :class:`Session` class, as shown above. This is done purely for convenience, and you can instead choose to refer to :class:`model.Session` and :class:`model.Page` throughout in your controllers since :class:`BaseController` imports the model for us. This may help to reduce any confusion, especially when working with more complex applications. 
-
-We shall add the convenience method :meth:`__before__`, which is always ran prior to the actual action method. We'll have it obtain and make available the relevant query object from the database, ready to be queried, so we don't have to do it in every action method.
+Next we'll add the convenience method :meth:`__before__` to the :class:`PagesController`, which is a special method Pylons always calls before calling the actual action method. We'll have :meth:`__before__` obtain and make available the relevant query object from the database, ready to be queried. Our other action methods will need this query object, so we might as well create it one place.
 
 .. code-block :: python 
 
-    def __before__(self):
-        self.page_q = Session.query(Page)
+    class PagesController(BaseController):
 
-Now we can query the data database using the query expression language provided by SQLAlchemy, .
-On to the :meth:`show` method itself. Replace the existing :meth:`index` action with this: 
+        def __before__(self):
+            self.page_q = Session.query(Page)
+
+Now we can query the database using the query expression language provided by SQLAlchemy.
+Add the following :meth:`show` method to :class:`PagesController`:
 
 .. code-block :: python 
 
@@ -584,9 +585,9 @@ We are making use of the ``h`` object to create our form and field objects. This
 :meth:`save` 
 --------------
 
-The first thing the :meth:`save` action has to do is to see if the page being saved already exists. If not it creates it with ``page = model.Page(title)``. Next it needs the updated content. In Pylons you can get request parameters from form submissions via ``GET`` and ``POST`` requests from the appropriately named ``request`` object. For form submissions from *only* ``GET`` or ``POST`` requests, use ``request.GET`` or ``request.POST``. Only ``POST`` requests should generate side effects (like changing data), so the save action will only reference ``request.POST`` for the parameters. 
+The first thing the :meth:`save` action has to do is to see if the page being saved already exists. If not it creates it with ``page = model.Page(title)``. Next it needs the updated content. In Pylons you can get request parameters from form submissions via ``GET`` and ``POST`` requests from the appropriately named ``request`` object. For form submissions from *only* ``GET`` or ``POST`` requests, use ``request.GET`` or ``request.POST``. Only ``POST`` requests should generate side effects (like changing data), so the save action will only reference ``request.POST`` for the parameters.
 
-Add the :meth:`save` action: 
+Then add the :meth:`save` action: 
 
 .. code-block :: python 
 
@@ -604,11 +605,11 @@ Add the :meth:`save` action:
         redirect_to('show_page', title=title)
 
 .. note :: 
-    ``request.POST`` is a MultiDict object: an ordered dictionary that may contain multiple values for each key. The MultiDict will always return one value for any existing key via the normal dict accessors ``request.POST[key]`` and ``request.POST.get(key)``. When multiple values are expected, use the ``request.POST.getall(key)`` method to return all values in a list. ``request.POST.getone(key)`` ensures one value for key was sent, raising a ``KeyError`` when there are 0 or more than 1 values. 
+    ``request.POST`` is a MultiDict object: an ordered dictionary that may contain multiple values for each key. The MultiDict will always return one value for any existing key via the normal dict accessors ``request.POST[key]`` and ``request.POST.get(key)``. When multiple values are expected, use the ``request.POST.getall(key)`` method to return all values in a list. ``request.POST.getone(key)`` ensures one value for key was sent, raising a :class:`KeyError` when there are 0 or more than 1 values. 
 
-The :func:`@authenticate_form` decorator that appears immediately before the  :meth:`save` action checks the value of the hidden form field placed there by the :func:`secure_form` helper that we used in ``templates/edit.mako`` to create the form. The hidden form field carries an authorization token for prevention of certain `Cross-site request forgery (CSRF) <http://en.wikipedia.org/wiki/Cross-site_request_forgery>`_ attacks.
+The :func:`@authenticate_form` decorator that appears immediately before the  :meth:`save` action checks the value of the hidden form field placed there by the :func:`secure_form` helper that we used in :file:`templates/edit.mako` to create the form. The hidden form field carries an authorization token for prevention of certain `Cross-site request forgery (CSRF) <http://en.wikipedia.org/wiki/Cross-site_request_forgery>`_ attacks.
 
-Upon a successful save, we want to redirect back to the ``show`` action and 'flash' a ``Successfully saved`` message at the top of the page. 'Flashing' a status message immediately after an action is a common requirement, and the `WebHelpers` package provides the :class:`webhelpers.pylonslib.Flash` class that makes it easy. To utilize it, we'll create a flash object at the bottom of our ``lib/helpers.py`` module:
+Upon a successful save, we want to redirect back to the :meth:`show` action and 'flash' a ``Successfully saved`` message at the top of the page. 'Flashing' a status message immediately after an action is a common requirement, and the `WebHelpers` package provides the :class:`webhelpers.pylonslib.Flash` class that makes it easy. To utilize it, we'll create a flash object at the bottom of our :file:`lib/helpers.py` module:
 
 .. code-block :: python
 
@@ -616,11 +617,17 @@ Upon a successful save, we want to redirect back to the ``show`` action and 'fla
 
     flash = _Flash()
 
-And import it into our ``pages.py``:
+And import it into our :file:`controllers/pages.py`. Our new :meth:`show` method
+is escaping the content via Python's :func:`cgi.escape` function, so we need to
+import that too, and also :func:`@authenticate_form`.
 
 .. code-block :: python 
 
-   from quickwiki.lib.helpers import flash
+    from cgi import escape
+
+    from pylons.decorators.secure import authenticate_form
+
+    from quickwiki.lib.helpers import flash
 
 And finally utilize the ``flash`` object in our :file:`templates/base.mako` template:
 
@@ -659,7 +666,7 @@ And finally utilize the ``flash`` object in our :file:`templates/base.mako` temp
       </body>
     </html>
 
-And add the following to the ``public/quick.css`` file: 
+And add the following to the :file:`public/quick.css` file: 
 
 .. code-block :: css 
 
@@ -675,7 +682,7 @@ It would be nice to get a title list and to be able to delete pages, so that's w
 
 :meth:`index`
 -------------
-Add the ``index()`` action:
+Add the :meth:`index` action:
 
 .. code-block :: python 
 
@@ -683,7 +690,7 @@ Add the ``index()`` action:
         c.titles = [page.title for page in self.page_q.all()]
         return render('/pages/index.mako')
 
-The ``index()`` action simply gets all the pages from the database. Create the ``templates/index.mako`` file to display the list:
+The :meth:`index` action simply gets all the pages from the database. Create the :file:`templates/index.mako` file to display the list:
 
 .. code-block:: html+mako
 
@@ -755,7 +762,7 @@ If you visit ``http://127.0.0.1:5000/pages`` you should see the full titles list
 :meth:`delete` 
 ----------------
 
-We need to add a ``delete()`` action that deletes a page, then returns us to the list of titles excluding the one that was deleted: 
+We need to add a :meth:`delete` action that deletes a page, then returns us to the list of titles excluding the one that was deleted: 
 
 .. code-block :: python 
 
