@@ -29,14 +29,14 @@ Next, ensure that the ``sqlalchemy.url`` variable in the ``[app:main]`` section 
 
 .. note :: 
 
-    The default ``sqlite:///%(here)s/quickwiki.db`` uses a (file-based) SQLite database named ``quickwiki.db`` in the project's top-level directory. This SQLite database will be created for you when running the ``paster setup-app`` command below, but you could also use MySQL, Oracle or PostgreSQL. Firebird and MS-SQL may also work. See the `SQLAlchemy documentation <http://www.sqlalchemy.org/docs/04/dbengine.html#dbengine_establishing>`_ for more information on how to connect to different databases. SQLite for example requires additional forward slashes in its URI, where the client/server databases should only use two. You will also need to make sure you have the appropriate Python driver for the database you wish to use. If you're using Python 2.5, a version of the `pysqlite adapter <http://www.initd.org/tracker/pysqlite/wiki/pysqlite>`_ is already included, so you can jump right in with the tutorial. You may need to get `SQLite itself <http://www.sqlite.org/download.html>`_. 
+    The default ``sqlite:///%(here)s/quickwiki.db`` uses a (file-based) SQLite database named ``quickwiki.db`` in the ini's top-level directory. This SQLite database will be created for you when running the ``paster setup-app`` command below, but you could also use MySQL, Oracle or PostgreSQL. Firebird and MS-SQL may also work. See the `SQLAlchemy documentation <http://www.sqlalchemy.org/docs/04/dbengine.html#dbengine_establishing>`_ for more information on how to connect to different databases. SQLite for example requires additional forward slashes in its URI, where the client/server databases should only use two. You will also need to make sure you have the appropriate Python driver for the database you wish to use. If you're using Python 2.5, a version of the `pysqlite adapter <http://www.initd.org/tracker/pysqlite/wiki/pysqlite>`_ is already included, so you can jump right in with the tutorial. You may need to get `SQLite itself <http://www.sqlite.org/download.html>`_. 
 
 Finally create the database tables and serve the finished application: 
 
 .. code-block :: bash 
 
     $ paster setup-app test.ini 
-    $ paster serve development.ini 
+    $ paster serve test.ini 
 
 That's it! Now you can visit ``http://127.0.0.1:5000`` and experiment with the finished Wiki. 
 
@@ -50,7 +50,7 @@ If you are interested in looking at the latest version of the QuickWiki source c
 
 .. note :: 
 
-    To run the version checked out from the repository, you'll want to run ``python setup.py egg_info`` from the project's root directory. This will generate some files in the ``QuickWiki.egg-info`` directory. Note that there is also currently a small bug where running the command doesn't generate a ``paster_plugins.txt`` file in the ``egg-info`` directory. Without this, ``paster shell`` will not work. Create it yourself, and add the text ``Pylons``, ``WebHelpers`` and ``PasteScript`` on separate lines. Hopefully this issue will be fixed soon. 
+    To run the version checked out from the repository, you'll want to run ``python setup.py egg_info`` from the project's root directory. This will generate some files in the ``QuickWiki.egg-info`` directory.
 
 Developing QuickWiki 
 ==================== 
@@ -61,7 +61,9 @@ Then create your project:
 
 .. code-block :: bash 
 
-    $ paster create -t pylons QuickWiki 
+    $ paster create -t pylons QuickWiki
+
+When prompted for which templating engine to use, simply hit enter for the default (Mako). When prompted for SQLAlchemy configuration, enter 'True'.
 
 Now let's start the server and see what we have: 
 
@@ -78,11 +80,11 @@ Visit ``http://127.0.0.1:5000`` where you will see the introduction page. Now de
 The Model 
 ========= 
 
-Pylons uses a Model-View-Controller architecture; we'll start by creating the model. We could use any system we like for the model, including `SQLObject <http://www.sqlobject.org>`_ or `SQLAlchemy <http://www.sqlalchemy.org>`_. SQLAlchemy is the default for current versions of Pylons, and we'll use it for QuickWiki. 
+Pylons uses a Model-View-Controller architecture; we'll start by creating the model. We could use any system we like for the model, including `SQLAlchemy <http://www.sqlalchemy.org>`_ or `SQLObject <http://www.sqlobject.org>`_. Optional SQLAlchemy integration is provided for new Pylons projects, so we'll use it for QuickWiki. 
 
-.. note :: SQLAlchemy is a Python SQL toolkit and Object Relational Mapper that is popular with many Python programmers. 
+.. note :: SQLAlchemy is a powerful Python SQL toolkit and Object Relational Mapper that is popular with many Python programmers. 
 
-SQLAlchemy provides a full suite of well known enterprise-level persistence patterns, designed for efficient and high-performance database access, adapted into a simple and Pythonic domain language. There is full and detailed documentation available on the SQLAlchemy website at http://sqlalchemy.org/docs/ and you should really read this before you get heavily into SQLAlchemy. 
+SQLAlchemy provides a full suite of well known enterprise-level persistence patterns, designed for efficient and high-performance database access, adapted into a simple and Pythonic domain language. It has full and detailed documentation available on the SQLAlchemy website: http://sqlalchemy.org/docs/.
 
 The most basic way of using SQLAlchemy is with explicit sessions where you create ``Session`` objects as needed. 
 
@@ -90,7 +92,7 @@ Pylons applications typically employ a slightly more sophisticated setup, using 
 
 .. note :: It is important to recognize the difference between SQLAlchemy's (or possibly another DB abstraction layer's) :class:`Session` object and Pylons' standard :dfn:`session` (with a lowercase 's') for web requests. See :mod:`beaker` for more on the latter. It is customary to reference the database session by :class:`model.Session` or (more recently) ``Session`` outside of model classes. 
 
-The default imports already present in :file:`model/__init__.py` make available some useful SQLAlchemy objects such as the :class:`Table` and :class:`Column` classes as well as the ``metadata`` object which is used when defining and managing tables. Now we take advantage of that and add the following to the end of the contents of the :file:`model/__init__.py` file: 
+The default imports already present in :file:`model/__init__.py` provide some SQLAlchemy objects such as the :mod:`sqlalchemy` module (aliased as :mod:`sa`) as well as the ``metadata`` object. ``metadata`` is used when defining and managing tables. Now we take advantage of that and add the following to the end of the contents of the :file:`model/__init__.py` file: 
 
 .. code-block :: python 
     
@@ -124,10 +126,12 @@ Add this to the bottom of ``model/__init__.py``:
 .. code-block :: python 
 
     class Page(object): 
-        def __str__(self): 
-            return self.title 
-            self.content = content
-    
+
+        def __unicode__(self):
+            return self.title
+
+        __str__ = __unicode__
+
     orm.mapper(Page, pages_table) 
 
 .. note :: For those more familiar with SQLAlchemy 0.3: in SQLAlchemy versions 0.4 and 0.5 :func:`scoped_session` replaces the :func:`sessioncontext` extension and so :class:`Session.mapper` could be used here in place of
@@ -148,8 +152,8 @@ It would be advantageous if we could add a method to our :class:`Page` object to
     from quickwiki.lib.helpers import link_to
     from quickwiki.model import meta
 
-
     log = logging.getLogger(__name__)
+
     SAFE_DOCUTILS = {'file_insertion_enabled': False, 'raw_enabled': False}
     wikiwords = re.compile(r"\b([A-Z]\w+[A-Z]+\w+)", re.UNICODE)
 
@@ -181,7 +185,7 @@ This code deserves a bit of explaining. The ``content = None`` line is so that t
 
     Pylons uses a **Model View Controller** architecture and so the formatting of objects into HTML should  properly be handled in the View, i.e. in a template. In this example however, converting reStructuredText into HTML in a template is inappropriate so we are treating the HTML representation of the content as part of the model. It also gives us the chance to demonstrate that SQLAlchemy domain classes are real Python classes that can have their own methods. 
 
-The :func:`link_to` and :func:`url` functions referenced in the controller code are respectively: a helper imported from :file:`webhelpers.html` indirectly via :file:`lib/helpers.py` and a utility function imported directly from the Pylons module. They both act as ``helper`` utilities for creating links to specific controller actions. In this case we have decided that all WikiWords should link to the :meth:`index` action of the ``page`` controller which we will create later. However, we need to ensure that the :func:`url` function is made available as a helper by adding an explicit import statement to :file:`lib/helpers.py`:
+The :func:`link_to` and :func:`url` functions referenced in the controller code are respectively: a helper imported from :file:`webhelpers.html` indirectly via :file:`lib/helpers.py` and a utility function imported directly from the Pylons module. They both act as ``helper`` utilities for creating links to specific controller actions. In this case we have decided that all WikiWords should link to the :meth:`index` action of the ``page`` controller which we will create later. However, we need to ensure that the :func:`link_to` function is made available as a helper by adding an import statement to :file:`lib/helpers.py`:
 
 .. code-block :: python
 
@@ -190,13 +194,7 @@ The :func:`link_to` and :func:`url` functions referenced in the controller code 
     Consists of functions to typically be used within templates, but also
     available to Controllers. This module is available to templates as 'h'.
     """
-    from webhelpers.html import escape, HTML, literal, url_escape
     from webhelpers.html.tags import *
-    from webhelpers.html.secure_form import secure_form
-    from webhelpers.pylonslib import Flash as _Flash
-    from pylons import url
-
-    flash = _Flash()
 
 One final change; since we have used docutils and SQLAlchemy, both third party packages, we need to edit our :file:`setup.py` file so that anyone installing QuickWiki with `Easy Install <http://peak.telecommunity.com/DevCenter/EasyInstall>`_ will automatically also have these dependencies installed for them too. Edit your :file:`setup.py` in your project root directory so that the ``install_requires`` line looks like this: 
 
@@ -208,9 +206,9 @@ While we are we are making changes to :file:`setup.py` we might want to complete
 
 .. code-block :: python 
 
-    version="0.1.6", 
-    description="QuickWiki - Pylons 0.9.7 Tutorial application", 
-    url="http://wiki.pylonshq.com/display/pylonsdocs/QuickWiki+Tutorial", 
+    version='0.1.6', 
+    description='QuickWiki - Pylons 0.9.7 Tutorial application', 
+    url='http://docs.pylonshq.com/tutorials/quickwiki_tutorial.html', 
 
 We might also want to make a full release rather than a development release in which case we would remove the following lines from :file:`setup.cfg`: 
 
@@ -248,7 +246,8 @@ Edit ``websetup.py``, used by the ``paster setup-app`` command, to look like thi
         """Place any commands to setup quickwiki here"""
         load_environment(conf.global_conf, conf.local_conf)
 
-        # Load the models
+        # import model now that the environment is loaded
+        from quickwiki import model
         from quickwiki.model import meta
         meta.metadata.bind = meta.engine
 
@@ -256,13 +255,10 @@ Edit ``websetup.py``, used by the ``paster setup-app`` command, to look like thi
         log.info("Creating tables...")
         meta.metadata.create_all(checkfirst=True)
         log.info("Successfully set up.")
-    
-        import quickwiki.model as model
+
         log.info("Adding front page data...")
-        page = model.Page(
-            title = u'FrontPage',
-            content = u'Welcome to the QuickWiki front page.'
-            )
+        page = model.Page(title=u'FrontPage',
+                          content=u'Welcome to the QuickWiki front page.')
         meta.Session.add(page)
         meta.Session.commit()
         log.info("Successfully set up.")
@@ -282,7 +278,7 @@ does exactly that and then
 
 uses the connection we've just set up and, well, creates the table(s) we've defined ... if they don't already exist. After the tables are created, the other lines add some data for the simple front page to our wiki.
 
-The Pylons default configuration specifies ``transactional=True`` when creating the ``Session``, this means that operations will be wrapped in a transaction and committed atomically (unless your DB doesn't support transactions, like MySQL's default MyISAM tables -- but that's beyond the scope of this tutorial). 
+By default, SQLAlchemy specifies ``autocommit=False`` when creating the ``Session``, which means that operations will be wrapped in a transaction and committed atomically (unless your DB doesn't support transactions, like MySQL's default MyISAM tables -- but that's beyond the scope of this tutorial). 
 
 To test this functionality run you first need to install your QuickWiki if you haven't already done so in order for ``paster`` to find the version we are developing instead of the version we installed at the very start: 
 
@@ -292,11 +288,11 @@ To test this functionality run you first need to install your QuickWiki if you h
 
 Specify your database URI in :file:`development.ini` so that the ``[app:main]`` section contains something like this, customized as needed for your database: 
 
-.. code-block :: ini 
+.. code-block :: ini
 
     [app:main] 
     use = egg:QuickWiki 
-    ... 
+    #... 
     # Specify the database for SQLAlchemy to use. 
     # %(here) may include a ':' character on Windows environments; this can 
     # invalidate the URI when specifying a SQLite db via path name 
@@ -320,15 +316,14 @@ You can now run the ``paster setup-app`` command to setup your tables in the sam
 
 At this stage you will need to ensure you have the appropriate Python database drivers for the database you chose, otherwise you might find SQLAlchemy complains it can't get the DBAPI module for the dialect it needs. 
 
-You should also edit :file:`QuickWiki.egg-info/paste_deploy_config.ini_tmpl` so that when users run ``paster make-config`` the configuration file that is produced for them will already have a section telling them to enter their own database URI as we did when we installed the finished QuickWiki at the start of the tutorial. Add these lines in the ``[app:main]`` section: 
+You should also edit :file:`quickwiki/config/deployment.ini_tmpl` so that when users run ``paster make-config`` the configuration file that is produced for them will already have a section telling them to enter their own database URI as we did when we installed the finished QuickWiki at the start of the tutorial. Add these lines in the ``[app:main]`` section: 
 
 .. code-block :: ini 
 
     # Specify the database for SQLAlchemy to use. 
     # %(here) may include a ':' character on Windows environments; this can 
     # invalidate the URI when specifying a SQLite db via path name 
-    #sqlalchemy.url = sqlite:///%(here)s/quickwiki.db 
-    #sqlalchemy.echo = true 
+    sqlalchemy.url = sqlite:///%(here)s/quickwiki.db 
 
 Templates 
 ========= 
@@ -341,34 +336,34 @@ In our project we will make use of a feature of the Mako templating language cal
 
 .. code-block :: html+mako 
 
-    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" 
-    "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"> 
-    <html> 
-        <head> 
-            <title>QuickWiki</title> 
-            <link type="text/css" rel="stylesheet" 
-                  href="/css/quick.css" media="screen" />
-        </head> 
-        <body> 
-            <div class="content"> 
-                ${next.body()}\ 
-                <p class="footer"> 
-                    Return to the 
-                    ${h.link_to('FrontPage', 
-                        url(action="index", title="FrontPage"))} 
-                    | ${h.link_to('Edit ' + c.title, 
-                        url(title=c.title, action='edit'))} 
-                </p> 
-            </div> 
-        </body> 
-    </html> 
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+      "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+    <html>
+      <head>
+        <title>QuickWiki</title>
+        ${h.stylesheet_link('/quick.css')}
+      </head>
 
-All our other templates will be automatically inserted into the ``${next.body()}`` line and the whole page will be returned when we call the :func:`render` global from our controller so that we can easily apply a consistent theme to all our templates. 
+      <body>
+        <div class="content">
+          <h1 class="main">${self.header()}</h1>
+          ${next.body()}\
+          <p class="footer"> 
+              Return to the 
+              ${h.link_to('FrontPage', 
+                  url(action="index", title="FrontPage"))} 
+              | ${h.link_to('Edit ' + c.title, 
+                  url(title=c.title, action='edit'))} 
+          </p> 
+        </div>
+      </body>
+    </html>
+
+We'll setup all our other templates to inherit from this one: they will be automatically inserted into the ``${next.body()}`` line. Thus the whole page will be returned when we call the :func:`render` global from our controller. This lets us easily apply a consistent theme to all our templates. 
 
 If you are interested in learning some of the features of Mako templates have a look at the comprehensive `Mako Documentation <http://www.makotemplates.org/docs/>`_. For now we just need to understand that :func:`next.body` is replaced with the child template and that anything within ``${...}`` brackets is executed and replaced with the result. By default, the replacement content is HTML-escaped in order to meet modern standards of basic protection from accidentally making the app vulnerable to XSS exploit.
 
-
-This :file:`base.mako` also makes use of various helper functions attached to the ``h`` object. These are described in the `WebHelpers documentation <http://pylonshq.com/WebHelpers/module-index.html>`_. You can add more helpers to the ``h`` object by adding them to ``lib/helpers.py`` following the example below of the imports that we have made for this project:
+This :file:`base.mako` also makes use of various helper functions attached to the ``h`` object. These are described in the `WebHelpers documentation <http://pylonshq.com/WebHelpers/module-index.html>`_. We need to add some helpers to the ``h`` by importing them in the ``lib/helpers.py`` module (some are for later use):
 
 .. code-block :: python
 
@@ -377,12 +372,9 @@ This :file:`base.mako` also makes use of various helper functions attached to th
     Consists of functions to typically be used within templates, but also
     available to Controllers. This module is available to templates as 'h'.
     """
-    from webhelpers.html import escape, HTML, literal, url_escape
+    from webhelpers.html import literal
     from webhelpers.html.tags import *
     from webhelpers.html.secure_form import secure_form
-    from webhelpers.pylonslib import Flash as _Flash
-
-    flash = _Flash()
  
 
 Note that the :file:`helpers` module is available to templates as 'h', this is a good place to import or define directly any convenience functions that you want to make available to all templates. 
@@ -439,9 +431,6 @@ If you are using Subversion, this will automatically be detected and the new con
 
 We are going to need the following actions: 
 
-``index(self)`` 
-lists all of the titles of the pages in the database
-
 ``show(self, title)``
 displays a page based on the title 
 
@@ -451,10 +440,13 @@ displays a from for editing the page ``title``
 ``save(self, title)`` 
 save the page ``title`` and show it with a saved message 
 
+``index(self)`` 
+lists all of the titles of the pages in the database
+
 ``delete(self, title)`` 
 deletes a page
 
-:meth:`index` 
+:meth:`show` 
 --------------- 
 
 Let's get to work on the new controller in :file:`page.py`. First we'll import the :class:`Page` class from our model class to save some typing later on. Add this line with the imports at the top of the file: 
@@ -465,15 +457,225 @@ Let's get to work on the new controller in :file:`page.py`. First we'll import t
 
 This is also done in the :file:`base.py` file for the :class:`Session` class, as shown above. This is done purely for convenience, and you can instead choose to refer to :class:`model.Session` and :class:`model.Page` throughout in your controllers since :class:`BaseController` imports the model for us. This may help to reduce any confusion, especially when working with more complex applications. 
 
-We shall add a convenience method :meth:`__init__` which will obtain and make available the relevant query object from the database, ready to be queried.
+We shall add the convenience method :meth:`__before__`, which is always ran prior to the actual action method. We'll have it obtain and make available the relevant query object from the database, ready to be queried, so we don't have to do it in every action method.
 
 .. code-block :: python 
 
-    def __init__(self):
+    def __before__(self):
         self.page_q = Session.query(Page)
 
 Now we can query the data database using the query expression language provided by SQLAlchemy, .
-On to the :meth:`index` method itself. Replace the existing :meth:`index` action with this: 
+On to the :meth:`show` method itself. Replace the existing :meth:`index` action with this: 
+
+.. code-block :: python 
+
+    def show(self, title):
+        page = self.page_q.filter_by(title=title).first()
+        if page:
+            c.content = page.get_wiki_content()
+            return render('/pages/show.mako')
+        elif wikiwords.match(title):
+            return render('/pages/new.mako')
+        abort(404)
+
+Add a template called :file:`templates/pages/show.mako` that looks like this: 
+
+.. code-block :: html+mako 
+
+    <%inherit file="/base.mako"/>\
+
+    <%def name="header()">${c.title}</%def>
+
+    ${h.literal(c.content)}
+
+This template simply displays the page title and content. 
+
+.. note :: Pylons automatically assigns all the action parameters to the Pylons context object ``c`` so that you don't have to assign them yourself. In this case, the value of ``title`` will be automatically assigned to ``c.title`` so that it can be used in the templates. We assign ``c.content`` manually in the controller. 
+
+We also need a template for pages that don't already exist. The template needs to display a message and link to the :meth:`edit` action so that they can be created. Add a template called :file:`templates/new.mako` that looks like this: 
+
+.. code-block :: html+mako 
+
+    <%inherit file="/base.mako"/>\
+
+    <%def name="header()">${c.title}</%def>
+
+    <p>This page doesn't exist yet.
+      <a href="${url('edit_page', title=c.title)}">Create the page</a>.
+    </p>
+
+At this point we can test our QuickWiki to see how it looks. If you don't already have a server running, start it now with: 
+
+.. code-block :: bash 
+
+    $ paster serve --reload development.ini 
+
+Visit ``http://127.0.0.1:5000/`` and you will see the front page of the wiki. If you haven't already done so, you should delete the file :file:`public/index.html` so that when you visit the URL above you are routed to the correct action in the page controller and see the wiki front page instead of the :file:`index.html` file being displayed. 
+
+We can spruce up the appearance of page a little by adding the stylesheet we linked to in the :file:`templates/base.mako` file earlier. Add the file :file:`public/quick.css` with the following content and refresh the page to reveal a better looking wiki: 
+
+.. code-block :: css 
+
+    body {
+      background-color: #888;
+      margin: 25px;
+    }
+
+    div.content {
+      margin: 0;
+      margin-bottom: 10px;
+      background-color: #d3e0ea;
+      border: 5px solid #333;
+      padding: 5px 25px 25px 25px;
+    }
+
+    h1.main {
+      width: 100%;
+    }
+
+    p.footer{
+      width: 100%;
+      padding-top: 8px;
+      border-top: 1px solid #000;
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+When you run the example you will notice that the word ``QuickWiki`` has been turned into a hyperlink by the :func:`get_wiki_content` method we added to our :class:`Page` domain object earlier. You can click the link and will see an example of the new page screen from the :file:`new.mako` template. If you follow the ``Create the page`` link you will see the Pylons automatic error handler kick in to tell you ``Action edit is not implemented``. Well, we better write it next, but before we do, have a play with the :ref:`interactive_debugging`, try clicking on the ``+`` or ``>>`` arrows and you will be able to interactively debug your application. It is a tremendously useful tool.
+
+:meth:`edit` 
+------------
+
+To edit the wiki page we need to get the content from the database without changing it to HTML to display it in a simple form for editing. Add the :meth:`edit` action: 
+
+.. code-block :: python 
+
+    def edit(self, title):
+        page = self.page_q.filter_by(title=title).first()
+        if page:
+            c.content = page.content
+        return render('/pages/edit.mako')
+
+and then create the ``templates/edit.mako`` file: 
+
+.. code-block :: html+mako  
+
+    <%inherit file="/base.mako"/>\
+
+    <%def name="header()">Editing ${c.title}</%def>
+
+    ${h.secure_form(url('save_page', title=c.title))}
+      ${h.textarea(name='content', rows=7, cols=40, content=c.content)} <br />
+      ${h.submit(value='Save changes', name='commit')}
+    ${h.end_form()}
+
+.. note :: You may have noticed that we only set ``c.content`` if the page exists but that it is accessed in ``h.text_area`` even for pages that don't exist and yet it doesn't raise an ``AttributeError``. 
+
+We are making use of the fact that the ``c`` object returns an empty string ``""`` for any attribute that is accessed which doesn't exist. This can be a very useful feature of the ``c`` object, but can catch you on occasions where you don't expect this behavior. It can be disabled by setting ``config['pylons.strict_c'] = True`` in your project's :file:`config/environment.py`. 
+
+We are making use of the ``h`` object to create our form and field objects. This saves a bit of manual HTML writing. The form submits to the ``save()`` action to save the new or updated content so let's write that next. 
+
+:meth:`save` 
+--------------
+
+The first thing the :meth:`save` action has to do is to see if the page being saved already exists. If not it creates it with ``page = model.Page(title)``. Next it needs the updated content. In Pylons you can get request parameters from form submissions via ``GET`` and ``POST`` requests from the appropriately named ``request`` object. For form submissions from *only* ``GET`` or ``POST`` requests, use ``request.GET`` or ``request.POST``. Only ``POST`` requests should generate side effects (like changing data), so the save action will only reference ``request.POST`` for the parameters. 
+
+Add the :meth:`save` action: 
+
+.. code-block :: python 
+
+    @authenticate_form
+    def save(self, title):
+        page = self.page_q.filter_by(title=title).first()
+        if not page:
+            page = Page(title)
+        # In a real application, you should validate and sanitize
+        # submitted data throughly! escape is a minimal example here.
+        page.content = escape(request.POST.getone('content'))
+        Session.add(page)
+        Session.commit()
+        flash('Successfully saved %s!' % title)
+        redirect_to('show_page', title=title)
+
+.. note :: 
+    ``request.POST`` is a MultiDict object: an ordered dictionary that may contain multiple values for each key. The MultiDict will always return one value for any existing key via the normal dict accessors ``request.POST[key]`` and ``request.POST.get(key)``. When multiple values are expected, use the ``request.POST.getall(key)`` method to return all values in a list. ``request.POST.getone(key)`` ensures one value for key was sent, raising a ``KeyError`` when there are 0 or more than 1 values. 
+
+The :func:`@authenticate_form` decorator that appears immediately before the  :meth:`save` action checks the value of the hidden form field placed there by the :func:`secure_form` helper that we used in ``templates/edit.mako`` to create the form. The hidden form field carries an authorization token for prevention of certain `Cross-site request forgery (CSRF) <http://en.wikipedia.org/wiki/Cross-site_request_forgery>`_ attacks.
+
+Upon a successful save, we want to redirect back to the ``show`` action and 'flash' a ``Successfully saved`` message at the top of the page. 'Flashing' a status message immediately after an action is a common requirement, and the `WebHelpers` package provides the :class:`webhelpers.pylonslib.Flash` class that makes it easy. To utilize it, we'll create a flash object at the bottom of our ``lib/helpers.py`` module:
+
+.. code-block :: python
+
+    from webhelpers.pylonslib import Flash as _Flash
+
+    flash = _Flash()
+
+And import it into our ``pages.py``:
+
+.. code-block :: python 
+
+   from quickwiki.lib.helpers import flash
+
+And finally utilize the ``flash`` object in our :file:`templates/base.mako` template:
+
+.. code-block :: html+mako
+
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+      "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+    <html>
+      <head>
+        <title>QuickWiki</title>
+        ${h.stylesheet_link('/quick.css')}
+      </head>
+
+      <body>
+        <div class="content">
+          <h1 class="main">${self.header()}</h1>
+
+          <% flashes = h.flash.pop_messages() %>
+          % if flashes:
+            % for flash in flashes:
+            <div id="flash">
+              <span class="message">${flash}</span>
+            </div>
+            % endfor
+          % endif
+
+          ${next.body()}\
+          <p class="footer"> 
+              Return to the 
+              ${h.link_to('FrontPage', 
+                  url(action="index", title="FrontPage"))} 
+              | ${h.link_to('Edit ' + c.title, 
+                  url(title=c.title, action='edit'))} 
+          </p> 
+        </div>
+      </body>
+    </html>
+
+And add the following to the ``public/quick.css`` file: 
+
+.. code-block :: css 
+
+    div#message{ 
+        color: orangered; 
+    } 
+
+The ``%`` syntax is used for control structures in mako -- conditionals and loops. You must 'close' them with an 'end' tag as shown here. At this point we have a fully functioning wiki that lets you create and edit pages and can be installed and deployed by an end user with just a few simple commands. 
+
+Visit ``http://127.0.0.1:5000`` and have a play. 
+
+It would be nice to get a title list and to be able to delete pages, so that's what we'll do next! 
+
+:meth:`index`
+-------------
+Add the ``index()`` action:
 
 .. code-block :: python 
 
@@ -481,18 +683,22 @@ On to the :meth:`index` method itself. Replace the existing :meth:`index` action
         c.titles = [page.title for page in self.page_q.all()]
         return render('/pages/index.mako')
 
-Add a template called :file:`templates/page.mako` that looks like this: 
+The ``index()`` action simply gets all the pages from the database. Create the ``templates/index.mako`` file to display the list:
 
-.. code-block :: html+mako 
+.. code-block:: html+mako
 
-    <%inherit file="base.mako"/> 
+    <%inherit file="/base.mako"/>\
 
-    <h1 class="main">${c.title}</h1> 
-    ${c.content} 
+    <%def name="header()">Title List</%def>
 
-This template simply displays the page title and content. 
-
-.. note :: Pylons automatically assigns all the action parameters to the Pylons context object ``c`` so that you don't have to assign them yourself. In this case, the value of ``title`` will be automatically assigned to ``c.title`` so that it can be used in the templates. We assign ``c.content`` manually in the controller. 
+    <ul id="titles">
+      % for title in c.titles:
+      <li>
+        ${title} [${h.link_to('visit', url('show_page', title=title))} -
+        ${h.link_to('delete', url('delete_page', title=title))}]
+      </li>
+      % endfor
+    </ul>
 
 We need to edit :file:`templates/base.mako` to add a link to the title list in the footer, but while we're at it, let's introduce a Mako function to make the footer a little smarter. Edit :file:`base.mako` like this: 
 
@@ -532,7 +738,7 @@ We need to edit :file:`templates/base.mako` to add a link to the title list in t
     <%def name="footer(action)">\
       Return to the ${h.link_to('FrontPage', url('home'))}
       % if action == "index":
-        <% return '' %>
+        <% return %>
       % endif
       % if action != 'edit':
         | ${h.link_to('Edit ' + c.title, url('edit_page', title=c.title))}
@@ -544,142 +750,12 @@ The ``<%def name="footer(action">`` creates a Mako function for display logic. A
 
 So the :func:`footer` function is called in place of our old 'static' footer markup. We pass it a value from ``pylons.routes_dict`` which holds the name of the action for the current request. The trailing `\\` character just tells Mako not to render an extra newline. 
 
-If you visit ``http://127.0.0.1:5000/page/`` you should see the full titles list and you should be able to visit each page. 
-
-
-We also need a template for pages that don't already exist. The template needs to display a message and link to the :meth:`edit` action so that they can be created. Add a template called :file:`templates/new.mako` that looks like this: 
-
-.. code-block :: html+mako 
-
-    <%inherit file="/base.mako"/>\
-
-    <%def name="header()">${c.title}</%def>
-
-    <p>This page doesn't exist yet.
-      <a href="${url('edit_page', title=c.title)}">Create the page</a>.
-    </p>
-
-At this point we can test our QuickWiki to see how it looks. If you don't already have a server running, start it now with: 
-
-.. code-block :: bash 
-
-    $ paster serve --reload development.ini 
-
-Visit ``http://127.0.0.1:5000/`` and you will see the front page of the wiki. If you haven't already done so, you should delete the file :file:`public/index.html` so that when you visit the URL above you are routed to the correct action in the page controller and see the wiki front page instead of the :file:`index.html` file being displayed. 
-
-We can spruce up the appearance of page a little by adding the stylesheet we linked to in the :file:`templates/base.mako` file earlier. Add the file :file:`public/quick.css` with the following content and refresh the page to reveal a better looking wiki: 
-
-.. code-block :: css 
-
-    body { 
-    background-color: #888; 
-    margin: 25px; 
-    } 
-    div.content{ 
-    margin: 0; 
-    margin-bottom: 10px; 
-    background-color: #d3e0ea; 
-    border: 5px solid #333; 
-    padding: 5px 25px 25px 25px; 
-    } 
-    h1.main{ 
-    width: 100%; 
-    border-bottom: 1px solid #000; 
-    } 
-    p.footer{ 
-    width: 100%; 
-    padding-top: 3px; 
-    border-top: 1px solid #000; 
-    } 
-
-When you run the example you will notice that the word ``QuickWiki`` has been turned into a hyperlink by the :func:`get_wiki_content` method we added to our :class:`Page` domain object earlier. You can click the link and will see an example of the new page screen from the :file:`new.mako` template. If you follow the ``Create the page`` link you will see the Pylons automatic error handler kick in to tell you ``Action edit is not implemented``. Well, we better write it next, but before we do, have a play with the :ref:`interactive_debugging`, try clicking on the ``+`` or ``>>`` arrows and you will be able to interactively debug your application. It is a tremendously useful tool.
-
-:meth:`edit` 
-------------
-
-To edit the wiki page we need to get the content from the database without changing it to HTML to display it in a simple form for editing. Add the :meth:`edit` action: 
-
-.. code-block :: python 
-
-    def edit(self, title): 
-        page_q = Session.query(Page) 
-        page = page_q.filter_by(title=title).first() 
-        if page: 
-            c.content = page.content 
-        return render('/edit.mako') 
-
-and then create the ``templates/edit.mako`` file: 
-
-.. code-block :: html+mako  
-
-    <%inherit file="/base.mako"/>\
-
-    <%def name="header()">Editing ${c.title}</%def>
-
-    ${h.secure_form(url('save_page', title=c.title))}
-      ${h.textarea(name='content', rows=7, cols=40, content=c.content)} <br />
-      ${h.submit(value='Save changes', name='commit')}
-    ${h.end_form()}
-
-.. note :: You may have noticed that we only set ``c.content`` if the page exists but that it is accessed in ``h.text_area`` even for pages that don't exist and yet it doesn't raise an ``AttributeError``. 
-
-We are making use of the fact that the ``c`` object returns an empty string ``""`` for any attribute that is accessed which doesn't exist. This can be a very useful feature of the ``c`` object, but can catch you on occasions where you don't expect this behavior. It can be disabled by setting ``config['pylons.strict_c'] = True`` in your project's :file:`config/environment.py`. 
-
-We are making use of the ``h`` object to create our form and field objects. This saves a bit of manual HTML writing. The form submits to the ``save()`` action to save the new or updated content so let's write that next. 
-
-:meth:`save` 
---------------
-
-The :func:`@authenticate_form` decorator that appears immediately before the  :meth:`save` action checks the value of the hidden form field placed there by the :func:`secure_form` helper that we used when creating the form. The hidden form field carries an authorization token for prevention of certain Cross-site request forgery (CSRF) attacks.
-
-The first thing the :meth:`save` action has to do is to see if the page being saved already exists. If not it creates it with ``page = model.Page(title)``. Next it needs the updated content. In Pylons you can get request parameters from form submissions via ``GET`` and ``POST`` requests from the appropriately named ``request`` object. For form submissions from *only* ``GET`` or ``POST`` requests, use ``request.GET`` or ``request.POST``. Only ``POST`` requests should generate side effects (like changing data), so the save action will only reference ``request.POST`` for the parameters. 
-
-Add the :meth:`save` action: 
-
-.. code-block :: python 
-
-    @authenticate_form
-    def save(self, title):
-        page = self.page_q.filter_by(title=title).first()
-        if not page:
-            page = Page(title)
-        # In a real application, you should validate and sanitize
-        # submitted data throughly! escape is a minimal example here.
-        page.content = escape(request.POST.getone('content'))
-        Session.add(page)
-        Session.commit()
-        flash('Successfully saved %s!' % title)
-        redirect_to('show_page', title=title)
-
-.. note :: 
-    ``request.POST`` is a MultiDict objects: an ordered dictionary that may contain multiple values for each key. The MultiDict will always return one value for any existing key via the normal dict accessors ``request.POST[key]`` and ``request.POST.get(key)``. When multiple values are expected, use the ``request.POST.getall(key)`` method to return all values in a list. 
-
-In order for the :file:`page.mako` template to display the ``Successfully saved`` message after the page is saved we need to update the :file:`templates/page.mako` file. After ``<h1 class="main">${c.title}</h1>`` add these lines: 
-
-.. code-block :: html+mako 
-
-    % if c.message: 
-    <p><div id="message">${c.message}</div></p> 
-    % endif 
-
-And add the following to the ``public/quick.css`` file: 
-
-.. code-block :: css 
-
-    div#message{ 
-        color: orangered; 
-    } 
-
-The ``%`` syntax is used for control structures in mako -- conditionals and loops. You must 'close' them with an 'end' tag as shown here. At this point we have a fully functioning wiki that lets you create and edit pages and can be installed and deployed by an end user with just a few simple commands. 
-
-Visit ``http://127.0.0.1:5000`` and have a play. 
-
-It would be nice to get a title list and to be able to delete pages, so that's what we'll do next! 
+If you visit ``http://127.0.0.1:5000/pages`` you should see the full titles list and you should be able to visit each page. 
 
 :meth:`delete` 
 ----------------
 
-We need to add a ``delete()`` action that returns the new list of titles excluding the one that has been deleted: 
+We need to add a ``delete()`` action that deletes a page, then returns us to the list of titles excluding the one that was deleted: 
 
 .. code-block :: python 
 
@@ -771,9 +847,7 @@ ToDo
 ==== 
 
 * If QuickWiki is intended as a reference app for Pylons best practices, I'd like to incorporate some testing into the tutorial. Possibly introduce ``paster shell`` too. 
-* Introduce 0.9.6's logging features instead of sqlalchemy.echo 
-* Further explain Pylons' Unicode support 
 
 Thanks 
 ====== 
-A big thanks to Ches Martin for updating this document and the QuickWiki project for Pylons 0.9.6 / Pylons 0.9.7 / QuickWiki 0.1.5 / QuickWiki 0.1.6, and others in the Pylons community who contributed bug fixes and suggestions. 
+A big thanks to Ches Martin for updating this document and the QuickWiki project for Pylons 0.9.6 / Pylons 0.9.7 / QuickWiki 0.1.5 / QuickWiki 0.1.6, Graham Higgins, and others in the Pylons community who contributed bug fixes and suggestions. 
