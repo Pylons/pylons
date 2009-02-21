@@ -68,7 +68,7 @@ Now let's start the server and see what we have:
     $ cd QuickWiki 
     $ paster serve --reload development.ini 
 
-.. note :: We have started the :command:`paster serve` with the :option:`--reload` option. This means any changes that we make to code will cause the server to restart (if necessary); your changes are immediately reflected on the live site. 
+.. note :: We have started :command:`paster serve` with the :option:`--reload` option. This means any changes that we make to code will cause the server to restart (if necessary); your changes are immediately reflected on the live site. 
 
 Visit http://127.0.0.1:5000 where you will see the introduction page. Now delete the file :file:`public/index.html` so we can see the front page of the wiki instead of this welcome page. If you now refresh the page, the Pylons built-in error document support will kick in and display an ``Error 404`` page, indicating the file could not be found. We'll setup a controller to handle this location later. 
 
