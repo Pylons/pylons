@@ -80,19 +80,19 @@ Visit ``http://127.0.0.1:5000`` where you will see the introduction page. Now de
 The Model 
 ========= 
 
-Pylons uses a Model-View-Controller architecture; we'll start by creating the model. We could use any system we like for the model, including `SQLAlchemy <http://www.sqlalchemy.org>`_ or `SQLObject <http://www.sqlobject.org>`_. Optional SQLAlchemy integration is provided for new Pylons projects, so we'll use it for QuickWiki. 
+Pylons uses a Model-View-Controller architecture; we'll start by creating the model. We could use any system we like for the model, including `SQLAlchemy <http://www.sqlalchemy.org>`_ or `SQLObject <http://www.sqlobject.org>`_. Optional SQLAlchemy integration is provided for new Pylons projects, which we've enabled, so we'll use SQLAlchemy for the QuickWiki. 
 
-.. note :: SQLAlchemy is a powerful Python SQL toolkit and Object Relational Mapper that is popular with many Python programmers. 
+.. note :: SQLAlchemy is a powerful Python SQL toolkit and Object Relational Mapper (ORM) that is popular with many Python programmers. 
 
 SQLAlchemy provides a full suite of well known enterprise-level persistence patterns, designed for efficient and high-performance database access, adapted into a simple and Pythonic domain language. It has full and detailed documentation available on the SQLAlchemy website: http://sqlalchemy.org/docs/.
 
 The most basic way of using SQLAlchemy is with explicit sessions where you create ``Session`` objects as needed. 
 
-Pylons applications typically employ a slightly more sophisticated setup, using SQLAlchemy's "contextual" thread-local sessions via :meth:`scoped_session`. With this configuration, the application can use a single :class:`Session` instance per web request, avoiding the need to pass it around explicitly. Instantiating a new :class:`Session` will actually find an existing one in the current thread if available. There are further details in the `SQLAlchemy documentation on the Session <http://www.sqlalchemy.org/docs/04/session.html#unitofwork_contextual>`_. 
+Pylons applications typically employ a slightly more sophisticated setup, using SQLAlchemy's "contextual" thread-local sessions via :meth:`scoped_session`. With this configuration, the application can use a single :class:`Session` instance per web request, avoiding the need to pass it around explicitly. Instantiating a new scoped :class:`Session` will actually find an existing one in the current thread if available. Pylons has setup a :class:`Session` for us in the :file:`model/meta.py` file. For further details, refer to the `SQLAlchemy documentation on the Session <http://www.sqlalchemy.org/docs/05/session.html#contextual-thread-local-sessions>`_.
 
 .. note :: It is important to recognize the difference between SQLAlchemy's (or possibly another DB abstraction layer's) :class:`Session` object and Pylons' standard :dfn:`session` (with a lowercase 's') for web requests. See :mod:`beaker` for more on the latter. It is customary to reference the database session by :class:`model.Session` or (more recently) ``Session`` outside of model classes. 
 
-The default imports already present in :file:`model/__init__.py` provide some SQLAlchemy objects such as the :mod:`sqlalchemy` module (aliased as :mod:`sa`) as well as the ``metadata`` object. ``metadata`` is used when defining and managing tables. Now we take advantage of that and add the following to the end of the contents of the :file:`model/__init__.py` file: 
+The default imports already present in :file:`model/__init__.py` provide SQLAlchemy objects such as the :mod:`sqlalchemy` module (aliased as :mod:`sa`) as well as the ``metadata`` object. ``metadata`` is used when defining and managing tables. Next we'll use these to build our wiki's model: we can remove the commented out Foo example and add the following to the end of the :file:`model/__init__.py` file: 
 
 .. code-block :: python 
     
@@ -100,32 +100,32 @@ The default imports already present in :file:`model/__init__.py` provide some SQ
                     sa.Column('title', sa.types.Unicode(40), primary_key=True), 
                     sa.Column('content', sa.types.Unicode(), default='') 
                     )
-    
-    class Page(object):
-        pass
 
-    orm.mapper(Page, pages_table)
-
-We now define a table called ``pages`` which has two columns, ``title`` (the primary key) and ``content``. 
+We've defined a table called ``pages`` which has two columns, ``title`` (the primary key) and ``content``. 
 
 .. note :: 
-    SQLAlchemy also supports reflecting table information directly from a database. If we had already created the ``pages`` database table, SQLAlchemy could have constructed the ``pages_table`` object for us. This uses the ``autoload=True`` parameter in place of the ``Column`` definitions, like this: 
+    SQLAlchemy also supports reflecting table information directly from a database. If we had already created the ``pages`` table in our database, SQLAlchemy could have constructed the ``pages_table`` object for us via the ``autoload=True`` parameter in place of the ``Column`` definitions, like this: 
 
-.. code-block :: python 
+    .. code-block :: python 
 
-    pages_table = sa.Table('pages', metadata, autoload=True) 
+        pages_table = sa.Table('pages', meta.metadata, autoload=True
+                               autoload_with_engine)
 
-`SQLAlchemy table reflection documentation <http://www.sqlalchemy.org/docs/04/metadata.html#metadata_tables_reflecting>`_ 
+    The ideal way to create autoloaded tables is within the :func:`init_model` function (lazily), so the database isn't accessed when we simply importing the :mod:`model` package. See `SQLAlchemy table reflection documentation <http://www.sqlalchemy.org/docs/05/metadata.html#reflecting-tables>`_ for more information.
 
 .. note :: A primary key is a unique ID for each row in a database table. In the example above we are using the page title as a natural primary key. Some people prefer to use integer primary keys for all tables, so-called surrogate primary keys. The author of this tutorial uses both methods in his own code and is not advocating one method over the other, it is important that you choose the best database structure for your application. See the Pylons Cookbook for `a quick general overview of relational databases <http://wiki.pylonshq.com/display/pylonscookbook/Relational+databases+for+people+in+a+hurry>`_ if you're not familiar with these concepts. 
 
-A core philosophy of SQLAlchemy is that tables and domain classes are different beasts. So next, we'll create the Python class that will represent the pages of our wiki and map these domain objects to rows in the ``pages`` table using a mapper. In a more complex application, you could break out model classes into separate ``.py`` files in your ``model`` directory, but for sake of simplicity in this case, we'll just stick to :file:`__init__.py`. 
+A core philosophy of ORMs is that tables and domain classes are different beasts. So next we'll create the Python class that will represent the pages of our wiki and map these domain objects to rows in the ``pages`` table using a mapper. In a more complex application, you could break out model classes into separate ``.py`` files in your ``model`` directory, but for sake of simplicity in this case, we'll just stick to :file:`__init__.py`. 
 
 Add this to the bottom of ``model/__init__.py``: 
 
 .. code-block :: python 
 
     class Page(object): 
+
+        def __init__(self, title, content=None):
+            self.title = title
+            self.content = content
 
         def __unicode__(self):
             return self.title
@@ -134,12 +134,14 @@ Add this to the bottom of ``model/__init__.py``:
 
     orm.mapper(Page, pages_table) 
 
+``content=None`` defaults the value of the ``content`` attribute to ``None`` when a new :class:`Page` object is created. The :class:`Page` object represents a row in the ``pages`` table so ``self.content`` will be the value of the ``content`` column. 
+
 .. note :: For those more familiar with SQLAlchemy 0.3: in SQLAlchemy versions 0.4 and 0.5 :func:`scoped_session` replaces the :func:`sessioncontext` extension and so :class:`Session.mapper` could be used here in place of
- :func:`orm.mapper` to get behavior similar to that achieved with :func:`assign_mapper`. This is considered to be an advanced topic and you should consult SQLAlchemy's documentation if you wish to learn how it works. 
+ :func:`orm.mapper` to get behavior similar to that achieved with :func:`assign_mapper`. This is considered to be an advanced topic, consult SQLAlchemy's documentation for more information.
 
-Looking ahead, our wiki will need some formatting so we will need to turn the ``content`` field into HTML. Any "WikiWords" (words made by joining together two or more lowercase words with the first letter capitalized) will also need to be converted into hyperlinks. 
+Looking ahead, our wiki will need some formatting so we'll need to turn the ``content`` field into HTML. Any "WikiWords" (words made by joining together two or capitalized words) will also need to be converted into hyperlinks. 
 
-It would be advantageous if we could add a method to our :class:`Page` object to retrieve the formatted HTML with the WikiWords already converted to hyperlinks. Add the following at the top of the :file:`model/__init__.py` file: 
+We can add a method to our :class:`Page` objects to create the formatted HTML with the WikiWords already converted to hyperlinks. Add the following at the top of the :file:`model/__init__.py` file: 
 
 .. code-block :: python 
 
@@ -154,21 +156,24 @@ It would be advantageous if we could add a method to our :class:`Page` object to
 
     log = logging.getLogger(__name__)
 
-    SAFE_DOCUTILS = {'file_insertion_enabled': False, 'raw_enabled': False}
+    # disable docutils security hazards:
+    # http://docutils.sourceforge.net/docs/howto/security.html
+    SAFE_DOCUTILS = dict(file_insertion_enabled=False, raw_enabled=False)
     wikiwords = re.compile(r"\b([A-Z]\w+[A-Z]+\w+)", re.UNICODE)
 
-and then add a :meth:`get_wiki_content` method to the ``Page`` object so it looks like this: 
+then add a :meth:`get_wiki_content` method to the :class:`Page` class:
 
 .. code-block :: python 
 
     class Page(object):
+
         def __init__(self, title, content=None):
             self.title = title
             self.content = content
 
         def get_wiki_content(self):
             """Convert reStructuredText content to HTML for display, and
-            create links for WikiWords.
+            create links for WikiWords
             """
             content = publish_parts(self.content, writer_name='html',
                                     settings_overrides=SAFE_DOCUTILS)['html_body']
@@ -178,14 +183,18 @@ and then add a :meth:`get_wiki_content` method to the ``Page`` object so it look
                 content = content.replace(title, link_to(title, title_url))
             return content
 
+        def __unicode__(self):
+            return self.title
 
-This code deserves a bit of explaining. The ``content = None`` line is so that the ``content`` attribute is initialized to ``None`` when a new :class:`Page` object is created. The :class:`Page` object represents a row in the ``pages`` table so ``self.content`` will be the value of the ``content`` field. The :class:`Set` object provides us with only unique WikiWord names, so we don't try replacing them more than once (a "wikiword" is of course defined by the regular expression set globally). 
+        __str__ = __unicode__
+
+The :class:`Set` object provides us with only unique WikiWord names, so we don't try replacing them more than once (a "wikiword" is of course defined by the regular expression set globally).
 
 .. note :: 
 
-    Pylons uses a **Model View Controller** architecture and so the formatting of objects into HTML should  properly be handled in the View, i.e. in a template. In this example however, converting reStructuredText into HTML in a template is inappropriate so we are treating the HTML representation of the content as part of the model. It also gives us the chance to demonstrate that SQLAlchemy domain classes are real Python classes that can have their own methods. 
+    Pylons uses a **Model View Controller** architecture and so the formatting of objects into HTML should  properly be handled in the View, i.e. in a template. However in this example, converting reStructuredText into HTML in a template is inappropriate so we are treating the HTML representation of the content as part of the model. It also gives us the chance to demonstrate that SQLAlchemy domain classes are real Python classes that can have their own methods. 
 
-The :func:`link_to` and :func:`url` functions referenced in the controller code are respectively: a helper imported from :file:`webhelpers.html` indirectly via :file:`lib/helpers.py` and a utility function imported directly from the Pylons module. They both act as ``helper`` utilities for creating links to specific controller actions. In this case we have decided that all WikiWords should link to the :meth:`index` action of the ``page`` controller which we will create later. However, we need to ensure that the :func:`link_to` function is made available as a helper by adding an import statement to :file:`lib/helpers.py`:
+The :func:`link_to` and :func:`url` functions referenced in the controller code are respectively: a helper imported from the :mod:`webhelpers.html` module indirectly via :file:`lib/helpers.py`, and a utility function imported directly from the :mod:`pylons` module. They are utilities for creating links to specific controller actions. In this case we have decided that all WikiWords should link to the :meth:`index` action of the ``page`` controller which we will create later. However, we need to ensure that the :func:`link_to` function is made available as a helper by adding an import statement to :file:`lib/helpers.py`:
 
 .. code-block :: python
 
@@ -196,11 +205,15 @@ The :func:`link_to` and :func:`url` functions referenced in the controller code 
     """
     from webhelpers.html.tags import *
 
-One final change; since we have used docutils and SQLAlchemy, both third party packages, we need to edit our :file:`setup.py` file so that anyone installing QuickWiki with `Easy Install <http://peak.telecommunity.com/DevCenter/EasyInstall>`_ will automatically also have these dependencies installed for them too. Edit your :file:`setup.py` in your project root directory so that the ``install_requires`` line looks like this: 
+Since we have used docutils and SQLAlchemy, both third party packages, we need to edit our :file:`setup.py` file so that anyone installing QuickWiki with `Easy Install <http://peak.telecommunity.com/DevCenter/EasyInstall>`_ will automatically have these dependencies installed too. Edit your :file:`setup.py` in your project root directory and add a docutils entry to the ``install_requires`` line (there will already be one for SQLAlchemy): 
 
 .. code-block :: python 
 
-    install_requires=["Pylons>=0.9.7", "docutils==0.4", "SQLAlchemy>=0.5"], 
+    install_requires=[
+        "Pylons>=0.9.7dev",
+        "SQLAlchemy>=0.5",
+        "docutils==0.4",
+    ],
 
 While we are we are making changes to :file:`setup.py` we might want to complete some of the other sections too. Set the version number to 0.1.6 and add a description and URL which will be used on PyPi when we release it: 
 
@@ -258,13 +271,13 @@ Edit ``websetup.py``, used by the ``paster setup-app`` command, to look like thi
 
         log.info("Adding front page data...")
         page = model.Page(title=u'FrontPage',
-                          content=u'Welcome to the QuickWiki front page.')
+                          content=u'**Welcome** to the QuickWiki front page!')
         meta.Session.add(page)
         meta.Session.commit()
         log.info("Successfully set up.")
 
 
-You can see that :file:`config/environment.py`'s :func:`load_environment` function is called, so our engine is ready for binding and we can import the model. A SQLAlchemy :class:`MetaData` object -- which provides some utility methods for operating on database schema -- usually needs to be connected to an engine, so the line  
+You can see that :file:`config/environment.py`'s :func:`load_environment` function is called (which calls the :file:`model/__init__.py`'s ':func:`init_model` ), so our engine is ready for binding and we can import the model. A SQLAlchemy :class:`MetaData` object -- which provides some utility methods for operating on database schema -- usually needs to be connected to an engine, so the line  
 
 .. code-block :: python
 
@@ -276,17 +289,15 @@ does exactly that and then
 
     model.metadata.create_all(checkfirst=True)
 
-uses the connection we've just set up and, well, creates the table(s) we've defined ... if they don't already exist. After the tables are created, the other lines add some data for the simple front page to our wiki.
+uses the connection we've just set up and, creates the table(s) we've defined ... if they don't already exist. After the tables are created, the other lines add some data for the simple front page to our wiki.
 
-By default, SQLAlchemy specifies ``autocommit=False`` when creating the ``Session``, which means that operations will be wrapped in a transaction and committed atomically (unless your DB doesn't support transactions, like MySQL's default MyISAM tables -- but that's beyond the scope of this tutorial). 
+By default, SQLAlchemy specifies ``autocommit=False`` when creating the ``Session``, which means that operations will be wrapped in a transaction and :func:`commit`'ed atomically (unless your DB doesn't support transactions, like MySQL's default MyISAM tables -- but that's beyond the scope of this tutorial). 
 
-To test this functionality run you first need to install your QuickWiki if you haven't already done so in order for ``paster`` to find the version we are developing instead of the version we installed at the very start: 
+The database SQLAlchemy will use is specified in the ``ini`` file, under the ``[app:main]`` section, as ``sqlalchemy.url``. We'll customize the ``sqlalchemy.url`` value to point to a SQLite database named :file:`quickwiki.db` that will reside in your project's root directory. Edit the :file:`development.ini` file in the root directory of your project:
 
-.. code-block :: bash 
+.. note :: 
 
-    $ python setup.py develop 
-
-Specify your database URI in :file:`development.ini` so that the ``[app:main]`` section contains something like this, customized as needed for your database: 
+    If you've decided to use a different database other than SQLite, see the SQLAlchemy note in the `Starting at the End`_ section for information on supported database URIs.
 
 .. code-block :: ini
 
@@ -294,35 +305,24 @@ Specify your database URI in :file:`development.ini` so that the ``[app:main]`` 
     use = egg:QuickWiki 
     #... 
     # Specify the database for SQLAlchemy to use. 
-    # %(here) may include a ':' character on Windows environments; this can 
-    # invalidate the URI when specifying a SQLite db via path name 
+    # SQLAlchemy database URL
     sqlalchemy.url = sqlite:///%(here)s/quickwiki.db 
-
-.. note :: 
-
-    See the SQLAlchemy note in the `Starting at the End`_ section for information on supported database URIs and a link to the SQLAlchemy documentation about the various options that can be included in them. 
-
-If you want to see the SQL being generated, you can have SQLAlchemy echo it to the console by adding this line: 
-
-.. code-block :: ini 
-
-    sqlalchemy.echo = true 
 
 You can now run the ``paster setup-app`` command to setup your tables in the same way an end user would, remembering to drop and recreate the database if the version tested earlier has already created the tables: 
 
 .. code-block :: bash 
 
-    $ paster setup-app development.ini 
+    $ paster setup-app development.ini
+
+You should see the SQL sent to the database as the default :file:`development.ini` is setup to log SQLAlchemy's SQL statements.
 
 At this stage you will need to ensure you have the appropriate Python database drivers for the database you chose, otherwise you might find SQLAlchemy complains it can't get the DBAPI module for the dialect it needs. 
 
-You should also edit :file:`quickwiki/config/deployment.ini_tmpl` so that when users run ``paster make-config`` the configuration file that is produced for them will already have a section telling them to enter their own database URI as we did when we installed the finished QuickWiki at the start of the tutorial. Add these lines in the ``[app:main]`` section: 
+You should also edit :file:`quickwiki/config/deployment.ini_tmpl` so that when users run ``paster make-config`` the configuration file that is produced for them will also use :file:`quickwiki.db`. In the ``[app:main]`` section: 
 
 .. code-block :: ini 
 
     # Specify the database for SQLAlchemy to use. 
-    # %(here) may include a ':' character on Windows environments; this can 
-    # invalidate the URI when specifying a SQLite db via path name 
     sqlalchemy.url = sqlite:///%(here)s/quickwiki.db 
 
 Templates 
@@ -330,9 +330,9 @@ Templates
 
 .. note :: 
 
-    Pylons uses the Mako templating language by default, although as is the case with most aspects of Pylons, you are free to deviate from the default if you prefer.
+    Pylons uses the `Mako templating engine <http://www.makotemplates.org>`_ by default, although as is the case with most aspects of Pylons, you are free to deviate from the default if you prefer.
 
-In our project we will make use of a feature of the Mako templating language called "inheritance". Add the main page template in :file:`templates/base.mako`: 
+In our project we will make use of the `Mako inheritance feature <http://www.makotemplates.org/docs/inheritance.html>`_. Add the main page template in :file:`templates/base.mako`: 
 
 .. code-block :: html+mako 
 
@@ -348,13 +348,10 @@ In our project we will make use of a feature of the Mako templating language cal
         <div class="content">
           <h1 class="main">${self.header()}</h1>
           ${next.body()}\
-          <p class="footer"> 
-              Return to the 
-              ${h.link_to('FrontPage', 
-                  url(action="index", title="FrontPage"))} 
-              | ${h.link_to('Edit ' + c.title, 
-                  url(title=c.title, action='edit'))} 
-          </p> 
+          <p class="footer">
+            Return to the ${h.link_to('FrontPage', url('FrontPage'))}
+            | ${h.link_to('Edit ' + c.title, url('edit_page', title=c.title))}
+          </p>
         </div>
       </body>
     </html>
@@ -511,8 +508,6 @@ At this point we can test our QuickWiki to see how it looks. If you don't alread
 
     $ paster serve --reload development.ini 
 
-Visit ``http://127.0.0.1:5000/`` and you will see the front page of the wiki. If you haven't already done so, you should delete the file :file:`public/index.html` so that when you visit the URL above you are routed to the correct action in the page controller and see the wiki front page instead of the :file:`index.html` file being displayed. 
-
 We can spruce up the appearance of page a little by adding the stylesheet we linked to in the :file:`templates/base.mako` file earlier. Add the file :file:`public/quick.css` with the following content and refresh the page to reveal a better looking wiki: 
 
 .. code-block :: css 
@@ -656,11 +651,8 @@ And finally utilize the ``flash`` object in our :file:`templates/base.mako` temp
 
           ${next.body()}\
           <p class="footer"> 
-              Return to the 
-              ${h.link_to('FrontPage', 
-                  url(action="index", title="FrontPage"))} 
-              | ${h.link_to('Edit ' + c.title, 
-                  url(title=c.title, action='edit'))} 
+            Return to the ${h.link_to('FrontPage', url('FrontPage'))}
+            | ${h.link_to('Edit ' + c.title, url('edit_page', title=c.title))}
           </p> 
         </div>
       </body>
@@ -670,9 +662,9 @@ And add the following to the :file:`public/quick.css` file:
 
 .. code-block :: css 
 
-    div#message{ 
-        color: orangered; 
-    } 
+    div#flash .message {
+      color: orangered;
+    }
 
 The ``%`` syntax is used for control structures in mako -- conditionals and loops. You must 'close' them with an 'end' tag as shown here. At this point we have a fully functioning wiki that lets you create and edit pages and can be installed and deployed by an end user with just a few simple commands. 
 
@@ -879,11 +871,14 @@ We've gone through the whole cycle of creating and distributing a Pylons applica
 
 That's it, I hope you found the tutorial useful. You are encouraged to email any comments to the `Pylons mailing list <http://groups.google.com/group/pylons-discuss>`_ where they will be welcomed. 
 
-ToDo 
-==== 
-
-* If QuickWiki is intended as a reference app for Pylons best practices, I'd like to incorporate some testing into the tutorial. Possibly introduce ``paster shell`` too. 
-
 Thanks 
 ====== 
 A big thanks to Ches Martin for updating this document and the QuickWiki project for Pylons 0.9.6 / Pylons 0.9.7 / QuickWiki 0.1.5 / QuickWiki 0.1.6, Graham Higgins, and others in the Pylons community who contributed bug fixes and suggestions. 
+
+Todo 
+==== 
+
+* Provide ``paster shell`` examples
+* Incorporate testing into the tutorial
+* Explain Ches's :meth:`validate_title` method in the actual QuickWiki project
+* Provide snapshots of every file modified at each step, to help resolve mistakes
