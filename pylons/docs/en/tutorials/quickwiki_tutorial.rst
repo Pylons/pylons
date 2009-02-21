@@ -735,7 +735,7 @@ We need to edit :file:`templates/base.mako` to add a link to the title list in t
           ${next.body()}\
       
           <p class="footer">
-          ${self.footer(request.environ['pylons.routes_dict']['action'])}\
+            ${self.footer(request.environ['pylons.routes_dict']['action'])}\
           </p>
         </div>
       </body>
