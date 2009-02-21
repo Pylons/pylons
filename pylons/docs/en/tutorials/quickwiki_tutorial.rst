@@ -11,7 +11,7 @@ Introduction
 
 If you haven't done so already, please first read the :ref:`getting_started` guide. 
 
-In this tutorial we are going to create a working wiki from scratch using Pylons 0.9.7 and SQLAlchemy. Our wiki will allow visitors to add, edit or delete formatted wiki pages. 
+In this tutorial we are going to create a working wiki from scratch using Pylons 0.9.7 and `SQLAlchemy`_. Our wiki will allow visitors to add, edit or delete formatted wiki pages. 
 
 Starting at the End 
 =================== 
@@ -29,7 +29,7 @@ Next, ensure that the ``sqlalchemy.url`` variable in the ``[app:main]`` section 
 
 .. note :: 
 
-    The default ``sqlite:///%(here)s/quickwiki.db`` uses a (file-based) SQLite database named ``quickwiki.db`` in the ini's top-level directory. This SQLite database will be created for you when running the ``paster setup-app`` command below, but you could also use MySQL, Oracle or PostgreSQL. Firebird and MS-SQL may also work. See the `SQLAlchemy documentation <http://www.sqlalchemy.org/docs/04/dbengine.html#dbengine_establishing>`_ for more information on how to connect to different databases. SQLite for example requires additional forward slashes in its URI, where the client/server databases should only use two. You will also need to make sure you have the appropriate Python driver for the database you wish to use. If you're using Python 2.5, a version of the `pysqlite adapter <http://www.initd.org/tracker/pysqlite/wiki/pysqlite>`_ is already included, so you can jump right in with the tutorial. You may need to get `SQLite itself <http://www.sqlite.org/download.html>`_. 
+    The default ``sqlite:///%(here)s/quickwiki.db`` uses a (file-based) SQLite database named ``quickwiki.db`` in the ini's top-level directory. This SQLite database will be created for you when running the :command:`paster setup-app` command below, but you could also use MySQL, Oracle or PostgreSQL. Firebird and MS-SQL may also work. See the `SQLAlchemy documentation <http://www.sqlalchemy.org/docs/04/dbengine.html#dbengine_establishing>`_ for more information on how to connect to different databases. SQLite for example requires additional forward slashes in its URI, where the client/server databases should only use two. You will also need to make sure you have the appropriate Python driver for the database you wish to use. If you're using Python 2.5, a version of the `pysqlite adapter <http://www.initd.org/tracker/pysqlite/wiki/pysqlite>`_ is already included, so you can jump right in with the tutorial. You may need to get `SQLite itself <http://www.sqlite.org/download.html>`_. 
 
 Finally create the database tables and serve the finished application: 
 
@@ -38,19 +38,15 @@ Finally create the database tables and serve the finished application:
     $ paster setup-app test.ini 
     $ paster serve test.ini 
 
-That's it! Now you can visit ``http://127.0.0.1:5000`` and experiment with the finished Wiki. 
+That's it! Now you can visit http://127.0.0.1:5000 and experiment with the finished Wiki. 
 
-When you've finished, stop the server with ``CTRL+C`` because we will start developing our own version. 
+When you've finished, stop the server with :kbd:`Control-C` so we can start developing our own version. 
 
-If you are interested in looking at the latest version of the QuickWiki source code it can be browsed online at http://www.knowledgetap.com/hg/QuickWiki or can be checked out using Mercurial: 
+If you are interested in looking at the latest version of the QuickWiki source code it can be browsed online at http://www.knowledgetap.com/hg/QuickWiki or can be checked out using `Mercurial <http://www.selenic.com/mercurial/>`_:
 
 .. code-block :: bash 
 
     $ hg clone http://www.knowledgetap.com/hg/QuickWiki 
-
-.. note :: 
-
-    To run the version checked out from the repository, you'll want to run ``python setup.py egg_info`` from the project's root directory. This will generate some files in the ``QuickWiki.egg-info`` directory.
 
 Developing QuickWiki 
 ==================== 
@@ -63,7 +59,7 @@ Then create your project:
 
     $ paster create -t pylons QuickWiki
 
-When prompted for which templating engine to use, simply hit enter for the default (Mako). When prompted for SQLAlchemy configuration, enter 'True'.
+When prompted for which templating engine to use, simply hit enter for the default (Mako). When prompted for SQLAlchemy configuration, enter ``True``.
 
 Now let's start the server and see what we have: 
 
@@ -72,25 +68,25 @@ Now let's start the server and see what we have:
     $ cd QuickWiki 
     $ paster serve --reload development.ini 
 
-.. note :: We have started the server with the ``--reload`` switch. This means any changes that we make to code will cause the server to restart (if necessary); your changes are immediately reflected on the live site. 
+.. note :: We have started the :command:`paster serve` with the :option:`--reload` option. This means any changes that we make to code will cause the server to restart (if necessary); your changes are immediately reflected on the live site. 
 
-Visit ``http://127.0.0.1:5000`` where you will see the introduction page. Now delete the file :file:`public/index.html` because we want to see the front page of the wiki instead of this welcome page. If you now refresh the page, the Pylons built-in error document support will kick in and display an ``Error 404`` page to tell you the file could not be found. We'll setup a controller to handle this location later. 
+Visit http://127.0.0.1:5000 where you will see the introduction page. Now delete the file :file:`public/index.html` so we can see the front page of the wiki instead of this welcome page. If you now refresh the page, the Pylons built-in error document support will kick in and display an ``Error 404`` page, indicating the file could not be found. We'll setup a controller to handle this location later. 
 
 
 The Model 
 ========= 
 
-Pylons uses a Model-View-Controller architecture; we'll start by creating the model. We could use any system we like for the model, including `SQLAlchemy <http://www.sqlalchemy.org>`_ or `SQLObject <http://www.sqlobject.org>`_. Optional SQLAlchemy integration is provided for new Pylons projects, which we've enabled, so we'll use SQLAlchemy for the QuickWiki. 
+Pylons uses a Model-View-Controller architecture; we'll start by creating the model. We could use any system we like for the model, including `SQLAlchemy`_ or `SQLObject <http://www.sqlobject.org>`_. Optional SQLAlchemy integration is provided for new Pylons projects, which we enabled when creating the project, and thus we'll be using SQLAlchemy for the QuickWiki. 
 
-.. note :: SQLAlchemy is a powerful Python SQL toolkit and Object Relational Mapper (ORM) that is popular with many Python programmers. 
+.. note :: `SQLAlchemy`_ is a powerful Python SQL toolkit and Object Relational Mapper (ORM) that is widely used by the Python community. 
 
 SQLAlchemy provides a full suite of well known enterprise-level persistence patterns, designed for efficient and high-performance database access, adapted into a simple and Pythonic domain language. It has full and detailed documentation available on the SQLAlchemy website: http://sqlalchemy.org/docs/.
 
-The most basic way of using SQLAlchemy is with explicit sessions where you create ``Session`` objects as needed. 
+The most basic way of using SQLAlchemy is with explicit sessions where you create :class:`Session` objects as needed. 
 
-Pylons applications typically employ a slightly more sophisticated setup, using SQLAlchemy's "contextual" thread-local sessions via :meth:`scoped_session`. With this configuration, the application can use a single :class:`Session` instance per web request, avoiding the need to pass it around explicitly. Instantiating a new scoped :class:`Session` will actually find an existing one in the current thread if available. Pylons has setup a :class:`Session` for us in the :file:`model/meta.py` file. For further details, refer to the `SQLAlchemy documentation on the Session <http://www.sqlalchemy.org/docs/05/session.html#contextual-thread-local-sessions>`_.
+Pylons applications typically employ a slightly more sophisticated setup, using SQLAlchemy's "contextual" thread-local sessions created via the :meth:`sqlalchemy.orm.scoped_session` function. With this configuration, the application can use a single :class:`Session` instance per web request, avoiding the need to pass it around explicitly. Instantiating a new scoped :class:`Session` will actually find an existing one in the current thread if available. Pylons has setup a :class:`Session` for us in the :file:`model/meta.py` file. For further details, refer to the `SQLAlchemy documentation on the Session <http://www.sqlalchemy.org/docs/05/session.html#contextual-thread-local-sessions>`_.
 
-.. note :: It is important to recognize the difference between SQLAlchemy's (or possibly another DB abstraction layer's) :class:`Session` object and Pylons' standard :dfn:`session` (with a lowercase 's') for web requests. See :mod:`beaker` for more on the latter. It is customary to reference the database session by :class:`model.Session` or (more recently) ``Session`` outside of model classes. 
+.. note :: It is important to recognize the difference between SQLAlchemy's (or possibly another DB abstraction layer's) :class:`Session` object and Pylons' standard :dfn:`session` (with a lowercase 's') for web requests. See :mod:`beaker` for more on the latter. It is customary to reference the database session by :class:`model.Session` or (more recently) :class:`Session` outside of model classes. 
 
 The default imports already present in :file:`model/__init__.py` provide SQLAlchemy objects such as the :mod:`sqlalchemy` module (aliased as :mod:`sa`) as well as the ``metadata`` object. ``metadata`` is used when defining and managing tables. Next we'll use these to build our wiki's model: we can remove the commented out Foo example and add the following to the end of the :file:`model/__init__.py` file: 
 
@@ -104,7 +100,7 @@ The default imports already present in :file:`model/__init__.py` provide SQLAlch
 We've defined a table called ``pages`` which has two columns, ``title`` (the primary key) and ``content``. 
 
 .. note :: 
-    SQLAlchemy also supports reflecting table information directly from a database. If we had already created the ``pages`` table in our database, SQLAlchemy could have constructed the ``pages_table`` object for us via the ``autoload=True`` parameter in place of the ``Column`` definitions, like this: 
+    SQLAlchemy also supports reflecting table information directly from a database. If we had already created the ``pages`` table in our database, SQLAlchemy could have constructed the ``pages_table`` object for us via the ``autoload=True`` parameter in place of the :class:`Column` definitions, like this: 
 
     .. code-block :: python 
 
@@ -115,7 +111,7 @@ We've defined a table called ``pages`` which has two columns, ``title`` (the pri
 
 .. note :: A primary key is a unique ID for each row in a database table. In the example above we are using the page title as a natural primary key. Some people prefer to use integer primary keys for all tables, so-called surrogate primary keys. The author of this tutorial uses both methods in his own code and is not advocating one method over the other, it is important that you choose the best database structure for your application. See the Pylons Cookbook for `a quick general overview of relational databases <http://wiki.pylonshq.com/display/pylonscookbook/Relational+databases+for+people+in+a+hurry>`_ if you're not familiar with these concepts. 
 
-A core philosophy of ORMs is that tables and domain classes are different beasts. So next we'll create the Python class that will represent the pages of our wiki and map these domain objects to rows in the ``pages`` table using a mapper. In a more complex application, you could break out model classes into separate ``.py`` files in your ``model`` directory, but for sake of simplicity in this case, we'll just stick to :file:`__init__.py`. 
+A core philosophy of ORMs is that tables and domain classes are different beasts. So next we'll create the Python class that will represent the pages of our wiki and map these domain objects to rows in the ``pages`` table using a mapper. In a more complex application, you could break out model classes into separate ``.py`` files in your :file:`model` directory, but for sake of simplicity in this case, we'll just stick to :file:`__init__.py`. 
 
 Add this to the bottom of ``model/__init__.py``: 
 
@@ -134,7 +130,7 @@ Add this to the bottom of ``model/__init__.py``:
 
     orm.mapper(Page, pages_table) 
 
-``content=None`` defaults the value of the ``content`` attribute to ``None`` when a new :class:`Page` object is created. The :class:`Page` object represents a row in the ``pages`` table so ``self.content`` will be the value of the ``content`` column. 
+``content=None`` defaults the value of the ``content`` attribute to :const:`None` when a new :class:`Page` object is created. The :class:`Page` object represents a row in the ``pages`` table, so ``self.content`` will be the value of the ``content`` column. 
 
 .. note :: For those more familiar with SQLAlchemy 0.3: in SQLAlchemy versions 0.4 and 0.5 :func:`scoped_session` replaces the :func:`sessioncontext` extension and so :class:`Session.mapper` could be used here in place of
  :func:`orm.mapper` to get behavior similar to that achieved with :func:`assign_mapper`. This is considered to be an advanced topic, consult SQLAlchemy's documentation for more information.
@@ -192,7 +188,7 @@ The :class:`Set` object provides us with only unique WikiWord names, so we don't
 
 .. note :: 
 
-    Pylons uses a **Model View Controller** architecture and so the formatting of objects into HTML should  properly be handled in the View, i.e. in a template. However in this example, converting reStructuredText into HTML in a template is inappropriate so we are treating the HTML representation of the content as part of the model. It also gives us the chance to demonstrate that SQLAlchemy domain classes are real Python classes that can have their own methods. 
+    Pylons uses a **Model View Controller** architecture and so the formatting of objects into HTML should properly be handled in the View, i.e. in a template. However in this example, converting `reStructuredText`_ into HTML in a template is inappropriate so we are treating the HTML representation of the content as part of the model. It also gives us the chance to demonstrate that SQLAlchemy domain classes are real Python classes that can have their own methods. 
 
 The :func:`link_to` and :func:`url` functions referenced in the controller code are respectively: a helper imported from the :mod:`webhelpers.html` module indirectly via :file:`lib/helpers.py`, and a utility function imported directly from the :mod:`pylons` module. They are utilities for creating links to specific controller actions. In this case we have decided that all WikiWords should link to the :meth:`index` action of the ``page`` controller which we will create later. However, we need to ensure that the :func:`link_to` function is made available as a helper by adding an import statement to :file:`lib/helpers.py`:
 
@@ -239,12 +235,12 @@ To test the automatic installation of the dependencies, run the following comman
 
 .. note :: 
 
-    The command ``python setup.py develop`` installs your application in a special mode so that it behaves exactly as if it had been installed as an egg file by an end user. This is really useful when you are developing an application because it saves you having to create an egg and install it every time you want to test a change. 
+    The command :command:`python setup.py develop` installs your application in a special mode so that it behaves exactly as if it had been installed as an egg file by an end user. This is really useful when you are developing an application because it saves you having to create an egg and install it every time you want to test a change. 
 
 Application Setup 
 =================
 
-Edit ``websetup.py``, used by the ``paster setup-app`` command, to look like this: 
+Edit :file:`websetup.py`, used by the :command:`paster setup-app` command, to look like this: 
 
 .. code-block :: python 
 
@@ -291,7 +287,7 @@ does exactly that and then
 
 uses the connection we've just set up and, creates the table(s) we've defined ... if they don't already exist. After the tables are created, the other lines add some data for the simple front page to our wiki.
 
-By default, SQLAlchemy specifies ``autocommit=False`` when creating the ``Session``, which means that operations will be wrapped in a transaction and :func:`commit`'ed atomically (unless your DB doesn't support transactions, like MySQL's default MyISAM tables -- but that's beyond the scope of this tutorial). 
+By default, SQLAlchemy specifies ``autocommit=False`` when creating the :class:`Session`, which means that operations will be wrapped in a transaction and :func:`commit`'ed atomically (unless your DB doesn't support transactions, like MySQL's default MyISAM tables -- but that's beyond the scope of this tutorial). 
 
 The database SQLAlchemy will use is specified in the ``ini`` file, under the ``[app:main]`` section, as ``sqlalchemy.url``. We'll customize the ``sqlalchemy.url`` value to point to a SQLite database named :file:`quickwiki.db` that will reside in your project's root directory. Edit the :file:`development.ini` file in the root directory of your project:
 
@@ -308,7 +304,7 @@ The database SQLAlchemy will use is specified in the ``ini`` file, under the ``[
     # SQLAlchemy database URL
     sqlalchemy.url = sqlite:///%(here)s/quickwiki.db 
 
-You can now run the ``paster setup-app`` command to setup your tables in the same way an end user would, remembering to drop and recreate the database if the version tested earlier has already created the tables: 
+You can now run the :command:`paster setup-app` command to setup your tables in the same way an end user would, remembering to drop and recreate the database if the version tested earlier has already created the tables: 
 
 .. code-block :: bash 
 
@@ -318,7 +314,7 @@ You should see the SQL sent to the database as the default :file:`development.in
 
 At this stage you will need to ensure you have the appropriate Python database drivers for the database you chose, otherwise you might find SQLAlchemy complains it can't get the DBAPI module for the dialect it needs. 
 
-You should also edit :file:`quickwiki/config/deployment.ini_tmpl` so that when users run ``paster make-config`` the configuration file that is produced for them will also use :file:`quickwiki.db`. In the ``[app:main]`` section: 
+You should also edit :file:`quickwiki/config/deployment.ini_tmpl` so that when users run :command:`paster make-config` the configuration file that is produced for them will also use :file:`quickwiki.db`. In the ``[app:main]`` section: 
 
 .. code-block :: ini 
 
@@ -558,7 +554,7 @@ To edit the wiki page we need to get the content from the database without chang
             c.content = page.content
         return render('/pages/edit.mako')
 
-and then create the ``templates/edit.mako`` file: 
+and then create the :file:`templates/edit.mako` file: 
 
 .. code-block :: html+mako  
 
@@ -571,11 +567,11 @@ and then create the ``templates/edit.mako`` file:
       ${h.submit(value='Save changes', name='commit')}
     ${h.end_form()}
 
-.. note :: You may have noticed that we only set ``c.content`` if the page exists but that it is accessed in ``h.text_area`` even for pages that don't exist and yet it doesn't raise an ``AttributeError``. 
+.. note :: You may have noticed that we only set ``c.content`` if the page exists but that it is accessed in :func:`h.text_area` even for pages that don't exist and yet it doesn't raise an :class:`AttributeError`. 
 
 We are making use of the fact that the ``c`` object returns an empty string ``""`` for any attribute that is accessed which doesn't exist. This can be a very useful feature of the ``c`` object, but can catch you on occasions where you don't expect this behavior. It can be disabled by setting ``config['pylons.strict_c'] = True`` in your project's :file:`config/environment.py`. 
 
-We are making use of the ``h`` object to create our form and field objects. This saves a bit of manual HTML writing. The form submits to the ``save()`` action to save the new or updated content so let's write that next. 
+We are making use of the ``h`` object to create our form and field objects. This saves a bit of manual HTML writing. The form submits to the :meth:`save()` action to save the new or updated content so let's write that next. 
 
 :meth:`save` 
 --------------
@@ -600,7 +596,7 @@ Then add the :meth:`save` action:
         redirect_to('show_page', title=title)
 
 .. note :: 
-    ``request.POST`` is a MultiDict object: an ordered dictionary that may contain multiple values for each key. The MultiDict will always return one value for any existing key via the normal dict accessors ``request.POST[key]`` and ``request.POST.get(key)``. When multiple values are expected, use the ``request.POST.getall(key)`` method to return all values in a list. ``request.POST.getone(key)`` ensures one value for key was sent, raising a :class:`KeyError` when there are 0 or more than 1 values. 
+    ``request.POST`` is a MultiDict object: an ordered dictionary that may contain multiple values for each key. The MultiDict will always return one value for any existing key via the normal dict accessors ``request.POST[key]`` and :meth:`request.POST.get`. When multiple values are expected, use the :meth:`request.POST.getall` method to return all values in a list. :meth:`request.POST.getone` ensures one value for key was sent, raising a :class:`KeyError` when there are 0 or more than 1 values. 
 
 The :func:`@authenticate_form` decorator that appears immediately before the  :meth:`save` action checks the value of the hidden form field placed there by the :func:`secure_form` helper that we used in :file:`templates/edit.mako` to create the form. The hidden form field carries an authorization token for prevention of certain `Cross-site request forgery (CSRF) <http://en.wikipedia.org/wiki/Cross-site_request_forgery>`_ attacks.
 
@@ -668,7 +664,7 @@ And add the following to the :file:`public/quick.css` file:
 
 The ``%`` syntax is used for control structures in mako -- conditionals and loops. You must 'close' them with an 'end' tag as shown here. At this point we have a fully functioning wiki that lets you create and edit pages and can be installed and deployed by an end user with just a few simple commands. 
 
-Visit ``http://127.0.0.1:5000`` and have a play. 
+Visit http://127.0.0.1:5000 and have a play. 
 
 It would be nice to get a title list and to be able to delete pages, so that's what we'll do next! 
 
@@ -753,11 +749,11 @@ We need to edit :file:`templates/base.mako` to add a link to the title list in t
       | ${h.link_to('Title List', url('pages'))}
     </%def>
 
-The ``<%def name="footer(action">`` creates a Mako function for display logic. As you can see, the function builds the HTML for the footer, but doesn't display the 'Edit' link when you're on the 'Title List' page or already on an edit page. It also won't show a 'Title List' link when you're already on that page. The ``<% ... %>`` tags shown on the ``return`` statement are the final new piece of Mako syntax: they're used much like the ``${...}`` tags, but for arbitrary Python code that does not directly render HTML. Also, the double hash (``##``) denotes a single-line comment in Mako. 
+The ``<%def name="footer(action">`` creates a Mako function for display logic. As you can see, the function builds the HTML for the footer, but doesn't display the 'Edit' link when you're on the 'Title List' page or already on an edit page. It also won't show a 'Title List' link when you're already on that page. The ``<% ... %>`` tags shown on the :keyword:`return` statement are the final new piece of Mako syntax: they're used much like the ``${...}`` tags, but for arbitrary Python code that does not directly render HTML. Also, the double hash (``##``) denotes a single-line comment in Mako. 
 
 So the :func:`footer` function is called in place of our old 'static' footer markup. We pass it a value from ``pylons.routes_dict`` which holds the name of the action for the current request. The trailing `\\` character just tells Mako not to render an extra newline. 
 
-If you visit ``http://127.0.0.1:5000/pages`` you should see the full titles list and you should be able to visit each page. 
+If you visit http://127.0.0.1:5000/pages you should see the full titles list and you should be able to visit each page. 
 
 :meth:`delete` 
 ----------------
@@ -778,7 +774,7 @@ We need to add a :meth:`delete` action that deletes pages submitted from :file:`
             flash('Deleted %s.' % title)
         redirect_to('pages')
 
-Again we use the :func:`@authenticate_form` decorator along with :func:`secure_form` used in :file:`templates/index.mako`. We're expecting potentially multiple titles, so we use ``request.POST.getall(key)`` to return a list of titles. The titles are used to identify and load the :class:`Page` objects, which are then deleted.
+Again we use the :func:`@authenticate_form` decorator along with :func:`secure_form` used in :file:`templates/index.mako`. We're expecting potentially multiple titles, so we use :meth:`request.POST.getall` to return a list of titles. The titles are used to identify and load the :class:`Page` objects, which are then deleted.
 
 We use the SQL ``IN`` operator to match multiple titles in one query. We can do this via the more flexible :meth:`filter` method which can accept an :meth:`in_` clause created via the title column's attribute.
 
@@ -796,9 +792,9 @@ is equivalent to:
 
 After deleting the pages, the changes are committed, and only after successfully committing do we flash deletion messages. That way if there was a problem with the commit no flash messages are shown. Finally we redirect back to the index page, which re-renders the list of remaining titles.
 
-Visit ``http://127.0.0.1:5000/index`` and have a go at deleting some pages. You may need to go back to the FrontPage and create some more if you get carried away! 
+Visit http://127.0.0.1:5000/index and have a go at deleting some pages. You may need to go back to the FrontPage and create some more if you get carried away! 
 
-That's it! A working, production-ready wiki in 20 mins. You can visit ``http://127.0.0.1:5000/`` once more to admire your work. 
+That's it! A working, production-ready wiki in 20 mins. You can visit http://127.0.0.1:5000/ once more to admire your work. 
 
 Publishing the Finished Product 
 =============================== 
@@ -809,7 +805,7 @@ After all that hard work it would be good to distribute the finished package wou
 
     $ python setup.py bdist_egg 
 
-This will create an egg file in ``dist`` which contains everything anyone needs to run your program. They can install it with: 
+This will create an egg file in the :file:`dist` directory which contains everything anyone needs to run your program. They can install it with: 
 
 .. code-block :: bash 
 
@@ -817,7 +813,7 @@ This will create an egg file in ``dist`` which contains everything anyone needs 
 
 You should probably make eggs for each version of Python your users might require by running the above commands with both Python 2.4 and 2.5 to create both versions of the eggs. 
 
-If you want to register your project with PyPi at ``http://www.python.org/pypi`` you can run the command below. *Please only do this with your own projects though because QuickWiki has already been registered!* 
+If you want to register your project with PyPi at http://www.python.org/pypi you can run the command below. *Please only do this with your own projects though because QuickWiki has already been registered!* 
 
 .. code-block :: bash 
 
@@ -825,11 +821,11 @@ If you want to register your project with PyPi at ``http://www.python.org/pypi``
 
 .. warning:: The PyPi authentication is very weak and passwords are transmitted in plain text. Don't use any sign in details that you use for important applications as they could be easily intercepted. 
 
-You will be asked a number of questions and then the information you entered in ``setup.py`` will be used as a basis for the page that is created. 
+You will be asked a number of questions and then the information you entered in :file:`setup.py` will be used as a basis for the page that is created. 
 
-Now visit ``http://www.python.org/pypi`` to see the new index with your new package listed. 
+Now visit http://www.python.org/pypi to see the new index with your new package listed. 
 
-.. note :: A `CheeseShop Tutorial <http://wiki.python.org/moin/CheeseShopTutorial>`_ has been written and `full documentation on setup.py <http://docs.python.org/dist/dist.html>`_ is available from the Python website. You can even use `reStructuredText <http://docutils.sourceforge.net/rst.html>`_ in the ``description`` and ``long_description`` areas of ``setup.py`` to add formatting to the pages produced on PyPi (PyPi used to be called "the CheeseShop"). There is also `another tutorial here <http://www.python.org/~jeremy/weblog/030924.html>`_. 
+.. note :: A `CheeseShop Tutorial <http://wiki.python.org/moin/CheeseShopTutorial>`_ has been written and `full documentation on setup.py <http://docs.python.org/dist/dist.html>`_ is available from the Python website. You can even use `reStructuredText`_ in the ``description`` and ``long_description`` areas of :file:`setup.py` to add formatting to the pages produced on PyPi (PyPi used to be called "the CheeseShop"). There is also `another tutorial here <http://www.python.org/~jeremy/weblog/030924.html>`_. 
 
 Finally you can sign in to PyPi with the account details you used when you registered your application and upload the eggs you've created. If that seems too difficult you can even use this command which should be run for each version of Python supported to upload the eggs for you: 
 
@@ -837,7 +833,7 @@ Finally you can sign in to PyPi with the account details you used when you regis
 
     $ python setup.py bdist_egg upload 
 
-Before this will work you will need to create a :file:`.pypirc` file in your home directory containing your username and password so that the ``upload`` command knows who to sign in as. It should look similar to this: 
+Before this will work you will need to create a :file:`.pypirc` file in your home directory containing your username and password so that the :command:`upload` command knows who to sign in as. It should look similar to this: 
 
 .. code-block :: ini
 
@@ -845,15 +841,15 @@ Before this will work you will need to create a :file:`.pypirc` file in your hom
     username: james 
     password: password 
 
-.. note :: This works on windows too but you will need to set your ``HOME`` environment variable first. If your home directory is ``C:\Documents and Settings\James`` you would put your :file:`.pypirc` file in that directory and set your ``HOME`` environment variable with this command: 
+.. note :: This works on windows too but you will need to set your :envvar:`HOME` environment variable first. If your home directory is :file:`C:\Documents and Settings\James` you would put your :file:`.pypirc` file in that directory and set your :envvar:`HOME` environment variable with this command: 
 
 .. code-block :: bash 
 
     > SET HOME=C:\Documents and Settings\James 
 
-You can now use the ``python setup.py bdist_egg upload`` as normal. 
+You can now use the :command:`python setup.py bdist_egg upload` as normal. 
 
-Now that the application is on PyPi anyone can install it with the ``easy_install`` command exactly as we did right at the very start of this tutorial. 
+Now that the application is on PyPi anyone can install it with the :command:`easy_install` command exactly as we did right at the very start of this tutorial. 
 
 Security 
 ======== 
@@ -878,7 +874,10 @@ A big thanks to Ches Martin for updating this document and the QuickWiki project
 Todo 
 ==== 
 
-* Provide ``paster shell`` examples
+* Provide :command:`paster shell` examples
 * Incorporate testing into the tutorial
 * Explain Ches's :meth:`validate_title` method in the actual QuickWiki project
 * Provide snapshots of every file modified at each step, to help resolve mistakes
+
+.. _`SQLAlchemy`: http://www.sqlalchemy.org
+.. _`reStructuredText`: <http://docutils.sourceforge.net/rst.html>
