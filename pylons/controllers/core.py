@@ -101,6 +101,8 @@ class WSGIController(object):
                         setattr(c, name, kargs[name])
                     args[name] = kargs[name]
         if log_debug:
+            import sys
+            print >> sys.stderr, 'EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE'
             log.debug("Calling %r method with keyword args: **%r",
                       func.__name__, args)
         try:
