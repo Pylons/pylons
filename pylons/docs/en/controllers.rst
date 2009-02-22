@@ -184,8 +184,8 @@ otherwise a ``404 Not Found`` error will be returned.
 Using the REST Controller with a RESTful API
 ============================================
 
-Using the paster restcontroller temlate
----------------------------------------
+Using the paster restcontroller template
+----------------------------------------
 
 .. code-block:: bash
 
@@ -219,7 +219,7 @@ directories will be created for you:
 
 .. code-block:: bash
 
-    $ paster restcontroller admin/tracback admin/trackbacks
+    $ paster restcontroller admin/trackback admin/trackbacks
     Creating yourproj/controllers/admin
     Creating yourproj/yourproj/controllers/admin/trackbacks.py
     Creating yourproj/yourproj/tests/functional/test_admin_trackbacks.py
