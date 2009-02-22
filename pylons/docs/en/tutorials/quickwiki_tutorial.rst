@@ -253,22 +253,19 @@ Edit :file:`websetup.py`, used by the :command:`paster setup-app` command, to lo
     """Setup the QuickWiki application"""
     import logging
 
+    from quickwiki import model
     from quickwiki.config.environment import load_environment
-
+    from quickwiki.model import meta
+    
     log = logging.getLogger(__name__)
 
     def setup_app(command, conf, vars):
         """Place any commands to setup quickwiki here"""
         load_environment(conf.global_conf, conf.local_conf)
 
-        # import model now that the environment is loaded
-        from quickwiki import model
-        from quickwiki.model import meta
-        meta.metadata.bind = meta.engine
-
-        # Create the tables if they aren't there already
+        # Create the tables if they don't already exist
         log.info("Creating tables...")
-        meta.metadata.create_all(checkfirst=True)
+        meta.metadata.create_all(bind=meta.engine)
         log.info("Successfully set up.")
 
         log.info("Adding front page data...")
