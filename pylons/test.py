@@ -16,14 +16,12 @@ Alternate ini files may be specified if the app should be loaded using
 a different configuration.
 
 """
-import ConfigParser
 import os
 import sys
 
 import nose.plugins
 import pkg_resources
 from paste.deploy import loadapp
-from paste.script.util.logging_config import fileConfig
 
 import pylons
 from pylons.i18n.translation import _get_translator
@@ -72,16 +70,9 @@ class PylonsPlugin(nose.plugins.Plugin):
         path = os.getcwd()
         sys.path.insert(0, path)
         pkg_resources.working_set.add_entry(path)
-        #self.logging_file_config()
         self.app = pylonsapp = loadapp('config:' + self.config_file,
                                        relative_to=path)
 
         # Initialize a translator for tests that utilize i18n
         translator = _get_translator(pylons.config.get('lang'))
         pylons.translator._push_object(translator)
-
-    def logging_file_config(self):
-        parser = ConfigParser.ConfigParser()
-        parser.read([self.config_file])
-        if parser.has_section('loggers'):
-            fileConfig(self.config_file)

@@ -48,15 +48,6 @@ If you are interested in looking at the latest version of the QuickWiki source c
 
     $ hg clone http://www.knowledgetap.com/hg/QuickWiki 
 
-.. Note::
-
-    To run the QuickWiki checked out from the repository, you'll need to first run :command:`python setup.py egg_info` from the project's root directory. This will generate `Python Egg <http://peak.telecommunity.com/DevCenter/PythonEggs>`_ metadata required for the :command:`paster` command (among other things) in a :file:`QuickWiki.egg-info` directory.
-
-    .. code-block :: bash 
-
-        $ cd QuickWiki
-        $ python setup.py egg_info
-
 Developing QuickWiki 
 ==================== 
 
