@@ -437,7 +437,7 @@ This is because we never provided a translation for the string ``'World!'`` so
 the string itself is used. 
 
 Pylons also provides a mechanism for fallback languages, so that you can 
-specify other languages to be used if the word is ommitted from the main 
+specify other languages to be used if the word is omitted from the main 
 language's catalog. 
 
 In this example we choose ``fr`` as the main language but ``es`` as a fallback:
