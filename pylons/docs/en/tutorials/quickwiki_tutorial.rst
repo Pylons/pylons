@@ -116,11 +116,11 @@ We've defined a table called ``pages`` which has two columns, ``title`` (the pri
         pages_table = sa.Table('pages', meta.metadata, autoload=True
                                autoload_with_engine)
 
-    The ideal way to create autoloaded tables is within the :func:`init_model` function (lazily), so the database isn't accessed when we simply importing the :mod:`model` package. See `SQLAlchemy table reflection documentation <http://www.sqlalchemy.org/docs/05/metadata.html#reflecting-tables>`_ for more information.
+    The ideal way to create autoloaded tables is within the :func:`init_model` function (lazily), so the database isn't accessed when simply importing the :mod:`model` package. See `SQLAlchemy table reflection documentation <http://www.sqlalchemy.org/docs/05/metadata.html#reflecting-tables>`_ for more information.
 
-.. note :: A primary key is a unique ID for each row in a database table. In the example above we are using the page title as a natural primary key. Some people prefer to use integer primary keys for all tables, so-called surrogate primary keys. The author of this tutorial uses both methods in his own code and is not advocating one method over the other, it is important that you choose the best database structure for your application. See the Pylons Cookbook for `a quick general overview of relational databases <http://wiki.pylonshq.com/display/pylonscookbook/Relational+databases+for+people+in+a+hurry>`_ if you're not familiar with these concepts. 
+.. note :: A primary key is a unique ID for each row in a database table. In the example above we are using the page title as a natural primary key. Some prefer to integer primary keys for all tables, so-called surrogate primary keys. The author of this tutorial uses both methods in his own code and is not advocating one method over the other, what's important is to choose the best database structure for your application. See the Pylons Cookbook for `a quick general overview of relational databases <http://wiki.pylonshq.com/display/pylonscookbook/Relational+databases+for+people+in+a+hurry>`_ if you're not familiar with these concepts. 
 
-A core philosophy of ORMs is that tables and domain classes are different beasts. So next we'll create the Python class that will represent the pages of our wiki and map these domain objects to rows in the ``pages`` table using a mapper. In a more complex application, you could break out model classes into separate ``.py`` files in your :file:`model` directory, but for sake of simplicity in this case, we'll just stick to :file:`__init__.py`. 
+A core philosophy of ORMs is that tables and domain classes are different beasts. So next we'll create the Python class that represents the pages of our wiki, and map these domain objects to rows in the ``pages`` table via the :func:`sqlalchemy.orm.mapper` function. In a more complex application, you could break out model classes into separate ``.py`` files in your :file:`model` directory, but for sake of simplicity in this case, we'll just stick to :file:`__init__.py`. 
 
 Add this to the bottom of ``model/__init__.py``: 
 
@@ -139,14 +139,11 @@ Add this to the bottom of ``model/__init__.py``:
 
     orm.mapper(Page, pages_table) 
 
-``content=None`` defaults the value of the ``content`` attribute to :const:`None` when a new :class:`Page` object is created. The :class:`Page` object represents a row in the ``pages`` table, so ``self.content`` will be the value of the ``content`` column. 
+A :class:`Page` object represents a row in the ``pages`` table, so ``self.title`` and ``self.content`` will be the values of the ``title`` and ``content`` columns.
 
-.. note :: For those more familiar with SQLAlchemy 0.3: in SQLAlchemy versions 0.4 and 0.5 :func:`scoped_session` replaces the :func:`sessioncontext` extension and so :class:`Session.mapper` could be used here in place of
- :func:`orm.mapper` to get behavior similar to that achieved with :func:`assign_mapper`. This is considered to be an advanced topic, consult SQLAlchemy's documentation for more information.
+Looking ahead, our wiki could use a way of marking up the ``content`` field into HTML. Also, any 'WikiWords' (words made by joining together two or more capitalized words) should be converted to hyperlinks to wiki pages.
 
-Looking ahead, our wiki will need some formatting so we'll need to turn the ``content`` field into HTML. Any "WikiWords" (words made by joining together two or capitalized words) will also need to be converted into hyperlinks. 
-
-We can add a method to our :class:`Page` objects to create the formatted HTML with the WikiWords already converted to hyperlinks. Add the following at the top of the :file:`model/__init__.py` file: 
+We can use Python's `docutils <http://docutils.sourceforge.net/>`_ library to allow marking up ``content`` as `reStructuredText`_. So next we'll add a method to our :class:`Page` class that formats ``content`` as HTML and converts the WikiWords to hyperlinks. Add the following at the top of the :file:`model/__init__.py` file: 
 
 .. code-block :: python 
 
@@ -199,7 +196,7 @@ The :class:`Set` object provides us with only unique WikiWord names, so we don't
 
     Pylons uses a **Model View Controller** architecture and so the formatting of objects into HTML should properly be handled in the View, i.e. in a template. However in this example, converting `reStructuredText`_ into HTML in a template is inappropriate so we are treating the HTML representation of the content as part of the model. It also gives us the chance to demonstrate that SQLAlchemy domain classes are real Python classes that can have their own methods. 
 
-The :func:`link_to` and :func:`url` functions referenced in the controller code are respectively: a helper imported from the :mod:`webhelpers.html` module indirectly via :file:`lib/helpers.py`, and a utility function imported directly from the :mod:`pylons` module. They are utilities for creating links to specific controller actions. In this case we have decided that all WikiWords should link to the :meth:`index` action of the ``page`` controller which we will create later. However, we need to ensure that the :func:`link_to` function is made available as a helper by adding an import statement to :file:`lib/helpers.py`:
+The :func:`link_to` and :func:`url` functions referenced in the controller code are respectively: a helper imported from the :mod:`webhelpers.html` module indirectly via :file:`lib/helpers.py`, and a utility function imported directly from the :mod:`pylons` module. They are utilities for creating links to specific controller actions. In this case we have decided that all WikiWords should link to the :meth:`show` action of the ``pages`` controller which we'll create later. However, we need to ensure that the :func:`link_to` function is made available as a helper by adding an import statement to :file:`lib/helpers.py`:
 
 .. code-block :: python
 
@@ -282,7 +279,7 @@ Edit :file:`websetup.py`, used by the :command:`paster setup-app` command, to lo
         log.info("Successfully set up.")
 
 
-You can see that :file:`config/environment.py`'s :func:`load_environment` function is called (which calls the :file:`model/__init__.py`'s ':func:`init_model` ), so our engine is ready for binding and we can import the model. A SQLAlchemy :class:`MetaData` object -- which provides some utility methods for operating on database schema -- usually needs to be connected to an engine, so the line  
+You can see that :file:`config/environment.py`'s :func:`load_environment` function is called (which calls :file:`model/__init__.py`'s :func:`init_model` function), so our engine is ready for binding and we can import the model. A SQLAlchemy :class:`MetaData` object -- which provides some utility methods for operating on database schema -- usually needs to be connected to an engine, so the line  
 
 .. code-block :: python
 
