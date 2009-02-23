@@ -17,7 +17,8 @@ log = logging.getLogger(__name__)
 def beaker_cache(key="cache_default", expire="never", type=None,
                  query_args=False,
                  cache_headers=('content-type', 'content-length'),
-                 invalidate_on_startup=False, **b_kwargs):
+                 invalidate_on_startup=False, 
+                 cache_response=True, **b_kwargs):
     """Cache decorator utilizing Beaker. Caches action or other
     function that returns a pickle-able object as a result.
 
@@ -42,6 +43,13 @@ def beaker_cache(key="cache_default", expire="never", type=None,
     ``invalidate_on_startup``
         If True, the cache will be invalidated each time the application
         starts or is restarted.
+    ``cache_response``
+        Determines whether the response at the time beaker_cache is used
+        should be cached or not, defaults to True.
+        
+        .. note::
+            When cache_response is set to False, the cache_headers
+            argument is ignored as none of the response is cached.
 
     If cache_enabled is set to False in the .ini file, then cache is
     disabled globally.
@@ -107,11 +115,11 @@ def beaker_cache(key="cache_default", expire="never", type=None,
         response = my_cache.get_value(cache_key, createfunc=create_func,
                                       expiretime=cache_expire,
                                       starttime=starttime)
-        
-        glob_response = pylons.response
-        glob_response.headerlist = [header for header in response['headers']
-                                    if header[0].lower() in cache_headers]
-        glob_response.status = response['status']
+        if cache_response:
+            glob_response = pylons.response
+            glob_response.headerlist = [header for header in response['headers']
+                                        if header[0].lower() in cache_headers]
+            glob_response.status = response['status']
 
         return response['content']
     return decorator(wrapper)

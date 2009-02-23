@@ -2,7 +2,7 @@ import os
 import shutil
 import time
 
-from paste.fixture import TestApp
+from webtest import TestApp
 from paste.registry import RegistryManager
 
 from beaker.middleware import CacheMiddleware
@@ -27,7 +27,18 @@ class CacheController(WSGIController):
             return 'Counter=%s' % pylons.g.counter
         func = beaker_cache(key=None)(func)
         return func()
-
+    
+    def test_response_cache_func(self, use_cache_status=True):
+        pylons.response.status_int = 404
+        def func():
+            pylons.g.counter += 1
+            return 'Counter=%s' % pylons.g.counter
+        if use_cache_status:
+            func = beaker_cache(key=None)(func)
+        else:
+            func = beaker_cache(key=None, cache_response=False)(func)
+        return func()
+    
     def test_dbm_cache_decorator(self):
         pylons.g.counter += 1
         return 'Counter=%s' % pylons.g.counter
@@ -109,7 +120,7 @@ class TestCacheDecorator(TestWSGIController):
         self.get_response(action='test_invalidate_cache')
 
         response = self.get_response(action='test_default_cache_decorator')
-        assert 'text/html' in response.header_dict['content-type']
+        assert 'text/html' in response.headers['content-type']
         assert 'Counter=1' in response
 
         response = self.get_response(action='test_default_cache_decorator')
@@ -148,10 +159,19 @@ class TestCacheDecorator(TestWSGIController):
         assert 'Counter=9' in response
 
         response = self.get_response(action='test_default_cache_decorator_func')
-        assert 'text/html' in response.header_dict['content-type']
+        assert 'text/html' in response.headers['content-type']
         assert 'Counter=10' in response
         response = self.get_response(action='test_default_cache_decorator_func')
         assert 'Counter=10' in response
+        
+        response = self.get_response(action='test_response_cache_func', use_cache_status=True)
+        
+        assert 'Counter=10' in response
+        
+        response = self.get_response(action='test_response_cache_func', use_cache_status=False,
+                                     test_args=dict(status=404))
+        assert 'Counter=10' in response
+        
     
     def test_dbm_cache_decorator(self):
         sap.g.counter = 0
@@ -199,17 +219,17 @@ class TestCacheDecorator(TestWSGIController):
         
     def test_header_cache(self):
         response = self.get_response(action='test_header_cache')
-        assert response.header_dict['content-type'] == 'application/special'
-        assert response.header_dict['x-powered-by'] == 'pylons'
-        assert 'x-dont-include' not in response.header_dict
+        assert response.headers['content-type'] == 'application/special'
+        assert response.headers['x-powered-by'] == 'pylons'
+        assert 'x-dont-include' not in response.headers
         output = response.body
 
         time.sleep(1)
         response = self.get_response(action='test_header_cache')
         assert response.body == output
-        assert response.header_dict['content-type'] == 'application/special'
-        assert response.header_dict['x-powered-by'] == 'pylons'
-        assert 'x-dont-include' not in response.header_dict
+        assert response.headers['content-type'] == 'application/special'
+        assert response.headers['x-powered-by'] == 'pylons'
+        assert 'x-dont-include' not in response.headers
         
     def test_nocache(self):
         sap.g.counter = 0

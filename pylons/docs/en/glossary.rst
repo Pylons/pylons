@@ -141,6 +141,11 @@ Glossary
         Refers to the current request being processed. Available to import
         from :mod:`pylons` and is available for use in templates by the
         same name. See :class:`~pylons.controllers.util.Request`.
+    
+    response
+        Refers to the response to the current request. Available to import
+        from :mod:`pylons` and is available for use in template by the same
+        name. See :class:`~pylons.controllers.util.Response`.
 
     route
         Routes determine how the URL's are mapped to the controllers and which

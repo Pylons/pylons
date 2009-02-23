@@ -14,9 +14,9 @@ There are several ways to cache data under Pylons, depending on where the slowdo
 
 .. note:: the latter only helps if the entire page can be cached.
 
-* Controllers - The `cache` object is available in controllers and templates for use in caching anything in Python that can be pickled. 
+* Controllers - The `cache` object can be imported in controllers used for caching anything in Python that can be pickled.
 
-* Templates - The results of an entire rendered template can be cached using the `3 cache keyword arguments to the render calls <http://pylonshq.com/docs/class-pylons.templating.Buffet.html#render>`_. These render commands can also be used inside templates. 
+* Templates - The results of an entire rendered template can be cached using the `3 cache keyword arguments to the render calls <pylons.templating.render_mako>`_. These render commands can also be used inside templates. 
 
 * Mako/Myghty Templates - Built-in caching options are available for both `Mako <http://www.makotemplates.org/docs/caching.html>`_ and `Myghty <http://www.myghty.org/docs/cache.myt>`_ template engines. They allow fine-grained caching of only certain sections of the template as well as caching of the entire template. 
 
@@ -24,22 +24,29 @@ The two primary concepts to bear in mind when caching are i) caches have a *name
 
 In templates, the cache ``namespace`` will automatically be set to the name of the template being rendered. Nothing else is required for basic caching, unless the developer wishes to control for how long the template is cached and/or maintain caches of multiple versions of the template. 
 
-see also Stephen Pierzchala's `Caching for Performance <http://web.archive.org/web/20060424171425/http://www.webperformance.org/caching/caching_for_performance.pdf>`_ (stephen@pierzchala.com)
+.. seealso::
+    
+    Stephen Pierzchala's `Caching for Performance <http://web.archive.org/web/20060424171425/http://www.webperformance.org/caching/caching_for_performance.pdf>`_ (stephen@pierzchala.com)
 
 Using the Cache object 
 ---------------------- 
 
-Inside a controller, the `cache` object will be available for use. If an action 
-or block of code makes heavy use of resources or take a long time to complete, 
-it can be convenient to cache the result. The `cache` object can cache any 
-Python structure that can be `pickled <http://docs.python.org/lib/module-pickle.html>`_. 
+Inside the controller, the `cache` object needs to be imported before being
+used. If an action or block of code makes heavy use of resources or take a
+long time to complete, it can be convenient to cache the result. The `cache`
+object can cache any Python structure that can be `pickled <http://docs.python.org/lib/module-pickle.html>`_. 
 
 Consider an action where it is desirable to cache some code that does a 
 time-consuming or resource-intensive lookup and returns an object that can be 
 pickled (list, dict, tuple, etc.):
 
 .. code-block:: python
-
+    
+    # Add to existing imports
+    from pylons import cache
+    
+    
+    # Under the controller class
     def some_action(self, day): 
         # hypothetical action that uses a 'day' variable as its key 
 
@@ -49,14 +56,14 @@ pickled (list, dict, tuple, etc.):
 
         # Get a cache for a specific namespace, you can name it whatever 
         # you want, in this case its 'my_function' 
-        mycache = cache.get_cache('my_function') 
+        mycache = cache.get_cache('my_function', type="memory") 
 
         # Get the value, this will create the cache copy the first time 
         # and any time it expires (in seconds, so 3600 = one hour) 
         c.myvalue = mycache.get_value(key=day, createfunc=expensive_function, 
-                                      type="memory", expiretime=3600)
+                                      expiretime=3600)
 
-        return render('/some/template.myt') 
+        return render('/some/template.myt')
 
 The `createfunc` option requires a callable object or a function which is then called by the cache whenever a value for the provided key is not in the cache, or has expired in the cache. 
 
@@ -81,8 +88,9 @@ Using Cache keywords to `render`
 
 .. warning:: Needs to be extended to cover the specific render_* calls introduced in Pylons 0.9.7
 
-All `render` commmands have caching functionality built in. To use it, merely
-add the appropriate cache keyword to the `render` call. 
+All :func:`render <pylons.templating.render_mako` commmands have caching
+functionality built in. To use it, merely add the appropriate cache keyword
+to the render call. 
 
 .. code-block:: python 
 
@@ -109,13 +117,10 @@ add the appropriate cache keyword to the `render` call.
 Using the Cache Decorator 
 -------------------------
 
-Pylons also provides the `beaker_cache 
-<http://pylonshq.com/docs/module-pylons.decorators.cache.html#beaker_cache>`_ 
+Pylons also provides the :func:`~pylons.decorators.cache.beaker_cache`
 decorator for caching in `pylons.cache` the results of a completed function call (memoizing).
 
-.. warning:: ambiguous with respect to 'as does the render function'
-
-The cache decorator takes the same cache arguments (minus their `cache_` prefix), as does the `render` function. 
+The cache decorator takes the same cache arguments (minus their `cache_` prefix), as the `render` function does. 
 
 .. code-block:: python 
 
@@ -136,11 +141,34 @@ The cache decorator takes the same cache arguments (minus their `cache_` prefix)
             c.data = expensive_call(id) 
             return render('/show.myt') 
 
-By default the decorator uses a composite of all of the decorated function's arguments as the cache key. It can alternatively use a composite of the `request.GET` query args as the cache key when the `query_args` option is enabled. 
+By default the decorator uses a composite of all of the decorated function's arguments as the cache key. It can alternatively use a composite of the `request.GET` query args as the cache key when the `query_args` option is enabled.
 
-.. warning:: ambiguous - are customizations in addition or in place of the above key-using options?
+The cache key can be further customized via the `key` argument.
 
-The cache key can be further customized via the `key` argument. 
+
+Caching Arbitrary Functions
+---------------------------
+
+Arbitrary functions can use the :func:`~pylons.decorators.cache.beaker_cache`
+decorator, but should include an additional option. Since the decorator caches
+the :term:`response` object, its unlikely the status code and headers for
+non-controller methods should be cached. To avoid caching that data, the
+cache_response keyword argument should be set to false.
+
+.. code-block:: python
+    
+    from pylons.decorators.cache import beaker_cache
+    
+    @beaker_cache(expire=600, cache_response=False)
+    def generate_data():
+        # do expensive data generation
+        return data
+
+.. warning::
+    
+    When caching arbitrary functions, the ``query_args`` argument should not
+    be used since the result of arbitrary functions shouldn't depend on
+    the request parameters.
 
 ETag Caching 
 ------------
@@ -152,14 +180,15 @@ of requesting the application to send a fresh copy.
 Because the ETag cache relies on sending headers to the browser, it works in a 
 slightly different manner to the other caching mechanisms described above. 
 
-The :func:`etag_cache` function will set the proper HTTP headers if
+The :func:`~pylons.controllers.util.etag_cache` function will set the proper HTTP headers if
 the browser doesn't yet have a copy of the page. Otherwise, a 304 HTTP
 Exception will be thrown that is then caught by Paste middleware and
 turned into a proper 304 response to the browser. This will cause the
 browser to use its own locally-cached copy.
 
-:func:`etag_cache` returns `pylons.response` for legacy purposes
-(`pylons.response` should be used directly instead).
+:func:`~pylons.controllers.util.etag_cache` returns 
+:class:`~pylons.controllers.util.Response` for legacy purposes
+(:class:`~pylons.controllers.util.Response` should be used directly instead).
 
 ETag-based caching requires a single key which is sent in the ETag HTTP header
 back to the browser. The `RFC specification for HTTP headers <http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html>`_ indicates that an 

@@ -39,7 +39,7 @@ Typically, no significant processing occurs in the view; it serves only as a mea
 Templates
 *********
 
-Template rendering engines are a popular choice for handling the task of view presentation. In Pylons this functionality is typically implemented using a template rendering engine.
+Template rendering engines are a popular choice for handling the task of view presentation.
 
 To return a processed template, it must be rendered and returned by the controller::
     

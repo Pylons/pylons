@@ -35,3 +35,10 @@ def test_retains_response():
     res = app.get('/', status=404)
     assert 'pylons.original_response' in res.environ
     assert 'No page found!' in res.environ['pylons.original_response'].body
+
+def test_retains_request():
+    app = TestApp(StatusCodeRedirect(simple_exception_app))
+    res = app.get('/fredrick', status=404)
+    assert 'pylons.original_request' in res.environ
+    assert '/fredrick' == res.environ['pylons.original_request'].path_info
+    

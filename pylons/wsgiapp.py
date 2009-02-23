@@ -190,9 +190,13 @@ class PylonsApp(object):
         if self.log_debug:
             log.debug("Setting up Pylons stacked object globals")
         
+        
         # Setup the basic pylons global objects
-        req = Request(environ)
-        req.language = self.request_options['language']
+        req_options = self.request_options
+        req = Request(environ, charset=req_options['charset'],
+                      unicode_errors=req_options['errors'],
+                      decode_param_names=req_options['decode_param_names'])
+        req.language = req_options['language']
         
         response = Response(
             content_type=self.response_options['content_type'],

@@ -51,7 +51,7 @@ multiple levels in the same program:
 
 The first two levels are *database neutral*, meaning they hide the differences between the databases' SQL dialects. Changing to a different database is merely a matter of supplying a new connection URL. Of course there are limits to this, but SQLAlchemy is 90% easier than rewriting all your SQL queries. 
 
-The `SQLAlchemy manual <http://www.sqlalchemy.org/docs/>`_ should be your next stop for questions not covered here. It's very well written and thorough.
+The `SQLAlchemy manual`_ should be your next stop for questions not covered here. It's very well written and thorough.
 
 SQLAlchemy add-ons
 ^^^^^^^^^^^^^^^^^^
@@ -71,6 +71,8 @@ Non-SQLAlchemy libraries
 Most of these expose only the object-relational mapper; their SQL builder and connection pool are not meant to be used directly.
 
 `Storm <http://storm.canonical.com>`_
+
+`Geniusql <http://www.aminus.net/geniusql>`_
 
 DB-API
 ++++++
@@ -155,24 +157,28 @@ your table definitions in *__init__.py* for simplicity.  If your
 application has many tables or multiple databases, you may prefer to split them
 up into multiple modules within the model.
 
-As of the Pylons 0.9.7 release, SQLAlchemy 0.4.8 is the current production
-version, while SQLAlchemy 0.5rc4 is the almost-released new version.  The
-default Pylons model was written for SQLAlchemy 0.4, but also works on 0.5 with
-a slight change to the *sessionmaker* arguments.  
 Here's a sample *model/__init__.py* with a "persons" table, which is based on
 the default model with the comments removed:
 
 .. code-block:: python
 
+    """The application's model objects"""
     import sqlalchemy as sa
-    import sqlalchemy.orm as orm
+    from sqlalchemy import orm
 
     from myapp.model import meta
 
     def init_model(engine):
-        sm = orm.sessionmaker(transactional=True, autoflush=True, bind=engine)
-        meta.Session = orm.scoped_session(sm)
+        """Call me before using any of the tables or classes in the model"""
+        ## Reflected tables must be defined and mapped here
+        #global reflected_table
+        #reflected_table = sa.Table("Reflected", meta.metadata, autoload=True,
+        #                           autoload_with=engine)
+        #orm.mapper(Reflected, reflected_table)
+        #
+        meta.Session.configure(bind=engine)
         meta.engine = engine
+
 
     t_persons = sa.Table("persons", meta.metadata,
         sa.Column("id", sa.types.Integer, primary_key=True),
@@ -184,12 +190,6 @@ the default model with the comments removed:
         pass
 
     orm.mapper(Person, t_persons)
-
-SQLAlchemy 0.5 users should change the *sessionmaker* line to this:
-
-.. code-block:: python
-
-    sm = orm.sessionmaker(bind=engine)
 
 This model has one table, "persons", assigned to the variable ``t_persons``.
 ``Person`` is an ORM class which is tied to the table via the mapper.
@@ -204,21 +204,25 @@ database.)  Here's the second example with reflection:
 
 .. code-block:: python
 
+    """The application's model objects"""
     import sqlalchemy as sa
-    import sqlalchemy.orm as orm
+    from sqlalchemy import orm
 
     from myapp.model import meta
 
     def init_model(engine):
+        """Call me before using any of the tables or classes in the model"""
+        # Reflected tables must be defined and mapped here
         global t_persons
+        t_persons = sa.Table("persons", meta.metadata, autoload=True,
+                             autoload_with=engine)
+        orm.mapper(Person, t_persons)
 
-        sm = orm.sessionmaker(transactional=True, autoflush=True, bind=engine)
-        meta.Session = orm.scoped_session(sm)
+        meta.Session.configure(bind=engine)
         meta.engine = engine
 
-        t_persons = sa.Table(meta.metadata, autoload=True, autoload_with=engine)
 
-        orm.mapper(Person, t_persons)
+    t_persons = None
 
     class Person(object):
         pass
@@ -235,18 +239,20 @@ the ORM class in one step:
 
 .. code-block:: python
 
+    """The application's model objects"""
     import sqlalchemy as sa
-    import sqlalchemy.orm as orm
-    import sqlalchemy.ext.declarative as declarative
+    from sqlalchemy import orm
+    from sqlalchemy.ext.declarative import declarative_base
 
     from myapp.model import meta
 
     _Base = declarative_base()
 
     def init_model(engine):
-        sm = orm.sessionmaker(bind=engine)
-        meta.Session = orm.scoped_session(sm)
+        """Call me before using any of the tables or classes in the model"""
+        meta.Session.configure(bind=engine)
         meta.engine = engine
+
 
     class Person(_Base):
         __tablename__ = "persons"
@@ -255,14 +261,11 @@ the ORM class in one step:
         name = sa.Column(sa.types.String(100))
         email = sa.Column(sa.types.String(100))
 
-A full summary of changes in SQLAlchemy 0.5 and upgrade instructions is at
-http://www.sqlalchemy.org/trac/wiki/05Migration .
-
 Relation example 
 ^^^^^^^^^^^^^^^^
 
 
-Here's an example of a `Person` and an `Address` class with a many:many relationship on `people.my_addresses`. See `Relational Databases for People in a Hurry <http://wiki.pylonshq.com/display/pylonscookbook/Relational+databases+for+people+in+a+hurry>`_ and the SQLAlchemy manual for details. 
+Here's an example of a `Person` and an `Address` class with a many:many relationship on `people.my_addresses`. See `Relational Databases for People in a Hurry <http://wiki.pylonshq.com/display/pylonscookbook/Relational+databases+for+people+in+a+hurry>`_ and the `SQLAlchemy manual`_ for details. 
 
 .. code-block:: python
 
@@ -295,12 +298,44 @@ Here's an example of a `Person` and an `Address` class with a many:many relation
         }) 
 
 
+Using SQLAlchemy's SQL Layer
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+SQLAlchemy's lower level SQL expressions can be used along with your ORM
+models, and organizing them as class methods can be an effective way to keep
+the domain logic separate, and write efficient queries that return subsets
+of data that don't map cleanly to the ORM.
+
+Consider the case that you want to get all the unique addresses from the
+relation example above. The following method in the Address class can make
+it easy:
+
+.. code-block:: python
+    
+    # Additional imports
+    from sqlalchemy import select, func
+    
+    from myapp.model.meta import Session
+    
+    
+    class Address(object):
+        @classmethod
+        def unique_addresses(cls):
+            """Query the db for distinct addresses, return them as a list"""
+            query = select([func.distinct(t_addresses.c.address).label('address')],
+                           from_obj=[t_addresses])
+            return [row['address'] for row in Session.execute(query).fetchall()]
+
+.. seealso::
+    
+    SQLAlchemy's `SQL Expression Language Tutorial <http://www.sqlalchemy.org/docs/05/sqlexpression.html>`_
+
 Using the model standalone 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 You now have everything necessary to use the model in a standalone script such as a cron job, or to test it interactively. You just need to create a SQLAlchemy engine and connect it to the model. This example uses a database "test.sqlite" in the current directory: 
 
-.. code-block:: python
+.. code-block:: pycon
 
     % python 
     Python 2.5.1 (r251:54863, Oct 5 2007, 13:36:32) 
@@ -311,8 +346,8 @@ You now have everything necessary to use the model in a standalone script such a
     >>> from myapp import model 
     >>> model.init_model(engine) 
 
-Now you can use the tables, classes, and Session as described in the SQLAlchemy
-manual.  For example:
+Now you can use the tables, classes, and Session as described in the
+`SQLAlchemy manual`_.  For example:
 
 .. code-block:: python
 
@@ -340,12 +375,12 @@ manual.  For example:
     a = model.Person()
     a.name = "Aaa"
     a.email = "aaa@example.com"
-    meta.Session.save(a)
+    meta.Session.add(a)
 
     b = model.Person()
     b.name = "Bbb"
     b.email = "bbb@example.com"
-    meta.Session.save(b)
+    meta.Session.add(b)
 
     meta.Session.commit()
 
@@ -389,7 +424,7 @@ Enter your username, password, host (localhost if it is on your machine), port n
 
 It's important to set "pool_recycle" for MySQL to prevent "MySQL server has gone away" errors. This is because MySQL automatically closes idle database connections without informing the application. Setting the connection lifetime to 3600 seconds (1 hour) ensures that the connections will be expired and recreated before MySQL notices they're idle. 
 
-Don't be tempted to use the ".echo" option to enable SQL logging because it may cause duplicate log output. Instead see the "Logging" section below to integrate MySQL logging into Paste's logging system. 
+Don't be tempted to use the ".echo" option to enable SQL logging because it may cause duplicate log output. Instead see the `Logging`_ section below to integrate MySQL logging into Paste's logging system. 
 
 For PostgreSQL 
 ^^^^^^^^^^^^^^
@@ -428,14 +463,16 @@ Controller
 ----------
 
 
-Add the following to the top of *myapp/lib/base.py* (the base controller): 
+The paster create SQLAlchemy option adds the following to the top of
+*myapp/lib/base.py* (the base controller):
 
 .. code-block:: python
 
     from myapp.model import meta 
 
 
-And change the `.\_\_call\_\_` method to: 
+and also changes the `.\_\_call\_\_` method to: 
+
 .. code-block:: python
 
     def __call__(self, environ, start_response): 
@@ -461,7 +498,7 @@ To actually create the tables in the database, you call the metadata's `.create_
     meta.metadata.create_all(bind=meta.engine) 
     log.info("Successfully setup") 
 
-Or for SQLAlchemy 0.5 with the Declarative syntax:
+Or for the new SQLAlchemy 0.5 Declarative syntax:
 
 .. code-block:: python
 
@@ -476,7 +513,7 @@ Then run the following on the command line:
 
 .. code-block:: bash
 
-    paster setup-app development.ini 
+    $ paster setup-app development.ini 
 
 
 Data queries and modifications
@@ -493,7 +530,7 @@ Here's how to enter new data into the database:
 
     mr_jones = Person() 
     mr_jones.name = 'Mr Jones' 
-    meta.Session.save(mr_jones) 
+    meta.Session.add(mr_jones) 
     meta.Session.commit() 
 
 
@@ -647,7 +684,7 @@ However, SQLAlchemy supports a shortcut for the above operation. Configure the m
 
     orm.mapper(Address, t_addresses) 
     orm.mapper(Person, t_people, properties = { 
-    'my_addresses' : orm.relation(
+    'my_addresses': orm.relation(
             Address, secondary=t_addresses_people, cascade="all,delete-orphan"), 
     }) 
 
@@ -701,7 +738,7 @@ Further reading
 ^^^^^^^^^^^^^^^
 
 
-The Query object has many other features, including filtering on conditions, ordering the results, grouping, etc. These are excellently described in the SQLAlchemy manual. See especially the `Data Mapping <http://www.sqlalchemy.org/docs/datamapping.html>`_ and `Session / Unit of Work <http://www.sqlalchemy.org/docs/unitofwork.html>`_ chapters. 
+The Query object has many other features, including filtering on conditions, ordering the results, grouping, etc. These are excellently described in the `SQLAlchemy manual`_. See especially the `Data Mapping <http://www.sqlalchemy.org/docs/datamapping.html>`_ and `Session / Unit of Work <http://www.sqlalchemy.org/docs/unitofwork.html>`_ chapters. 
 
 Testing Your Models
 -------------------
@@ -715,7 +752,8 @@ Normal model usage works fine in model tests, however to use the metadata you mu
     from myapp import model 
     from myapp.model import meta 
 
-    class TestModels(TestController): 
+    class TestModels(TestController):
+
         def setUp(self): 
             meta.Session.remove() 
             meta.metadata.create_all(meta.engine) 
@@ -760,8 +798,7 @@ To bind different tables to different databases, but always with a particular ta
 .. code-block:: python
 
     binds={"table1": engine1, "table2": engine2} 
-    Session = scoped_session(sessionmaker(
-                    transactional=True, autoflush=True, binds=binds) 
+    Session = scoped_session(sessionmaker(binds=binds))
 
 
 To choose the bindings on a per-request basis, skip the sessionmaker bind(s) argument, and instead put this in your base controller's `\_\_call\_\_` method before the superclass call, or directly in a specific action method: 
@@ -783,9 +820,9 @@ It's also possible to bind a metadata to an engine using the `MetaData(engine)` 
 
 Don't confuse SQLAlchemy sessions and Pylons sessions; they're two different things! The `session` object used in controllers (`pylons.session`) is an industry standard used in web applications to maintain state between web requests by the same user. SQLAlchemy's session is an object that synchronizes ORM objects in memory with their corresponding records in the database. 
 
-The `Session` variable in this chapter is _not_ a SQLAlchemy session object; it's a "contextual session" class. Calling it returns the (new or existing) session object appropriate for this web request, taking into account threading and middleware issues. Calling its class methods (`Session.commit()`, `Session.query(...)`, etc) implicitly calls the corresponding method on the appropriate session. You can normally just call the `Session` class methods and ignore the internal session objects entirely. See "Contextual/Thread-local Sessions" in the SQLAlchemy manual for more information. This is equivalent to SQLAlchemy 0.3's `SessionContext` but with a different API. 
+The `Session` variable in this chapter is _not_ a SQLAlchemy session object; it's a "contextual session" class. Calling it returns the (new or existing) session object appropriate for this web request, taking into account threading and middleware issues. Calling its class methods (`Session.commit()`, `Session.query(...)`, etc) implicitly calls the corresponding method on the appropriate session. You can normally just call the `Session` class methods and ignore the internal session objects entirely. See "Contextual/Thread-local Sessions" in the `SQLAlchemy manual`_ for more information. This is equivalent to SQLAlchemy 0.3's `SessionContext` but with a different API. 
 
-"Transactional" sessions are a new feature in SQLAlchemy 0.4; this is why we're using `Session.commit()` instead of `Session.flush()`. The `transactional` and `autoflush` args to `sessionmaker` enable this, and should normally be used together. 
+"Transactional" sessions are a new feature in SQLAlchemy 0.4; this is why we're using `Session.commit()` instead of `Session.flush()`. The `autocommit=False` (`transactional=True` in SQLALchemy 0.4) and `autoflush=True` args (which are the defaults) to `sessionmaker` enable this, and should normally be used together. 
 
 Fancy classes
 -------------
@@ -796,10 +833,14 @@ Here's an ORM class with some extra features:
 .. code-block:: python
 
     class Person(object): 
+
         def __init__(self, firstname, lastname, sex): 
-            if not firstname: raise ValueError("arg 'firstname' cannot be blank") 
-            if not lastname: raise ValueError("arg 'lastname' cannot be blank") 
-            if sex not in ["M", "F"]: raise ValueError("sex must be 'M' or 'F'") 
+            if not firstname:
+                raise ValueError("arg 'firstname' cannot be blank") 
+            if not lastname:
+                raise ValueError("arg 'lastname' cannot be blank") 
+            if sex not in ["M", "F"]:
+                raise ValueError("sex must be 'M' or 'F'") 
             self.firstname = firstname 
             self.lastname = lastname 
             self.sex = sex 
@@ -815,7 +856,7 @@ Here's an ORM class with some extra features:
             return "%s %s" % (self.firstname, self.lastname) 
 
         @classmethod 
-        def all(class_, order=None, sex=None): 
+        def all(cls, order=None, sex=None): 
             """Return a Query of all Persons. The caller can iterate this,
             do q.count(), add additional conditions, etc. 
             """ 
@@ -866,7 +907,7 @@ Then modify the "[loggers]" section to enable your new logger:
 
 To log the results along with the SQL statements, set the level to DEBUG. This can cause a lot of output! To stop logging the SQL, set the level to WARN or ERROR. 
 
-SQLAlchemy has several other loggers you can configure in the same way. "sqlalchemy.pool" level INFO tells when connections are checked out from the engine's connection pool and when they're returned. "sqlalchemy.orm" and buddies log various ORM operations. See "Configuring Logging" in the SQLAlchemy manual. 
+SQLAlchemy has several other loggers you can configure in the same way. "sqlalchemy.pool" level INFO tells when connections are checked out from the engine's connection pool and when they're returned. "sqlalchemy.orm" and buddies log various ORM operations. See "Configuring Logging" in the `SQLAlchemy manual`_. 
 
 Multiple application instances
 ------------------------------
@@ -885,7 +926,9 @@ If you're running multiple instances of the _same_ Pylons application in the sam
         from pylons import config 
         return "Pylons|%s|%s" % (thread.get_ident(), config._current_obj()) 
 
-    Session = scoped_session(sessionmaker(...), pylons_scope) 
+    Session = scoped_session(sessionmaker(), pylons_scope) 
 
 
 If you're affected by this, or think you might be, please bring it up on the pylons-discuss mailing list. We need feedback from actual users in this situation to verify that our advice is correct. 
+
+.. _`SQLAlchemy manual`: http://www.sqlalchemy.org/docs/

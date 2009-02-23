@@ -10,7 +10,7 @@ from paste.recursive import RecursiveMiddleware
 from paste.urlparser import StaticURLParser
 from weberror.evalexception import EvalException
 from weberror.errormiddleware import ErrorMiddleware
-from webob import Response
+from webob import Request, Response
 from webhelpers.html import literal
 
 import pylons
@@ -204,6 +204,7 @@ class StatusCodeRedirect(object):
             # Create a response object
             environ['pylons.original_response'] = Response(
                 status=status, headerlist=headers, app_iter=app_iter)
+            environ['pylons.original_request'] = Request(environ)
             
             # Create a new environ to avoid touching the original request data
             new_environ = environ.copy()

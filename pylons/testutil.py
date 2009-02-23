@@ -8,6 +8,7 @@ functionality.
 import gettext
 
 import pylons
+from pylons.configuration import request_defaults, response_defaults
 from pylons.controllers.util import Request, Response
 from pylons.util import ContextObj, PylonsContext
 
@@ -56,14 +57,22 @@ class SetupCacheGlobal(object):
         registry.register(pylons.translator, translator)
 
         # Update the environ
+        req = Request(environ, charset=request_defaults['charset'],
+                      unicode_errors=request_defaults['errors'],
+                      decode_param_names=request_defaults['decode_param_names'])        
+        req.language = request_defaults['language']
+        
+        response = Response(
+            content_type=response_defaults['content_type'],
+            charset=response_defaults['charset'])
+        response.headers.update(response_defaults['headers'])
+        
         environ.update(self.environ)
         py_obj.config = pylons.config._current_obj()
-        py_obj.request = req = Request(environ)
-        py_obj.response = resp = Response()
+        py_obj.request = req
+        py_obj.response = response
         py_obj.c = ContextObj()
         environ['pylons.pylons'] = py_obj
         registry.register(pylons.request, req)
-        registry.register(pylons.response, resp)
-        resp.content_type = 'text/html'
-        resp.charset = 'utf-8'
+        registry.register(pylons.response, response)
         return self.app(environ, start_response)

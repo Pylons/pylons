@@ -45,11 +45,7 @@ class Request(WebObRequest):
     adds defaults, along with several methods for backwards 
     compatibility with paste.wsgiwrappers.WSGIRequest.
     
-    """
-    charset = 'utf-8'
-    unicode_errors = 'replace'
-    language = 'en-us'
-    
+    """    
     def determine_browser_charset(self):
         """Legacy method to return the
         :attr:`webob.Request.accept_charset`"""
@@ -93,8 +89,6 @@ class Response(WebObResponse):
     backwards compatibility with paste.wsgiwrappers.WSGIResponse.
     
     """
-    default_content_type = 'text/html'
-    errors = 'strict'
     content = WebObResponse.body
     
     def determine_charset(self):
