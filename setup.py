@@ -7,7 +7,7 @@ except ImportError:
     use_setuptools()
     from setuptools import setup, find_packages
 
-version = '0.10'
+version = '1.0'
 
 tests_require = ['nose']
 if not sys.platform.startswith('java'):

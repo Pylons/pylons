@@ -1,6 +1,9 @@
 Pylons Changelog
 ================
 
+1.0 (**tip**)
+
+
 0.9.7 (February 23, 2009)
 * WARNING: A new option is available to determine whether or not an actions
   arguments should be automatically attached to 'c'. To turn off this implicit
