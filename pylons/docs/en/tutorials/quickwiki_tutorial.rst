@@ -212,7 +212,7 @@ Since we have used docutils and SQLAlchemy, both third party packages, we need t
 .. code-block :: python 
 
     install_requires=[
-        "Pylons>=0.9.7dev",
+        "Pylons>=0.9.7",
         "SQLAlchemy>=0.5",
         "docutils==0.4",
     ],
