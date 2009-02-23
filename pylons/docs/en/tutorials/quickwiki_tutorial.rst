@@ -50,12 +50,12 @@ If you are interested in looking at the latest version of the QuickWiki source c
 
 .. Note::
 
-    To run the QuickWiki checked out from the repository, you'll need to first run :command:`python setup.py egg_info` from the project's root directory. This will generate `Python Egg <http://peak.telecommunity.com/DevCenter/PythonEggs>`_ metadata required for the :command:`paster` command (among other things) in a :file:`QuickWiki.egg-info` directory.
+    To run the QuickWiki checked out from the repository, you'll need to first run :command:`python setup.py develop` from the project's root directory. This will install its dependencies and generate `Python Egg <http://peak.telecommunity.com/DevCenter/PythonEggs>`_ metadata in a :file:`QuickWiki.egg-info` directory. The latter is required for the :command:`paster` command (among other things) .
 
     .. code-block :: bash 
 
         $ cd QuickWiki
-        $ python setup.py egg_info
+        $ python setup.py develop
 
 Developing QuickWiki 
 ==================== 
