@@ -12,10 +12,7 @@ class TestSample2Controller(TestController):
     
     def test_genshi_default(self):
         self._test_genshi_default('testdefault')
-        
-    def test_genshi_default_leagcy(self):
-        self._test_genshi_default('testdefault_legacy')
-
+    
     def _test_genshi_default(self, action):
         response = self.app.get(url(controller='sample', action=action))
         assert 'Hello from Genshi' in response
