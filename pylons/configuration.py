@@ -119,34 +119,6 @@ class PylonsConfig(DispatchingConfig):
         'buffet.template_options': {},
     }
 
-    def __getattr__(self, name):
-        # Backwards compatibility
-        if name == 'Config':
-            class FakeConfig(object):
-                def __init__(this, *args, **kwargs):
-                    self.load_environment(*args, **kwargs)
-                def __getattr__(this, name):
-                    return getattr(self, name)
-                def __setattr__(this, name, value):
-                    setattr(self, name, value)
-            return FakeConfig
-        else:
-            conf_dict = self.current_conf()
-
-            # Backwards compat for when the option is now in the dict, 
-            # and access was attempted via attribute
-            for prefix in ('', 'pylons.', 'buffet.', 'routes.'):
-                full_name = prefix + name
-                if full_name in conf_dict:
-                    warnings.warn(pylons.legacy.config_attr_moved % \
-                                   (name, full_name), DeprecationWarning, 3)
-                    return conf_dict[full_name]
-            if name == 'request_defaults':
-                return request_defaults
-            elif name == 'response_defaults':
-                return response_defaults
-            return getattr(conf_dict, name)
-
     def init_app(self, global_conf, app_conf, package=None, paths=None):
         """Initialize configuration for the application
         
