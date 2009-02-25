@@ -64,6 +64,11 @@ def can_import(name):
     except ImportError:
         return False
 
+def create_module_name(name, directory):
+    """Construct the python module name from the given name and directory"""
+    return '%(package)s.%(module)s' % dict(
+        package=directory.replace(os.path.extsep, '.'),
+        module=name)
 
 def is_minimal_template(package, fail_fast=False):
     """Determine if the specified Pylons project (package) uses the
@@ -202,7 +207,9 @@ class ControllerCommand(Command):
             if not fullname.startswith(os.sep):
                 fullname = os.sep + fullname
             testname = fullname.replace(os.sep, '_')[1:]
-            check_controller_existance(base_package, name)
+            
+            module_name = create_module_name(name, directory)
+            check_controller_existance(base_package, module_name)
             
             file_op.template_vars.update(
                 {'name': controller_name,
@@ -282,6 +289,7 @@ class RestControllerCommand(Command):
                     file_op.parse_path_name_args(self.args[0])
                 pluralname, pluraldirectory = \
                     file_op.parse_path_name_args(self.args[1])
+
             except:
                 raise BadCommand('No egg_info directory was found')
 
@@ -306,7 +314,9 @@ class RestControllerCommand(Command):
             if defines_render(base_package):
                 importstatement += ', render'
             
-            check_controller_existance(base_package, name)
+            
+            module_name = create_module_name(pluralname, pluraldirectory)
+            check_controller_existance(base_package, module_name)
             
             # Setup the controller
             fullname = os.path.join(pluraldirectory, pluralname)
@@ -324,8 +334,8 @@ class RestControllerCommand(Command):
             if nameprefix:
                 controller_c = ", controller='%s', \n\t" % \
                     '/'.join([pluraldirectory, pluralname])
-                controller_c += "path_prefix='/%s', name_prefix='%s_'" % \
-                    (pluraldirectory, pluraldirectory)
+                controller_c += "path_prefix='/%s', name_prefix='%s'" % \
+                    (pluraldirectory, nameprefix)
             command = "map.resource('%s', '%s'%s)\n" % \
                 (singularname, pluralname, controller_c)
 
