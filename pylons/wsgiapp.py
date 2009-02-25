@@ -14,7 +14,6 @@ from routes import request_config
 from webob.exc import HTTPFound, HTTPNotFound
 
 import pylons
-import pylons.legacy
 import pylons.templating
 from pylons.controllers.util import Request, Response
 from pylons.i18n.translation import _get_translator
@@ -147,8 +146,6 @@ class PylonsApp(object):
         
         registry.register(pylons.app_globals, self.globals)
         registry.register(pylons.config, self.config)
-        registry.register(pylons.h, self.helpers or \
-                          pylons.legacy.load_h(self.package_name))
         registry.register(pylons.c, pylons_obj.c)
         registry.register(pylons.translator, pylons_obj.translator)
         

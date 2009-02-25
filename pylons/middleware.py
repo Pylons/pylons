@@ -1,12 +1,8 @@
 """Pylons' WSGI middlewares"""
 import logging
 import os.path
-import urllib
-import warnings
 
 from paste.deploy.converters import asbool
-from paste.errordocument import StatusBasedForward
-from paste.recursive import RecursiveMiddleware
 from paste.urlparser import StaticURLParser
 from weberror.evalexception import EvalException
 from weberror.errormiddleware import ErrorMiddleware
@@ -14,13 +10,11 @@ from webob import Request, Response
 from webhelpers.html import literal
 
 import pylons
-import pylons.legacy
 from pylons.error import template_error_formatters
 from pylons.util import call_wsgi_application
 
-__all__ = ['ErrorDocuments', 'ErrorHandler', 'StaticJavascripts',
-           'error_document_template', 'error_mapper', 'footer_html',
-           'head_html', 'media_path']
+__all__ = ['ErrorHandler', 'StaticJavascripts', 'error_document_template',
+           'footer_html', 'head_html', 'media_path']
 
 log = logging.getLogger(__name__)
 
@@ -123,11 +117,6 @@ def ErrorHandler(app, global_conf, **errorware):
     listed in the .ini file, under ``email_to``.
     
     """
-    if 'error_template' in errorware:
-        del errorware['error_template']
-        warnings.warn(pylons.legacy.error_template_warning,
-                      DeprecationWarning, 2)
-
     if asbool(global_conf.get('debug')):
         footer = footer_html % (pylons.config.get('traceback_host', 
                                                   'pylonshq.com'),
@@ -141,26 +130,6 @@ def ErrorHandler(app, global_conf, **errorware):
     else:
         app = ErrorMiddleware(app, global_conf, **errorware)
     return app
-
-
-def error_mapper(code, message, environ, global_conf=None, **kw):
-    """Legacy function used with ErrorDocuments to provide a mapping
-    of error codes to handle"""
-    if environ.get('pylons.error_call'):
-        return
-    else:
-        environ['pylons.error_call'] = True
-    
-    if global_conf is None:
-        global_conf = {}
-    codes = [401, 403, 404]
-    if not asbool(global_conf.get('debug')):
-        codes.append(500)
-    if code in codes:
-        # StatusBasedForward expects a relative URL (no SCRIPT_NAME)
-        url = '/error/document/?%s' % (urllib.urlencode({'message': message,
-                                                         'code': code}))
-        return url
 
 
 class StatusCodeRedirect(object):
@@ -214,21 +183,6 @@ class StatusCodeRedirect(object):
                     self.app, new_environ, catch_exc_info=True)
         start_response(status, headers, exc_info)
         return app_iter
-
-
-def ErrorDocuments(app, global_conf=None, mapper=None, **kw):
-    """Wraps the app in error docs using Paste RecursiveMiddleware and
-    ErrorDocumentsMiddleware
-    
-    All the args are passed directly into the ErrorDocumentsMiddleware. If no
-    mapper is given, a default error_mapper is passed in.
-    """
-    if global_conf is None:
-        global_conf = {}
-    if mapper is None:
-        mapper = error_mapper
-    return RecursiveMiddleware(StatusBasedForward(app, global_conf=global_conf,
-                                                  mapper=mapper, **kw))
 
 
 error_document_template = literal("""\

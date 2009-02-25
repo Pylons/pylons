@@ -2,6 +2,11 @@ Pylons Changelog
 ================
 
 1.0 (**tip**)
+* WARNING: Removed legacy pylons.database module.
+* WARNING: Removed legacy pylons.config module.
+* WARNING: Removed Buffet options, setup, and legacy render/render_response
+  function from pylons.templating. This also means config no longer accepts
+  the add_template_engine option.
 
 
 0.9.7 (February 23, 2009)

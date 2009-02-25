@@ -2,7 +2,6 @@ import datetime
 
 from projectname.lib.base import *
 import projectname.lib.helpers as h
-from pylons import h as deprecated_h
 from pylons import request, response, session
 from pylons import tmpl_context as c
 from pylons import app_globals as g
@@ -89,5 +88,3 @@ class SampleController(BaseController):
         response.write(_('No languages'))
         return ''
         
-    def deprecated_h(self):
-        return '%s is %s' % (h.url_for(), deprecated_h.url_for())
