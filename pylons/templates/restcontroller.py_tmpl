@@ -21,11 +21,11 @@ class {{classname}}Controller(BaseController):
         # url('{{nameprefix}}{{pluralname}}')
 
     def new(self, format='html'):
-        """GET /{{path}}{{pluralname}}/new: Form to create a new item"""
+        """GET /{{path}}{{singularname}}/new: Form to create a new item"""
         # url('{{nameprefix}}new_{{singularname}}')
 
     def update(self, id):
-        """PUT /{{path}}{{pluralname}}/id: Update an existing item"""
+        """PUT /{{path}}{{singularname}}/id: Update an existing item"""
         # Forms posted to this method should contain a hidden field:
         #    <input type="hidden" name="_method" value="PUT" />
         # Or using helpers:
@@ -34,7 +34,7 @@ class {{classname}}Controller(BaseController):
         # url('{{nameprefix}}{{singularname}}', id=ID)
 
     def delete(self, id):
-        """DELETE /{{path}}{{pluralname}}/id: Delete an existing item"""
+        """DELETE /{{path}}{{singularname}}/id: Delete an existing item"""
         # Forms posted to this method should contain a hidden field:
         #    <input type="hidden" name="_method" value="DELETE" />
         # Or using helpers:
@@ -43,9 +43,9 @@ class {{classname}}Controller(BaseController):
         # url('{{nameprefix}}{{singularname}}', id=ID)
 
     def show(self, id, format='html'):
-        """GET /{{path}}{{pluralname}}/id: Show a specific item"""
+        """GET /{{path}}{{singularname}}/id: Show a specific item"""
         # url('{{nameprefix}}{{singularname}}', id=ID)
 
     def edit(self, id, format='html'):
-        """GET /{{path}}{{pluralname}}/id/edit: Form to edit an existing item"""
+        """GET /{{path}}{{singularname}}/id/edit: Form to edit an existing item"""
         # url('{{nameprefix}}edit_{{singularname}}', id=ID)
