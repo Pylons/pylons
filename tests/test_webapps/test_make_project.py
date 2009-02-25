@@ -96,6 +96,14 @@ def make_controller():
     # Make sure all files are added to the repository:
     assert '?' not in res.stdout
 
+def make_controller_subdirectory():
+    res = projenv.run(_get_script_name('paster')+' controller mysubdir/sample')
+    assert os.path.join('projectname','controllers', 'mysubdir', 'sample.py') in res.files_created
+    assert os.path.join('projectname','tests','functional','test_mysubdir_sample.py') in res.files_created
+    #res = projenv.run(_get_script_name('svn')+' status')
+    # Make sure all files are added to the repository:
+    assert '?' not in res.stdout
+    
 def make_restcontroller():
     res = projenv.run(_get_script_name('paster')+' restcontroller restsample restsamples')
     assert os.path.join('projectname','controllers','restsamples.py') in res.files_created
@@ -103,6 +111,16 @@ def make_restcontroller():
     #res = projenv.run(_get_script_name('svn')+' status')
     # Make sure all files are added to the repository:
     assert '?' not in res.stdout
+
+def make_restcontroller_subdirectory():
+    res = projenv.run(_get_script_name('paster')+' restcontroller mysubdir/restsample mysubdir/restsamples')
+    assert os.path.join('projectname','controllers','mysubdir', 'restsamples.py') in res.files_created
+    assert os.path.join('projectname','tests','functional','test_mysubdir_restsamples.py') in res.files_created
+    #res = projenv.run(_get_script_name('svn')+' status')
+    # Make sure all files are added to the repository:
+    assert '?' not in res.stdout
+
+
 
 def _do_proj_test(copydict, emptyfiles=None):
     """Given a dict of files, where the key is a filename in filestotest, the value is
@@ -272,6 +290,9 @@ def test_project_paster_create():
 def test_project_make_controller():
     make_controller()
 
+def test_project_make_controller_subdirectory():
+    make_controller_subdirectory()
+
 def test_project_do_nosetests():
     do_nosetests()
 
@@ -284,6 +305,9 @@ def test_project_do_i18ntest():
 def test_project_make_restcontroller():
     make_restcontroller()
 
+def test_project_make_restcontroller_subdirectory():
+    make_restcontroller_subdirectory()
+    
 def test_project_do_rest_nosetests():
     copydict = {
         'rest_routing.py':'projectname/config/routing.py',
