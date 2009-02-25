@@ -1,6 +1,5 @@
 from pylons import app_globals as g
 from pylons.decorators.cache import beaker_cache
-from pylons.templating import render_response
 from projectname.lib.base import BaseController
 
 class CacheController(BaseController):

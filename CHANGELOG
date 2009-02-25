@@ -1,7 +1,17 @@
 Pylons Changelog
 ================
 
-0.9.7 (**tip**)
+1.0 (**tip**)
+* WARNING: Method arguments no longer assigned to 'c' by default.
+* WARNING: Changed default to strict_c.
+* WARNING: Removed legacy pylons.database module.
+* WARNING: Removed legacy pylons.config module.
+* WARNING: Removed Buffet options, setup, and legacy render/render_response
+  function from pylons.templating. This also means config no longer accepts
+  the add_template_engine option.
+
+
+0.9.7 (February 23, 2009)
 * WARNING: A new option is available to determine whether or not an actions
   arguments should be automatically attached to 'c'. To turn off this implicit
   behavior in environment.py:

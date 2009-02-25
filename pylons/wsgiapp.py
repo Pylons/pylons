@@ -14,7 +14,6 @@ from routes import request_config
 from webob.exc import HTTPFound, HTTPNotFound
 
 import pylons
-import pylons.legacy
 import pylons.templating
 from pylons.controllers.util import Request, Response
 from pylons.i18n.translation import _get_translator
@@ -69,24 +68,7 @@ class PylonsApp(object):
             log.debug("Raising redirect to %s", url)
             raise HTTPFound(location=url)
         self.redirect_to = redirect_to
-        
-        # Initialize Buffet and all our template engines, default engine is the
-        # first in the template_engines list
-        if config.get('buffet.template_engines'):
-            def_eng = config['buffet.template_engines'][0]
-            self.buffet = pylons.templating.Buffet(
-                def_eng['engine'], 
-                template_root=def_eng['template_root'],
-                **def_eng['template_options'])
-            for e in config['buffet.template_engines'][1:]:
-                log.debug("Initializing additional template engine: %s",
-                          e['engine'])
-                self.buffet.prepare(e['engine'],
-                                    template_root=e['template_root'],
-                                    alias=e['alias'], **e['template_options'])
-        else:
-            self.buffet = None
-        
+                
         # Cache some options for use during requests
         self._session_key = self.environ_config.get('session', 'beaker.session')
         self._cache_key = self.environ_config.get('cache', 'beaker.cache')
@@ -164,13 +146,9 @@ class PylonsApp(object):
         
         registry.register(pylons.app_globals, self.globals)
         registry.register(pylons.config, self.config)
-        registry.register(pylons.h, self.helpers or \
-                          pylons.legacy.load_h(self.package_name))
         registry.register(pylons.c, pylons_obj.c)
         registry.register(pylons.translator, pylons_obj.translator)
         
-        if self.buffet:
-            registry.register(pylons.buffet, self.buffet)
         if 'session' in pylons_obj.__dict__:
             registry.register(pylons.session, pylons_obj.session)
         if 'cache' in pylons_obj.__dict__:
@@ -210,10 +188,7 @@ class PylonsApp(object):
         pylons_obj.response = response
         pylons_obj.g = pylons_obj.app_globals = self.globals
         pylons_obj.h = self.helpers
-        
-        if self.buffet:
-            pylons_obj.buffet = self.buffet
-        
+                
         environ['pylons.pylons'] = pylons_obj
         
         environ['pylons.environ_config'] = self.environ_config

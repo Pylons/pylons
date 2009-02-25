@@ -2,13 +2,10 @@
 import inspect
 import logging
 import types
-import warnings
 
-from paste.httpexceptions import HTTPException as LegacyHTTPException
 from webob.exc import HTTPException, HTTPNotFound
 
 import pylons
-import pylons.legacy
 
 __all__ = ['WSGIController']
 
@@ -115,17 +112,6 @@ class WSGIController(object):
             # 304 Not Modified's shouldn't have a content-type set
             if result.wsgi_response.status_int == 304:
                 result.wsgi_response.headers.pop('Content-Type', None)
-            result._exception = True
-        except LegacyHTTPException, httpe:
-            if log_debug:
-                log.debug("%r method raised legacy HTTPException: %s (code: "
-                          "%s)", func.__name__, httpe.__class__.__name__,
-                          httpe.code, exc_info=True)
-            warnings.warn("Raising a paste.httpexceptions.HTTPException is "
-                          "deprecated, use webob.exc.HTTPException instead",
-                          DeprecationWarning, 2)
-            result = httpe.response(pylons.request.environ)
-            result.headers.pop('Content-Type')
             result._exception = True
 
         return result
@@ -236,18 +222,10 @@ class WSGIController(object):
                 py_response.unicode_body = py_response.unicode_body + \
                         response
             elif hasattr(response, 'wsgi_response'):
-                # It's either a legacy WSGIResponse object, or an exception
-                # that got tossed.
+                # It's an exception that got tossed.
                 if log_debug:
                     log.debug("Controller returned a Response object, merging "
                               "it with pylons.response")
-                if response is pylons.response:
-                    # Only etag_cache() returns pylons.response
-                    # (deprecated). Unwrap it to avoid a recursive loop
-                    # (see ticket #508)
-                    response = response._current_obj()
-                    warnings.warn(pylons.legacy.response_warning,
-                                  DeprecationWarning, 1)
                 for name, value in py_response.headers.items():
                     if name.lower() == 'set-cookie':
                         response.headers.add(name, value)

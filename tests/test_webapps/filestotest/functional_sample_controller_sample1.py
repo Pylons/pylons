@@ -48,7 +48,3 @@ class TestSampleController(TestController):
         assert 'extra' in response
         assert 'something' in response
         assert 'data' in response
-
-    def test_deprecated_h(self):
-        response = self.app.get(url(controller='sample', action='deprecated_h'))
-        assert '/sample/deprecated_h is /sample/deprecated_h' in response

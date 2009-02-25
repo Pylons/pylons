@@ -125,7 +125,8 @@ latex_paper_size = 'letter'
 # (source start file, target name, title, author, document class [howto/manual]).
 latex_documents = [
   ('index', 'Pylons.tex', 'Pylons Reference Documentation', 
-   'Ben Bangert, Graham Higgins, James Gardner', 'manual', 'toctree_only'),
+   'Ben Bangert, Graham Higgins, James Gardner, Philip Jenvey', 'manual',
+   'toctree_only'),
 ]
 
 # Additional stuff for the LaTeX preamble.
