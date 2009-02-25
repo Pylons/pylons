@@ -67,7 +67,7 @@ def can_import(name):
 def create_module_name(name, directory):
     """Construct the python module name from the given name and directory"""
     return '%(package)s.%(module)s' % dict(
-        package=directory.replace(os.path.extsep, '.'),
+        package=directory.replace(os.path.sep, '.'),
         module=name)
 
 def is_minimal_template(package, fail_fast=False):
