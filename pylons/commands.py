@@ -327,9 +327,11 @@ class RestControllerCommand(Command):
             testname = fullname.replace(os.sep, '_')[1:]
 
             nameprefix = ''
+            path = ''
             if pluraldirectory:
                 nameprefix = pluraldirectory.replace(os.path.sep, '_') + '_'
-
+                path = pluraldirectory.replace(os.path.sep, '/') + '/'
+                
             controller_c = ''
             if nameprefix:
                 controller_c = ", controller='%s', \n\t" % \
@@ -346,6 +348,7 @@ class RestControllerCommand(Command):
                  'name': controller_name,
                  'nameprefix': nameprefix,
                  'package':base_package,
+                 'path':path,
                  'resource_command': command.replace('\n\t', '\n%s#%s' % \
                                                          (' '*4, ' '*9)),
                  'fname': os.path.join(pluraldirectory, pluralname),
