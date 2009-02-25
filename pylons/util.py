@@ -5,13 +5,9 @@ directory and default plug-ins for a new Pylons project. The minimal
 template a more minimal template with less additional directories and
 layout.
 
-The functions used in this module are to assist Pylons in creating new
-projects, and handling deprecation warnings for moved Pylons functions.
-
 """
 import logging
 import sys
-import warnings
 
 import pkg_resources
 from paste.deploy.converters import asbool
@@ -33,22 +29,6 @@ def func_move(name, moved_to='pylons.i18n'):
             "statements to reflect the move" % (name, moved_to))
 
 
-def deprecated(func, message):
-    def deprecated_method(*args, **kargs):
-        warnings.warn(message, DeprecationWarning, 2)
-        return func(*args, **kargs)
-    try:
-        deprecated_method.__name__ = func.__name__
-    except TypeError: # Python < 2.4
-        pass
-    deprecated_method.__doc__ = "%s\n\n%s" % (message, func.__doc__)
-    return deprecated_method
-
-
-get_lang = deprecated(pylons.i18n.get_lang, func_move('get_lang'))
-set_lang = deprecated(pylons.i18n.set_lang, func_move('set_lang'))
-_ = deprecated(pylons.i18n._, func_move('_'))
-
 # Avoid circular import and a double warning
 def log(*args, **kwargs):
     """Deprecated: Use the logging module instead.
@@ -57,18 +37,6 @@ def log(*args, **kwargs):
     """
     import pylons.helpers
     return pylons.helpers.log(*args, **kwargs)
-
-def get_prefix(environ, warn=True):
-    """Deprecated: Use environ.get('SCRIPT_NAME', '') instead"""
-    if warn:
-        warnings.warn("The get_prefix function is deprecated, please use "
-                      "environ.get('SCRIPT_NAME', '') instead",
-                      DeprecationWarning, 2)
-    prefix = pylons.config.get('prefix', '')
-    if not prefix:
-        if environ.get('SCRIPT_NAME', '') != '':
-            prefix = environ['SCRIPT_NAME']
-    return prefix
 
 
 def call_wsgi_application(application, environ, catch_exc_info=False):
@@ -83,6 +51,7 @@ def call_wsgi_application(application, environ, catch_exc_info=False):
     be None, but won't be if there was an exception.  If you don't
     do this and there was an exception, the exception will be
     raised directly.
+    
     """
     captured = []
     output = []

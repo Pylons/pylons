@@ -2,6 +2,8 @@ Pylons Changelog
 ================
 
 1.0 (**tip**)
+* WARNING: Method arguments no longer assigned to 'c' by default.
+* WARNING: Changed default to strict_c.
 * WARNING: Removed legacy pylons.database module.
 * WARNING: Removed legacy pylons.config module.
 * WARNING: Removed Buffet options, setup, and legacy render/render_response
