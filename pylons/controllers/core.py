@@ -2,9 +2,7 @@
 import inspect
 import logging
 import types
-import warnings
 
-from paste.httpexceptions import HTTPException as LegacyHTTPException
 from webob.exc import HTTPException, HTTPNotFound
 
 import pylons
@@ -114,17 +112,6 @@ class WSGIController(object):
             # 304 Not Modified's shouldn't have a content-type set
             if result.wsgi_response.status_int == 304:
                 result.wsgi_response.headers.pop('Content-Type', None)
-            result._exception = True
-        except LegacyHTTPException, httpe:
-            if log_debug:
-                log.debug("%r method raised legacy HTTPException: %s (code: "
-                          "%s)", func.__name__, httpe.__class__.__name__,
-                          httpe.code, exc_info=True)
-            warnings.warn("Raising a paste.httpexceptions.HTTPException is "
-                          "deprecated, use webob.exc.HTTPException instead",
-                          DeprecationWarning, 2)
-            result = httpe.response(pylons.request.environ)
-            result.headers.pop('Content-Type')
             result._exception = True
 
         return result
