@@ -330,7 +330,7 @@ class RestControllerCommand(Command):
             path = ''
             if pluraldirectory:
                 nameprefix = pluraldirectory.replace(os.path.sep, '_') + '_'
-                path = pluraldirectory.replace(os.path.sep, '/') + '/'
+                path = pluraldirectory + '/'
                 
             controller_c = ''
             if nameprefix:
