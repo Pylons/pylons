@@ -126,11 +126,13 @@ def validate_name(name):
     return True
 
 
-def check_controller_existance(base_package, name): 
-    """Check if given controller already exists in project.""" 
-    filename = os.path.join(base_package, 'controllers', name + '.py') 
+def check_controller_existance(base_package, directory, name): 
+    """Check if given controller already exists in project."""
+    filename = os.path.join(base_package, 'controllers', directory,
+                            name + '.py')
     if os.path.exists(filename): 
-        raise BadCommand('Controller %s already exists.' % name)
+        raise BadCommand('Controller %s already exists.' %
+                         os.path.join(directory, name))
 
 
 class ControllerCommand(Command):
@@ -208,8 +210,8 @@ class ControllerCommand(Command):
                 fullname = os.sep + fullname
             testname = fullname.replace(os.sep, '_')[1:]
             
-            module_name = create_module_name(name, directory)
-            check_controller_existance(base_package, module_name)
+            module_dir = directory.replace('/', os.path.sep)
+            check_controller_existance(base_package, module_dir, name)
             
             file_op.template_vars.update(
                 {'name': controller_name,
@@ -315,8 +317,8 @@ class RestControllerCommand(Command):
                 importstatement += ', render'
             
             
-            module_name = create_module_name(pluralname, pluraldirectory)
-            check_controller_existance(base_package, module_name)
+            module_dir = pluraldirectory.replace('/', os.path.sep)
+            check_controller_existance(base_package, module_dir, name)
             
             # Setup the controller
             fullname = os.path.join(pluraldirectory, pluralname)
