@@ -139,7 +139,7 @@ Windows では、このように activate してください:
 
 .. code-block:: text
     
-    > mydevenv\bin\activate.bat
+    > mydevenv\Scripts\activate.bat
 
 
 .. Working Directly From the Source Code 
