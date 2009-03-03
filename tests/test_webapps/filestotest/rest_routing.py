@@ -19,6 +19,8 @@ def make_map():
 
     # CUSTOM ROUTES HERE
     map.resource('restsample', 'restsamples')
+    map.resource('restsample', 'restsamples', controller='mysubdir/restsamples', 
+        path_prefix='/mysubdir', name_prefix='mysubdir_')
 
     map.connect('/:controller/:action')
     map.connect('/:controller/:action/:id')
