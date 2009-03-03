@@ -1,7 +1,7 @@
 """Base objects to be exported for use in Controllers"""
 from paste.registry import StackedObjectProxy
 
-from pylons.config import config
+from pylons.configuration import config
 from pylons.legacy import h, jsonify, Response
 
 __all__ = ['app_globals', 'c', 'cache', 'config', 'g', 'request', 'response',
