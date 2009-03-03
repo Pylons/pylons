@@ -99,17 +99,8 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     extras_require = {
-        'cheetah': ["Cheetah>=1.0", "TurboCheetah>=0.9.5"],
-        'myghty': ["Myghty>=1.1"],
-        'kid': ["kid>=0.9", "TurboKid>=0.9.1"],
-        'genshi': ["Genshi>=0.4.4"],
+        'genshi': ['Genshi>=0.4.4'],
         'jinja2': ['Jinja2'],
-        'full': [
-            "docutils>=0.4", "elementtree>=1.2.6",
-            "Pygments>=0.7", "Cheetah>=1.0",
-            "TurboCheetah>=0.9.5", "kid>=0.9", "TurboKid>=0.9.1",
-            'Genshi>=0.4.4',
-        ],
     },
     entry_points="""
     [paste.paster_command]
@@ -120,9 +111,6 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
     [paste.paster_create_template]
     pylons = pylons.util:PylonsTemplate
     pylons_minimal = pylons.util:MinimalPylonsTemplate
-
-    [python.templating.engines]
-    pylonsmyghty = pylons.templating:MyghtyTemplatePlugin [myghty]
 
     [nose.plugins]
     pylons = pylons.test:PylonsPlugin
