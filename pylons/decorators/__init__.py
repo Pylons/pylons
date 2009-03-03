@@ -150,7 +150,7 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
             log.debug("Errors found in validation, parsing form with htmlfill "
                       "for errors")
             request.environ['REQUEST_METHOD'] = 'GET'
-            self._py_object.c.form_errors = errors
+            self._py_object.tmpl_context.form_errors = errors
 
             # If there's no form supplied, just continue with the current
             # function call.

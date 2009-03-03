@@ -146,7 +146,7 @@ class PylonsApp(object):
         
         registry.register(pylons.app_globals, self.globals)
         registry.register(pylons.config, self.config)
-        registry.register(pylons.c, pylons_obj.c)
+        registry.register(pylons.tmpl_context, pylons_obj.tmpl_context)
         registry.register(pylons.translator, pylons_obj.translator)
         
         if 'session' in pylons_obj.__dict__:
@@ -186,7 +186,7 @@ class PylonsApp(object):
         pylons_obj.config = self.config
         pylons_obj.request = req
         pylons_obj.response = response
-        pylons_obj.g = pylons_obj.app_globals = self.globals
+        pylons_obj.app_globals = self.globals
         pylons_obj.h = self.helpers
                 
         environ['pylons.pylons'] = pylons_obj
@@ -197,11 +197,11 @@ class PylonsApp(object):
         lang = self.config['lang']
         pylons_obj.translator = _get_translator(lang, pylons_config=self.config)
         
-        if self.config['pylons.strict_c']:
-            c = ContextObj()
+        if self.config['pylons.strict_tmpl_context']:
+            tmpl_context = ContextObj()
         else:
-            c = AttribSafeContextObj()
-        pylons_obj.c = c
+            tmpl_context = AttribSafeContextObj()
+        pylons_obj.tmpl_context = tmpl_context
         
         econf = self.config['pylons.environ_config']
         if self._session_key in environ:
@@ -306,7 +306,7 @@ class PylonsApp(object):
         pylons_obj = environ['pylons.pylons']
         testenv['req'] = pylons_obj.request
         testenv['response'] = pylons_obj.response
-        testenv['tmpl_context'] = testenv['c'] = pylons_obj.c
+        testenv['tmpl_context'] = pylons_obj.tmpl_context
         testenv['app_globals'] = testenv['g'] = pylons_obj.app_globals
         testenv['h'] = self.config['pylons.h'] or pylons_obj.h
         testenv['config'] = self.config

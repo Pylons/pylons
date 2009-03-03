@@ -4,8 +4,9 @@ Pylons Changelog
 1.0 (**tip**)
 * Added tests for restcontroller with sub-directory, and fixed generated unit
   tests. Patches supplied by Michael van Tellingen, fixes #571.
-* WARNING: Method arguments no longer assigned to 'c' by default.
-* WARNING: Changed default to strict_c.
+* WARNING: Method arguments no longer assigned to 'tmpl_context' by default.
+* WARNING: Changed default to strict_tmpl_context.
+* WARNING: Removed legacy pylons.c and pylons.g globals.
 * WARNING: Removed legacy pylons.database module.
 * WARNING: Removed legacy pylons.config module.
 * WARNING: Removed Buffet options, setup, and legacy render/render_response

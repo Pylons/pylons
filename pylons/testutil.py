@@ -50,8 +50,8 @@ class SetupCacheGlobal(object):
             registry.register(pylons.session, environ['beaker.session'])
             environ_config['session'] = 'beaker.session'
         if self.setup_g:
-            py_obj.g = self.g
-            registry.register(pylons.g, self.g)
+            py_obj.app_globals = self.g
+            registry.register(pylons.app_globals, self.g)
         translator = gettext.NullTranslations()
         py_obj.translator = translator
         registry.register(pylons.translator, translator)
@@ -71,7 +71,7 @@ class SetupCacheGlobal(object):
         py_obj.config = pylons.config._current_obj()
         py_obj.request = req
         py_obj.response = response
-        py_obj.c = ContextObj()
+        py_obj.tmpl_context = ContextObj()
         environ['pylons.pylons'] = py_obj
         registry.register(pylons.request, req)
         registry.register(pylons.response, response)

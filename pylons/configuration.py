@@ -23,6 +23,7 @@ from webhelpers.mimehelper import MIMETypes
 
 
 default_template_engine = 'mako'
+
 request_defaults = dict(charset='utf-8', errors='replace',
                         decode_param_names=False, language='en-us')
 response_defaults = dict(content_type='text/html',
@@ -51,10 +52,6 @@ class PylonsConfig(DispatchingConfig):
     There's several useful keys of the config object most people will
     be interested in:
 
-    ``pylons.template_options``
-        Full dict of template options that any TG compatible plugin
-        should be able to parse. Comes with basic config needed for
-        Genshi, Mako, Myghty, and Kid.
     ``pylons.paths``
         A dict of absolute paths that were defined in the applications
         ``config/environment.py`` module.
@@ -63,21 +60,14 @@ class PylonsConfig(DispatchingConfig):
         objects for registering with Pylons. If these are present then
         PylonsApp will use them from environ rather than using default
         middleware from Beaker. Valid keys are: ``session, cache``
-    ``pylons.template_engines``
-        List of template engines to configure. The first one in the
-        list will be configured as the default template engine. Each
-        item in the list is a dict indicating how to configure the
-        template engine with keys:
-        
-        ``engine``, ``template_root``, ``template_options``, and 
-        ``alias``
-    ``pylons.default_charset``
-        Deprecated: Use the response_settings dict instead.
-        Default character encoding specified to the browser via the
-        'charset' parameter of the HTTP response's Content-Type header.
-    ``pylons.strict_c``
-        Whether or not the ``c`` object should throw an attribute error
-        when access is attempted to an attribute that doesn't exist.
+    ``pylons.strict_tmpl_context``
+        Whether or not the ``tmpl_context`` object should throw an
+        attribute error when access is attempted to an attribute that
+        doesn't exist. Defaults to True.
+    ``pylons.tmpl_context_attach_args``
+        Whethor or not Routes variables should automatically be
+        attached to the tmpl_context object when specified in a
+        controllers method.
     ``pylons.request_options``
         A dict of Content-Type related default settings for new
         instances of :class:`~pylons.controllers.util.Request`. May
@@ -102,17 +92,14 @@ class PylonsConfig(DispatchingConfig):
                          'controllers': None,
                          'templates': [],
                          'static_files': None},
-        'pylons.db_engines': {},
         'pylons.environ_config': dict(session='beaker.session', 
                                       cache='beaker.cache'),
-        'pylons.g': None,
+        'pylons.app_globals': None,
         'pylons.h': None,
         'pylons.request_options': request_defaults.copy(),
         'pylons.response_options': response_defaults.copy(),
-        'pylons.strict_c': True,
-        'pylons.c_attach_args': False,
-        'buffet.template_engines': [],
-        'buffet.template_options': {},
+        'pylons.strict_tmpl_context': True,
+        'pylons.tmpl_context_attach_args': False,
     }
 
     def init_app(self, global_conf, app_conf, package=None, paths=None):

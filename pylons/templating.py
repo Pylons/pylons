@@ -110,8 +110,8 @@ import pylons
 
 __all__ = ['render_genshi', 'render_jinja2', 'render_mako', 'render_response']
 
-PYLONS_VARS = ['c', 'config', 'g', 'h', 'render', 'request', 'session',
-               'translator', 'ungettext', '_', 'N_']
+PYLONS_VARS = ['c', 'app_globals', 'config', 'h', 'render', 'request',
+               'session', 'translator', 'ungettext', '_', 'N_']
 
 log = logging.getLogger(__name__)
 
@@ -138,7 +138,6 @@ def pylons_globals():
         tmpl_context=c,
         config=conf,
         app_globals=g,
-        g=g,
         h=conf.get('pylons.h') or pylons.h._current_obj(),
         request=pylons.request._current_obj(),
         response=pylons.response._current_obj(),
