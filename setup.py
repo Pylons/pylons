@@ -78,7 +78,7 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
     test_suite='nose.collector',
     tests_require=tests_require,
     install_requires=[
-        "Routes>=1.10.3", "WebHelpers>=0.6.4", "Beaker>=1.2.2",
+        "Routes>=1.10.3", "WebHelpers>=0.6.4", "Beaker>=1.3dev",
         "Paste>=1.7.2", "PasteDeploy>=1.3.3", "PasteScript>=1.7.3",
         "FormEncode>=1.2.1", "simplejson>=2.0.8", "decorator>=2.3.2",
         "nose>=0.10.4", "Mako>=0.2.4", "WebOb>=0.9.6.1", "WebError>=0.10.1",
