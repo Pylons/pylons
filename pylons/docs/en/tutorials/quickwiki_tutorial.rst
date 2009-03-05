@@ -881,4 +881,4 @@ Todo
 * Provide snapshots of every file modified at each step, to help resolve mistakes
 
 .. _`SQLAlchemy`: http://www.sqlalchemy.org
-.. _`reStructuredText`: <http://docutils.sourceforge.net/rst.html>
+.. _`reStructuredText`: http://docutils.sourceforge.net/rst.html
