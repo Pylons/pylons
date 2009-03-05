@@ -1,7 +1,5 @@
 .. _quickwiki_tutorial:
 
-.. quickwiki-tutorial:
-
 ==================
 Quickwiki tutorial
 ==================
