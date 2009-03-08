@@ -308,6 +308,10 @@ This requires the additional import line:
 
 Whereas the modification to ``config/middleware.py`` will setup an instance of ``PrefixMiddleware`` under every environment (.ini).
 
+Using Java Web Servers with Jython
+**********************************
+
+See :ref:`java_deployment`.
 
 .. _adding_documentation:
 
