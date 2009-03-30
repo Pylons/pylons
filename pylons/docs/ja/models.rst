@@ -480,6 +480,7 @@ ORM のクラス、およびアプリケーション開始時に呼ばなけれ�
     """The application's model objects"""
     import sqlalchemy as sa
     from sqlalchemy import orm
+    from sqlalchemy.ext.declarative import declarative_base
 
     from myapp.model import meta
 
@@ -658,6 +659,52 @@ SQLAlchemy 0.5 には、 1 ステップでテーブルと ORM クラスを定義
     orm.mapper(Person, t_people, properties = { 
         'my_addresses' : orm.relation(Address, secondary = t_addresses_people), 
         }) 
+
+
+.. Using SQLAlchemy's SQL Layer
+
+SQLAlchemy の SQL レイヤーを使用する
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. SQLAlchemy's lower level SQL expressions can be used along with your ORM
+.. models, and organizing them as class methods can be an effective way to keep
+.. the domain logic separate, and write efficient queries that return subsets
+.. of data that don't map cleanly to the ORM.
+
+SQLAlchemy の低レベル SQL 式は ORM モデルと共に使用することができます。
+そしてそれらをクラスメソッドとして組織化するのが、ドメインロジックを分
+離して、 ORM にきれいにマップされないデータの部分集合を返す効率的なクエ
+リを書くための効果的な方法です。
+
+
+.. Consider the case that you want to get all the unique addresses
+.. from the relation example above. The following method in the
+.. Address class can make it easy:
+
+上のリレーションの例で、すべてのユニークなアドレスを得たいケースを考え
+てください。 Address クラスの以下のメソッドはそれを簡単にします:
+
+
+.. code-block:: python
+    
+    # Additional imports
+    from sqlalchemy import select, func
+    
+    from myapp.model.meta import Session
+    
+    
+    class Address(object):
+        @classmethod
+        def unique_addresses(cls):
+            """Query the db for distinct addresses, return them as a list"""
+            query = select([func.distinct(t_addresses.c.address).label('address')],
+                           from_obj=[t_addresses])
+            return [row['address'] for row in Session.execute(query).fetchall()]
+
+
+.. seealso::
+    
+    SQLAlchemy's `SQL Expression Language Tutorial <http://www.sqlalchemy.org/docs/05/sqlexpression.html>`_
 
 
 .. Using the model standalone 
@@ -1641,7 +1688,7 @@ Fancy classes
             return "%s %s" % (self.firstname, self.lastname) 
 
         @classmethod 
-        def all(class_, order=None, sex=None): 
+        def all(cls, order=None, sex=None): 
             """Return a Query of all Persons. The caller can iterate this,
             do q.count(), add additional conditions, etc. 
             """ 
