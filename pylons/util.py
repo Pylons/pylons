@@ -22,22 +22,7 @@ import pylons.i18n
 __all__ = ['AttribSafeContextObj', 'ContextObj', 'PylonsContext',
            'class_name_from_module_name', 'call_wsgi_application']
 
-pylons_log = logging.getLogger(__name__)
-
-def func_move(name, moved_to='pylons.i18n'):
-    return ("The %s function has moved to %s, please update your import "
-            "statements to reflect the move" % (name, moved_to))
-
-
-# Avoid circular import and a double warning
-def log(*args, **kwargs):
-    """Deprecated: Use the logging module instead.
-
-    Log a message to the output log.
-    """
-    import pylons.helpers
-    return pylons.helpers.log(*args, **kwargs)
-
+log = logging.getLogger(__name__)
 
 def call_wsgi_application(application, environ, catch_exc_info=False):
     """
@@ -143,8 +128,8 @@ class AttribSafeContextObj(ContextObj):
         try:
             return object.__getattribute__(self, name)
         except AttributeError:
-            pylons_log.debug("No attribute called %s found on c object, "
-                             "returning empty string", name)
+            log.debug("No attribute called %s found on c object, returning "
+                      "empty string", name)
             return ''
 
 

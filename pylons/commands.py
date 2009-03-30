@@ -121,11 +121,13 @@ def validate_name(name):
     return True
 
 
-def check_controller_existance(base_package, name): 
-    """Check if given controller already exists in project.""" 
-    filename = os.path.join(base_package, 'controllers', name + '.py') 
+def check_controller_existence(base_package, directory, name): 
+    """Check if given controller already exists in project."""
+    filename = os.path.join(base_package, 'controllers', directory,
+                            name + '.py')
     if os.path.exists(filename): 
-        raise BadCommand('Controller %s already exists.' % name)
+        raise BadCommand('Controller %s already exists.' %
+                         os.path.join(directory, name))
 
 
 class ControllerCommand(Command):
@@ -202,7 +204,9 @@ class ControllerCommand(Command):
             if not fullname.startswith(os.sep):
                 fullname = os.sep + fullname
             testname = fullname.replace(os.sep, '_')[1:]
-            check_controller_existance(base_package, name)
+            
+            module_dir = directory.replace('/', os.path.sep)
+            check_controller_existence(base_package, module_dir, name)
             
             file_op.template_vars.update(
                 {'name': controller_name,
@@ -282,6 +286,7 @@ class RestControllerCommand(Command):
                     file_op.parse_path_name_args(self.args[0])
                 pluralname, pluraldirectory = \
                     file_op.parse_path_name_args(self.args[1])
+
             except:
                 raise BadCommand('No egg_info directory was found')
 
@@ -306,7 +311,9 @@ class RestControllerCommand(Command):
             if defines_render(base_package):
                 importstatement += ', render'
             
-            check_controller_existance(base_package, name)
+            
+            module_dir = pluraldirectory.replace('/', os.path.sep)
+            check_controller_existence(base_package, module_dir, name)
             
             # Setup the controller
             fullname = os.path.join(pluraldirectory, pluralname)
@@ -317,15 +324,17 @@ class RestControllerCommand(Command):
             testname = fullname.replace(os.sep, '_')[1:]
 
             nameprefix = ''
+            path = ''
             if pluraldirectory:
                 nameprefix = pluraldirectory.replace(os.path.sep, '_') + '_'
-
+                path = pluraldirectory + '/'
+                
             controller_c = ''
             if nameprefix:
                 controller_c = ", controller='%s', \n\t" % \
                     '/'.join([pluraldirectory, pluralname])
-                controller_c += "path_prefix='/%s', name_prefix='%s_'" % \
-                    (pluraldirectory, pluraldirectory)
+                controller_c += "path_prefix='/%s', name_prefix='%s'" % \
+                    (pluraldirectory, nameprefix)
             command = "map.resource('%s', '%s'%s)\n" % \
                 (singularname, pluralname, controller_c)
 
@@ -336,6 +345,7 @@ class RestControllerCommand(Command):
                  'name': controller_name,
                  'nameprefix': nameprefix,
                  'package':base_package,
+                 'path':path,
                  'resource_command': command.replace('\n\t', '\n%s#%s' % \
                                                          (' '*4, ' '*9)),
                  'fname': os.path.join(pluraldirectory, pluralname),
@@ -475,7 +485,6 @@ class ShellCommand(Command):
               'response, session, tmpl_context, url') in locs
         exec ('from pylons.controllers.util import abort, redirect_to') in locs
         exec 'from pylons.i18n import _, ungettext, N_' in locs
-        exec 'from pylons.templating import render' in locs
         
         # Import all objects from the base module
         __import__(base_module)

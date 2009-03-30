@@ -59,7 +59,7 @@
 
 .. code-block:: text
     
-    > mydevenv\bin\activate.bat
+    > mydevenv\Scripts\activate.bat
 
 
 Робота з вихідним кодом 
