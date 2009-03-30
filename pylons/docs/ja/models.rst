@@ -195,13 +195,11 @@ SQLAlchemy は次のような 3 つの異なったレベルで動かすことが
 90% 簡単です。
 
 
-.. The `SQLAlchemy manual <http://www.sqlalchemy.org/docs/>`_ should be
-.. your next stop for questions not covered here. It's very well written
-.. and thorough.
+.. The `SQLAlchemy manual`_ should be your next stop for questions not
+.. covered here. It's very well written and thorough.
 
-`SQLAlchemy マニュアル <http://www.sqlalchemy.org/docs/>`_ はここで
-カバーされなかった質問のために次に読むべきです。 それは、非常に良く書か
-れており網羅的です。
+`SQLAlchemy マニュアル`_ はここでカバーされなかった質問のために次に読む
+べきです。 それは、非常に良く書かれており網羅的です。
 
  
 .. SQLAlchemy add-ons
@@ -267,6 +265,8 @@ SQL ビルダーとコネクションプールは直接使用されることは�
 
 
 `Storm <http://storm.canonical.com>`_
+
+`Geniusql <http://www.aminus.net/geniusql>`_
 
 DB-API
 ++++++
@@ -467,33 +467,33 @@ ORM のクラス、およびアプリケーション開始時に呼ばなけれ�
 に分けると良いかもしれません。
 
 
-.. As of the Pylons 0.9.7 release, SQLAlchemy 0.4.8 is the current
-.. production version, while SQLAlchemy 0.5rc4 is the almost-released
-.. new version.  The default Pylons model was written for SQLAlchemy
-.. 0.4, but also works on 0.5 with a slight change to the
-.. *sessionmaker* arguments.  Here's a sample *model/__init__.py* with
-.. a "persons" table, which is based on the default model with the
-.. comments removed:
+.. Here's a sample *model/__init__.py* with a "persons" table, which
+.. is based on the default model with the comments removed:
 
-Pylons 0.9.7 リリースの時点では SQLAlchemy 0.4.8 が最新の製品バージョン
-です。その一方で、 SQLAlchemy 0.5rc4 がもうすぐリリースされる新しいバー
-ジョンです。デフォルトの Pylons モデルは、SQLAlchemy 0.4 のために書かれ
-ましたが、 *sessionmaker* 引数に小さな変更を加えることで 0.5 でも動きま
-す。ここに、サンプルの *model/__init__.py* と "persons" テーブルがあり
-ます (which is based on the default model with the comments removed):
+ここに "persons" テーブルを含むサンプルの *model/__init__.py* がありま
+す。これはデフォルトのモデルからコメントを除いたものをベースにしていま
+す。
 
 
 .. code-block:: python
 
+    """The application's model objects"""
     import sqlalchemy as sa
-    import sqlalchemy.orm as orm
+    from sqlalchemy import orm
 
     from myapp.model import meta
 
     def init_model(engine):
-        sm = orm.sessionmaker(transactional=True, autoflush=True, bind=engine)
-        meta.Session = orm.scoped_session(sm)
+        """Call me before using any of the tables or classes in the model"""
+        ## Reflected tables must be defined and mapped here
+        #global reflected_table
+        #reflected_table = sa.Table("Reflected", meta.metadata, autoload=True,
+        #                           autoload_with=engine)
+        #orm.mapper(Reflected, reflected_table)
+        #
+        meta.Session.configure(bind=engine)
         meta.engine = engine
+
 
     t_persons = sa.Table("persons", meta.metadata,
         sa.Column("id", sa.types.Integer, primary_key=True),
@@ -505,17 +505,6 @@ Pylons 0.9.7 リリースの時点では SQLAlchemy 0.4.8 が最新の製品バ�
         pass
 
     orm.mapper(Person, t_persons)
-
-
-.. SQLAlchemy 0.5 users should change the *sessionmaker* line to this:
-
-SQLAlchemy 0.5 ユーザは sessionmaker の行をこのように変更する必要があり
-ます:
-
-
-.. code-block:: python
-
-    sm = orm.sessionmaker(bind=engine)
 
 
 .. This model has one table, "persons", assigned to the variable
@@ -548,21 +537,25 @@ SQLAlchemy 0.5 ユーザは sessionmaker の行をこのように変更する必
 
 .. code-block:: python
 
+    """The application's model objects"""
     import sqlalchemy as sa
-    import sqlalchemy.orm as orm
+    from sqlalchemy import orm
 
     from myapp.model import meta
 
     def init_model(engine):
+        """Call me before using any of the tables or classes in the model"""
+        # Reflected tables must be defined and mapped here
         global t_persons
+        t_persons = sa.Table("persons", meta.metadata, autoload=True,
+                             autoload_with=engine)
+        orm.mapper(Person, t_persons)
 
-        sm = orm.sessionmaker(transactional=True, autoflush=True, bind=engine)
-        meta.Session = orm.scoped_session(sm)
+        meta.Session.configure(bind=engine)
         meta.engine = engine
 
-        t_persons = sa.Table(meta.metadata, autoload=True, autoload_with=engine)
 
-        orm.mapper(Person, t_persons)
+    t_persons = None
 
     class Person(object):
         pass
@@ -596,18 +589,19 @@ SQLAlchemy 0.5 には、 1 ステップでテーブルと ORM クラスを定義
 
 .. code-block:: python
 
+    """The application's model objects"""
     import sqlalchemy as sa
-    import sqlalchemy.orm as orm
-    import sqlalchemy.ext.declarative as declarative
+    from sqlalchemy import orm
 
     from myapp.model import meta
 
     _Base = declarative_base()
 
     def init_model(engine):
-        sm = orm.sessionmaker(bind=engine)
-        meta.Session = orm.scoped_session(sm)
+        """Call me before using any of the tables or classes in the model"""
+        meta.Session.configure(bind=engine)
         meta.engine = engine
+
 
     class Person(_Base):
         __tablename__ = "persons"
@@ -615,13 +609,6 @@ SQLAlchemy 0.5 には、 1 ステップでテーブルと ORM クラスを定義
         id = sa.Column(sa.types.Integer, primary_key=True)
         name = sa.Column(sa.types.String(100))
         email = sa.Column(sa.types.String(100))
-
-
-.. A full summary of changes in SQLAlchemy 0.5 and upgrade
-.. instructions is at http://www.sqlalchemy.org/trac/wiki/05Migration .
-
-SQLAlchemy 0.5 における変更の完全な概要 (full summary) とアップグレード
-手順が http://www.sqlalchemy.org/trac/wiki/05Migration にあります。
 
 
 .. Relation example 
@@ -633,13 +620,13 @@ SQLAlchemy 0.5 における変更の完全な概要 (full summary) とアップ�
 .. many:many relationship on `people.my_addresses`. See `Relational
 .. Databases for People in a Hurry
 .. <http://wiki.pylonshq.com/display/pylonscookbook/Relational+databases+for+people+in+a+hurry>`_
-.. and the SQLAlchemy manual for details.
+.. and the `SQLAlchemy manual`_ for details.
 
 ここに、 `Person` クラスと `Address` クラス、そして
 `people.my_addresses` 上の多対他関連に関する例があります。詳細に関して
 は `Relational Databases for People in a Hurry
 <http://wiki.pylonshq.com/display/pylonscookbook/Relational+databases+for+people+in+a+hurry>`_
-と SQLAlchemy マニュアルを見てください。
+と `SQLAlchemy マニュアル`_ を見てください。
 
 
 .. code-block:: python
@@ -691,7 +678,7 @@ SQLAlchemy 0.5 における変更の完全な概要 (full summary) とアップ�
 いうデータベースを使用します:
 
 
-.. code-block:: python
+.. code-block:: pycon
 
     % python 
     Python 2.5.1 (r251:54863, Oct 5 2007, 13:36:32) 
@@ -704,10 +691,10 @@ SQLAlchemy 0.5 における変更の完全な概要 (full summary) とアップ�
 
 
 .. Now you can use the tables, classes, and Session as described in
-.. the SLQAlchemy manual.  For example:
+.. the `SQLAlchemy manual`_.  For example:
 
-すると、 SLQAlchemy マニュアルで説明されるようにテーブル、クラス、およ
-び Session を使用できます。例えば:
+すると、 `SQLAlchemy マニュアル`_ で説明されるようにテーブル、クラス、
+および Session を使用できます。例えば:
 
 
 .. code-block:: python
@@ -736,12 +723,12 @@ SQLAlchemy 0.5 における変更の完全な概要 (full summary) とアップ�
     a = model.Person()
     a.name = "Aaa"
     a.email = "aaa@example.com"
-    meta.Session.save(a)
+    meta.Session.add(a)
 
     b = model.Person()
     b.name = "Bbb"
     b.email = "bbb@example.com"
-    meta.Session.save(b)
+    meta.Session.add(b)
 
     meta.Session.commit()
 
@@ -843,13 +830,13 @@ MySQL の場合、 "MySQL server has gone away" エラーを防ぐために
 
 .. Don't be tempted to use the ".echo" option to enable SQL logging
 .. because it may cause duplicate log output. Instead see the
-.. "Logging" section below to integrate MySQL logging into Paste's
+.. `Logging`_ section below to integrate MySQL logging into Paste's
 .. logging system.
 
 SQL ログを有効にするのに ".echo" オプションを使いたくなるかもしれません
 が、それは重複するログ出力を引き起こすので使わないようにしてください。
-代わりに下の "Logging" セクションを見て、 MySQL ログを Paste のログシス
-テムに統合してください。
+代わりに下の `ログ出力`_ セクションを見て、 MySQL ログを Paste のログシ
+ステムに統合してください。
 
 
 .. For PostgreSQL 
@@ -911,20 +898,21 @@ PostgreSQL の設定
 コントローラ
 ------------
 
-.. Add the following to the top of *myapp/lib/base.py* (the base
-.. controller):
+.. The paster create SQLAlchemy option adds the following to the top
+.. of *myapp/lib/base.py* (the base controller):
 
-*myapp/lib/base.py* (ベースコントローラ) の先頭に以下を加えてください:
+paster create の SQLAlchemy オプションは *myapp/lib/base.py* (ベースコ
+ントローラ) の先頭に以下を加えます:
 
 
 .. code-block:: python
 
-    from myapp.model import meta 
+    from myapp.model import meta
 
 
-.. And change the `.\_\_call\_\_` method to: 
+.. and also changes the `.\_\_call\_\_` method to:
 
-そして、 `.__call__` メソッドを以下のように変えてください:
+そして、 `.\_\_call\_\_` メソッドを以下のように変えます:
 
 
 .. code-block:: python
@@ -974,9 +962,9 @@ product として自動的に起こりますが、.remove() を呼ぶことで�
     log.info("Successfully setup") 
 
 
-.. Or for SQLAlchemy 0.5 with the Declarative syntax:
+.. Or for the new SQLAlchemy 0.5 Declarative syntax:
 
-または、 SQLAlchemy 0.5 の Declarative 構文に対しては:
+または、 SQLAlchemy 0.5 の新しい Declarative 構文に対しては:
 
 
 .. code-block:: python
@@ -995,7 +983,7 @@ product として自動的に起こりますが、.remove() を呼ぶことで�
 
 .. code-block:: bash
 
-    paster setup-app development.ini 
+    $ paster setup-app development.ini 
 
 
 .. Data queries and modifications
@@ -1031,7 +1019,7 @@ product として自動的に起こりますが、.remove() を呼ぶことで�
 
     mr_jones = Person() 
     mr_jones.name = 'Mr Jones' 
-    meta.Session.save(mr_jones) 
+    meta.Session.add(mr_jones) 
     meta.Session.commit() 
 
 
@@ -1266,7 +1254,7 @@ delete-orphan"` を使用してください:
 
     orm.mapper(Address, t_addresses) 
     orm.mapper(Person, t_people, properties = { 
-    'my_addresses' : orm.relation(
+    'my_addresses': orm.relation(
             Address, secondary=t_addresses_people, cascade="all,delete-orphan"), 
     }) 
 
@@ -1356,14 +1344,14 @@ Further reading
 
 .. The Query object has many other features, including filtering on
 .. conditions, ordering the results, grouping, etc. These are
-.. excellently described in the SQLAlchemy manual. See especially the
+.. excellently described in the `SQLAlchemy manual`_. See especially the
 .. `Data Mapping <http://www.sqlalchemy.org/docs/datamapping.html>`_
 .. and `Session / Unit of Work
 .. <http://www.sqlalchemy.org/docs/unitofwork.html>`_ chapters.
 
 Query オブジェクトには、条件によるフィルタリング、結果の並び替え、グルー
-ピングを含む他の多くの特徴があります。これらは SQLAlchemy マニュアルに
-優れた説明があります。 特に `Data Mapping
+ピングを含む他の多くの特徴があります。これらは `SQLAlchemy マニュアル`_
+に優れた説明があります。 特に `Data Mapping
 <http://www.sqlalchemy.org/docs/datamapping.html>`_ と `Session / Unit
 of Work <http://www.sqlalchemy.org/docs/unitofwork.html>`_ の章を見てく
 ださい。
@@ -1391,7 +1379,8 @@ of Work <http://www.sqlalchemy.org/docs/unitofwork.html>`_ の章を見てく
     from myapp import model 
     from myapp.model import meta 
 
-    class TestModels(TestController): 
+    class TestModels(TestController):
+
         def setUp(self): 
             meta.Session.remove() 
             meta.metadata.create_all(meta.engine) 
@@ -1499,8 +1488,7 @@ of Work <http://www.sqlalchemy.org/docs/unitofwork.html>`_ の章を見てく
 .. code-block:: python
 
     binds={"table1": engine1, "table2": engine2} 
-    Session = scoped_session(sessionmaker(
-                    transactional=True, autoflush=True, binds=binds) 
+    Session = scoped_session(sessionmaker(binds=binds))
 
 
 .. To choose the bindings on a per-request basis, skip the
@@ -1542,7 +1530,7 @@ of Work <http://www.sqlalchemy.org/docs/unitofwork.html>`_ の章を見てく
 ORM SQL 操作は、エンジンを必要とします。 (厳密に言うと、それらは代わり
 にコネクションを使用できますが、それはこのチュートリアルの範囲を超えて
 います。) 実際のデータベースクエリを行うあらゆる SQLAlchemy メソッドに
-対して`bind=` 引数でエンジンを渡すか、またはセッションまたはメタデータ
+対して `bind=` 引数でエンジンを渡すか、またはセッションまたはメタデータ
 にエンジンを bind することができます。このチュートリアルは、それが最も
 柔軟性があるので、上の "Multiple Engines" セクションで示されるように、
 セッションを bind することを勧めます。
@@ -1589,8 +1577,8 @@ SQLAlchemy のセッションと Pylons のセッションを混同しないで�
 .. `Session.query(...)`, etc) implicitly calls the corresponding
 .. method on the appropriate session. You can normally just call the
 .. `Session` class methods and ignore the internal session objects
-.. entirely. See "Contextual/Thread-local Sessions" in the SQLAlchemy
-.. manual for more information. This is equivalent to SQLAlchemy 0.3's
+.. entirely. See "Contextual/Thread-local Sessions" in the `SQLAlchemy
+.. manual`_ for more information. This is equivalent to SQLAlchemy 0.3's
 .. `SessionContext` but with a different API.
 
 本章の `Session` 変数は SQLAlchemy のセッションオブジェクトでは
@@ -1600,20 +1588,23 @@ SQLAlchemy のセッションと Pylons のセッションを混同しないで�
 (`Session.commit()` 、 `Session.query(…)` など) を呼ぶと、対応するメソッ
 ドが適切なセッションを使用して暗黙的に呼ばれます。通常は `Session` クラ
 スメソッドだけを呼んで、内部のセッションオブジェクトを完全に無視できま
-す。 詳しい情報に関して SQLAlchemy マニュアルの
+す。 詳しい情報に関して `SQLAlchemy マニュアル`_ の
 "Contextual/Thread-local Sessions" を見てください。これは SQLAlchemy
 0.3 の `SessionContext` と同等のものですが、 API が異なっています。
 
 
 .. "Transactional" sessions are a new feature in SQLAlchemy 0.4; this
 .. is why we're using `Session.commit()` instead of
-.. `Session.flush()`. The `transactional` and `autoflush` args to
-.. `sessionmaker` enable this, and should normally be used together.
+.. `Session.flush()`. The `autocommit=False` (`transactional=True` in
+.. SQLALchemy 0.4) and `autoflush=True` args (which are the defaults)
+.. to `sessionmaker` enable this, and should normally be used
+.. together.
 
 「トランザクション」セッションは SQLAlchemy 0.4 の新機能です。 これは私
 たちが `Session.flush()` の代わりに `Session.commit()` を使用している理
-由です。 `sessionmaker` に対する `transactional` と `autoflush` 引数は
-これを可能にして、通常それらは一緒に使用されるはずです。
+由です。 `sessionmaker` に対する `autocommit=False` 引数 (SQLALchemy
+0.4 では `transactional=True`) と `autoflush=True` 引数 (これらはデフォ
+ルトです) はこれを可能にして、通常それらは一緒に使用されるべきです。
 
 
 Fancy classes
@@ -1627,10 +1618,14 @@ Fancy classes
 .. code-block:: python
 
     class Person(object): 
+
         def __init__(self, firstname, lastname, sex): 
-            if not firstname: raise ValueError("arg 'firstname' cannot be blank") 
-            if not lastname: raise ValueError("arg 'lastname' cannot be blank") 
-            if sex not in ["M", "F"]: raise ValueError("sex must be 'M' or 'F'") 
+            if not firstname:
+                raise ValueError("arg 'firstname' cannot be blank") 
+            if not lastname:
+                raise ValueError("arg 'lastname' cannot be blank") 
+            if sex not in ["M", "F"]:
+                raise ValueError("sex must be 'M' or 'F'") 
             self.firstname = firstname 
             self.lastname = lastname 
             self.sex = sex 
@@ -1787,13 +1782,13 @@ SQL 文の結果をログに記録するには、レベルを DEBUG に設定し
 .. way. "sqlalchemy.pool" level INFO tells when connections are
 .. checked out from the engine's connection pool and when they're
 .. returned. "sqlalchemy.orm" and buddies log various ORM
-.. operations. See "Configuring Logging" in the SQLAlchemy manual.
+.. operations. See "Configuring Logging" in the `SQLAlchemy manual`_.
 
 SQLAlchemy には、同様の方法で構成できる他のロガーがいくつかあります。
 "sqlalchemy.pool" レベル INFO は、コネクションがエンジンのコネクション
 プールからいつ調べられるか、そして、それらがいつ返されるかを伝えます。
-"sqlalchemy.orm" と buddies は様々な ORM 操作を記録します。 SQLAlchemy
-マニュアルの "Configuring Logging" を見てください。
+"sqlalchemy.orm" と buddies は様々な ORM 操作を記録します。 `SQLAlchemy
+マニュアル`_ の "Configuring Logging" を見てください。
 
 
 .. Multiple application instances
@@ -1847,7 +1842,7 @@ SQLAlchemy には、同様の方法で構成できる他のロガーがいくつ
         from pylons import config 
         return "Pylons|%s|%s" % (thread.get_ident(), config._current_obj()) 
 
-    Session = scoped_session(sessionmaker(...), pylons_scope) 
+    Session = scoped_session(sessionmaker(), pylons_scope) 
 
 
 .. If you're affected by this, or think you might be, please bring it
@@ -1858,3 +1853,6 @@ SQLAlchemy には、同様の方法で構成できる他のロガーがいくつ
 pylons-discuss メーリングリストに提起してください。ここでのアドバイスが
 正しいことを検証するために、私たちはこの状況に直面している実際のユーザ
 からのフィードバックを必要としています。
+
+.. _`SQLAlchemy manual`: http://www.sqlalchemy.org/docs/
+.. _`SQLAlchemy マニュアル`: http://www.sqlalchemy.org/docs/
