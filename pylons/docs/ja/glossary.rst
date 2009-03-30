@@ -350,6 +350,21 @@
         てください。
 
 
+    .. response
+    ..     Refers to the response to the current request. Available to
+    ..     import from :mod:`pylons` and is available for use in
+    ..     template by the same name. See
+    ..     :class:`~pylons.controllers.util.Response`.
+
+    response
+        (**レスポンス**)
+
+        現在のリクエストに対するレスポンスを指します。 :mod:`pylons` か
+        らインポートすることで、またはテンプレート中では同じ名前によっ
+        て利用可能です。 :class:`~pylons.controllers.util.Response` を
+        見てください。
+
+
     .. route
     ..     Routes determine how the URL's are mapped to the
     ..     controllers and which URL is generated. See

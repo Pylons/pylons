@@ -411,7 +411,7 @@ Routes の match dict の中から必要な値だけが引数として渡され�
 RESTful API で REST コントローラを使う
 ============================================
 
-.. Using the paster restcontroller temlate
+.. Using the paster restcontroller template
 
 paster restcontroller テンプレートを使う
 -----------------------------------------
@@ -470,7 +470,7 @@ RestController コマンドは REST ベースのディスパッチング
 
 .. code-block:: bash
 
-    $ paster restcontroller admin/tracback admin/trackbacks
+    $ paster restcontroller admin/trackback admin/trackbacks
     Creating yourproj/controllers/admin
     Creating yourproj/yourproj/controllers/admin/trackbacks.py
     Creating yourproj/yourproj/tests/functional/test_admin_trackbacks.py

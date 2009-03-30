@@ -769,7 +769,7 @@ hello コントローラの最後の行を、このように修正してくだ�
 
 
 .. Pylons also provides a mechanism for fallback languages, so that
-.. you can specify other languages to be used if the word is ommitted
+.. you can specify other languages to be used if the word is omitted
 .. from the main language's catalog.
 
 Pylons も fallback 言語のためのメカニズムを提供しています。これは、ある
