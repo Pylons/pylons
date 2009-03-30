@@ -148,6 +148,7 @@ Example: Testing a Controller
     from testexample.lib.base import * 
 
     class CommentsController(BaseController): 
+
         def index(self): 
             return 'Basic output' 
 
@@ -174,11 +175,11 @@ Example: Testing a Controller
 
     class TestCommentsController(TestController): 
         def test_index(self): 
-            response = self.app.get(url_for(controller='/comments')) 
+            response = self.app.get(url(controller='/comments')) 
             assert 'Basic output' in response 
 
         def test_sess(self): 
-            response = self.app.get(url_for(controller='/comments', action='sess')) 
+            response = self.app.get(url(controller='/comments', action='sess')) 
             assert response.session['name'] == 'Joe Smith' 
             assert 'Saved a session' in response 
 
@@ -455,7 +456,7 @@ WebTest の fixture テストでは、テストの中でアクセスしたい独
 
     class TestCommentsController(TestController): 
         def test_index(self): 
-            response = self.app.get(url_for(controller='/')) 
+            response = self.app.get(url(controller='/')) 
             assert response.email.name == 'Fred Smith' 
 
 
