@@ -4,11 +4,9 @@ import sys
 from shutil import rmtree
 
 import pkg_resources
-import nose
-import nose.config
 import pylons
 from nose import SkipTest
-from paste.fixture import *
+from paste.fixture import TestFileEnvironment
 
 is_jython = sys.platform.startswith('java')
 
