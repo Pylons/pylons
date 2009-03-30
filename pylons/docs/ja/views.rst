@@ -111,12 +111,10 @@ RDF (セマンティックウェブを支援するグラフベースの表現ス
 *************
 
 .. Template rendering engines are a popular choice for handling the
-.. task of view presentation. In Pylons this functionality is
-.. typically implemented using a template rendering engine.
+.. task of view presentation.
 
 テンプレートレンダリングエンジンは、ビューのプレゼンテーションに関する
-タスクを扱うための一般的な選択です。 Pylons では、通常この機能はテンプ
-レートレンダリングエンジンを使用することで実装されます。
+タスクを扱うための一般的な選択です。
 
 
 .. To return a processed template, it must be rendered and returned by
