@@ -23,7 +23,9 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx']
+
+intersphinx_mapping = {'http://www.sqlalchemy.org/docs/05/': None}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -123,7 +125,8 @@ latex_paper_size = 'letter'
 # (source start file, target name, title, author, document class [howto/manual]).
 latex_documents = [
   ('index', 'Pylons.tex', 'Pylons Reference Documentation', 
-   'Ben Bangert, Graham Higgins, James Gardner', 'manual', 'toctree_only'),
+   'Ben Bangert, Graham Higgins, James Gardner, Philip Jenvey', 'manual',
+   'toctree_only'),
 ]
 
 # Additional stuff for the LaTeX preamble.
