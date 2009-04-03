@@ -135,7 +135,7 @@ class TestCacheDecorator(TestWSGIController):
         assert 'Counter=3' in response
         response = self.get_response(action='test_expire_cache_decorator')
         assert 'Counter=3' in response
-        time.sleep(1)
+        time.sleep(2)
         response = self.get_response(action='test_expire_cache_decorator')
         assert 'Counter=4' in response
         
@@ -192,7 +192,7 @@ class TestCacheDecorator(TestWSGIController):
         assert "Counter=1" in response
         response = self.get_response(action="test_expire_dbm_cache_decorator")
         assert "Counter=1" in response
-        time.sleep(1)
+        time.sleep(2)
         response = self.get_response(action="test_expire_dbm_cache_decorator")
         assert "Counter=2" in response
         
