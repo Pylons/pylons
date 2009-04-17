@@ -242,14 +242,20 @@ Adding a route to match ``/``
 =============================
 
 The controller and action can be specified directly in the :meth:`map.connect`
-statement, as well as the raw URL should be matched.
+statement, as well as the raw URL to be matched:
 
 .. code-block:: python
 
     map.connect('/', controller='main', action='index')
 
-will result in ``/`` being handled by the ``index`` method of the ``main``
+results in ``/`` being handled by the ``index`` method of the ``main``
 controller.
+
+.. note::
+    By default, projects' static files (in the :file:`public/` directory) are
+    served in preference to controllers. New Pylons projects include a welcome
+    page (:file:`public/index.html`) that shows up at the ``/`` url. You'll
+    want to remove this file before mapping a route there.
 
 Generating URLs
 ===============
