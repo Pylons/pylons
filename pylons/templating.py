@@ -138,7 +138,7 @@ def pylons_globals():
         tmpl_context=c,
         config=conf,
         app_globals=g,
-        h=conf.get('pylons.h') or pylons.h._current_obj(),
+        h=conf.get('pylons.h'),
         request=pylons.request._current_obj(),
         response=pylons.response._current_obj(),
         url=pylons.url._current_obj(),

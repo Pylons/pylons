@@ -308,7 +308,7 @@ class PylonsApp(object):
         testenv['response'] = pylons_obj.response
         testenv['tmpl_context'] = pylons_obj.tmpl_context
         testenv['app_globals'] = testenv['g'] = pylons_obj.app_globals
-        testenv['h'] = self.config['pylons.h'] or pylons_obj.h
+        testenv['h'] = self.config['pylons.h']
         testenv['config'] = self.config
         if hasattr(pylons_obj, 'session'):
             testenv['session'] = pylons_obj.session
