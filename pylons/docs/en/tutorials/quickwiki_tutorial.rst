@@ -40,7 +40,7 @@ That's it! Now you can visit http://127.0.0.1:5000 and experiment with the finis
 
 When you've finished, stop the server with :kbd:`Control-C` so we can start developing our own version. 
 
-If you are interested in looking at the latest version of the QuickWiki source code it can be browsed online at http://www.knowledgetap.com/hg/QuickWiki or can be checked out using `Mercurial <http://www.selenic.com/mercurial/>`_:
+If you are interested in looking at the latest version of the QuickWiki source code it can be browsed online at http://bitbucket.org/bbangert/quickwiki/src/ or can be checked out using `Mercurial <http://www.selenic.com/mercurial/>`_:
 
 .. code-block :: bash 
 
