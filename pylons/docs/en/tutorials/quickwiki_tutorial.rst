@@ -44,7 +44,7 @@ If you are interested in looking at the latest version of the QuickWiki source c
 
 .. code-block :: bash 
 
-    $ hg clone http://www.knowledgetap.com/hg/QuickWiki 
+    $ hg clone http://bitbucket.org/bbangert/quickwiki 
 
 .. Note::
 
