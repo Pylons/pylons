@@ -76,16 +76,13 @@
 ------------------------
 .. currentmodule:: webob.etag
 .. automodule:: webob.etag
-.. autoclass:: AnyETag
-    :members:
-.. autoclass:: NoETag
-    :members:
+.. autodata:: AnyETag
+.. autodata:: NoETag
 .. autoclass:: ETagMatcher
     :members:
 .. autoclass:: IfRange
     :members:
-.. autoclass:: NoIfRange
-    :members:
+.. autodata:: NoIfRange
 
 
 mod:`webob.exc`
