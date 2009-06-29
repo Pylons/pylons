@@ -4,7 +4,6 @@ from paste.cascade import Cascade
 from paste.registry import RegistryManager
 from paste.urlparser import StaticURLParser
 from paste.deploy.converters import asbool
-from pylons import config
 from pylons.middleware import error_mapper, ErrorDocuments, ErrorHandler, \
     StaticJavascripts
 from pylons.wsgiapp import PylonsApp
@@ -31,10 +30,10 @@ def make_app(global_conf, full_stack=True, **app_conf):
         defaults to main).
     """
     # Configure the Pylons environment
-    load_environment(global_conf, app_conf)
+    config = load_environment(global_conf, app_conf)
 
     # The Pylons WSGI app
-    app = PylonsApp()
+    app = PylonsApp(config=config)
     
     # CUSTOM MIDDLEWARE HERE (filtered by error handling middlewares)
     
@@ -59,4 +58,5 @@ def make_app(global_conf, full_stack=True, **app_conf):
     javascripts_app = StaticJavascripts()
     static_app = StaticURLParser(config['pylons.paths']['static_files'])
     app = Cascade([static_app, javascripts_app, app])
+    app.config = config
     return app

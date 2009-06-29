@@ -76,3 +76,4 @@ class PylonsPlugin(nose.plugins.Plugin):
         # Initialize a translator for tests that utilize i18n
         translator = _get_translator(pylons.config.get('lang'))
         pylons.translator._push_object(translator)
+
