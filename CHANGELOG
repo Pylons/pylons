@@ -4,8 +4,7 @@ Pylons Changelog
 1.0 (**tip**)
 * Removed CacheMiddleware. cache object is now setup as an attribute on the
   app_globals object for use where needed.
-* Added tests for restcontroller with sub-directory, and fixed generated unit
-  tests. Patches supplied by Michael van Tellingen, fixes #571.
+* WARNING: config only supports dict access
 * WARNING: Method arguments no longer assigned to 'tmpl_context' by default.
 * WARNING: Changed default to strict_tmpl_context.
 * WARNING: Removed legacy pylons.c and pylons.g globals.
@@ -15,6 +14,15 @@ Pylons Changelog
   function from pylons.templating. This also means config no longer accepts
   the add_template_engine option.
 
+0.10 (**branch**)
+* Added tests for restcontroller with sub-directory, and fixed generated unit
+  tests. Patches supplied by Michael van Tellingen, fixes #571.
+
+0.9.7.1 (**branch**)
+* Updated project templates to use actual config instance, rather than the
+  StackedObjectProxy classes.
+* Changed PylonsConfig to be dict subclass, rather than DispatchingConfig
+  subclass.
 
 0.9.7 (February 23, 2009)
 * WARNING: A new option is available to determine whether or not an actions
