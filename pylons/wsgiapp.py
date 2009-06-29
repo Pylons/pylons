@@ -44,7 +44,7 @@ class PylonsApp(object):
     approach.
     
     """
-    def __init__(self, **kwargs):
+    def __init__(self, config=None, **kwargs):
         """Initialize a base Pylons WSGI application
         
         The base Pylons WSGI application requires several keywords, the
@@ -52,7 +52,7 @@ class PylonsApp(object):
         provided then h will be None.
         
         """
-        self.config = config = pylons.config._current_obj()
+        self.config = config = config or pylons.config._current_obj()
         package_name = config['pylons.package']
         self.helpers = config['pylons.h']
         self.globals = config.get('pylons.app_globals') or config['pylons.g']
