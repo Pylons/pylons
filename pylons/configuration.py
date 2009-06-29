@@ -37,7 +37,9 @@ response_defaults = dict(content_type='text/html',
 log = logging.getLogger(__name__)
 
 
-class PylonsConfig(DispatchingConfig):
+config = DispatchingConfig()
+
+class PylonsConfig(dict):
     """Pylons configuration object
 
     The Pylons configuration object is a per-application instance
@@ -131,7 +133,7 @@ class PylonsConfig(DispatchingConfig):
                     setattr(self, name, value)
             return FakeConfig
         else:
-            conf_dict = self.current_conf()
+            conf_dict = self
 
             # Backwards compat for when the option is now in the dict, 
             # and access was attempted via attribute
@@ -145,7 +147,7 @@ class PylonsConfig(DispatchingConfig):
                 return request_defaults
             elif name == 'response_defaults':
                 return response_defaults
-            return getattr(conf_dict, name)
+            return conf_dict[name]
 
     def load_environment(self, tmpl_options=None, map=None, paths=None,
                          environ_config=None, default_charset=None,
@@ -309,12 +311,11 @@ class PylonsConfig(DispatchingConfig):
             warnings.warn(pylons.legacy.root_path, DeprecationWarning, 2)
             paths['root'] = paths['root_path']
         
-        log.debug("Pushing process configuration")
-        self.push_process_config(conf)
+        self.update(conf)
         self.set_defaults(template_engine)
     
     def set_defaults(self, template_engine):
-        conf = self.current_conf()
+        conf = self
         
         # Load the MIMETypes with its default types
         MIMETypes.init()
@@ -443,11 +444,11 @@ class PylonsConfig(DispatchingConfig):
         conf['pylons.errorware'] = errorware
 
 
-config = PylonsConfig()
+pylons_config = PylonsConfig()
 
 
 # Push an empty config so all accesses to config at import time have something
 # to look at and modify. This config will be merged with the app's when it's
 # built in the paste.app_factory entry point.
-initial_config = copy.deepcopy(PylonsConfig.defaults)
-config.push_process_config(initial_config)
+pylons_config.update(copy.deepcopy(PylonsConfig.defaults))
+config.push_process_config(pylons_config)
