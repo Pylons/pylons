@@ -93,8 +93,13 @@ def beaker_cache(key="cache_default", expire="never", type=None,
 
         if type:
             b_kwargs['type'] = type
-            
-        my_cache = pylons.cache.get_cache(namespace, **b_kwargs)
+        
+        cache_obj = getattr(pylons.app_globals, 'cache', None)
+        if not cache_obj:
+            cache_obj = getattr(pylons, 'cache', None)
+        if not cache_obj:
+            raise Exception('No cache object found')
+        my_cache = cache_obj.get_cache(namespace, **b_kwargs)
             
         if expire == "never":
             cache_expire = None
