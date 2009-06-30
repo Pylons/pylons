@@ -28,4 +28,3 @@ class CacheController(BaseController):
         g.counter += 1
         return 'Counter=%s, id=%s' % (g.counter, id)
     test_keyslist_cache_decorator = beaker_cache(key=["id", "id2"])(test_keyslist_cache_decorator)
-    

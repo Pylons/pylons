@@ -152,9 +152,7 @@ class PylonsConfig(dict):
         conf['pylons.package'] = package
 
         conf['debug'] = asbool(conf.get('debug'))
-        
-        self.update(conf)
-        
+                
         # Load the MIMETypes with its default types
         MIMETypes.init()
         
@@ -192,6 +190,9 @@ class PylonsConfig(dict):
                                             conf['app_conf'].get('cache_dir'))
         # Save our errorware values
         conf['pylons.errorware'] = errorware
+        
+        # Load conf dict into self
+        self.update(conf)
 
 
 pylons_config = PylonsConfig()

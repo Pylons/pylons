@@ -19,6 +19,8 @@ Pylons Changelog
   tests. Patches supplied by Michael van Tellingen, fixes #571.
 
 0.9.7.1 (**branch**)
+* Fixed bug with unit tests running the app load twice during testing.
+  Fixes #620.
 * Updated project templates to use actual config instance, rather than the
   StackedObjectProxy classes.
 * Changed PylonsConfig to be dict subclass, rather than DispatchingConfig

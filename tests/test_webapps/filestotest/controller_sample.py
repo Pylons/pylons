@@ -2,13 +2,13 @@ import datetime
 
 from projectname.lib.base import *
 import projectname.lib.helpers as h
-from pylons import request, response, session
+from pylons import request, response, session, url
 from pylons import tmpl_context as c
 from pylons import app_globals as g
 from pylons.decorators import rest
 from pylons.i18n import _, get_lang, set_lang, LanguageError
 from pylons.templating import render_mako, render_genshi, render_jinja2
-from pylons.controllers.util import abort, redirect_to, url_for
+from pylons.controllers.util import abort, redirect_to
 
 class SampleController(BaseController):
     def index(self):
@@ -29,7 +29,7 @@ class SampleController(BaseController):
         return str(g.counter)
     
     def myself(self):
-        return h.url_for()
+        return url.current()
     
     def myparams(self):
         return str(request.params)
