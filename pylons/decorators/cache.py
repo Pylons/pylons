@@ -98,7 +98,8 @@ def beaker_cache(key="cache_default", expire="never", type=None,
         if not cache_obj:
             cache_obj = getattr(pylons, 'cache', None)
         if not cache_obj:
-            raise Exception('No cache object found')
+            raise Exception('No CacheMiddleware or cache object on '
+                            ' app_globals was found')
         
         my_cache = cache_obj.get_cache(namespace, **b_kwargs)
             
