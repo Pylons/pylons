@@ -7,7 +7,7 @@ import pylons
 from pylons.controllers import WSGIController
 from pylons.controllers.util import redirect_to
 
-from __init__ import TestWSGIController, SetupCacheGlobal, ControllerWrap
+from __init__ import TestWSGIController, SetupCacheGlobal, ControllerWrap, TestMiddleware
 
 class BasicWSGIController(WSGIController):
     def __before__(self):
@@ -34,6 +34,10 @@ class BasicWSGIController(WSGIController):
         pylons.response.set_cookie('message', 'Hello World')
         exc = status_map[301]
         raise exc('/elsewhere').exception
+    
+    def use_customnotfound(self):
+        exc = status_map[404]
+        raise exc('Custom not found').exception
     
     def header_check(self):
         pylons.response.headers['Content-Type'] = 'text/plain'
@@ -79,6 +83,7 @@ class TestBasicWSGI(TestWSGIController):
         self.baseenviron = {}
         app = ControllerWrap(BasicWSGIController)
         app = self.sap = SetupCacheGlobal(app, self.baseenviron)
+        app = TestMiddleware(app)
         app = RegistryManager(app)
         self.app = TestApp(app)
         
@@ -98,6 +103,15 @@ class TestBasicWSGI(TestWSGIController):
         self.environ['paste.config']['global_conf']['debug'] = False
         self.environ['pylons.routes_dict']['action'] = 'notthere'
         resp = self.app.get('/', status=404)
+        assert resp.status == 404
+    
+    def test_404exception(self):
+        self.environ['paste.config']['global_conf']['debug'] = False
+        self.environ['pylons.routes_dict']['action'] = 'use_customnotfound'
+        resp = self.app.get('/', status=404)
+        assert 'pylons.controller.exception' in resp.environ
+        exc = resp.environ['pylons.controller.exception']
+        assert exc.detail == 'Custom not found'
         assert resp.status == 404
     
     def test_private_func(self):
