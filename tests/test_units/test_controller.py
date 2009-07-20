@@ -111,7 +111,7 @@ class TestBasicWSGI(TestWSGIController):
         resp = self.app.get('/', status=404)
         assert 'pylons.controller.exception' in resp.environ
         exc = resp.environ['pylons.controller.exception']
-        assert exc.message == 'Custom not found'
+        assert exc.detail == 'Custom not found'
         assert resp.status == 404
     
     def test_private_func(self):
