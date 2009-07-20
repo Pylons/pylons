@@ -84,6 +84,7 @@ class WSGIController(object):
                 
         log_debug = self._pylons_log_debug
         c = self._py_object.c
+        environ = self._py_object.request.environ
         args = None
         
         if argspec[2]:
@@ -112,6 +113,9 @@ class WSGIController(object):
                           httpe.wsgi_response.code, exc_info=True)
             result = httpe
             
+            # Store the exception in the environ
+            environ['pylons.controller.exception'] = httpe
+            
             # 304 Not Modified's shouldn't have a content-type set
             if result.wsgi_response.status_int == 304:
                 result.wsgi_response.headers.pop('Content-Type', None)
@@ -124,7 +128,7 @@ class WSGIController(object):
             warnings.warn("Raising a paste.httpexceptions.HTTPException is "
                           "deprecated, use webob.exc.HTTPException instead",
                           DeprecationWarning, 2)
-            result = httpe.response(pylons.request.environ)
+            result = httpe.response(environ)
             result.headers.pop('Content-Type')
             result._exception = True
 

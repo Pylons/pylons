@@ -14,6 +14,19 @@ try:
 except:
     pass
 
+
+class TestMiddleware(object):
+    def __init__(self, app):
+        self.app = app
+    
+    def __call__(self, environ, start_response):
+        if 'paste.testing_variables' not in environ:
+            environ['paste.testing_variables'] = {}
+        testenv = environ['paste.testing_variables']
+        testenv['environ'] = environ
+        return self.app(environ, start_response)
+
+
 class TestWSGIController(TestCase):
     def setUp(self):
         c = ContextObj()

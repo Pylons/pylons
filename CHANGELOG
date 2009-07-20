@@ -6,6 +6,8 @@ Pylons Changelog
   tests. Patches supplied by Michael van Tellingen, fixes #571.
 
 0.9.7.1 (**branch**)
+* Retain the original controller exception when thrown under
+  environ['pylons.controller.exception'] for use in the error controller.
 * Fixed bug with unit tests running the app load twice during testing.
   Fixes #620.
 * Updated project templates to use actual config instance, rather than the
