@@ -540,7 +540,7 @@ year とマッチした URL 部分は、関数引数の中で名前によって�
 =======================================
 
 .. The controller and action can be specified directly in the
-.. :meth:`map.connect` statement, as well as the raw URL should be
+.. :meth:`map.connect` statement, as well as the raw URL to be
 .. matched.
 
 :meth:`map.connect` 文において、生の URL がマッチするのと同時に、コント
@@ -552,11 +552,27 @@ year とマッチした URL 部分は、関数引数の中で名前によって�
     map.connect('/', controller='main', action='index')
 
 
-.. will result in ``/`` being handled by the ``index`` method of the
+.. results in ``/`` being handled by the ``index`` method of the
 .. ``main`` controller.
 
 これにより、 ``/`` が ``main`` コントローラの ``index`` メソッドで扱わ
 れるようになります。
+
+
+.. .. note::
+..     By default, projects' static files (in the :file:`public/`
+..     directory) are served in preference to controllers. New Pylons
+..     projects include a welcome page (:file:`public/index.html`)
+..     that shows up at the ``/`` url. You'll want to remove this file
+..     before mapping a route there.
+
+.. note::
+
+    デフォルトでは、 プロジェクトの静的 (:file:`public/` ディレクトリの
+    中の) ファイルはコントローラよりも優先されます。新しい Pylons プロ
+    ジェクトは ``/`` URL で表示されるウェルカムページ
+    (:file:`public/index.html`) を含んでいるので、ルーティング設定をす
+    る前にこのファイルを取り除いた方が良いでしょう。
 
 
 .. Generating URLs
