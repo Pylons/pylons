@@ -34,7 +34,9 @@ response_defaults = dict(content_type='text/html',
 log = logging.getLogger(__name__)
 
 
-class PylonsConfig(DispatchingConfig):
+config = DispatchingConfig()
+
+class PylonsConfig(dict):
     """Pylons configuration object
 
     The Pylons configuration object is a per-application instance
@@ -150,10 +152,7 @@ class PylonsConfig(DispatchingConfig):
         conf['pylons.package'] = package
 
         conf['debug'] = asbool(conf.get('debug'))
-        
-        log.debug("Pushing process configuration")
-        self.push_process_config(conf)
-        
+                
         # Load the MIMETypes with its default types
         MIMETypes.init()
         
@@ -191,13 +190,16 @@ class PylonsConfig(DispatchingConfig):
                                             conf['app_conf'].get('cache_dir'))
         # Save our errorware values
         conf['pylons.errorware'] = errorware
+        
+        # Load conf dict into self
+        self.update(conf)
 
 
-config = PylonsConfig()
+pylons_config = PylonsConfig()
 
 
 # Push an empty config so all accesses to config at import time have something
 # to look at and modify. This config will be merged with the app's when it's
 # built in the paste.app_factory entry point.
-initial_config = copy.deepcopy(PylonsConfig.defaults)
-config.push_process_config(initial_config)
+pylons_config.update(copy.deepcopy(PylonsConfig.defaults))
+config.push_process_config(pylons_config)

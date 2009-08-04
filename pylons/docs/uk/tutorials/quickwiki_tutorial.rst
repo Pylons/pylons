@@ -40,11 +40,11 @@ That's it! Now you can visit http://127.0.0.1:5000 and experiment with the finis
 
 When you've finished, stop the server with ``CTRL+C`` because we will start developing our own version. 
 
-If you are interested in looking at the latest version of the QuickWiki source code it can be browsed online at http://www.knowledgetap.com/hg/QuickWiki or can be checked out using Mercurial: 
+If you are interested in looking at the latest version of the QuickWiki source code it can be browsed online at http://bitbucket.org/bbangert/quickwiki/src/ or can be checked out using Mercurial: 
 
 .. code-block:: bash 
 
-    $ hg clone http://www.knowledgetap.com/hg/QuickWiki 
+    $ hg clone http://bitbucket.org/bbangert/quickwiki 
 
 .. Note:: 
 

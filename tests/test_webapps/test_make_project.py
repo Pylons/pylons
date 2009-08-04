@@ -1,15 +1,12 @@
 """Tests against full Pylons projects created from scratch"""
 import os
 import sys
-import time
 from shutil import rmtree
 
 import pkg_resources
-import nose
-import nose.config
 import pylons
 from nose import SkipTest
-from paste.fixture import *
+from paste.fixture import TestFileEnvironment
 
 is_jython = sys.platform.startswith('java')
 
@@ -126,12 +123,6 @@ def _do_proj_test(copydict, emptyfiles=None):
     """Given a dict of files, where the key is a filename in filestotest, the value is
     the destination in the new projects dir. emptyfiles is a list of files that should
     be created and empty."""
-    if is_jython:
-        # Hack for Jython .py/bytecode mtime handling:
-        # http://bugs.jython.org/issue1024 (the issue actually describes
-        # this test)
-        time.sleep(1)
-    
     if pylons.test.pylonsapp:
         pylons.test.pylonsapp = None
     

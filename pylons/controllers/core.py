@@ -81,6 +81,7 @@ class WSGIController(object):
                 
         log_debug = self._pylons_log_debug
         c = self._py_object.tmpl_context
+        environ = self._py_object.request.environ
         args = None
         
         if argspec[2]:
@@ -108,6 +109,9 @@ class WSGIController(object):
                           func.__name__, httpe.__class__.__name__,
                           httpe.wsgi_response.code, exc_info=True)
             result = httpe
+            
+            # Store the exception in the environ
+            environ['pylons.controller.exception'] = httpe
             
             # 304 Not Modified's shouldn't have a content-type set
             if result.wsgi_response.status_int == 304:

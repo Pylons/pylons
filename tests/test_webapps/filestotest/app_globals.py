@@ -9,7 +9,7 @@ class Globals(object):
     life of the application
 
     """
-    def __init__(self):
+    def __init__(self, config):
         """One instance of Globals is created during application
         initialization and is available during requests via the
         'app_globals' variable

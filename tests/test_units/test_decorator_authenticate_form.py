@@ -1,28 +1,44 @@
 # -*- coding: utf-8 -*-
+import logging
+import logging.handlers
 import os
+
 from beaker.middleware import SessionMiddleware
 from paste.fixture import TestApp
 from paste.registry import RegistryManager
+from routes import request_config
+from webhelpers.html import secure_form
+
 from pylons import request
 from pylons.controllers import WSGIController
 from pylons.decorators.secure import authenticate_form, csrf_detected_message
 from pylons.testutil import ControllerWrap, SetupCacheGlobal
-from routes import request_config
-from webhelpers.rails import secure_form_tag
 
 from __init__ import data_dir, TestWSGIController
 
 session_dir = os.path.join(data_dir, 'session')
 
 try:
+    import shutil
     shutil.rmtree(session_dir)
 except:
     pass
 
+
+# Eat the logging handler messages
+my_logger = logging.getLogger()
+my_logger.setLevel(logging.INFO)
+# Add the log message handler to the logger
+class NullHandler(logging.Handler):
+    def emit(self, record):
+        pass
+my_logger.addHandler(NullHandler())
+
+
 class ProtectedController(WSGIController):
     def form(self):
         request_config().environ = request.environ
-        return secure_form_tag.authentication_token()
+        return secure_form.authentication_token()
 
     def protected(self):
         request_config().environ = request.environ
@@ -52,14 +68,14 @@ class TestAuthenticateFormDecorator(TestWSGIController):
 
         self.environ['pylons.routes_dict']['action'] = 'protected'
         response = self.app.post('/protected',
-                                 params={secure_form_tag.token_key: token},
+                                 params={secure_form.token_key: token},
                                  extra_environ=self.environ,
                                  expect_errors=True)
         assert 'Authenticated' in response
 
         self.environ['pylons.routes_dict']['action'] = 'protected'
         response = self.app.put('/protected',
-                                params={secure_form_tag.token_key: token},
+                                params={secure_form.token_key: token},
                                 extra_environ=self.environ,
                                 expect_errors=True)
         assert 'Authenticated' in response

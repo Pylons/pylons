@@ -1,6 +1,8 @@
 """Setup the {{project}} application"""
 import logging
 
+import pylons.test
+
 from {{package}}.config.environment import load_environment
 {{if sqlalchemy}}
 from {{package}}.model import meta
@@ -10,7 +12,9 @@ log = logging.getLogger(__name__)
 
 def setup_app(command, conf, vars):
     """Place any commands to setup {{package}} here"""
-    load_environment(conf.global_conf, conf.local_conf)
+    # Don't reload the app if it was loaded under the testing environment
+    if not pylons.test.pylonsapp:
+        load_environment(conf.global_conf, conf.local_conf)
     {{if sqlalchemy}}
 
     # Create the tables if they don't already exist
