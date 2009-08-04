@@ -82,6 +82,14 @@ Installation for Windows / Python 2.3
     python23_install
     windowsnotes
 
+Pylons on Jython
+----------------
+
+.. toctree::
+    :maxdepth: 2
+
+    jython
+
 Advanced Pylons
 ---------------
 
