@@ -480,7 +480,6 @@ ORM のクラス、およびアプリケーション開始時に呼ばなけれ�
     """The application's model objects"""
     import sqlalchemy as sa
     from sqlalchemy import orm
-    from sqlalchemy.ext.declarative import declarative_base
 
     from myapp.model import meta
 
@@ -593,6 +592,7 @@ SQLAlchemy 0.5 には、 1 ステップでテーブルと ORM クラスを定義
     """The application's model objects"""
     import sqlalchemy as sa
     from sqlalchemy import orm
+    from sqlalchemy.ext.declarative import declarative_base
 
     from myapp.model import meta
 
@@ -945,7 +945,7 @@ PostgreSQL の設定
 コントローラ
 ------------
 
-.. The paster create SQLAlchemy option adds the following to the top
+.. The paster create SQLAlchemy options adds the following to the top
 .. of *myapp/lib/base.py* (the base controller):
 
 paster create の SQLAlchemy オプションは *myapp/lib/base.py* (ベースコ
@@ -1534,7 +1534,7 @@ of Work <http://www.sqlalchemy.org/docs/unitofwork.html>`_ の章を見てく
 
 .. code-block:: python
 
-    binds={"table1": engine1, "table2": engine2} 
+    binds = {"table1": engine1, "table2": engine2} 
     Session = scoped_session(sessionmaker(binds=binds))
 
 
