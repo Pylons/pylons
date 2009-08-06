@@ -468,7 +468,7 @@ The paster create SQLAlchemy option adds the following to the top of
 
 .. code-block:: python
 
-    from myapp.model import meta 
+    from myapp.model import meta
 
 
 and also changes the `.\_\_call\_\_` method to: 
@@ -797,7 +797,7 @@ To bind different tables to different databases, but always with a particular ta
 
 .. code-block:: python
 
-    binds={"table1": engine1, "table2": engine2} 
+    binds = {"table1": engine1, "table2": engine2} 
     Session = scoped_session(sessionmaker(binds=binds))
 
 
