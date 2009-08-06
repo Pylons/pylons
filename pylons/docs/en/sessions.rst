@@ -72,7 +72,7 @@ type
 
 Type of storage used for the session, current types are "dbm", "file", "memcached", "database", and "memory". The storage uses the Container API that is also used by the cache system.
 
-When using dbm files, each user's session is stored in its own dbm file, via the class :class"`beaker.container.DBMNamespaceManager` class.
+When using dbm files, each user's session is stored in its own dbm file, via the :class:`beaker.container.DBMNamespaceManager` class.
 
 When using 'database' or 'memcached', additional configuration options are required as documented in the appropriate section below.
 
@@ -167,7 +167,7 @@ id
 *Accepts:* string
 *Default:* None
 
-Session id for this session. When using sessions with cookies, this parameter is not needed as the session automatically creates, writes and retrieves the value from the request. When using a URL-based method for the session, the id should be retreived from the id data member when the session is first created, and then used in writing new URLs.
+Session id for this session. When using sessions with cookies, this parameter is not needed as the session automatically creates, writes and retrieves the value from the request. When using a URL-based method for the session, the id should be retrieved from the id data member when the session is first created, and then used in writing new URLs.
 
 key
 ^^^
@@ -221,7 +221,9 @@ Custom and caching middleware
 Care should be taken when deciding in which layer to place custom
 middleware. In most cases middleware should be placed between the
 Pylons WSGI application instantiation and the Routes middleware; however,
-if the middleware should run *before* the session object or routing is handled::
+if the middleware should run *before* the session object or routing is handled:
+
+.. code-block:: python
 
     # Routing/Session/Cache Middleware
     app = RoutesMiddleware(app, config['routes.map'])
@@ -278,7 +280,7 @@ for `Cross-site request forgery`__ for more information.
 
 .. __: http://en.wikipedia.org/wiki/Cross-site_request_forgery
 
-Pylons provides an ``authenticate_form`` decorator that does this verfication
+Pylons provides an ``authenticate_form`` decorator that does this verification
 on the behalf of controllers.
 
 These helpers depend on Pylons' ``session`` object.  Most of them can be easily 
