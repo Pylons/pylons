@@ -467,33 +467,32 @@ ORM のクラス、およびアプリケーション開始時に呼ばなけれ�
 に分けると良いかもしれません。
 
 
-.. As of the Pylons 0.9.7 release, SQLAlchemy 0.4.8 is the current
-.. production version, while SQLAlchemy 0.5rc4 is the almost-released
-.. new version.  The default Pylons model was written for SQLAlchemy
-.. 0.4, but also works on 0.5 with a slight change to the
-.. *sessionmaker* arguments.  Here's a sample *model/__init__.py* with
-.. a "persons" table, which is based on the default model with the
-.. comments removed:
+.. Here's a sample *model/__init__.py* with a "persons" table, which
+.. is based on the default model with the comments removed:
 
-Pylons 0.9.7 リリースの時点では SQLAlchemy 0.4.8 が最新の製品バージョン
-です。その一方で、 SQLAlchemy 0.5rc4 がもうすぐリリースされる新しいバー
-ジョンです。デフォルトの Pylons モデルは、SQLAlchemy 0.4 のために書かれ
-ましたが、 *sessionmaker* 引数に小さな変更を加えることで 0.5 でも動きま
-す。ここに、サンプルの *model/__init__.py* と "persons" テーブルがあり
-ます (which is based on the default model with the comments removed):
+ここに、サンプルの *model/__init__.py* と "persons" テーブルがあります
+(which is based on the default model with the comments removed):
 
 
 .. code-block:: python
 
+    """The application's model objects"""
     import sqlalchemy as sa
-    import sqlalchemy.orm as orm
+    from sqlalchemy import orm
 
     from myapp.model import meta
 
     def init_model(engine):
-        sm = orm.sessionmaker(transactional=True, autoflush=True, bind=engine)
-        meta.Session = orm.scoped_session(sm)
+        """Call me before using any of the tables or classes in the model"""
+        ## Reflected tables must be defined and mapped here
+        #global reflected_table
+        #reflected_table = sa.Table("Reflected", meta.metadata, autoload=True,
+        #                           autoload_with=engine)
+        #orm.mapper(Reflected, reflected_table)
+        #
+        meta.Session.configure(bind=engine)
         meta.engine = engine
+
 
     t_persons = sa.Table("persons", meta.metadata,
         sa.Column("id", sa.types.Integer, primary_key=True),
@@ -505,17 +504,6 @@ Pylons 0.9.7 リリースの時点では SQLAlchemy 0.4.8 が最新の製品バ�
         pass
 
     orm.mapper(Person, t_persons)
-
-
-.. SQLAlchemy 0.5 users should change the *sessionmaker* line to this:
-
-SQLAlchemy 0.5 ユーザは sessionmaker の行をこのように変更する必要があり
-ます:
-
-
-.. code-block:: python
-
-    sm = orm.sessionmaker(bind=engine)
 
 
 .. This model has one table, "persons", assigned to the variable
@@ -548,21 +536,25 @@ SQLAlchemy 0.5 ユーザは sessionmaker の行をこのように変更する必
 
 .. code-block:: python
 
+    """The application's model objects"""
     import sqlalchemy as sa
-    import sqlalchemy.orm as orm
+    from sqlalchemy import orm
 
     from myapp.model import meta
 
     def init_model(engine):
+        """Call me before using any of the tables or classes in the model"""
+        # Reflected tables must be defined and mapped here
         global t_persons
+        t_persons = sa.Table("persons", meta.metadata, autoload=True,
+                             autoload_with=engine)
+        orm.mapper(Person, t_persons)
 
-        sm = orm.sessionmaker(transactional=True, autoflush=True, bind=engine)
-        meta.Session = orm.scoped_session(sm)
+        meta.Session.configure(bind=engine)
         meta.engine = engine
 
-        t_persons = sa.Table(meta.metadata, autoload=True, autoload_with=engine)
 
-        orm.mapper(Person, t_persons)
+    t_persons = None
 
     class Person(object):
         pass
@@ -596,18 +588,20 @@ SQLAlchemy 0.5 には、 1 ステップでテーブルと ORM クラスを定義
 
 .. code-block:: python
 
+    """The application's model objects"""
     import sqlalchemy as sa
-    import sqlalchemy.orm as orm
-    import sqlalchemy.ext.declarative as declarative
+    from sqlalchemy import orm
+    from sqlalchemy.ext.declarative import declarative_base
 
     from myapp.model import meta
 
     _Base = declarative_base()
 
     def init_model(engine):
-        sm = orm.sessionmaker(bind=engine)
-        meta.Session = orm.scoped_session(sm)
+        """Call me before using any of the tables or classes in the model"""
+        meta.Session.configure(bind=engine)
         meta.engine = engine
+
 
     class Person(_Base):
         __tablename__ = "persons"
@@ -615,13 +609,6 @@ SQLAlchemy 0.5 には、 1 ステップでテーブルと ORM クラスを定義
         id = sa.Column(sa.types.Integer, primary_key=True)
         name = sa.Column(sa.types.String(100))
         email = sa.Column(sa.types.String(100))
-
-
-.. A full summary of changes in SQLAlchemy 0.5 and upgrade
-.. instructions is at http://www.sqlalchemy.org/trac/wiki/05Migration .
-
-SQLAlchemy 0.5 における変更の完全な概要 (full summary) とアップグレード
-手順が http://www.sqlalchemy.org/trac/wiki/05Migration にあります。
 
 
 .. Relation example 
@@ -691,7 +678,7 @@ SQLAlchemy 0.5 における変更の完全な概要 (full summary) とアップ�
 いうデータベースを使用します:
 
 
-.. code-block:: python
+.. code-block:: pycon
 
     % python 
     Python 2.5.1 (r251:54863, Oct 5 2007, 13:36:32) 
@@ -736,12 +723,12 @@ SQLAlchemy 0.5 における変更の完全な概要 (full summary) とアップ�
     a = model.Person()
     a.name = "Aaa"
     a.email = "aaa@example.com"
-    meta.Session.save(a)
+    meta.Session.add(a)
 
     b = model.Person()
     b.name = "Bbb"
     b.email = "bbb@example.com"
-    meta.Session.save(b)
+    meta.Session.add(b)
 
     meta.Session.commit()
 
@@ -911,10 +898,11 @@ PostgreSQL の設定
 コントローラ
 ------------
 
-.. Add the following to the top of *myapp/lib/base.py* (the base
-.. controller):
+.. The paster create SQLAlchemy option adds the following to the top of
+.. *myapp/lib/base.py* (the base controller):
 
-*myapp/lib/base.py* (ベースコントローラ) の先頭に以下を加えてください:
+paster create SQLAlchemy オプションは *myapp/lib/base.py* (ベースコント
+ローラ) の先頭に以下を追加します:
 
 
 .. code-block:: python
@@ -922,9 +910,9 @@ PostgreSQL の設定
     from myapp.model import meta 
 
 
-.. And change the `.\_\_call\_\_` method to: 
+.. and also changes the `.\_\_call\_\_` method to: 
 
-そして、 `.__call__` メソッドを以下のように変えてください:
+そして、 `.\_\_call\_\_` メソッドを以下のように変更します:
 
 
 .. code-block:: python
@@ -974,9 +962,9 @@ product として自動的に起こりますが、.remove() を呼ぶことで�
     log.info("Successfully setup") 
 
 
-.. Or for SQLAlchemy 0.5 with the Declarative syntax:
+.. Or for the new SQLAlchemy 0.5 Declarative syntax:
 
-または、 SQLAlchemy 0.5 の Declarative 構文に対しては:
+または、 SQLAlchemy 0.5 の新しい Declarative 構文に対しては:
 
 
 .. code-block:: python
@@ -995,7 +983,7 @@ product として自動的に起こりますが、.remove() を呼ぶことで�
 
 .. code-block:: bash
 
-    paster setup-app development.ini 
+    $ paster setup-app development.ini 
 
 
 .. Data queries and modifications
@@ -1031,7 +1019,7 @@ product として自動的に起こりますが、.remove() を呼ぶことで�
 
     mr_jones = Person() 
     mr_jones.name = 'Mr Jones' 
-    meta.Session.save(mr_jones) 
+    meta.Session.add(mr_jones) 
     meta.Session.commit() 
 
 
@@ -1266,7 +1254,7 @@ delete-orphan"` を使用してください:
 
     orm.mapper(Address, t_addresses) 
     orm.mapper(Person, t_people, properties = { 
-    'my_addresses' : orm.relation(
+    'my_addresses': orm.relation(
             Address, secondary=t_addresses_people, cascade="all,delete-orphan"), 
     }) 
 
@@ -1391,7 +1379,8 @@ of Work <http://www.sqlalchemy.org/docs/unitofwork.html>`_ の章を見てく
     from myapp import model 
     from myapp.model import meta 
 
-    class TestModels(TestController): 
+    class TestModels(TestController):
+
         def setUp(self): 
             meta.Session.remove() 
             meta.metadata.create_all(meta.engine) 
@@ -1498,9 +1487,8 @@ of Work <http://www.sqlalchemy.org/docs/unitofwork.html>`_ の章を見てく
 
 .. code-block:: python
 
-    binds={"table1": engine1, "table2": engine2} 
-    Session = scoped_session(sessionmaker(
-                    transactional=True, autoflush=True, binds=binds) 
+    binds = {"table1": engine1, "table2": engine2} 
+    Session = scoped_session(sessionmaker(binds=binds))
 
 
 .. To choose the bindings on a per-request basis, skip the
@@ -1607,13 +1595,16 @@ SQLAlchemy のセッションと Pylons のセッションを混同しないで�
 
 .. "Transactional" sessions are a new feature in SQLAlchemy 0.4; this
 .. is why we're using `Session.commit()` instead of
-.. `Session.flush()`. The `transactional` and `autoflush` args to
-.. `sessionmaker` enable this, and should normally be used together.
+.. `Session.flush()`. The `autocommit=False` (`transactional=True` in
+.. SQLALchemy 0.4) and `autoflush=True` args (which are the defaults)
+.. to `sessionmaker` enable this, and should normally be used
+.. together.
 
 「トランザクション」セッションは SQLAlchemy 0.4 の新機能です。 これは私
 たちが `Session.flush()` の代わりに `Session.commit()` を使用している理
-由です。 `sessionmaker` に対する `transactional` と `autoflush` 引数は
-これを可能にして、通常それらは一緒に使用されるはずです。
+由です。 `sessionmaker` に対する `autocommit=False` (SQLALchemy 0.4 で
+は `transactional=True`) と `autoflush=True` 引数 (これはデフォルトです)
+はこれを可能にして、通常それらは一緒に使用されるはずです。
 
 
 Fancy classes
@@ -1627,10 +1618,14 @@ Fancy classes
 .. code-block:: python
 
     class Person(object): 
+
         def __init__(self, firstname, lastname, sex): 
-            if not firstname: raise ValueError("arg 'firstname' cannot be blank") 
-            if not lastname: raise ValueError("arg 'lastname' cannot be blank") 
-            if sex not in ["M", "F"]: raise ValueError("sex must be 'M' or 'F'") 
+            if not firstname:
+                raise ValueError("arg 'firstname' cannot be blank") 
+            if not lastname:
+                raise ValueError("arg 'lastname' cannot be blank") 
+            if sex not in ["M", "F"]:
+                raise ValueError("sex must be 'M' or 'F'") 
             self.firstname = firstname 
             self.lastname = lastname 
             self.sex = sex 
@@ -1646,7 +1641,7 @@ Fancy classes
             return "%s %s" % (self.firstname, self.lastname) 
 
         @classmethod 
-        def all(class_, order=None, sex=None): 
+        def all(cls, order=None, sex=None): 
             """Return a Query of all Persons. The caller can iterate this,
             do q.count(), add additional conditions, etc. 
             """ 
@@ -1847,7 +1842,7 @@ SQLAlchemy には、同様の方法で構成できる他のロガーがいくつ
         from pylons import config 
         return "Pylons|%s|%s" % (thread.get_ident(), config._current_obj()) 
 
-    Session = scoped_session(sessionmaker(...), pylons_scope) 
+    Session = scoped_session(sessionmaker(), pylons_scope) 
 
 
 .. If you're affected by this, or think you might be, please bring it
