@@ -88,7 +88,7 @@ Using Cache keywords to `render`
 
 .. warning:: Needs to be extended to cover the specific render_* calls introduced in Pylons 0.9.7
 
-All :func:`render <pylons.templating.render_mako` commmands have caching
+All :func:`render <pylons.templating.render_mako>` commands have caching
 functionality built in. To use it, merely add the appropriate cache keyword
 to the render call. 
 
@@ -246,7 +246,7 @@ DBMCache
 
 The DBMCache stores (actually pickles) the response in a dbm style database.
 
-What may not be obvious is that the are two levels of keys.  They are essentially created as one for the function or template name (called the namespace) and one for the ''keys'' within that (called the key).  So for `Some_Function_name`, there is a cache created as one dbm file/database.  As that function is called with different arguments, those arguments are keys within the dbm file. First lets create and populate a cache.  This cache might be a cache for the function `Some_Function_name` called three times with three different arguments: `x, yy, and zzz`:
+What may not be obvious is that there are two levels of keys.  They are essentially created as one for the function or template name (called the namespace) and one for the ''keys'' within that (called the key).  So for `Some_Function_name`, there is a cache created as one dbm file/database.  As that function is called with different arguments, those arguments are keys within the dbm file. First let's create and populate a cache.  This cache might be a cache for the function `Some_Function_name` called three times with three different arguments: `x`, `yy`, and `zzz`:
 
 .. code-block:: python
 
@@ -314,7 +314,7 @@ Using the `ext:database` cache type.
 
 This is identical to the cache usage above with the only difference being the creation of the `CacheManager`.  It is much easier to view the caches outside the beaker code (again for edification and debugging, not for api usage).
 
-SQLite was used in this instance and the SQLite data file can be directly accessed uaing the SQLite command-line utility or the Firefox plug-in:
+SQLite was used in this instance and the SQLite data file can be directly accessed using the SQLite command-line utility or the Firefox plug-in:
 
 .. code-block:: text
 
