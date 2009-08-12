@@ -61,23 +61,24 @@ Pylons では、速度低下が起こる場所に応じて、データをキャ�
     (訳注: 後者が何を指しているのか不明)
 
 
-.. * Controllers - The `cache` object can be imported in controllers and
+.. * Controllers - The `cache` object is available in controllers and
 ..   templates for use in caching anything in Python that can be pickled.
 
-* コントローラ - `cache` オブジェクトは、 Python で pickle 可能なあらゆ
-  るものをキャッシュするのに使用するために、コントローラとテンプレート
-  でインポートすることが可能です。
+ * コントローラ - `cache` オブジェクトは、 Python で pickle 可能なあら
+   ゆるものをキャッシュするのに使用するために、コントローラとテンプレー
+   トで利用可能です。
 
 
 .. * Templates - The results of an entire rendered template can be cached
 ..   using the `3 cache keyword arguments to the render calls
-..   <pylons.templating.render_mako>`_.  These render commands can also
-..   be used inside templates.
+..   <http://pylonshq.com/docs/class-pylons.templating.Buffet.html#render>`_.
+..   These render commands can also be used inside templates.
 
 * テンプレート - レンダリングされたテンプレートの結果全体は `render 呼
   び出しに対する 3 種類のキャッシュキーワード引数
-  <pylons.templating.render_mako>`_ を使ってキャッシュすることができま
-  す。これらの render コマンドは、テンプレートの中で使用できます。
+  <http://pylonshq.com/docs/class-pylons.templating.Buffet.html#render>`_
+  を使ってキャッシュすることができます。これらの render コマンドは、テ
+  ンプレートの中で使用できます。
 
 
 .. * Mako/Myghty Templates - Built-in caching options are available for
@@ -124,15 +125,13 @@ Python 文字列でなければなりません。**
 ジョンのキャッシュを維持したい場合です。
 
 
-.. see also::
+.. see also Stephen Pierzchala's `Caching for Performance
+.. <http://web.archive.org/web/20060424171425/http://www.webperformance.org/caching/caching_for_performance.pdf>`_
+.. (stephen@pierzchala.com)
 
-    .. Stephen Pierzchala's `Caching for Performance
-    .. <http://web.archive.org/web/20060424171425/http://www.webperformance.org/caching/caching_for_performance.pdf>`_
-    .. (stephen@pierzchala.com)
-
-    Stephen Pierzchala の `Caching for Performance
-    <http://web.archive.org/web/20060424171425/http://www.webperformance.org/caching/caching_for_performance.pdf>`_
-    (stephen@pierzchala.com) も読んでください。
+Stephen Pierzchala の `Caching for Performance
+<http://web.archive.org/web/20060424171425/http://www.webperformance.org/caching/caching_for_performance.pdf>`_
+(stephen@pierzchala.com) も読んでください。
 
 
 .. Using the Cache object
@@ -140,18 +139,17 @@ Python 文字列でなければなりません。**
 cache オブジェクトを使う
 ------------------------
 
-.. Inside the controller, the `cache` object needs to be imported before
-.. being used. If an action or block of code makes heavy use of resources
-.. or take a long time to complete, it can be convenient to cache the
-.. result. The `cache` object can cache any Python structure that can be
-.. `pickled <http://docs.python.org/lib/module-pickle.html>`_.
+.. Inside a controller, the `cache` object will be available for use. If
+.. an action or block of code makes heavy use of resources or take a long
+.. time to complete, it can be convenient to cache the result. The
+.. `cache` object can cache any Python structure that can be `pickled
+.. <http://docs.python.org/lib/module-pickle.html>`_.
 
-コントローラの中では、 `cache` オブジェクトを利用する前にインポートする
-必要があります。リソースや時間を集中的に使用するアクションまたはブロッ
-クがコード中にあれば、結果をキャッシュすることは有効な場合があります。
-`cache` オブジェクトは `pickle
-<http://www.python.jp/doc/release/lib/module-pickle.html>`_ 可能などん
-な Python 構造もキャッシュすることができます。
+コントローラの中では、 `cache` オブジェクトが利用可能です。リソースや時
+間を集中的に使用するアクションまたはブロックがコード中にあれば、結果を
+キャッシュすることは有効な場合があります。 `cache` オブジェクトは
+`pickle <http://www.python.jp/doc/release/lib/module-pickle.html>`_ 可
+能などんな Python 構造もキャッシュすることができます。
 
 
 .. Consider an action where it is desirable to cache some code that does

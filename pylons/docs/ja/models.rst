@@ -195,11 +195,13 @@ SQLAlchemy は次のような 3 つの異なったレベルで動かすことが
 90% 簡単です。
 
 
-.. The `SQLAlchemy manual`_ should be your next stop for questions not
-.. covered here. It's very well written and thorough.
+.. The `SQLAlchemy manual <http://www.sqlalchemy.org/docs/>`_ should be
+.. your next stop for questions not covered here. It's very well written
+.. and thorough.
 
-`SQLAlchemy マニュアル`_ はここでカバーされなかった質問のために次に読む
-べきです。 それは、非常に良く書かれており網羅的です。
+`SQLAlchemy マニュアル <http://www.sqlalchemy.org/docs/>`_ はここで
+カバーされなかった質問のために次に読むべきです。 それは、非常に良く書か
+れており網羅的です。
 
  
 .. SQLAlchemy add-ons
@@ -265,8 +267,6 @@ SQL ビルダーとコネクションプールは直接使用されることは�
 
 
 `Storm <http://storm.canonical.com>`_
-
-`Geniusql <http://www.aminus.net/geniusql>`_
 
 DB-API
 ++++++
@@ -470,9 +470,8 @@ ORM のクラス、およびアプリケーション開始時に呼ばなけれ�
 .. Here's a sample *model/__init__.py* with a "persons" table, which
 .. is based on the default model with the comments removed:
 
-ここに "persons" テーブルを含むサンプルの *model/__init__.py* がありま
-す。これはデフォルトのモデルからコメントを除いたものをベースにしていま
-す。
+ここに、サンプルの *model/__init__.py* と "persons" テーブルがあります
+(which is based on the default model with the comments removed):
 
 
 .. code-block:: python
@@ -621,13 +620,13 @@ SQLAlchemy 0.5 には、 1 ステップでテーブルと ORM クラスを定義
 .. many:many relationship on `people.my_addresses`. See `Relational
 .. Databases for People in a Hurry
 .. <http://wiki.pylonshq.com/display/pylonscookbook/Relational+databases+for+people+in+a+hurry>`_
-.. and the `SQLAlchemy manual`_ for details.
+.. and the SQLAlchemy manual for details.
 
 ここに、 `Person` クラスと `Address` クラス、そして
 `people.my_addresses` 上の多対他関連に関する例があります。詳細に関して
 は `Relational Databases for People in a Hurry
 <http://wiki.pylonshq.com/display/pylonscookbook/Relational+databases+for+people+in+a+hurry>`_
-と `SQLAlchemy マニュアル`_ を見てください。
+と SQLAlchemy マニュアルを見てください。
 
 
 .. code-block:: python
@@ -661,52 +660,6 @@ SQLAlchemy 0.5 には、 1 ステップでテーブルと ORM クラスを定義
         }) 
 
 
-.. Using SQLAlchemy's SQL Layer
-
-SQLAlchemy の SQL レイヤーを使用する
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. SQLAlchemy's lower level SQL expressions can be used along with your ORM
-.. models, and organizing them as class methods can be an effective way to keep
-.. the domain logic separate, and write efficient queries that return subsets
-.. of data that don't map cleanly to the ORM.
-
-SQLAlchemy の低レベル SQL 式は ORM モデルと共に使用することができます。
-そしてそれらをクラスメソッドとして組織化するのが、ドメインロジックを分
-離して、 ORM にきれいにマップされないデータの部分集合を返す効率的なクエ
-リを書くための効果的な方法です。
-
-
-.. Consider the case that you want to get all the unique addresses
-.. from the relation example above. The following method in the
-.. Address class can make it easy:
-
-上のリレーションの例で、すべてのユニークなアドレスを得たいケースを考え
-てください。 Address クラスの以下のメソッドはそれを簡単にします:
-
-
-.. code-block:: python
-    
-    # Additional imports
-    from sqlalchemy import select, func
-    
-    from myapp.model.meta import Session
-    
-    
-    class Address(object):
-        @classmethod
-        def unique_addresses(cls):
-            """Query the db for distinct addresses, return them as a list"""
-            query = select([func.distinct(t_addresses.c.address).label('address')],
-                           from_obj=[t_addresses])
-            return [row['address'] for row in Session.execute(query).fetchall()]
-
-
-.. seealso::
-    
-    SQLAlchemy's `SQL Expression Language Tutorial <http://www.sqlalchemy.org/docs/05/sqlexpression.html>`_
-
-
 .. Using the model standalone 
 
 スタンドアローンでモデルを使用する
@@ -738,10 +691,10 @@ SQLAlchemy の低レベル SQL 式は ORM モデルと共に使用すること�
 
 
 .. Now you can use the tables, classes, and Session as described in
-.. the `SQLAlchemy manual`_.  For example:
+.. the SLQAlchemy manual.  For example:
 
-すると、 `SQLAlchemy マニュアル`_ で説明されるようにテーブル、クラス、
-および Session を使用できます。例えば:
+すると、 SLQAlchemy マニュアルで説明されるようにテーブル、クラス、およ
+び Session を使用できます。例えば:
 
 
 .. code-block:: python
@@ -877,13 +830,13 @@ MySQL の場合、 "MySQL server has gone away" エラーを防ぐために
 
 .. Don't be tempted to use the ".echo" option to enable SQL logging
 .. because it may cause duplicate log output. Instead see the
-.. `Logging`_ section below to integrate MySQL logging into Paste's
+.. "Logging" section below to integrate MySQL logging into Paste's
 .. logging system.
 
 SQL ログを有効にするのに ".echo" オプションを使いたくなるかもしれません
 が、それは重複するログ出力を引き起こすので使わないようにしてください。
-代わりに下の `ログ出力`_ セクションを見て、 MySQL ログを Paste のログシ
-ステムに統合してください。
+代わりに下の "Logging" セクションを見て、 MySQL ログを Paste のログシス
+テムに統合してください。
 
 
 .. For PostgreSQL 
@@ -945,21 +898,21 @@ PostgreSQL の設定
 コントローラ
 ------------
 
-.. The paster create SQLAlchemy options adds the following to the top
-.. of *myapp/lib/base.py* (the base controller):
+.. The paster create SQLAlchemy option adds the following to the top of
+.. *myapp/lib/base.py* (the base controller):
 
-paster create の SQLAlchemy オプションは *myapp/lib/base.py* (ベースコ
-ントローラ) の先頭に以下を加えます:
+paster create SQLAlchemy オプションは *myapp/lib/base.py* (ベースコント
+ローラ) の先頭に以下を追加します:
 
 
 .. code-block:: python
 
-    from myapp.model import meta
+    from myapp.model import meta 
 
 
-.. and also changes the `.\_\_call\_\_` method to:
+.. and also changes the `.\_\_call\_\_` method to: 
 
-そして、 `.\_\_call\_\_` メソッドを以下のように変えます:
+そして、 `.\_\_call\_\_` メソッドを以下のように変更します:
 
 
 .. code-block:: python
@@ -1391,14 +1344,14 @@ Further reading
 
 .. The Query object has many other features, including filtering on
 .. conditions, ordering the results, grouping, etc. These are
-.. excellently described in the `SQLAlchemy manual`_. See especially the
+.. excellently described in the SQLAlchemy manual. See especially the
 .. `Data Mapping <http://www.sqlalchemy.org/docs/datamapping.html>`_
 .. and `Session / Unit of Work
 .. <http://www.sqlalchemy.org/docs/unitofwork.html>`_ chapters.
 
 Query オブジェクトには、条件によるフィルタリング、結果の並び替え、グルー
-ピングを含む他の多くの特徴があります。これらは `SQLAlchemy マニュアル`_
-に優れた説明があります。 特に `Data Mapping
+ピングを含む他の多くの特徴があります。これらは SQLAlchemy マニュアルに
+優れた説明があります。 特に `Data Mapping
 <http://www.sqlalchemy.org/docs/datamapping.html>`_ と `Session / Unit
 of Work <http://www.sqlalchemy.org/docs/unitofwork.html>`_ の章を見てく
 ださい。
@@ -1577,7 +1530,7 @@ of Work <http://www.sqlalchemy.org/docs/unitofwork.html>`_ の章を見てく
 ORM SQL 操作は、エンジンを必要とします。 (厳密に言うと、それらは代わり
 にコネクションを使用できますが、それはこのチュートリアルの範囲を超えて
 います。) 実際のデータベースクエリを行うあらゆる SQLAlchemy メソッドに
-対して `bind=` 引数でエンジンを渡すか、またはセッションまたはメタデータ
+対して`bind=` 引数でエンジンを渡すか、またはセッションまたはメタデータ
 にエンジンを bind することができます。このチュートリアルは、それが最も
 柔軟性があるので、上の "Multiple Engines" セクションで示されるように、
 セッションを bind することを勧めます。
@@ -1624,8 +1577,8 @@ SQLAlchemy のセッションと Pylons のセッションを混同しないで�
 .. `Session.query(...)`, etc) implicitly calls the corresponding
 .. method on the appropriate session. You can normally just call the
 .. `Session` class methods and ignore the internal session objects
-.. entirely. See "Contextual/Thread-local Sessions" in the `SQLAlchemy
-.. manual`_ for more information. This is equivalent to SQLAlchemy 0.3's
+.. entirely. See "Contextual/Thread-local Sessions" in the SQLAlchemy
+.. manual for more information. This is equivalent to SQLAlchemy 0.3's
 .. `SessionContext` but with a different API.
 
 本章の `Session` 変数は SQLAlchemy のセッションオブジェクトでは
@@ -1635,7 +1588,7 @@ SQLAlchemy のセッションと Pylons のセッションを混同しないで�
 (`Session.commit()` 、 `Session.query(…)` など) を呼ぶと、対応するメソッ
 ドが適切なセッションを使用して暗黙的に呼ばれます。通常は `Session` クラ
 スメソッドだけを呼んで、内部のセッションオブジェクトを完全に無視できま
-す。 詳しい情報に関して `SQLAlchemy マニュアル`_ の
+す。 詳しい情報に関して SQLAlchemy マニュアルの
 "Contextual/Thread-local Sessions" を見てください。これは SQLAlchemy
 0.3 の `SessionContext` と同等のものですが、 API が異なっています。
 
@@ -1649,9 +1602,9 @@ SQLAlchemy のセッションと Pylons のセッションを混同しないで�
 
 「トランザクション」セッションは SQLAlchemy 0.4 の新機能です。 これは私
 たちが `Session.flush()` の代わりに `Session.commit()` を使用している理
-由です。 `sessionmaker` に対する `autocommit=False` 引数 (SQLALchemy
-0.4 では `transactional=True`) と `autoflush=True` 引数 (これらはデフォ
-ルトです) はこれを可能にして、通常それらは一緒に使用されるべきです。
+由です。 `sessionmaker` に対する `autocommit=False` (SQLALchemy 0.4 で
+は `transactional=True`) と `autoflush=True` 引数 (これはデフォルトです)
+はこれを可能にして、通常それらは一緒に使用されるはずです。
 
 
 Fancy classes
@@ -1829,13 +1782,13 @@ SQL 文の結果をログに記録するには、レベルを DEBUG に設定し
 .. way. "sqlalchemy.pool" level INFO tells when connections are
 .. checked out from the engine's connection pool and when they're
 .. returned. "sqlalchemy.orm" and buddies log various ORM
-.. operations. See "Configuring Logging" in the `SQLAlchemy manual`_.
+.. operations. See "Configuring Logging" in the SQLAlchemy manual.
 
 SQLAlchemy には、同様の方法で構成できる他のロガーがいくつかあります。
 "sqlalchemy.pool" レベル INFO は、コネクションがエンジンのコネクション
 プールからいつ調べられるか、そして、それらがいつ返されるかを伝えます。
-"sqlalchemy.orm" と buddies は様々な ORM 操作を記録します。 `SQLAlchemy
-マニュアル`_ の "Configuring Logging" を見てください。
+"sqlalchemy.orm" と buddies は様々な ORM 操作を記録します。 SQLAlchemy
+マニュアルの "Configuring Logging" を見てください。
 
 
 .. Multiple application instances
@@ -1900,6 +1853,3 @@ SQLAlchemy には、同様の方法で構成できる他のロガーがいくつ
 pylons-discuss メーリングリストに提起してください。ここでのアドバイスが
 正しいことを検証するために、私たちはこの状況に直面している実際のユーザ
 からのフィードバックを必要としています。
-
-.. _`SQLAlchemy manual`: http://www.sqlalchemy.org/docs/
-.. _`SQLAlchemy マニュアル`: http://www.sqlalchemy.org/docs/
