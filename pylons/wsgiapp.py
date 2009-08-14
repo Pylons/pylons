@@ -14,7 +14,6 @@ from routes import request_config
 from webob.exc import HTTPFound, HTTPNotFound
 
 import pylons
-import pylons.legacy
 import pylons.templating
 from pylons.controllers.util import Request, Response
 from pylons.i18n.translation import _get_translator
@@ -69,24 +68,7 @@ class PylonsApp(object):
             log.debug("Raising redirect to %s", url)
             raise HTTPFound(location=url)
         self.redirect_to = redirect_to
-        
-        # Initialize Buffet and all our template engines, default engine is the
-        # first in the template_engines list
-        if config.get('buffet.template_engines'):
-            def_eng = config['buffet.template_engines'][0]
-            self.buffet = pylons.templating.Buffet(
-                def_eng['engine'], 
-                template_root=def_eng['template_root'],
-                **def_eng['template_options'])
-            for e in config['buffet.template_engines'][1:]:
-                log.debug("Initializing additional template engine: %s",
-                          e['engine'])
-                self.buffet.prepare(e['engine'],
-                                    template_root=e['template_root'],
-                                    alias=e['alias'], **e['template_options'])
-        else:
-            self.buffet = None
-        
+                
         # Cache some options for use during requests
         self._session_key = self.environ_config.get('session', 'beaker.session')
         self._cache_key = self.environ_config.get('cache', 'beaker.cache')
@@ -164,17 +146,15 @@ class PylonsApp(object):
         
         registry.register(pylons.app_globals, self.globals)
         registry.register(pylons.config, self.config)
-        registry.register(pylons.h, self.helpers or \
-                          pylons.legacy.load_h(self.package_name))
-        registry.register(pylons.c, pylons_obj.c)
+        registry.register(pylons.tmpl_context, pylons_obj.tmpl_context)
         registry.register(pylons.translator, pylons_obj.translator)
         
-        if self.buffet:
-            registry.register(pylons.buffet, self.buffet)
         if 'session' in pylons_obj.__dict__:
             registry.register(pylons.session, pylons_obj.session)
         if 'cache' in pylons_obj.__dict__:
             registry.register(pylons.cache, pylons_obj.cache)
+        elif 'cache' in pylons_obj.app_globals.__dict__:
+            registry.register(pylons.cache, pylons_obj.app_globals.cache)
         
         if 'routes.url' in environ:
             registry.register(pylons.url, environ['routes.url'])
@@ -208,12 +188,9 @@ class PylonsApp(object):
         pylons_obj.config = self.config
         pylons_obj.request = req
         pylons_obj.response = response
-        pylons_obj.g = pylons_obj.app_globals = self.globals
+        pylons_obj.app_globals = self.globals
         pylons_obj.h = self.helpers
-        
-        if self.buffet:
-            pylons_obj.buffet = self.buffet
-        
+                
         environ['pylons.pylons'] = pylons_obj
         
         environ['pylons.environ_config'] = self.environ_config
@@ -222,11 +199,11 @@ class PylonsApp(object):
         lang = self.config['lang']
         pylons_obj.translator = _get_translator(lang, pylons_config=self.config)
         
-        if self.config['pylons.strict_c']:
-            c = ContextObj()
+        if self.config['pylons.strict_tmpl_context']:
+            tmpl_context = ContextObj()
         else:
-            c = AttribSafeContextObj()
-        pylons_obj.c = c
+            tmpl_context = AttribSafeContextObj()
+        pylons_obj.tmpl_context = tmpl_context
         
         econf = self.config['pylons.environ_config']
         if self._session_key in environ:
@@ -331,9 +308,9 @@ class PylonsApp(object):
         pylons_obj = environ['pylons.pylons']
         testenv['req'] = pylons_obj.request
         testenv['response'] = pylons_obj.response
-        testenv['tmpl_context'] = testenv['c'] = pylons_obj.c
+        testenv['tmpl_context'] = pylons_obj.tmpl_context
         testenv['app_globals'] = testenv['g'] = pylons_obj.app_globals
-        testenv['h'] = self.config['pylons.h'] or pylons_obj.h
+        testenv['h'] = self.config['pylons.h']
         testenv['config'] = self.config
         if hasattr(pylons_obj, 'session'):
             testenv['session'] = pylons_obj.session
