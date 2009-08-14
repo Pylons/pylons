@@ -153,6 +153,8 @@ class PylonsApp(object):
             registry.register(pylons.session, pylons_obj.session)
         if 'cache' in pylons_obj.__dict__:
             registry.register(pylons.cache, pylons_obj.cache)
+        elif 'cache' in pylons_obj.app_globals.__dict__:
+            registry.register(pylons.cache, pylons_obj.app_globals.cache)
         
         if 'routes.url' in environ:
             registry.register(pylons.url, environ['routes.url'])
