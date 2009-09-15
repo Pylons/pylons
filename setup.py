@@ -9,9 +9,9 @@ except ImportError:
 
 version = '0.9.7.1'
 
-tests_require = ['nose']
+tests_require = ['nose', 'Jinja2>=2.2.1']
 if not sys.platform.startswith('java'):
-    tests_require.extend(['Genshi', 'Jinja2', 'coverage>=2.85'])
+    tests_require.extend(['Genshi', 'coverage>=2.85'])
 
 setup(
     name="Pylons",
