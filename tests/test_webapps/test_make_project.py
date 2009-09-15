@@ -319,8 +319,6 @@ def test_project_do_genshi_default():
     do_genshi()
 
 def test_project_do_jinja2():
-    if is_jython:
-        raise SkipTest('Jython does not currently support Jinja2')
     do_jinja2()
 
 def test_project_do_xmlrpc():
