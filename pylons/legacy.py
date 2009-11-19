@@ -96,6 +96,29 @@ uses h):
     from pylons import h
 """)
 
+pylons_c_warning = (
+"pylons.c is deprecated. Your project should import pylons.tmpl_context as c"
+"""instead:
+
+Before:
+    from pylons import c
+
+After:
+    from pylons import tmpl_context as c
+"""
+)
+
+pylons_g_warning = (
+"pylons.g is deprecated. Your project should import pylons.app_globals"
+"If desired, it can be imported as 'g', but its recommended to refer to"
+"it as app_globals for clarity"
+)
+
+pylons_buffet_warning = (
+"pylons.buffet is deprecated and will be removed in Pylons 1.0 entirely."
+"The new render functions should be used instead."
+)
+
 render_response_warning = (
 "render_response is deprecated, please return the response content directly "
 "(via the render function) instead")
@@ -130,13 +153,18 @@ jsonify = deprecated(pylons.decorators.jsonify,
                                moved_to='pylons.decorators.jsonify'))
 
 class DeprecatedStackedObjectProxy(StackedObjectProxy):
-    def _current_obj(*args, **kwargs):
-        warnings.warn(pylons_h_warning, DeprecationWarning, 3)
-        return StackedObjectProxy._current_obj(*args, **kwargs)
-h = DeprecatedStackedObjectProxy(name="h")
-c = DeprecatedStackedObjectProxy(name="tmpl_context")
-g = DeprecatedStackedObjectProxy(name="app_globals")
-buffet = DeprecatedStackedObjectProxy(name="buffet")
+    def __init__(self, *args, **kwargs):
+        self.__warning = kwargs.pop('warning')
+        StackedObjectProxy.__init__(self, *args, **kwargs)
+
+    def _current_obj(self, *args, **kwargs):
+        warnings.warn(self.__warning, DeprecationWarning, 3)
+        return StackedObjectProxy._current_obj(self, *args, **kwargs)
+
+h = DeprecatedStackedObjectProxy(name="h", warning=pylons_h_warning)
+c = DeprecatedStackedObjectProxy(name="tmpl_context", warning=pylons_c_warning)
+g = DeprecatedStackedObjectProxy(name="app_globals", warning=pylons_g_warning)
+buffet = DeprecatedStackedObjectProxy(name="buffet", warning=pylons_buffet_warning)
 
 response_warning = (
 "Returning a Response object from a controller is deprecated, and support for "
