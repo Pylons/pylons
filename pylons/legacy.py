@@ -134,6 +134,9 @@ class DeprecatedStackedObjectProxy(StackedObjectProxy):
         warnings.warn(pylons_h_warning, DeprecationWarning, 3)
         return StackedObjectProxy._current_obj(*args, **kwargs)
 h = DeprecatedStackedObjectProxy(name="h")
+c = DeprecatedStackedObjectProxy(name="tmpl_context")
+g = DeprecatedStackedObjectProxy(name="app_globals")
+buffet = DeprecatedStackedObjectProxy(name="buffet")
 
 response_warning = (
 "Returning a Response object from a controller is deprecated, and support for "
