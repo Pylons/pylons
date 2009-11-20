@@ -115,8 +115,8 @@ class PylonsConfig(dict):
         'pylons.h': None,
         'pylons.request_options': request_defaults.copy(),
         'pylons.response_options': response_defaults.copy(),
-        'pylons.strict_c': False,
-        'pylons.c_attach_args': True,
+        'pylons.strict_tmpl_context': False,
+        'pylons.tmpl_context_attach_args': True,
         'buffet.template_engines': [],
         'buffet.template_options': {},
     }
@@ -143,6 +143,9 @@ class PylonsConfig(dict):
                     warnings.warn(pylons.legacy.config_attr_moved % \
                                    (name, full_name), DeprecationWarning, 3)
                     return conf_dict[full_name]
+            if name in ['pylons.strict_c', 'pylons.c_attach_args']:
+                warnings.warn(pylons.legacy.c_attrib_moved % name,
+                              DeprecationWarning, 3)
             if name == 'request_defaults':
                 return request_defaults
             elif name == 'response_defaults':

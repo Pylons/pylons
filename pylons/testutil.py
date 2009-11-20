@@ -52,6 +52,7 @@ class SetupCacheGlobal(object):
         if self.setup_g:
             py_obj.g = py_obj.app_globals = self.g
             registry.register(pylons.g, self.g)
+            registry.register(pylons.app_globals, self.g)
         translator = gettext.NullTranslations()
         py_obj.translator = translator
         registry.register(pylons.translator, translator)

@@ -16,6 +16,13 @@ config_attr_moved = (
     "The attribute 'config.%s' has moved to the pylons.config dictionary: "
     "Please access it via pylons.config['%s']")
 
+c_attrib_moved = (
+"""The 'c' attributes have changed names:
+    pylons.strict_c  -> pylons.strict_tmpl_context
+    pylons.c_attach_args -> pylons.tmpl_context_attach_args
+"""
+)
+
 config_load_environment = (
 "The pylons.config.Config object is deprecated. Please load the environment "
 "configuration via the pylons.config object in config/environment.py instead, "
@@ -109,13 +116,13 @@ After:
 )
 
 pylons_g_warning = (
-"pylons.g is deprecated. Your project should import pylons.app_globals"
-"If desired, it can be imported as 'g', but its recommended to refer to"
+"pylons.g is deprecated. Your project should import pylons.app_globals "
+"If desired, it can be imported as 'g', but its recommended to refer to "
 "it as app_globals for clarity"
 )
 
 pylons_buffet_warning = (
-"pylons.buffet is deprecated and will be removed in Pylons 1.0 entirely."
+"pylons.buffet is deprecated and will be removed in Pylons 1.0 entirely. "
 "The new render functions should be used instead."
 )
 
@@ -158,7 +165,7 @@ class DeprecatedStackedObjectProxy(StackedObjectProxy):
         StackedObjectProxy.__init__(self, *args, **kwargs)
 
     def _current_obj(self, *args, **kwargs):
-        warnings.warn(self.__warning, DeprecationWarning, 3)
+        warnings.warn(self.__dict__['__warning'], DeprecationWarning, 3)
         return StackedObjectProxy._current_obj(self, *args, **kwargs)
 
 h = DeprecatedStackedObjectProxy(name="h", warning=pylons_h_warning)
