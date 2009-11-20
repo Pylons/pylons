@@ -17,10 +17,7 @@ config_attr_moved = (
     "Please access it via pylons.config['%s']")
 
 c_attrib_moved = (
-"""The 'c' attributes have changed names:
-    pylons.strict_c  -> pylons.strict_tmpl_context
-    pylons.c_attach_args -> pylons.tmpl_context_attach_args
-"""
+"Setting or accessing %s is deprecated. Set / Access it as %s instead."
 )
 
 config_load_environment = (

@@ -120,6 +120,24 @@ class PylonsConfig(dict):
         'buffet.template_engines': [],
         'buffet.template_options': {},
     }
+    
+    def __setitem__(self, name, value):
+        if name in ['pylons.strict_c', 'pylons.c_attach_args']:
+            new_name = name.replace('c', 'tmpl_context')
+            warnings.warn(pylons.legacy.c_attrib_moved % \
+                          (name, new_name),
+                          DeprecationWarning, 3)
+            name = new_name
+        dict.__setitem__(self, name, value)
+
+    def __getitem__(self, name):
+        if name in ['pylons.strict_c', 'pylons.c_attach_args']:
+            new_name = name.replace('c', 'tmpl_context')
+            warnings.warn(pylons.legacy.c_attrib_moved % \
+                          (name, new_name),
+                          DeprecationWarning, 3)
+            name = new_name
+        return dict.__getitem__(self, name)
 
     def __getattr__(self, name):
         # Backwards compatibility
@@ -144,8 +162,11 @@ class PylonsConfig(dict):
                                    (name, full_name), DeprecationWarning, 3)
                     return conf_dict[full_name]
             if name in ['pylons.strict_c', 'pylons.c_attach_args']:
-                warnings.warn(pylons.legacy.c_attrib_moved % name,
+                new_name = name.replace('c', 'tmpl_context')
+                warnings.warn(pylons.legacy.c_attrib_moved % \
+                              (name, new_name),
                               DeprecationWarning, 3)
+                name = new_name
             if name == 'request_defaults':
                 return request_defaults
             elif name == 'response_defaults':
