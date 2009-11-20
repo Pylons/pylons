@@ -154,7 +154,7 @@ jsonify = deprecated(pylons.decorators.jsonify,
 
 class DeprecatedStackedObjectProxy(StackedObjectProxy):
     def __init__(self, *args, **kwargs):
-        self.__warning = kwargs.pop('warning')
+        self.__dict__['__warning'] = kwargs.pop('warning')
         StackedObjectProxy.__init__(self, *args, **kwargs)
 
     def _current_obj(self, *args, **kwargs):
