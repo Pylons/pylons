@@ -19,8 +19,6 @@ Pylons Changelog
   throw deprecation warnings.
 * Added tests for restcontroller with sub-directory, and fixed generated unit
   tests. Patches supplied by Michael van Tellingen, fixes #571.
-
-0.9.7.1 (**branch**)
 * Retain the original controller exception when thrown under
   environ['pylons.controller.exception'] for use in the error controller.
 * Fixed bug with unit tests running the app load twice during testing.
