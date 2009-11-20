@@ -1,7 +1,9 @@
 """The {{project}} WSGI application"""
 import os
 
-from beaker.middleware import CacheMiddleware, SessionMiddleware
+from beaker.cache import CacheManager
+from beaker.middleware import SessionMiddleware
+from beaker.util import parse_cache_config_options
 {{if template_engine == 'mako'}}
 from mako.lookup import TemplateLookup
 {{elif template_engine == 'genshi'}}
@@ -104,7 +106,6 @@ def make_app(global_conf, full_stack=True, static_files=True, **app_conf):
     # Routing/Session/Cache Middleware
     app = RoutesMiddleware(app, config['routes.map'])
     app = SessionMiddleware(app, config)
-    app = CacheMiddleware(app, config)
 
     # CUSTOM MIDDLEWARE HERE (filtered by error handling middlewares)
 
@@ -144,3 +145,4 @@ class Globals(object):
         'app_globals' variable
 
         """
+        self.cache = CacheManager(**parse_cache_config_options(config))

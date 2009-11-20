@@ -242,6 +242,8 @@ class PylonsConfig(dict):
             config.template_engines.append(old_default)
         
         """
+        warnings.warn("add_template_engine is deprecated, use custom render"
+                      " functions instead", DeprecationWarning, 3)
         if not options:
             options = self['buffet.template_options']
         config = dict(engine=engine, template_root=root,
