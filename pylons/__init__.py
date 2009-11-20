@@ -3,7 +3,7 @@ from paste.registry import StackedObjectProxy
 
 from pylons.configuration import config
 
-__all__ = ['app_globals', 'c', 'cache', 'config', 'g', 'request', 'response',
+__all__ = ['app_globals', 'cache', 'config', 'request', 'response',
            'session', 'tmpl_context', 'url']
 
 def __figure_version():

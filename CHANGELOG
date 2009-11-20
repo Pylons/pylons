@@ -15,6 +15,8 @@ Pylons Changelog
   the add_template_engine option.
 
 0.10 (**branch**)
+* Changed 1.0 deprecated pylons.c, pylons.g, pylons.buffet instances to
+  throw deprecation warnings.
 * Added tests for restcontroller with sub-directory, and fixed generated unit
   tests. Patches supplied by Michael van Tellingen, fixes #571.
 
