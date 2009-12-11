@@ -14,14 +14,15 @@ def make_map(config):
     
     # The ErrorController route (handles 404/500 error pages); it should
     # likely stay at the top, ensuring it can always be resolved
-    map.connect('error/:action/:id', controller='error')
+    map.connect('/error/{action}', controller='error')
+    map.connect('/error/{action}/{id}', controller='error')
 
     # CUSTOM ROUTES HERE
     map.resource('restsample', 'restsamples')
     map.resource('restsample', 'restsamples', controller='mysubdir/restsamples', 
         path_prefix='/mysubdir', name_prefix='mysubdir_')
 
-    map.connect('/:controller/:action')
-    map.connect('/:controller/:action/:id')
+    map.connect('/{controller}/{action}')
+    map.connect('/{controller}/{action}/{id}')
 
     return map

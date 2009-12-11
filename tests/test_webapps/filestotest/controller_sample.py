@@ -2,14 +2,14 @@ import datetime
 
 from projectname.lib.base import *
 import projectname.lib.helpers as h
-from pylons import h as deprecated_h
+# from pylons import h as deprecated_h
 from pylons import request, response, session
 from pylons import tmpl_context as c
-from pylons import app_globals as g
+from pylons import app_globals
 from pylons.decorators import rest
 from pylons.i18n import _, get_lang, set_lang, LanguageError
-from pylons.templating import render as old_render, render_genshi, \
-    render_jinja2, render_response
+from pylons.templating import render_mako, render_genshi, \
+    render_jinja2
 from pylons.controllers.util import abort, redirect_to, url_for
 
 class SampleController(BaseController):
@@ -23,12 +23,12 @@ class SampleController(BaseController):
         return 'session incrementer'
     
     def globalup(self):
-        return g.message
+        return app_globals.message
     
     def global_store(self, id=None):
         if id:
-            g.counter += int(id)
-        return str(g.counter)
+            app_globals.counter += int(id)
+        return str(app_globals.counter)
     
     def myself(self):
         return h.url_for()
@@ -40,12 +40,12 @@ class SampleController(BaseController):
         c.test = "This is in c var"
         return render_genshi('testgenshi.html')
 
-    def testdefault_legacy(self):
-        c.test = "This is in c var"
-        return old_render('testgenshi')
+    # def testdefault_legacy(self):
+    #     c.test = "This is in c var"
+    #     return old_render('testgenshi')
         
     def test_template_caching(self):
-        return render_response('/test_mako.html', cache_expire='never')
+        return render_mako('/test_mako.html', cache_expire='never')
     
     def test_only_post(self):
         return 'It was a post!'
@@ -94,5 +94,5 @@ class SampleController(BaseController):
         response.write(_('No languages'))
         return ''
         
-    def deprecated_h(self):
-        return '%s is %s' % (h.url_for(), deprecated_h.url_for())
+    # def deprecated_h(self):
+    #     return '%s is %s' % (h.url_for(), deprecated_h.url_for())
