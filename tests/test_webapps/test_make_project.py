@@ -65,7 +65,7 @@ def paster_create(template_engine='mako', overwrite=False):
         if not overwrite:
             assert fn in res.files_created.keys()
         assert fn in res.stdout
-
+    
     if not overwrite:
         setup = res.files_created[os.path.join('ProjectName','setup.py')]
         setup.mustcontain('0.1')
@@ -342,3 +342,4 @@ def test_project_do_xmlrpc():
 def teardown():
     dir_to_clean = os.path.join(os.path.dirname(__file__), TEST_OUTPUT_DIRNAME)
     rmtree(dir_to_clean)
+
