@@ -8,7 +8,7 @@ from pylons.controllers import WSGIController
 from pylons.decorators.secure import authenticate_form, csrf_detected_message
 from pylons.testutil import ControllerWrap, SetupCacheGlobal
 from routes import request_config
-from webhelpers.rails import secure_form_tag
+from webhelpers.html import secure_form
 
 from __init__ import data_dir, TestWSGIController
 
@@ -22,7 +22,7 @@ except:
 class ProtectedController(WSGIController):
     def form(self):
         request_config().environ = request.environ
-        return secure_form_tag.authentication_token()
+        return secure_form.authentication_token()
 
     def protected(self):
         request_config().environ = request.environ
@@ -52,14 +52,14 @@ class TestAuthenticateFormDecorator(TestWSGIController):
 
         self.environ['pylons.routes_dict']['action'] = 'protected'
         response = self.app.post('/protected',
-                                 params={secure_form_tag.token_key: token},
+                                 params={secure_form.token_key: token},
                                  extra_environ=self.environ,
                                  expect_errors=True)
         assert 'Authenticated' in response
 
         self.environ['pylons.routes_dict']['action'] = 'protected'
         response = self.app.put('/protected',
-                                params={secure_form_tag.token_key: token},
+                                params={secure_form.token_key: token},
                                 extra_environ=self.environ,
                                 expect_errors=True)
         assert 'Authenticated' in response
