@@ -72,11 +72,10 @@ def beaker_cache(key="cache_default", expire="never", type=None,
             return func(*args, **kwargs)
 
         if key:
+            key_dict = kwargs.copy()
+            key_dict.update(_make_dict_from_args(func, args))
             if query_args:
-                key_dict = pylons.request.GET.mixed()
-            else:
-                key_dict = kwargs.copy()
-                key_dict.update(_make_dict_from_args(func, args))
+                key_dict.update(dict(self._py_object.request.GET))
             
             if key != "cache_default":
                 if isinstance(key, list):
