@@ -178,7 +178,6 @@ def do_genshi():
         }
     copydict = {
         'testgenshi.html':'projectname/templates/testgenshi.html',
-        'middleware_def_engine.py':'projectname/config/middleware.py',
         'environment_def_engine.py':'projectname/config/environment.py',
         'functional_sample_controller_sample2.py':'projectname/tests/functional/test_sample2.py'
     }
