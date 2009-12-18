@@ -1,4 +1,5 @@
 from projectname.lib.base import *
+from pylons.controllers import XMLRPCController
 
 class XmlrpcController(XMLRPCController):
     def userstatus(self):
