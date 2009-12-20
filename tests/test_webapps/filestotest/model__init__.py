@@ -1,9 +1,8 @@
-{{if sqlalchemy}}
 """The application's model objects"""
-from {{package}}.model.meta import Session, metadata
+from projectname.model.meta import Session, metadata
 
-#from sqlalchemy import orm, types, Table, Column, ForeignKey
-#from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import types, Column
+from sqlalchemy.ext.declarative import declarative_base
 
 def init_model(engine):
     """Call me before using any of the tables or classes in the model"""
@@ -18,14 +17,15 @@ def init_model(engine):
 ## Declarative object definitions
 ## http://www.sqlalchemy.org/docs/05/reference/ext/declarative.html
 #
-#Base = declarative_base(metadata=metadata)
-#
-#class Foo(Base):
-#    __tablename__ = 'foo'
-#
-#    id = Column(types.Integer, primary_key=True)
-#    bar = Column(types.String(255), nullable=False)
+Base = declarative_base(metadata=metadata)
 
+class Foo(Base):
+    __tablename__ = 'foo'
+
+    id = Column(types.Integer, primary_key=True)
+    bar = Column(types.String(255), nullable=False)
+    def __repr__(self):
+        return "Foo:%s" % self.id
 
 ## Non-reflected tables
 ## http://www.sqlalchemy.org/docs/05/ormtutorial.html
@@ -48,4 +48,3 @@ def init_model(engine):
 #
 #class Reflected(object):
 #    pass
-{{endif}}

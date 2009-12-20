@@ -19,8 +19,7 @@ from pylons.configuration import PylonsConfig
 {{if template_engine == 'mako'}}
 from pylons.error import handle_mako_error
 {{endif}}
-from pylons.middleware import ErrorHandler, StaticJavascripts, \
-    StatusCodeRedirect
+from pylons.middleware import ErrorHandler, StatusCodeRedirect
 from pylons.wsgiapp import PylonsApp
 from routes.middleware import RoutesMiddleware
 

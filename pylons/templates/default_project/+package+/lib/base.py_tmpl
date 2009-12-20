@@ -8,7 +8,7 @@ from pylons.templating import render_{{template_engine}} as render
 {{endif}}
 {{if sqlalchemy}}
 
-from {{package}}.model import meta
+from {{package}}.model.meta import Session
 {{endif}}
 
 class BaseController(WSGIController):
@@ -22,4 +22,4 @@ class BaseController(WSGIController):
         try:
             return WSGIController.__call__(self, environ, start_response)
         finally:
-            meta.Session.remove(){{else}}        return WSGIController.__call__(self, environ, start_response){{endif}}
+            Session.remove(){{else}}        return WSGIController.__call__(self, environ, start_response){{endif}}

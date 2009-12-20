@@ -4,7 +4,7 @@ from projectname.lib.base import *
 import projectname.lib.helpers as h
 from pylons import request, response, session, url
 from pylons import tmpl_context as c
-from pylons import app_globals as g
+from pylons import app_globals
 from pylons.decorators import rest
 from pylons.i18n import _, get_lang, set_lang, LanguageError
 from pylons.templating import render_mako, render_genshi, render_jinja2
@@ -21,12 +21,12 @@ class SampleController(BaseController):
         return 'session incrementer'
     
     def globalup(self):
-        return g.message
+        return app_globals.message
     
     def global_store(self, id=None):
         if id:
-            g.counter += int(id)
-        return str(g.counter)
+            app_globals.counter += int(id)
+        return str(app_globals.counter)
     
     def myself(self):
         return url.current()
@@ -87,4 +87,3 @@ class SampleController(BaseController):
         set_lang([])
         response.write(_('No languages'))
         return ''
-        

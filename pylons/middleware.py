@@ -90,9 +90,8 @@ class StaticJavascripts(object):
     
     """
     def __init__(self, **kwargs):
-        from webhelpers.rails.asset_tag import javascript_path
         self.javascripts_app = \
-            StaticURLParser(os.path.dirname(javascript_path), **kwargs)
+            StaticURLParser('/javascripts/', **kwargs)
         
     def __call__(self, environ, start_response):
         if environ.get('PATH_INFO', '').startswith('/javascripts/'):

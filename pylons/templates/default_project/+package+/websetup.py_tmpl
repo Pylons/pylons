@@ -5,7 +5,7 @@ import pylons.test
 
 from {{package}}.config.environment import load_environment
 {{if sqlalchemy}}
-from {{package}}.model import meta
+from {{package}}.model.meta import Session, metadata
 {{endif}}
 
 log = logging.getLogger(__name__)
@@ -18,5 +18,5 @@ def setup_app(command, conf, vars):
     {{if sqlalchemy}}
 
     # Create the tables if they don't already exist
-    meta.metadata.create_all(bind=meta.engine)
+    metadata.create_all(bind=Session.bind)
     {{endif}}
