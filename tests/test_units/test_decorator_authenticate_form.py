@@ -13,11 +13,6 @@ from pylons import request
 from pylons.controllers import WSGIController
 from pylons.decorators.secure import authenticate_form, csrf_detected_message
 from pylons.testutil import ControllerWrap, SetupCacheGlobal
-<<<<<<< local
-=======
-from routes import request_config
-from webhelpers.html import secure_form
->>>>>>> other
 
 from __init__ import data_dir, TestWSGIController
 
