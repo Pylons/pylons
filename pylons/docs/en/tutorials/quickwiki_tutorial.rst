@@ -101,10 +101,10 @@ The default imports already present in :file:`model/__init__.py` provide SQLAlch
     
     pages_table = sa.Table('pages', meta.metadata, 
                     sa.Column('title', sa.types.Unicode(40), primary_key=True), 
-                    sa.Column('content', sa.types.Unicode(), default='') 
+                    sa.Column('content', sa.types.UnicodeText(), default='') 
                     )
 
-We've defined a table called ``pages`` which has two columns, ``title`` (the primary key) and ``content``. 
+We've defined a table called ``pages`` which has two columns: ``title`` (the primary key), a VARCHAR of 40 characters, and ``content`` a TEXT column of variable sized length. 
 
 .. note :: 
     SQLAlchemy also supports reflecting table information directly from a database. If we had already created the ``pages`` table in our database, SQLAlchemy could have constructed the ``pages_table`` object for us via the ``autoload=True`` parameter in place of the :class:`Column` definitions, like this: 
