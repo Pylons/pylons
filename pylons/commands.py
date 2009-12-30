@@ -481,8 +481,8 @@ class ShellCommand(Command):
         if can_import(helpers_module):
             locs['h'] = sys.modules[helpers_module]
 
-        exec ('from pylons import app_globals, c, config, g, request, '
-              'response, session, tmpl_context, url') in locs
+        exec ('from pylons import app_globals, config, request, response, '
+              'session, tmpl_context, url') in locs
         exec ('from pylons.controllers.util import abort, redirect_to') in locs
         exec 'from pylons.i18n import _, ungettext, N_' in locs
         locs.pop('__builtins__', None)
