@@ -2,7 +2,7 @@
 """The application's model objects"""
 from {{package}}.model.meta import Session, metadata
 
-#from sqlalchemy import orm, types, Table, Column, ForeignKey
+#from sqlalchemy import Column, ForeignKey, Table, orm, types
 #from sqlalchemy.ext.declarative import declarative_base
 
 def init_model(engine):
@@ -10,7 +10,7 @@ def init_model(engine):
     ## Reflected tables must be defined and mapped here
     #global reflected_table
     #reflected_table = Table("Reflected", metadata, autoload=True,
-    #                           autoload_with=engine)
+    #                        autoload_with=engine)
     #orm.mapper(Reflected, reflected_table)
     #
     Session.configure(bind=engine)
