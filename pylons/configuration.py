@@ -310,11 +310,7 @@ class PylonsConfig(dict):
         .. versionchanged:: 0.9.7
             ``template_engine`` is no longer required, and can be set
             to :data:`None` to avoid loading the default one.
-        
-        ``template_engine``
-            Declare the default template engine to setup. Choices are
-            kid, genshi, mako (the default), and pylonsmyghty.
-        
+                
         """
         log.debug("Initializing configuration, package: '%s'", package)
         conf = global_conf.copy()
@@ -338,9 +334,9 @@ class PylonsConfig(dict):
             paths['root'] = paths['root_path']
         
         self.update(conf)
-        self.set_defaults(template_engine)
+        self.set_defaults()
     
-    def set_defaults(self, template_engine):
+    def set_defaults(self, template_engine=None):
         conf = self
         
         # Load the MIMETypes with its default types
