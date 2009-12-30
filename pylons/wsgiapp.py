@@ -10,6 +10,7 @@ import logging
 import sys
 
 import paste.registry
+import pkg_resources
 from routes import request_config
 from webob.exc import HTTPFound, HTTPNotFound
 
@@ -250,6 +251,13 @@ class PylonsApp(object):
         # Check to see if we've cached the class instance for this name
         if controller in self.controller_classes:
             return self.controller_classes[controller]
+        
+        # Check to see if its a dotted name
+        if '.' in controller or ':' in controller:
+            mycontroller = pkg_resources.EntryPoint.parse(
+                'x=%s' % controller).load(False)
+            self.controller_classes[controller] = mycontroller
+            return mycontroller
         
         # Pull the controllers class name, import controller
         full_module_name = self.package_name + '.controllers.' \
