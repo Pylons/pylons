@@ -485,6 +485,7 @@ class ShellCommand(Command):
               'response, session, tmpl_context, url') in locs
         exec ('from pylons.controllers.util import abort, redirect_to') in locs
         exec 'from pylons.i18n import _, ungettext, N_' in locs
+        locs.pop('__builtins__', None)
         
         # Import all objects from the base module
         __import__(base_module)
