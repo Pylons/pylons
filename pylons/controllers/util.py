@@ -129,8 +129,6 @@ def etag_cache(key=None):
     
     Otherwise, the ETag header will be added to the response headers.
 
-    Returns ``pylons.response`` for legacy purposes (``pylons.response``
-    should be used directly instead).
     
     Suggested use is within a Controller Action like so:
     
@@ -159,10 +157,6 @@ def etag_cache(key=None):
         raise status_map[304]().exception
     else:
         log.debug("ETag didn't match, returning response object")
-        # NOTE: Returning the proxy rather than the actual repsonse, to
-        # easily trigger a DeprecationWarning in Controller.__call__
-        # when a controller returns the result of etag_cache
-        return pylons.response
 
 
 def forward(wsgi_app):
