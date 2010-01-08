@@ -148,10 +148,10 @@ def etag_cache(key=None):
         exception if the ETag recieved matches the key provided.
     
     """
-    if_none_match = pylons.request.environ.get('HTTP_IF_NONE_MATCH', None)
+    key = str(key)
     response = pylons.response._current_obj()
     response.headers['ETag'] = key
-    if str(key) == if_none_match:
+    if key in pylons.request.if_none_match:
         log.debug("ETag match, returning 304 HTTP Not Modified Response")
         response.headers.pop('Content-Type', None)
         response.headers.pop('Cache-Control', None)
