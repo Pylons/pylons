@@ -17,6 +17,8 @@ Pylons Changelog
 0.10 (**branch**)
 * Changed 1.0 deprecated pylons.c, pylons.g, pylons.buffet instances to
   throw deprecation warnings.
+* Fixed etag_cache matching when the If-None-Match header contains a comma
+  separated list of etags. Fixes #557. Thanks magicbronson.
 * Added tests for restcontroller with sub-directory, and fixed generated unit
   tests. Patches supplied by Michael van Tellingen, fixes #571.
 * Retain the original controller exception when thrown under
