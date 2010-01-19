@@ -1,7 +1,6 @@
 """Security related decorators"""
 import logging
 import urlparse
-import warnings
 
 from decorator import decorator
 from webhelpers.html import secure_form
@@ -92,31 +91,31 @@ def https(*redirect_args, **redirect_kwargs):
         request = get_pylons(args).request
         if request.scheme.lower() == 'https':
             return func(*args, **kwargs)
-        else:
-            if request.method.upper() != 'POST':
-                # ensure https
-                if not redirect_args or redirect_kwargs:
-                    from routes import url_for
-                    url_doc = (not redirect_args and 'url.current()' or
-                               'url(*args, **kwargs)')
-                    msg = ('Calling https with url_for args is deprecated, '
-                           'use https(lambda: %s) instead' % url_doc)
-                    warnings.warn(msg, DeprecationWarning, 2)
-                    redirect_kwargs['protocol'] = 'https'
-                    url = url_for(*redirect_args, **redirect_kwargs)
-                else:
-                    url = redirect_args[0]
-                    if callable(url):
-                        url = url()
-                # Ensure an https scheme, which also needs a host
-                parts = urlparse.urlparse(url)
-                url = urlparse.urlunparse(('https', parts[1] or request.host) +
-                                          parts[2:])
+        if request.method.upper() == 'POST':
+            # don't allow POSTs (raises an exception)
+            abort(405, headers=[('Allow', 'GET')])
 
-                log.debug('Redirecting non-https request: %s to: %s',
-                          request.path_info, url)
-                redirect(url)
-            else:
-                # don't allow POSTs
-                abort(405, headers=[('Allow', 'GET')])
+        # ensure https
+        if not redirect_args or redirect_kwargs:
+            from routes import url_for
+            import warnings
+            url_doc = (not redirect_args and 'url.current()' or
+                       'url(*args, **kwargs)')
+            msg = ('Calling https with url_for args is deprecated, use '
+                   'https(lambda: %s) instead' % url_doc)
+            warnings.warn(msg, DeprecationWarning, 2)
+            redirect_kwargs['protocol'] = 'https'
+            url = url_for(*redirect_args, **redirect_kwargs)
+        else:
+            url = redirect_args[0]
+            if callable(url):
+                url = url()
+        # Ensure an https scheme, which also needs a host
+        parts = urlparse.urlparse(url)
+        url = urlparse.urlunparse(('https', parts[1] or request.host) +
+                                  parts[2:])
+
+        log.debug('Redirecting non-https request: %s to: %s',
+                  request.path_info, url)
+        redirect(url)
     return decorator(wrapper)
