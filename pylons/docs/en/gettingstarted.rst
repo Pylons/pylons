@@ -13,16 +13,12 @@ throughout to encourage exploration of the various aspects of Pylons.
 Requirements
 ************
 
-* Python 2.3+ (Python 2.4+ highly recommended)
+* Python 2 series above and including 2.4 (Python 3 or later not supported at 
+    this time)
 
 **********
 Installing
 **********
-
-.. warning::
-    
-    These instructions require Python 2.4+. For installing with
-    Python 2.3, see :ref:`python23_installation`.
 
 To avoid conflicts with system-installed Python libraries, Pylons comes with a
 boot-strap Python script that sets up a "virtual" Python environment. Pylons will then be installed under the virtual environment.
@@ -53,7 +49,7 @@ boot-strap Python script that sets up a "virtual" Python environment. Pylons wil
     
     .. code-block:: bash
     
-        $ curl http://pylonshq.com/download/0.9.7/go-pylons.py | python - mydevenv
+        $ curl http://pylonshq.com/download/1.0/go-pylons.py | python - mydevenv
     
     To isolate further from additional system-wide Python libraries, run
     with the --no-site-packages option:
@@ -76,6 +72,17 @@ Or on Window to activate:
     
     > mydevenv\Scripts\activate.bat
 
+.. note::
+    
+    If you get an error such as::
+        
+        ImportError: No module named _md5
+    
+    during the install. It is likely that your Python installation is missing
+    standard libraries needed to run Pylons. Debian and other systems using
+    debian packages most frequently encounter this, make sure to install
+    the ``python-dev`` packages and ``python-hashlib`` packages.
+
 
 Working Directly From the Source Code 
 =====================================
@@ -86,13 +93,13 @@ Check out the latest code:
 
 .. code-block:: bash 
 
-    $ hg clone https://www.knowledgetap.com/hg/pylons-dev Pylons 
+    $ hg clone http://bitbucket.org/bbangert/pylons/
 
 To tell setuptools to use the version in the ``Pylons`` directory: 
 
 .. code-block:: bash 
 
-    $ cd Pylons 
+    $ cd pylons 
     $ python setup.py develop 
 
 The active version of Pylons is now the copy in this directory, and changes made there will be reflected for Pylons apps running.
@@ -175,6 +182,10 @@ The command loads the project's server configuration file in :file:`development.
     if changes are made to Python files or the :file:`development.ini` 
     config file. This is very useful during development. To stop the server
     press :command:`Ctrl+c` or the platform's equivalent.
+    
+    The paster serve command can be run anywhere, as long as the 
+    development.ini path is properly specified. Generally during development
+    it's run in the root directory of the project.
 
 Visiting http://127.0.0.1:5000/ when the server is running will show the welcome page.
 
