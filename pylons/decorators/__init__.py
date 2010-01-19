@@ -232,8 +232,8 @@ def encode_formencode_errors(errors, encoding, encoding_errors='strict'):
                                                    encoding_errors)
     else:
         # Fallback to an iterable (a list)
-        errors = [encode_formencode_errors(error, encoding, encoding_errors) \
-                      for error in errors]
+        errors = [encode_formencode_errors(error, encoding, encoding_errors)
+                  for error in errors]
     return errors
 
 

@@ -22,6 +22,7 @@ def authenticated_form(params):
     return submitted_token is not None and \
         submitted_token == secure_form.authentication_token()
 
+
 def authenticate_form(func, *args, **kwargs):
     """Decorator for authenticating a form
 
@@ -43,6 +44,7 @@ def authenticate_form(func, *args, **kwargs):
                  'REMOTE_ADDR: %s' % (request, request.remote_addr))
         abort(403, detail=csrf_detected_message)
 authenticate_form = decorator(authenticate_form)
+
 
 def https(*redirect_args, **redirect_kwargs):
     """Decorator to redirect to the SSL version of a page if not
