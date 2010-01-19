@@ -76,4 +76,6 @@ class SetupCacheGlobal(object):
         environ['pylons.pylons'] = py_obj
         registry.register(pylons.request, req)
         registry.register(pylons.response, response)
+        if 'routes.url' in environ:
+            registry.register(pylons.url, environ['routes.url'])
         return self.app(environ, start_response)
