@@ -76,7 +76,7 @@ def https(*redirect_args, **redirect_kwargs):
             do_secure()
 
         # redirect to HTTPS version of myself
-        @https(lambda: url.current())
+        @https()
         def get(self):
             do_secure()
 
@@ -97,17 +97,18 @@ def https(*redirect_args, **redirect_kwargs):
             # don't allow POSTs (raises an exception)
             abort(405, headers=[('Allow', 'GET')])
 
-        # ensure https
-        if not redirect_args or redirect_kwargs:
-            from routes import url_for
+        if redirect_kwargs:
+            # XXX: not a foolproof check for url_for arguments, but the
+            # best we can do
             import warnings
-            url_doc = (not redirect_args and 'url.current()' or
-                       'url(*args, **kwargs)')
-            msg = ('Calling https with url_for args is deprecated, use '
-                   'https(lambda: %s) instead' % url_doc)
-            warnings.warn(msg, DeprecationWarning, 2)
+            from routes import url_for
+            warnings.warn('Calling https with url_for args is deprecated, use '
+                          'https(lambda: url(*args, **kwargs)) instead',
+                          DeprecationWarning, 2)
             redirect_kwargs['protocol'] = 'https'
             url = url_for(*redirect_args, **redirect_kwargs)
+        elif not redirect_args:
+            url = request.url
         else:
             url = redirect_args[0]
             if callable(url):
