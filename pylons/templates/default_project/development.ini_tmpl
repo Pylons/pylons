@@ -86,5 +86,5 @@ level = NOTSET
 formatter = generic
 
 [formatter_generic]
-format = %(asctime)s,%(msecs)03d %(levelname)-5.5s [%(name)s] %(message)s
+format = %(asctime)s,%(msecs)03d %(levelname)-5.5s [%(name)s] [%(threadName)s] %(message)s
 datefmt = %H:%M:%S

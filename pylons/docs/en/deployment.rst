@@ -118,7 +118,7 @@ Using our new wiki example again, the ``wiki/config/deployment.ini_tmpl`` file c
     formatter = generic
 
     [formatter_generic]
-    format = %(asctime)s %(levelname)-5.5s [%(name)s] %(message)s
+    format = %(asctime)s %(levelname)-5.5s [%(name)s] [%(threadName)s] %(message)s
 
 
 When the command ``paster make-config wiki wiki_production.ini`` is run, the contents of this file are produced so you should tweak this file to provide sensible default configuration for production deployment of your app. 

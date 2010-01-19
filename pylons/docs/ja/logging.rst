@@ -160,7 +160,7 @@ make-config <package_name> <ini_file>`` で作られる) プロダクション i
     formatter = generic 
 
     [formatter_generic] 
-    format = %(asctime)s %(levelname)-5.5s [%(name)s] %(message)s 
+    format = %(asctime)s %(levelname)-5.5s [%(name)s] [%(threadName)s] %(message)s 
 
 
 .. One root Logger is created that logs only messages at a level above or
