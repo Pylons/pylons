@@ -31,6 +31,8 @@ Pylons Changelog
   session/cache and routes middleware into the project template. This will
   require projects to be updated to include those 3 middleware in the projects
   middleware.py.
+* Added redirect, preferred over redirect_to. Takes an explicit url instead of
+  url_for like arguments
 * Changed to using WebTest instead of paste.fixture for app testing.
 * Added render_mako_def to render def blocks within a mako template.
 * Changes to cache_decorator and cached_template to support Beaker API

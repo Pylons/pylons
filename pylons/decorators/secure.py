@@ -1,10 +1,12 @@
 """Security related decorators"""
 import logging
+import warnings
 
 from decorator import decorator
+from routes import url_for
 from webhelpers.html import secure_form
 
-from pylons.controllers.util import abort, redirect_to
+from pylons.controllers.util import abort, redirect
 from pylons.decorators.util import get_pylons
 
 __all__ = ['authenticate_form', 'https']
@@ -44,29 +46,38 @@ def authenticate_form(func, *args, **kwargs):
 authenticate_form = decorator(authenticate_form)
 
 def https(*redirect_args, **redirect_kwargs):
-    """Decorator to redirect to the SSL version of a page if not currently
-    using HTTPS. Takes as arguments the parameters to pass to redirect_to.
-    (Specify no arguments necessary to redirect the current page).  Apply this
-    decorator to controller methods (actions).
+    """Decorator to redirect to the SSL version of a page if not
+    currently using HTTPS. Takes a url argument to redirect to. Apply
+    this decorator to controller methods (actions).
 
-    Non-https POST requests are aborted (405 response code) by this decorator.
+    Non-https POST requests are aborted (405 response code) by this
+    decorator.
 
     Example:
     
     .. code-block:: python
 
-        @https('/pylons') # redirect to HTTPS /pylons
+        # redirect to HTTPS /pylons
+        @https('/pylons')
         def index(self):
-            #...
+            do_secure()
 
         # redirect to HTTPS /auth/login
-        @https(controller='auth', action='login')
+        @https(url(controller='auth', action='login'))
         def login(self):
-            #...
+            do_secure()
 
-        @https() # redirect to HTTPS version of myself
+        # redirect to HTTPS version of myself            
+        @https(url.current())
         def get(self):
-            #...
+            do_secure()
+
+    .. warning::
+
+        Arguments as would be passed to the
+        :func:`url_for`/:func:`redirect_to` functions are also accepted,
+        but that functionality is pending deprecation. Explicitly
+        specify the url instead.
 
     """
     def wrapper(func, *args, **kwargs):
@@ -76,11 +87,20 @@ def https(*redirect_args, **redirect_kwargs):
             return func(*args, **kwargs)
         else:
             if request.method.upper() != 'POST':
-                redirect_kwargs['protocol'] = 'https' # ensure https
+                # ensure https
+                redirect_kwargs['protocol'] = 'https'
                 log.debug('Redirecting non-https request: %s to redirect '
                           'args: *%r, **%r', request.path_info, redirect_args,
                           redirect_kwargs)
-                redirect_to(*redirect_args, **redirect_kwargs)
+                if len(redirect_kwargs):
+                    # XXX: Not the best detection; this function will
+                    # just have to break one day (probably for 1.0)
+                    msg = ('Calling https with url_for args is pending '
+                           'deprecation, use https(url(*args, **kwargs)) '
+                           'instead')
+                    warnings.warn(msg, PendingDeprecationWarning, 2)
+                redirect(url_for(*redirect_args, **redirect_kwargs))
             else:
-                abort(405, headers=[('Allow', 'GET')]) # don't allow POSTs.
+                # don't allow POSTs
+                abort(405, headers=[('Allow', 'GET')])
     return decorator(wrapper)
