@@ -2,6 +2,9 @@ Pylons Changelog
 ================
 
 0.10 (**branch**)
+* redirect_to is now deprecated, use redirect(url(*args, **kwargs)) instead.
+* url_for like args to the https decorator are now deprecated, pass it a url
+  or a callable returning a url instead.
 * Changed 1.0 deprecated pylons.c, pylons.g, pylons.buffet instances to
   throw deprecation warnings.
 * Fixed etag_cache matching when the If-None-Match header contains a comma

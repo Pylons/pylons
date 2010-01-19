@@ -221,13 +221,12 @@ def redirect_to(*args, **kargs):
     
     .. warning::
 
-        This function is pending deprecation. Pass the result of
-        :func:`url` to :func:`redirect` instead.
+        This function is deprecated. Pass the result of :func:`url` to
+        :func:`redirect` instead.
 
     """
     import warnings
-    warnings.warn('redirect_to is pending deprecation, use '
-                  'redirect(url(*args, **kwargs)) instead.',
-                  PendingDeprecationWarning, 2)
+    warnings.warn('redirect_to is deprecated, use redirect(url(*args, '
+                  '**kwargs)) instead.', DeprecationWarning, 2)
     code = kargs.pop('_code', 302)
     return redirect(url_for(*args, **kargs), code)
