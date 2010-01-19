@@ -49,10 +49,7 @@ def lazify(func):
     """Decorator to return a lazy-evaluated version of the original"""
     def newfunc(*args, **kwargs):
         return LazyString(func, *args, **kwargs)
-    try:
-        newfunc.__name__ = 'lazy_%s' % func.__name__
-    except TypeError: # Python < 2.4
-        pass
+    newfunc.__name__ = 'lazy_%s' % func.__name__
     newfunc.__doc__ = 'Lazy-evaluated version of the %s function\n\n%s' % \
         (func.__name__, func.__doc__)
     return newfunc

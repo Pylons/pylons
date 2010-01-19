@@ -17,8 +17,8 @@ import pylons
 import pylons.templating
 from pylons.controllers.util import Request, Response
 from pylons.i18n.translation import _get_translator
-from pylons.util import AttribSafeContextObj, ContextObj, PylonsContext, \
-    class_name_from_module_name
+from pylons.util import (AttribSafeContextObj, ContextObj, PylonsContext,
+                         class_name_from_module_name)
 
 __all__ = ['PylonsApp']
 

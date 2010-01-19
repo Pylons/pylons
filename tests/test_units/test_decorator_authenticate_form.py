@@ -24,10 +24,10 @@ class ProtectedController(WSGIController):
         request_config().environ = request.environ
         return secure_form.authentication_token()
 
+    @authenticate_form
     def protected(self):
         request_config().environ = request.environ
         return 'Authenticated'
-    protected = authenticate_form(protected)
 
 class TestAuthenticateFormDecorator(TestWSGIController):
     def setUp(self):

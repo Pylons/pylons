@@ -11,25 +11,26 @@ from pylons.testutil import ControllerWrap, SetupCacheGlobal
 from __init__ import TestWSGIController
 
 class HttpsController(WSGIController):
+
+    @https('/pylons')
     def index(self):
         return 'index page'
-    index = https('/pylons')(index)
 
+    @https(controller='auth', action='login')
     def login(self):
         return 'login page'
-    login = https(controller='auth', action='login')(login)
 
+    @https(lambda: url(controller='auth', action='login'))
     def login2(self):
         return 'login2 page'
-    login2 = https(lambda: url(controller='auth', action='login'))(login2)
 
+    @https(lambda: url.current())
     def secure(self):
         return 'secure page'
-    secure = https(lambda: url.current())(secure)
 
+    @https()
     def get(self):
         return 'get page'
-    get = https()(get)
 
 class TestHttpsDecorator(TestWSGIController):
     def setUp(self):

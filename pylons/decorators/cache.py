@@ -2,10 +2,6 @@
 import inspect
 import logging
 import time
-try:
-    set
-except NameError:
-    from sets import Set as set
 
 from decorator import decorator
 from paste.deploy.converters import asbool
@@ -146,8 +142,8 @@ def create_cache_key(func, key_dict=None, self=None):
     else:
         cache_key = func.__name__
     if key_dict:
-        cache_key += " " + " ".join(["%s=%s" % (k, v) for k, v
-                                     in key_dict.iteritems()])
+        cache_key += " " + " ".join("%s=%s" % (k, v)
+                                    for k, v in key_dict.iteritems())
 
     if not kls and self:
         kls = getattr(self, '__class__', None)

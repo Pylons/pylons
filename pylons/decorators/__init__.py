@@ -23,6 +23,7 @@ __all__ = ['jsonify', 'validate']
 
 log = logging.getLogger(__name__)
 
+@decorator
 def jsonify(func, *args, **kwargs):
     """Action decorator that formats output for JSON
 
@@ -42,7 +43,6 @@ def jsonify(func, *args, **kwargs):
         log.warning(msg)
     log.debug("Returning JSON wrapped action output")
     return simplejson.dumps(data)
-jsonify = decorator(jsonify)
 
 
 def validate(schema=None, validators=None, form=None, variable_decode=False,
