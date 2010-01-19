@@ -24,6 +24,10 @@ class HttpsController(WSGIController):
     def secure(self):
         return 'secure page'
 
+    @https()
+    def get(self):
+        return 'get page'
+
 class TestHttpsDecorator(TestWSGIController):
     def setUp(self):
         TestWSGIController.setUp(self)
@@ -78,3 +82,15 @@ class TestHttpsDecorator(TestWSGIController):
         response = self.app.get('/secure', status=200)
         assert 'location' not in response.header_dict
         assert 'secure page' in response
+
+    def test_https_redirect_to_self(self):
+        self.environ['pylons.routes_dict']['action'] = 'get'
+
+        response = self.app.get('/get', status=302)
+        assert response.header_dict.get('location') == \
+            'https://localhost/get'
+
+        self.environ['wsgi.url_scheme'] = 'https'
+        response = self.app.get('/get', status=200)
+        assert 'location' not in response.header_dict
+        assert 'get page' in response
