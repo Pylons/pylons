@@ -11,7 +11,7 @@ below.
 Functions available:
 
 :func:`abort`, :func:`forward`, :func:`etag_cache`, 
-:func:`mimetype`, :func:`redirect`, and :func:`redirect_to`
+:func:`mimetype` and :func:`redirect`
 """
 import base64
 import binascii
@@ -26,7 +26,6 @@ try:
 except ImportError:
     import sha as sha1
 
-from routes import url_for
 from webob import Request as WebObRequest
 from webob import Response as WebObResponse
 from webob.exc import status_map
@@ -202,25 +201,3 @@ def redirect(url, code=302):
     log.debug("Generating %s redirect" % code)
     exc = status_map[code]
     raise exc(location=url).exception
-
-
-def redirect_to(*args, **kargs):
-    """Raises a redirect exception to the URL resolved by Routes'
-    url_for function
-    
-    Optionally, a _code variable may be passed with the status code of
-    the redirect, i.e.::
-
-        redirect_to(controller='home', action='index', _code=303)
-    
-    .. warning::
-
-        This function is deprecated. Pass the result of :func:`url` to
-        :func:`redirect` instead.
-
-    """
-    import warnings
-    warnings.warn('redirect_to is deprecated, use redirect(url(*args, '
-                  '**kwargs)) instead.', DeprecationWarning, 2)
-    code = kargs.pop('_code', 302)
-    return redirect(url_for(*args, **kargs), code)

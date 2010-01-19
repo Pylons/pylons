@@ -13,6 +13,8 @@ Pylons Changelog
 * WARNING: Removed Buffet options, setup, and legacy render/render_response
   function from pylons.templating. This also means config no longer accepts
   the add_template_engine option.
+* WARNING: Removed legacy redirect_to function.
+* WARNING: @https decorator no longer accepts url_for-like arguments.
 
 0.10 (**branch**)
 * redirect_to is now deprecated, use redirect(url(*args, **kwargs)) instead.
