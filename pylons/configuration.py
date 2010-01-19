@@ -279,7 +279,7 @@ class PylonsConfig(dict):
         
         .. note
             This *must* be called at least once, as soon as possible 
-            tosetup all the configuration options.
+            to setup all the configuration options.
         
         ``global_conf``
             Several options are expected to be set for a Pylons web
