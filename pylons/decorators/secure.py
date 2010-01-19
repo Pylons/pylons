@@ -46,7 +46,7 @@ def authenticate_form(func, *args, **kwargs):
         abort(403, detail=csrf_detected_message)
 
 
-def https(url_or_callable):
+def https(url_or_callable=None):
     """Decorator to redirect to the SSL version of a page if not
     currently using HTTPS. Apply this decorator to controller methods
     (actions).
@@ -76,7 +76,7 @@ def https(url_or_callable):
             do_secure()
 
         # redirect to HTTPS version of myself
-        @https(lambda: url.current())
+        @https()
         def get(self):
             do_secure()
 
@@ -90,7 +90,9 @@ def https(url_or_callable):
             # don't allow POSTs (raises an exception)
             abort(405, headers=[('Allow', 'GET')])
 
-        if callable(url_or_callable):
+        if url_or_callable is None:
+            url = request.url
+        elif callable(url_or_callable):
             url = url_or_callable()
         else:
             url = url_or_callable
