@@ -212,7 +212,15 @@ def redirect_to(*args, **kargs):
     the redirect, i.e.::
 
         redirect_to(controller='home', action='index', _code=303)
+    
+    .. warning::
+
+        This function is deprecated. Pass the result of :func:`url` to
+        :func:`redirect` instead.
 
     """
+    import warnings
+    warnings.warn('redirect_to is deprecated, use redirect(url(*args, '
+                  '**kwargs)) instead.', DeprecationWarning, 2)
     code = kargs.pop('_code', 302)
     return redirect(url_for(*args, **kargs), code)
