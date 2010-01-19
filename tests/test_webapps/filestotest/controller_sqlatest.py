@@ -16,7 +16,7 @@ from pylons.decorators import rest
 from pylons.i18n import _, get_lang, set_lang, LanguageError
 from pylons.templating import render_mako, render_genshi, \
     render_jinja2
-from pylons.controllers.util import abort, redirect_to, url_for
+from pylons.controllers.util import abort, redirect
 
 class SampleController(BaseController):
     def index(self):

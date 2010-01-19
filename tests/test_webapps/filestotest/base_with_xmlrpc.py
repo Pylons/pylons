@@ -1,6 +1,6 @@
 from pylons import tmpl_context as c, app_globals, cache, request, session
 from pylons.controllers import WSGIController, XMLRPCController
-from pylons.controllers.util import abort, redirect_to, etag_cache
+from pylons.controllers.util import abort, etag_cache, redirect
 from pylons.decorators import jsonify, validate
 from pylons.templating import render_mako as render
 from pylons.i18n import N_, _, ungettext

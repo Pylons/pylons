@@ -5,7 +5,6 @@ from webob.exc import status_map
 
 import pylons
 from pylons.controllers import WSGIController
-from pylons.controllers.util import redirect_to
 
 from __init__ import TestWSGIController, SetupCacheGlobal, ControllerWrap, TestMiddleware
 
