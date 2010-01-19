@@ -88,6 +88,33 @@ For Routes to become aware of new controllers present in the controller director
 
 On the next request, Routes will rescan the controllers directory and those routes that use the ``:controller`` dynamic part of the path will be able to match the new controller.
 
+Customizing the Controller Name
+-------------------------------
+
+By default, Pylons looks for a controller named 'Something'Controller. This
+naming scheme can be overridden by supplying an optional module-level variable
+called ``__controller__`` to indicate the desired controller class::
+    
+    import logging
+
+    from pylons import request, response, session, tmpl_context as c
+    from pylons.controllers.util import abort, redirect_to
+
+    from helloworld.lib.base import BaseController, render
+
+    log = logging.getLogger(__name__)
+    
+    __controller__ = 'Hello'
+
+    class Hello(BaseController):
+
+        def index(self):
+            # Return a rendered template
+            #return render('/hello.mako')
+            # or, return a string
+            return 'Hello World'
+    
+
 
 Attaching WSGI apps
 -------------------

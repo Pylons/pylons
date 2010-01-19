@@ -38,15 +38,15 @@ master_doc = 'index'
 
 # General substitutions.
 project = 'Pylons'
-copyright = '2008, 2009, Ben Bangert, James Gardner, Philip Jenvey'
+copyright = '2008-2010, Ben Bangert, James Gardner, Philip Jenvey'
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
 #
 # The short X.Y version.
-version = '0.9.7'
+version = '1.0'
 # The full version, including alpha/beta/rc tags.
-release = '0.9.7'
+release = '1.0'
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
