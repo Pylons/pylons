@@ -40,7 +40,7 @@ To trigger an error so that we can explore what's happening just raise an except
     class DocsController(BaseController): 
         def view(self, url): 
             if request.path_info.endswith('docs'): 
-                redirect_to('/docs/') 
+                redirect(url('/docs/'))
             return render('/docs/' + url) 
 
 Since we want to explore the ``session`` and ``request``, we'll need to bind them first. Here's what our action now looks like with the binding and raising an exception: 
@@ -50,7 +50,7 @@ Since we want to explore the ``session`` and ``request``, we'll need to bind the
     def view(self, url): 
         raise "hi" 
         if request.path_info.endswith('docs'): 
-            redirect_to('/docs/') 
+            redirect(url('/docs/'))
         return render('/docs/' + url) 
 
 Here's what exploring the Traceback from the above example looks like (Excerpt of the relevant portion): 
