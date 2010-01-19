@@ -10,17 +10,18 @@ from pylons.controllers import WSGIController, XMLRPCController
 from __init__ import TestWSGIController, SetupCacheGlobal, ControllerWrap
 
 class CacheController(WSGIController):
+
+    @jsonify
     def test_bad_json(self):
         return ["this is neat"]
-    test_bad_json = jsonify(test_bad_json)
 
+    @jsonify
     def test_bad_json2(self):
         return ("this is neat",)
-    test_bad_json2 = jsonify(test_bad_json2)
     
+    @jsonify
     def test_good_json(self):
         return dict(fred=42)
-    test_good_json = jsonify(test_good_json)
 
 environ = {}
 app = ControllerWrap(CacheController)

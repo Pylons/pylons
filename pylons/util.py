@@ -77,7 +77,7 @@ def class_name_from_module_name(module_name):
 
     """
     words = module_name.replace('-', '_').split('_')
-    return ''.join([w.title() for w in words])
+    return ''.join(w.title() for w in words)
 
 
 class PylonsContext(object):
@@ -104,10 +104,9 @@ class ContextObj(object):
     """The :term:`tmpl_context` object, with strict attribute access
     (raises an Exception when the attribute does not exist)"""
     def __repr__(self):
-        attrs = [(name, value)
-                 for name, value in self.__dict__.items()
-                 if not name.startswith('_')]
-        attrs.sort()
+        attrs = sorted((name, value)
+                       for name, value in self.__dict__.iteritems()
+                       if not name.startswith('_'))
         parts = []
         for name, value in attrs:
             value_repr = repr(value)

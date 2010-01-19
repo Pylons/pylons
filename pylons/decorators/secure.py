@@ -22,6 +22,8 @@ def authenticated_form(params):
     return submitted_token is not None and \
         submitted_token == secure_form.authentication_token()
 
+
+@decorator
 def authenticate_form(func, *args, **kwargs):
     """Decorator for authenticating a form
 
@@ -42,7 +44,7 @@ def authenticate_form(func, *args, **kwargs):
         log.warn('Cross-site request forgery detected, request denied: %r '
                  'REMOTE_ADDR: %s' % (request, request.remote_addr))
         abort(403, detail=csrf_detected_message)
-authenticate_form = decorator(authenticate_form)
+
 
 def https(url_or_callable):
     """Decorator to redirect to the SSL version of a page if not

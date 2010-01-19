@@ -493,8 +493,7 @@ class ShellCommand(Command):
         base = sys.modules[base_module]
         base_public = [__name for __name in dir(base) if not \
                        __name.startswith('_') or __name == '_']
-        for name in base_public:
-            locs[name] = getattr(base, name)
+        locs.update((name, getattr(base, name)) for name in base_public)
         locs.update(dict(wsgiapp=wsgiapp, app=test_app))
 
         mapper = tresponse.config.get('routes.map')

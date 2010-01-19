@@ -40,9 +40,9 @@ class ValidatingController(WSGIController):
 </html>
 """
 
+    @validate(schema=NetworkForm, form='new_network')
     def network(self):
         return 'Your network is: %s' % self.form_result.get('new_network')
-    network = validate(schema=NetworkForm, form='new_network')(network)
 
     def view_hello(self):
         return """
@@ -64,22 +64,21 @@ class ValidatingController(WSGIController):
 </html>
 """
 
+    @validate(schema=HelloForm(), post_only=False, form='view_hello')
     def hello(self):
         return str(self.form_result)
-    hello = validate(schema=HelloForm(), post_only=False, form='view_hello')(hello)
 
+    @validate(schema=HelloForm(), post_only=False, form='view_hello',
+              auto_error_formatter=custom_error_formatter)
     def hello_custom(self):
         return str(self.form_result)
-    hello_custom = \
-        validate(schema=HelloForm(), post_only=False, form='view_hello',
-                     auto_error_formatter=custom_error_formatter)(hello_custom)
 
+    @validate(schema=NetworkForm, form='hello_recurse')
     def hello_recurse(self, environ):
         if environ['REQUEST_METHOD'] == 'GET':
             return self.new_network()
         else:
             return 'Your network is: %s' % self.form_result.get('new_network')
-    hello_recurse = validate(schema=NetworkForm, form='hello_recurse')(hello_recurse)
 
 
 class TestValidateDecorator(TestWSGIController):

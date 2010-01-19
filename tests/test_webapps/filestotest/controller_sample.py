@@ -40,18 +40,20 @@ class SampleController(BaseController):
         
     def test_template_caching(self):
         return render_mako('/test_mako.html', cache_expire='never')
-    
+
+    @rest.dispatch_on(GET='test_only_get')
+    @rest.restrict('POST')
     def test_only_post(self):
         return 'It was a post!'
-    test_only_post = rest.dispatch_on(GET='test_only_get')(rest.restrict('POST')(test_only_post))
-    
+
+    @rest.restrict('GET')
     def test_only_get(self):
         return 'It was a get!'
-    test_only_get = rest.restrict('GET')(test_only_get)
-    
+
+    @rest.restrict('POST')
+    @rest.dispatch_on(POST='test_only_post')
     def impossible(self):
         return 'This should never be shown'
-    impossible = rest.restrict('POST')(rest.dispatch_on(POST='test_only_post')(impossible))
 
     def testjinja2(self):
         c.test = "This is in c var"
