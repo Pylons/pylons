@@ -469,7 +469,7 @@ class ShellCommand(Command):
 
         exec ('from pylons import app_globals, c, config, g, request, '
               'response, session, tmpl_context, url') in locs
-        exec ('from pylons.controllers.util import abort, redirect_to') in locs
+        exec ('from pylons.controllers.util import abort, redirect') in locs
         exec 'from pylons.i18n import _, ungettext, N_' in locs
         exec 'from pylons.templating import render' in locs
         
