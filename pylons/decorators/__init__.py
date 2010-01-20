@@ -120,7 +120,6 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
         else:
             params = request.params
         
-        is_unicode_params = isinstance(params, UnicodeMultiDict)
         params = params.mixed()
         if variable_decode:
             log.debug("Running variable_decode on params")
@@ -159,82 +158,17 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
 
             request.environ['pylons.routes_dict']['action'] = form
             response = self._dispatch_call()
-            # XXX: Legacy WSGIResponse support
-            legacy_response = False
-            if hasattr(response, 'content'):
-                form_content = ''.join(response.content)
-                legacy_response = True
-            else:
-                form_content = response
-                response = self._py_object.response
-            
+
             # If the form_content is an exception response, return it
-            if hasattr(form_content, '_exception'):
-                return form_content
-            
-            # Ensure htmlfill can safely combine the form_content, params and
-            # errors variables (that they're all of the same string type)
-            if not is_unicode_params:
-                log.debug("Raw string form params: ensuring the '%s' form and "
-                          "FormEncode errors are converted to raw strings for "
-                          "htmlfill", form)
-                encoding = determine_response_charset(response)
-
-                # WSGIResponse's content may (unlikely) be unicode
-                if isinstance(form_content, unicode):
-                    form_content = form_content.encode(encoding,
-                                                       response.errors)
-
-                # FormEncode>=0.7 errors are unicode (due to being localized
-                # via ugettext). Convert any of the possible formencode
-                # unpack_errors formats to contain raw strings
-                errors = encode_formencode_errors(errors, encoding,
-                                                  response.errors)
-            elif not isinstance(form_content, unicode):
-                log.debug("Unicode form params: ensuring the '%s' form is "
-                          "converted to unicode for htmlfill", form)
-                encoding = determine_response_charset(response)
-                form_content = form_content.decode(encoding)
-
-            form_content = htmlfill.render(form_content, defaults=params,
-                                           errors=errors, **htmlfill_kwargs)
-            if legacy_response:
-                # Let the Controller merge the legacy response
-                response.content = form_content
+            if hasattr(response, '_exception'):
                 return response
-            else:
-                return form_content
+
+            htmlfill_kwargs2 = htmlfill_kwargs.copy()
+            htmlfill_kwargs2.setdefault('encoding', request.charset)
+            return htmlfill.render(response, defaults=params, errors=errors,
+                                   **htmlfill_kwargs2)
         return func(self, *args, **kwargs)
     return decorator(wrapper)
-
-
-def determine_response_charset(response):
-    """Determine the charset of the specified Response object,
-    returning the default system encoding when none is set"""
-    charset = response.charset
-    if charset is None:
-        charset = sys.getdefaultencoding()
-    log.debug("Determined result charset to be: %s", charset)
-    return charset
-
-
-def encode_formencode_errors(errors, encoding, encoding_errors='strict'):
-    """Encode any unicode values contained in a FormEncode errors dict
-    to raw strings of the specified encoding"""
-    if errors is None or isinstance(errors, str):
-        # None or Just incase this is FormEncode<=0.7
-        pass
-    elif isinstance(errors, unicode):
-        errors = errors.encode(encoding, encoding_errors)
-    elif isinstance(errors, dict):
-        for key, value in errors.iteritems():
-            errors[key] = encode_formencode_errors(value, encoding,
-                                                   encoding_errors)
-    else:
-        # Fallback to an iterable (a list)
-        errors = [encode_formencode_errors(error, encoding, encoding_errors)
-                  for error in errors]
-    return errors
 
 
 def pylons_formencode_gettext(value):

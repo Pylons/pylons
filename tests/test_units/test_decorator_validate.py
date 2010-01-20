@@ -2,7 +2,7 @@
 from paste.fixture import TestApp
 from paste.registry import RegistryManager
 
-from pylons.decorators import validate, encode_formencode_errors
+from pylons.decorators import validate
 
 from pylons.controllers import WSGIController
 
@@ -126,28 +126,3 @@ class TestValidateDecorator(TestWSGIController):
         assert "[None, None, u'Please enter an integer value']" in response
         assert ("""<p><span class="pylons-error">[None, None, u'Please enter """
                 """an integer value']</span></p>""") in response
-
-def test_encode_formencode_errors():
-    assert None == encode_formencode_errors(None, 'utf-8')
-    assert 'Invalid' == encode_formencode_errors('Invalid', 'utf-8')
-    errors = encode_formencode_errors(u'Invalid', 'utf-8')
-    assert 'Invalid' == errors
-    assert isinstance(errors, str)
-    assert 'Росси́я' == encode_formencode_errors(u'Росси́я', 'utf-8')
-    errors = encode_formencode_errors(dict(hello=u'Росси́я'), 'iso-8859-1', 'replace')
-    assert errors == dict(hello=u'Росси́я'.encode('iso-8859-1', 'replace'))
-    assert isinstance(errors['hello'], str)
-    errors = encode_formencode_errors({'hello': [None, None, u'Invalid']}, 'utf-8')
-    assert {'hello': [None, None, 'Invalid']} == errors
-    assert isinstance(errors['hello'][2], str)
-    orig_errors = {'a': [u'Invalid'],
-                   'b': {'b2': [u'Invalid', None]},
-                   'c': [None, u'Invalid',
-                         {'c2': [u'Invalid', u'Invalid']},
-                         [u'Invalid', None]],
-                   'd': 'Hello'}
-    e = encode_formencode_errors(orig_errors, 'utf-8')
-    assert e == orig_errors
-    for i in (e['a'][0], e['b']['b2'][0], e['c'][1], e['c'][2]['c2'][0],
-              e['c'][2]['c2'][1], e['c'][3][0], e['d']):
-        assert isinstance(i, str)
