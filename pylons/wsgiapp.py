@@ -11,7 +11,6 @@ import sys
 
 import paste.registry
 import pkg_resources
-from routes import request_config
 from webob.exc import HTTPFound, HTTPNotFound
 
 import pylons
@@ -226,11 +225,7 @@ class PylonsApp(object):
         returned.
         
         """
-        # Update the Routes config object in case we're using Routes
-        config = request_config()
-        config.redirect = self.redirect_to
         match = environ['wsgiorg.routing_args'][1]
-        
         environ['pylons.routes_dict'] = match
         controller = match.get('controller')
         if not controller:

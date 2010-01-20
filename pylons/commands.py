@@ -44,8 +44,7 @@ import sys
 
 import paste.fixture
 import paste.registry
-import paste.deploy.config
-from paste.deploy import loadapp, appconfig
+from paste.deploy import loadapp
 from paste.script.command import Command, BadCommand
 from paste.script.filemaker import FileOp
 from tempita import paste_script_template_renderer
@@ -430,17 +429,6 @@ class ShellCommand(Command):
             # Configure logging from the config file
             self.logging_file_config(config_file)
         
-        # XXX: Note, initializing CONFIG here is Legacy support. pylons.config
-        # will automatically be initialized and restored via the registry
-        # restorer along with the other StackedObjectProxys
-        # Load app config into paste.deploy to simulate request config
-        # Setup the Paste CONFIG object, adding app_conf/global_conf for legacy
-        # code
-        conf = appconfig(config_name, relative_to=here_dir)
-        conf.update(dict(app_conf=conf.local_conf,
-                         global_conf=conf.global_conf))
-        paste.deploy.config.CONFIG.push_thread_config(conf)
-
         # Load locals and populate with objects for use in shell
         sys.path.insert(0, here_dir)
 
