@@ -17,6 +17,7 @@ import base64
 import binascii
 import hmac
 import logging
+import re
 try:
     import cPickle as pickle
 except ImportError:
@@ -142,13 +143,16 @@ def etag_cache(key=None):
     
     .. note::
         This works because etag_cache will raise an HTTPNotModified
-        exception if the ETag recieved matches the key provided.
+        exception if the ETag received matches the key provided.
     
     """
     key = str(key)
+    IF_NONE_MATCH = re.compile('(?:W/)?(?:"([^"]*)",?\s*)')
+    if_none_matches = IF_NONE_MATCH.findall(
+        pylons.request.environ.get('HTTP_IF_NONE_MATCH', ''))
     response = pylons.response._current_obj()
-    response.headers['ETag'] = key
-    if key in pylons.request.if_none_match:
+    response.headers['ETag'] = '"%s"' % key
+    if str(key) in if_none_matches:
         log.debug("ETag match, returning 304 HTTP Not Modified Response")
         response.headers.pop('Content-Type', None)
         response.headers.pop('Cache-Control', None)
