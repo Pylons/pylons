@@ -38,6 +38,9 @@ __all__ = ['abort', 'etag_cache', 'redirect', 'redirect_to', 'Request',
 
 log = logging.getLogger(__name__)
 
+IF_NONE_MATCH = re.compile('(?:W/)?(?:"([^"]*)",?\s*)')
+
+
 class Request(WebObRequest):
     """WebOb Request subclass
     
@@ -146,8 +149,6 @@ def etag_cache(key=None):
         exception if the ETag received matches the key provided.
     
     """
-    key = str(key)
-    IF_NONE_MATCH = re.compile('(?:W/)?(?:"([^"]*)",?\s*)')
     if_none_matches = IF_NONE_MATCH.findall(
         pylons.request.environ.get('HTTP_IF_NONE_MATCH', ''))
     response = pylons.response._current_obj()
