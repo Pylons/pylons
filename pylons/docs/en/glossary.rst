@@ -48,6 +48,12 @@ Glossary
         no way an OOP language, but thanks in part to CFCs, it does boast
         some of the attributes that make OOP languages so popular.
 
+    
+    config
+        The :class:`~pylons.configuration.PylonsConfig` instance for a given
+        application. This can be accessed as ``pylons.config`` after an 
+        Pylons application has been loaded.
+    
     controller
         The 'C' in MVC. The controller is given a request, does the necessary
         logic to prepare data for display, then renders a template with

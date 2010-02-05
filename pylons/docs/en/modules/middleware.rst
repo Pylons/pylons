@@ -37,14 +37,3 @@ EvalException
 
 :mod:`weberror.evalexception`
 :class:`weberror.evalexception.EvalException`
-
-Legacy
-------
-
-.. versionchanged:: 0.9.7
-    These functions were deprecated in Pylons 0.9.7, and have been superceded
-    by the :class:`StatusCodeRedirect` middleware.
-
-.. autofunction:: pylons.middleware.ErrorDocuments
-.. autofunction:: pylons.middleware.error_mapper
-

@@ -7,7 +7,7 @@ except ImportError:
     use_setuptools()
     from setuptools import setup, find_packages
 
-version = '1.0'
+version = '1.0b1'
 
 tests_require = ['nose', 'Jinja2>=2.2.1']
 if not sys.platform.startswith('java'):
@@ -85,7 +85,7 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
         "WebTest>=1.1", "Tempita>=0.2",
     ],
     dependency_links=[
-        "http://www.pylonshq.com/download/0.9.7"
+        "http://www.pylonshq.com/download/1.0"
     ],
     classifiers=[
         "Development Status :: 5 - Production/Stable",

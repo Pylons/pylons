@@ -4,9 +4,6 @@
 Controller utilities, Request and Response objects
 ==================================================
 
-.. _controllers_util:
-
-
 The Request object
 ==================
 
