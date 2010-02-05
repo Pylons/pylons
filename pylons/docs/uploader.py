@@ -107,7 +107,7 @@ for filename in images:
     headers['Content-Length'] = str(len(file_content))
     resp, data = http.request(image_uri + '?version=%s&project=%s&name=%s' %
                               (basedata['version'], basedata['project'], filename),
-                              body=file_content, headers=headers)
+                              'POST', body=file_content, headers=headers)
     status_code = int(resp.status)
     if status_code == 200:
         print "Uploaded %s" % filename

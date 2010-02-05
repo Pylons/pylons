@@ -42,6 +42,10 @@ Pylons changes from 0.9.7 to 1.0:
         app = SessionMiddleware(app, config)
 
         # CUSTOM MIDDLEWARE HERE (filtered by error handling middlewares)
+    
+    Note that the CacheMiddleware is no longer setup by default through
+    middleware, its now setup under :term:`app_globals` inside its 
+    instantiaion in :file:`lib/app_globals.py`.
         
 * Change all instances of ``redirect_to(...)`` -> ``redirect(url(...))``
     
