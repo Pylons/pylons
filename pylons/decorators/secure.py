@@ -3,10 +3,7 @@ import logging
 import urlparse
 
 from decorator import decorator
-try:
-    from webhelpers.html import secure_form
-except ImportError:
-    import webhelpers.html.secure_form as secure_form
+import webhelpers.html.secure_form as secure_form
 
 from pylons.controllers.util import abort, redirect
 from pylons.decorators.util import get_pylons
