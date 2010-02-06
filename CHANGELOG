@@ -1,7 +1,7 @@
 Pylons Changelog
 ================
 
-1.0 (**tip**)
+1.0b1 (February 5, 2009)
 * Removed CacheMiddleware. cache object is now setup as an attribute on the
   app_globals object for use where needed.
 * WARNING: config only supports dict access
@@ -16,7 +16,7 @@ Pylons Changelog
 * WARNING: Removed legacy redirect_to function.
 * WARNING: @https decorator no longer accepts url_for-like arguments.
 
-0.10 (**branch**)
+0.10b1 (February 5, 2009)
 * redirect_to is now deprecated, use redirect(url(*args, **kwargs)) instead.
 * url_for like args to the https decorator are now deprecated, pass it a url
   or a callable returning a url instead.

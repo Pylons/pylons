@@ -10,6 +10,15 @@ For any project prior to 0.9.7, you should first follow the applicable docs to u
 
 To upgrade to 1.0, first upgrade your project to 0.10. This is a Pylons release that is fully backwards-compatible with 0.9.7. However under 0.10 a variety of warnings will be issued about the various things that need to be changed before upgrading to 1.0.
 
+.. tip::
+    Since Pylons 0.10 is only out as a beta at this point, upgrade using the
+    actual URL, for example:
+    
+    .. code-block:: bash
+        
+        $ easy_install -U http://pylonshq.com/download/0.10b1/Pylons-0.10b1.tar.gz
+
+
 Beyond the warnings issued, you should also read the following list and ensure these changes have been applied.
 
 Pylons changes from 0.9.7 to 1.0:
@@ -23,6 +32,16 @@ Pylons changes from 0.9.7 to 1.0:
     
         # Add under 'def load_environment':
         config = PylonsConfig()
+        
+        # Replace the make_map / app globals line with
+        config['routes.map'] = make_map(config)
+        config['pylons.app_globals'] = app_globals.Globals(config)
+        
+        # Optionally, if removing the CacheMiddleware and using the
+        # cache in the new 1.0 style, add under the previous lines:
+        import pylons
+        pylons.cache._push_object(config['pylons.app_globals'].cache)
+        
     
         # Add at the end of the load_environment function:
         return config
@@ -43,9 +62,29 @@ Pylons changes from 0.9.7 to 1.0:
 
         # CUSTOM MIDDLEWARE HERE (filtered by error handling middlewares)
     
-    Note that the CacheMiddleware is no longer setup by default through
-    middleware, its now setup under :term:`app_globals` inside its 
-    instantiaion in :file:`lib/app_globals.py`.
+    .. note::
+    
+        The CacheMiddleware is no longer setup by default through
+        middleware, its now setup under :term:`app_globals` inside its 
+        instantiation in :file:`lib/app_globals.py`.
+    
+    Update config/routing.py to accept the :term:`config`::
+        
+        # Replace the def line with
+        def make_map(config):
+    
+    Update lib/app_globals.py to accept the :term:`config`::
+        
+        # Replace the __init__ line with
+        def __init__(self, config):
+        
+        # Optionally, if you decided to remove the CacheMiddleware
+        # Add these imports
+        from beaker.cache import CacheManager
+        from beaker.util import parse_cache_config_options
+        
+        # and add this line in __init__:
+        self.cache = CacheManager(**parse_cache_config_options(config))
         
 * Change all instances of ``redirect_to(...)`` -> ``redirect(url(...))``
     
@@ -55,3 +94,18 @@ Pylons changes from 0.9.7 to 1.0:
     instance should be used (import: ``from pylons import url``).
 
 * Ensure that all use of ``g`` is switched to using the new name, :term:`app_globals`
+
+* :class:`url <routes.util.URLGenerator>` does not retain the current route memory like ``url_for`` did by default. To get a route generated using the current route, call :meth:`url.current <routes.util.URLGenerator.current>`.
+    
+    For example::
+        
+        # Rather than url_for() for the current route
+        url.current()
+
+
+* By default, the :term:`tmpl_context` (a.k.a 'c'), is no longer a :class:`~pylons.util.AttribSafeContextObj`. This means accessing attributes that don't exist will raise an :exc:`AttributeError`. 
+    
+    To use the attribute-safe :term:`tmpl_context`, add this line to the
+    :file:`config/environment.py`::
+        
+        config['pylons.strict_tmpl_context'] = False
