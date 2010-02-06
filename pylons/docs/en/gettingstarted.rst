@@ -35,7 +35,7 @@ boot-strap Python script that sets up a "virtual" Python environment. Pylons wil
     to setup a working Pylons install on shared hosting providers and other
     systems where system-wide access is unavailable.
 
-1. Download the `go-pylons.py <http://www.pylonshq.com/download/0.9.7/go-pylons.py>`_ script.
+1. Download the `go-pylons.py <http://www.pylonshq.com/download/1.0b1/go-pylons.py>`_ script.
 2. Run the script and specify a directory for the virtual environment to be created under:
     
     .. code-block:: bash
@@ -49,7 +49,7 @@ boot-strap Python script that sets up a "virtual" Python environment. Pylons wil
     
     .. code-block:: bash
     
-        $ curl http://pylonshq.com/download/1.0/go-pylons.py | python - mydevenv
+        $ curl http://pylonshq.com/download/1.0b1/go-pylons.py | python - mydevenv
     
     To isolate further from additional system-wide Python libraries, run
     with the --no-site-packages option:
