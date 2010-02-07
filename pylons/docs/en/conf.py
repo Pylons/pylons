@@ -25,7 +25,12 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx']
 
-intersphinx_mapping = {'http://www.sqlalchemy.org/docs/05/': None}
+intersphinx_mapping = {
+    'http://www.sqlalchemy.org/docs/05/': None,
+    'http://webhelpers.groovie.org/': None,
+    'http://routes.groovie.org/': None,
+    'http://beaker.groovie.org/': None,
+}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
