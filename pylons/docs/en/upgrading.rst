@@ -23,7 +23,7 @@ Beyond the warnings issued, you should also read the following list and ensure t
 
 Pylons changes from 0.9.7 to 1.0:
 
-* The config object created in ``environment.py`` is now passed around explicitly.
+* The config object created in ``environment.py`` is now passed around explicitly. There are also some other minor updates as follows.
     
     Update config/environment.py to initialize and return the config::
     
@@ -61,6 +61,9 @@ Pylons changes from 0.9.7 to 1.0:
         app = SessionMiddleware(app, config)
 
         # CUSTOM MIDDLEWARE HERE (filtered by error handling middlewares)
+        
+        # Add right before 'return app':
+        app.config = config
     
     .. note::
     
@@ -85,6 +88,47 @@ Pylons changes from 0.9.7 to 1.0:
         
         # and add this line in __init__:
         self.cache = CacheManager(**parse_cache_config_options(config))
+    
+    Update tests/__init__.py as needed::
+        
+        from unittest import TestCase
+
+        from paste.deploy import loadapp
+        from paste.script.appinstall import SetupCommand
+        from pylons import url
+        from routes.util import URLGenerator
+        from webtest import TestApp
+
+        import pylons.test
+
+        __all__ = ['environ', 'url', 'TestController']
+
+        # Invoke websetup with the current config file
+        SetupCommand('setup-app').run([pylons.test.pylonsapp.config['__file__']])
+
+        environ = {}
+
+        class TestController(TestCase):
+
+            def __init__(self, *args, **kwargs):
+                wsgiapp = pylons.test.pylonsapp
+                config = wsgiapp.config
+                self.app = TestApp(wsgiapp)
+                url._push_object(URLGenerator(config['routes.map'], environ))
+                TestCase.__init__(self, *args, **kwargs)
+    
+    Finally, update websetup.py to avoid the duplicate app creation that
+    previously could occur during the unit tests::
+        
+        # Add to the imports
+        import pylons.test
+        
+        # Add under the 'def setup_app':
+        
+        # Don't reload the app if it was loaded under the testing environment
+        if not pylons.test.pylonsapp:
+            load_environment(conf.global_conf, conf.local_conf)
+        
         
 * Change all instances of ``redirect_to(...)`` -> ``redirect(url(...))``
     
@@ -95,12 +139,19 @@ Pylons changes from 0.9.7 to 1.0:
 
 * Ensure that all use of ``g`` is switched to using the new name, :term:`app_globals`
 
-* :class:`url <routes.util.URLGenerator>` does not retain the current route memory like ``url_for`` did by default. To get a route generated using the current route, call :meth:`url.current <routes.util.URLGenerator.current>`.
+* Change all instances of ``url_for`` to :class:`url <routes.util.URLGenerator>`. 
+    
+    Note that ``url`` does not retain the current route memory like
+    ``url_for`` did by default. To get a route generated using the 
+    current route, call 
+    :meth:`url.current <routes.util.URLGenerator.current>`.
     
     For example::
         
         # Rather than url_for() for the current route
         url.current()
+    
+    :class:`url <routes.util.URLGenerator>` can be imported from ``pylons``.
 
 
 * By default, the :term:`tmpl_context` (a.k.a 'c'), is no longer a :class:`~pylons.util.AttribSafeContextObj`. This means accessing attributes that don't exist will raise an :exc:`AttributeError`. 
