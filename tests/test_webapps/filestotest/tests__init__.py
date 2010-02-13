@@ -21,7 +21,7 @@ __all__ = ['environ', 'url', 'TestController']
 
 try:
     from sqlalchemy import engine_from_config
-    from projectname.model.meta import Session, metadata
+    from projectname.model.meta import Session, Base
     from projectname.model import Foo, init_model
     SQLAtesting = True
 except:

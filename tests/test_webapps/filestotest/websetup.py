@@ -15,4 +15,3 @@ def setup_app(command, conf, vars):
     config = load_environment(conf.global_conf, conf.local_conf)
     # Create the tables if they don't already exist
     Base.metadata.create_all(bind=Session.bind)
-

@@ -188,7 +188,7 @@ Create a :file:`model/person.py` module::
 Then for convenience when using the models, import it in :file:`model/__init__.py`::
     
     """The application's model objects"""
-    from myapp.model.meta import Session, metadata
+    from myapp.model.meta import Session, Base
     
     from myapp.model.person import Person
 
@@ -232,7 +232,7 @@ model it should be related to based on the text string ``'Person'``.
 Then add the import to the :file:`model/__init__.py` file::
     
     """The application's model objects"""
-    from myapp.model.meta import Session, metadata
+    from myapp.model.meta import Session, Base
     
     from myapp.model.address import Address
     from myapp.model.person import Person
@@ -254,10 +254,10 @@ To actually create the tables in the database, you call the metadata's `.create_
 
 .. code-block:: python
 
-    from myapp.model.meta import Base
+    from myapp.model.meta import Base, Session
     log.info("Creating tables")
-    Base.metadata.drop_all(checkfirst=True)
-    Base.metadata.create_all()
+    Base.metadata.drop_all(checkfirst=True, bind=Session.bind)
+    Base.metadata.create_all(bind=Session.bind)
     log.info("Successfully setup")
 
 Then run the following on the command line: 

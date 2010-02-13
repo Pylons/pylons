@@ -1,6 +1,6 @@
 {{if sqlalchemy}}
 """The application's model objects"""
-from {{package}}.model.meta import Session
+from {{package}}.model.meta import Session, Base
 
 
 def init_model(engine):
