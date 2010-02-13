@@ -57,7 +57,10 @@ SQLAlchemy add-ons
 ^^^^^^^^^^^^^^^^^^
 
 Most of these provide a higher-level ORM, either by combining the table definition and ORM class definition into one step, or supporting an "active record" style of access.  
-*Please take the time to learn how to do things "the regular way" before using these shortcuts in a production application*.  Understanding what these add-ons do behind the scenes will help if you have to troubleshoot a database error or work around a limitation in the add-on later.
+
+*Please take the time to learn how to do things "the regular way" before using these shortcuts in a production application*.  
+
+Understanding what these add-ons do behind the scenes will help if you have to troubleshoot a database error or work around a limitation in the add-on later.
 
 `SQLSoup <http://www.sqlalchemy.org/docs/05/plugins.html#plugins_sqlsoup>`_, an extension to SQLAlchemy, provides a quick way to generate ORM classes based on existing database tables.
 
@@ -145,20 +148,38 @@ To see which version of SQLAlchemy you have, go to a Python shell and look at sq
 
 Defining tables and ORM classes
 -------------------------------
-
 When you answer "yes" to the SQLAlchemy question when creating a Pylons
 project, it configures a simple default model.  The model consists of two
-files: *__init__.py* and *meta.py*.  *__init__.py* contains your table
-definitions and ORM classes, and an ``init_model()`` function which must be
-called at application startup.  *meta.py* is merely a container for
-SQLAlchemy's housekeeping objects (``Session``, ``metadata``, and ``engine``),
-which not all applications will use.  If your application is small, you can put
-your table definitions in *__init__.py* for simplicity.  If your
-application has many tables or multiple databases, you may prefer to split them
-up into multiple modules within the model.
+files: :file:`model/__init__.py` and :file:`model/meta.py`.  
 
-Here's a sample *model/__init__.py* with a "persons" table, which is based on
-the default model with the comments removed:
+:file:`model/__init__.py`
++++++++++++++++++++++++++
+The file :file:`model/__init__.py` contains the table definitions, the ORM 
+classes and an :func:`init_model` function. This :func:`init_model` function 
+must be called at application startup. In the Pylons default project template
+this call is made in the :func:`load_environment` function (in the file 
+:file:`config/environment.py`).
+
+A tactic for handling simple vs. complex models
++++++++++++++++++++++++++++++++++++++++++++++++
+If your application is small, you can put your table definitions in 
+:file:`model/__init__.py` for simplicity.  If your application has many tables
+or uses multiple databases, you may prefer to split them up into multiple 
+modules within the model.
+
+:file:`model/meta.py`
++++++++++++++++++++++
+:file:`model/meta.py` is merely a container for a few housekeeping objects 
+required by SQLAlchemy (:class:`Session`, ``metadata``, and ``engine``). The
+objects are optional in the context of other applications that do not make use 
+of them and so if you answer "no" to the SQLAlchem question when creating a 
+Pylons project, the creation of :file:`model/meta.py` is simply skipped.
+
+
+Definitions using the default SQLAlchemy approach
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Here is a sample :file:`model/__init__.py` with a "persons" table, based on 
+the default SQLAlchemy approach:
 
 .. code-block:: python
 
@@ -169,13 +190,6 @@ the default model with the comments removed:
     from myapp.model import meta
 
     def init_model(engine):
-        """Call me before using any of the tables or classes in the model"""
-        ## Reflected tables must be defined and mapped here
-        #global reflected_table
-        #reflected_table = sa.Table("Reflected", meta.metadata, autoload=True,
-        #                           autoload_with=engine)
-        #orm.mapper(Reflected, reflected_table)
-        #
         meta.Session.configure(bind=engine)
         meta.engine = engine
 
@@ -192,15 +206,26 @@ the default model with the comments removed:
     orm.mapper(Person, t_persons)
 
 This model has one table, "persons", assigned to the variable ``t_persons``.
-``Person`` is an ORM class which is tied to the table via the mapper.
+:class:`Person` is an ORM class which is bound to the table via the mapper.
 
-If the table already exists, you can read its column definitions from the
-database rather than specifying them manually; this is called *reflecting* the
-table.  The advantage is you don't have to specify the column types in Python
-code.  Reflecting must be done inside ``init_model()`` because it depends on a
-live database engine, which is not available when the module is imported.  (An
-*engine* is a SQLAlchemy object that knows how to connect to a particular
-database.)  Here's the second example with reflection:
+
+Definitions using "reflection" of an existing database table
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+If the table already exists, SQLAlchemy can read the column definitions 
+directly from the database. This is called *reflecting* the table.
+
+The advantage of this approach is that it allows you to dispense with the 
+task of specifying the column types in Python code.  
+
+Reflecting existing database tables must be done inside :func:`init_model` 
+because to perform the reflection, a live database engine is required and this 
+is not available when the module is imported. A live database engine is bound 
+explicitly in the :func:`init_model` function and so enables reflection. 
+
+(An *engine* is a SQLAlchemy object that knows how to connect to a particular
+database.)  
+
+Here's the second example with reflection:
 
 .. code-block:: python
 
@@ -227,15 +252,19 @@ database.)  Here's the second example with reflection:
     class Person(object):
         pass
 
-Note how ``t_persons`` and the ``orm.mapper()`` call moved into ``init_model``,
-while the ``Person`` class didn't have to.  Also note the ``global t_persons``
-statement.  This tells Python that ``t_persons`` is a global variable outside
-the function.  ``global`` is required when assigning to a global variable
-inside a function.  It's not required if you're merely modifying a mutable
-object in place, which is why ``meta`` doesn't have to be declared global.
+Note how ``t_persons`` and the :func:`orm.mapper` call moved into 
+:func:`init_model`, while the ``Person`` class didn't have to.  Also note 
+the ``global t_persons`` statement.  This tells Python that ``t_persons`` 
+is a global variable outside the function.  ``global`` is required when 
+assigning to a global variable inside a function.  It's not required if 
+you're merely modifying a mutable object in place, which is why ``meta`` 
+doesn't have to be declared global.
 
-SQLAlchemy 0.5 has an optional Declarative syntax which defines the table and
-the ORM class in one step:
+
+Definitions using SQLAlchemy's "DeclarativeBase" syntax
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+SQLAlchemy 0.5 has an optional Declarative syntax which offers the 
+convenience of defining the table and the ORM class in one step:
 
 .. code-block:: python
 
@@ -261,9 +290,9 @@ the ORM class in one step:
         name = sa.Column(sa.types.String(100))
         email = sa.Column(sa.types.String(100))
 
+
 Relation example 
 ^^^^^^^^^^^^^^^^
-
 
 Here's an example of a `Person` and an `Address` class with a many:many relationship on `people.my_addresses`. See `Relational Databases for People in a Hurry <http://wiki.pylonshq.com/display/pylonscookbook/Relational+databases+for+people+in+a+hurry>`_ and the `SQLAlchemy manual`_ for details. 
 
