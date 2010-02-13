@@ -186,13 +186,15 @@ Testing Pylons Objects
 
 Pylons will provide several additional attributes for the :mod:`webtest` :class:`webtest.TestResponse` object that let you access various objects that were created during the web request: 
 
+``config``
+    The configured Pylons applications.
 ``session`` 
     Session object 
 ``req`` 
     Request object 
-``c`` 
+``tmpl_context`` 
     Object containing variables passed to templates 
-``g`` 
+``app_globals`` 
     Globals object 
 
 To use them, merely access the attributes of the response *after* you've used 
@@ -209,6 +211,17 @@ a get/post command:
     The :class:`response <webtest.TestResponse>` object already has a
     TestRequest object assigned to it, therefore Pylons assigns its
     ``request`` object to the response as ``req``. 
+
+
+Accessing Special Globals
+-------------------------
+
+Sometimes, you might wish to modify or check a global Pylons variable such as :term:`app_globals` before running the rest of your unit tests. The non-request specific variables are available from a special URL that will respond only in unit testing situations.
+
+For example, to get the :term:`app_globals` object without sending a request to your actual applications::
+    
+    response = app.get('/_test_vars')
+    app_globals = response.app_globals
 
 Testing Your Own Objects 
 ======================== 
