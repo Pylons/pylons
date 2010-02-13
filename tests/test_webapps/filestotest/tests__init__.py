@@ -38,8 +38,9 @@ test_file = os.path.join(conf_dir, 'test.ini')
 conf = appconfig('config:' + test_file)
 config = load_environment(conf.global_conf, conf.local_conf)
 
-engine = engine_from_config(config, 'sqlalchemy.')
-init_model(engine)
+if SQLAtesting:
+    engine = engine_from_config(config, 'sqlalchemy.')
+    init_model(engine)
 
 # Invoke websetup with the current config file
 SetupCommand('setup-app').run([pylons.test.pylonsapp.config['__file__']])

@@ -3,7 +3,7 @@ import datetime
 from projectname.lib.base import *
 try:
     import sqlalchemy as sa
-    from projectname.model.meta import Session, metadata
+    from projectname.model.meta import Session, Base
     from projectname.model import Foo
     SQLAtesting = True
 except:

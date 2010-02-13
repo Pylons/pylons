@@ -7,7 +7,7 @@ from beaker.middleware import SessionMiddleware
 from paste.fixture import TestApp
 from paste.registry import RegistryManager
 from routes import request_config
-from webhelpers.html import secure_form
+from webhelpers.pylonslib import secure_form
 
 from pylons import request
 from pylons.controllers import WSGIController

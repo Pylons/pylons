@@ -36,7 +36,7 @@ In a new Pylons project, the error handling middleware is configured in the proj
         else:
             app = StatusCodeRedirect(app, [400, 401, 403, 404, 500])
     
-The first middleware configured, :def:`~pylons.middleware.ErrorHandler`, actually configures one of two :mod:`WebError <weberror>` middlewares depending on whether the project is in ``debug`` mode or not. If it is in ``debug`` mode, then the :ref:`interactive_debugging` is enabled, otherwise, the :ref:`e-mail error handling <error_emails>` will be used.
+The first middleware configured, :func:`~pylons.middleware.ErrorHandler`, actually configures one of two :mod:`WebError <weberror>` middlewares depending on whether the project is in ``debug`` mode or not. If it is in ``debug`` mode, then the :ref:`interactive_debugging` is enabled, otherwise, the :ref:`e-mail error handling <error_emails>` will be used.
 
 The second middleware configured is the :class:`~pylons.middleware.StatusCodeRedirect` middleware. This middleware watches the request, and if the application returns a response containing one of the status code's listed, it will call back into the application to the error controller, and use that output instead.
 
@@ -54,7 +54,7 @@ Recommended Configurations
 
 * For programmatic error and non-200 status code handling, keep the stack as-is.
 
-* To *not* have tracebacks e-mailed, remove only the :def:`~pylons.middleware.ErrorHandler` middleware. This will also disable :ref:`interactive_debugging` however. To retain :ref:`interactive_debugging` but disable traceback e-mails::
+* To *not* have tracebacks e-mailed, remove only the :func:`~pylons.middleware.ErrorHandler` middleware. This will also disable :ref:`interactive_debugging` however. To retain :ref:`interactive_debugging` but disable traceback e-mails::
     
     if asbool(config['debug']):
         app = ErrorHandler(app, global_conf, **config['pylons.errorware'])
@@ -62,8 +62,6 @@ Recommended Configurations
 .. note::
     
     To only capture specific non-200 status codes, the :class:`~pylons.middleware.StatusCodeRedirect` middleware can be passed a list of the codes that it should intercept and redirect to the error controller. When in non-debug mode, it captures the 400-404, and 500 status codes. Altering the list will capture more or less types of requests as desired.
-
-
 
 
 

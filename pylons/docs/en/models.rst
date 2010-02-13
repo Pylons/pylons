@@ -157,31 +157,7 @@ SQLAlchemy 0.5 has an optional Declarative syntax which offers the
 convenience of defining the table and the ORM class in one step. This
 is the recommended usage of SQLAlchemy.
 
-First, ensure the ``declarative_base`` object is in the :file:`model/meta.py`
-file so it looks like::
-    
-    """SQLAlchemy Metadata and Session object"""
-    from sqlalchemy import MetaData
-    from sqlalchemy.ext.declarative import declarative_base
-    from sqlalchemy.orm import scoped_session, sessionmaker
-
-    __all__ = ['Session', 'Base', 'metadata']
-
-    # SQLAlchemy session manager. Updated by model.init_model()
-    Session = scoped_session(sessionmaker())
-
-    # Global metadata. If you have multiple databases with overlapping table
-    # names, you'll need a metadata for each database
-    metadata = MetaData()
-    
-    # The declarative Base
-    Base = declarative_base()
-
-.. note::
-    
-    New Pylons 1.0 projects will already look like this.
-
-Next, create a :file:`model/person.py` module::
+Create a :file:`model/person.py` module::
 
     """Person model"""
     from sqlalchemy import Column
