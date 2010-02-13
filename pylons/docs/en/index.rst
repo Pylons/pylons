@@ -33,6 +33,7 @@ MVC Reference
     controllers
     views
     models
+    advanced_models
 
 Project Configuration and Logging
 ---------------------------------

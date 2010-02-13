@@ -29,91 +29,17 @@ This freedom arises from the way that the three parts of an MVC-based applicatio
 
 .. note:: *adapted from an Oct 2002 TechRepublic article by by Brian Kotek: "MVC design pattern brings about better organization and code reuse"* - http://articles.techrepublic.com.com/5100-10878_11-1049862.html
 
-Model basics
+Model Basics
 ============
 
 Pylons provides a :data:`model` package to put your database code in but does not offer a database engine or API.  Instead there are several third-party APIs to choose from.
 
-SQL databases
--------------
+The recommend and most common approach used in Pylons applications is to use SQLAlchemy with the declarative configuration style and develop with a relational database (Postgres, MySQL, etc). 
 
-SQLAlchemy
-^^^^^^^^^^
-
-`SQLAlchemy <http://www.sqlalchemy.org/>`_ is by far the most common approach for Pylons databases.  It provides a connection pool, a SQL statement builder, an object-relational mapper (ORM), and transaction support.  SQLAlchemy works with several database engines (MySQL, PostgreSQL, SQLite, Oracle, Firebird, MS-SQL, Access via ODBC, etc) and understands the peculiar SQL dialect of each, making it possible to port a program from one engine to another by simply changing the connection string.  Although its API is still changing gradually, SQLAlchemy is well tested, widely deployed, has excellent documentation, and its mailing list is quick with answers.  :ref:`Using SQLAlchemy <working_with_sqlalchemy>` describes the recommended way to configure a Pylons application for SQLAlchemy.
-
-SQLAlchemy lets you work at three different levels, and you can even use
-multiple levels in the same program:
-
-* The object-relational mapper (ORM) lets you interact with the database using your own object classes rather than writing SQL code. 
-* The SQL expression language has many methods to create customized SQL statements, and the result cursor is more friendly than DBAPI's. 
-* The low-level execute methods accept literal SQL strings if you find something the SQL builder can't do, such as adding a column to an existing table or modifying the column's type. If they return results, you still get the benefit of SQLAlchemy's result cursor. 
-
-The first two levels are *database neutral*, meaning they hide the differences between the databases' SQL dialects. Changing to a different database is merely a matter of supplying a new connection URL. Of course there are limits to this, but SQLAlchemy is 90% easier than rewriting all your SQL queries. 
-
-The `SQLAlchemy manual`_ should be your next stop for questions not covered here. It's very well written and thorough.
-
-SQLAlchemy add-ons
-^^^^^^^^^^^^^^^^^^
-
-Most of these provide a higher-level ORM, either by combining the table definition and ORM class definition into one step, or supporting an "active record" style of access.  
-
-*Please take the time to learn how to do things "the regular way" before using these shortcuts in a production application*.  
-
-Understanding what these add-ons do behind the scenes will help if you have to troubleshoot a database error or work around a limitation in the add-on later.
-
-`SQLSoup <http://www.sqlalchemy.org/docs/05/plugins.html#plugins_sqlsoup>`_, an extension to SQLAlchemy, provides a quick way to generate ORM classes based on existing database tables.
-
-If you're familiar with ActiveRecord, used in Ruby on Rails, then you may want to use the `Elixir <http://elixir.ematia.de/>`_ layer on top of SQLAlchemy.
-
-`Tesla <http://code.google.com/p/tesla-pylons-elixir/>`_ is a framework built on top of Pylons and Elixir/SQLAlchemy.
-
-Non-SQLAlchemy libraries
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-Most of these expose only the object-relational mapper; their SQL builder and connection pool are not meant to be used directly.
-
-`Storm <http://storm.canonical.com>`_
-
-`Geniusql <http://www.aminus.net/geniusql>`_
-
-DB-API
-++++++
-
-All the SQL libraries above are built on top of Python's DB-API, which provides a common low-level interface for interacting with several database engines: MySQL, PostgreSQL, SQLite, Oracle, Firebird, MS-SQL, Access via ODBC, etc.  Most programmers do not use DB-API directly because its API is low-level and repetitive and does not provide a connection pool.  There's no "DB-API package" to install because it's an abstract interface rather than software.  Instead, install the Python package for the particular engine you're interested in.  Python's `Database Topic Guide <http://www.python.org/topics/database/>`_ describes the DB-API and lists the package required for each engine.  The `sqlite3 <http://docs.python.org/lib/module-sqlite3.html>`_ package for SQLite is included in Python 2.5.
-
-Object databases
-----------------
-
-Object databases store Python dicts, lists, and classes in pickles, allowing you to access hierarchical data using normal Python statements rather than having to map them to tables, relations, and a foreign language (SQL).
-
-`ZODB <http://wiki.zope.org/ZODB/FrontPage>`_
-
-`Durus <http://www.mems-exchange.org/software/durus/>`_ [#]_
-
-.. [#] Durus is not thread safe, so you should use its server mode if your
-   application writes to the database.  Do not share connections between
-   threads.  ZODB is thread safe, so it may be a more convenient alternative.
-
-Other databases
----------------
-
-Pylons can also work with other database systems, such as the following:
-
-`Schevo <http://schevo.org/>`_ uses Durus to combine some features of relational and object databases.  It is written in Python.
-
-`CouchDb <http://couchdb.org/>`_ is a document-based database.  It features a `Python API <http://code.google.com/p/couchdb-python/>`_.
-
-The Datastore database in Google App Engine.
-
-.. _working_with_sqlalchemy:
-
-Working with SQLAlchemy
-=======================
+**This is the documented and recommended approach for creating a Pylons project with a SQL database**.
 
 Install SQLAlchemy
 ------------------
-
 
 We'll assume you've already installed Pylons and have the `easy_install` command. At the command line, run: 
 
@@ -133,202 +59,242 @@ Next you'll have to install a database engine and its Python bindings. If you do
 
 See the `Python Package Index <http://pypi.python.org/>`_ (formerly the Cheeseshop) for other database drivers. 
 
-Check Your Version 
-^^^^^^^^^^^^^^^^^^
+.. tip:: Checking Your Version
+
+    To see which version of SQLAlchemy you have, go to a Python shell and look at ``sqlalchemy.__version__`` :
+    
+    .. code-block:: pycon
+
+        >>> import sqlalchemy 
+        >>> sqlalchemy.__version__ 
+        0.5.8
+
+Create a Pylons Project with SQLAlchemy
+---------------------------------------
+
+When creating a Pylons project, one of the questions asked is whether the project should be configured with SQLAlchemy. Before continuing, ensure that the project was created with this option, if its missing the :file:`model/meta.py` file, then the project should be re-created with this option.
+    
+.. tip::
+    
+    The project doesn't need to be deleted to add this option, just re-run
+    the `paster` command in the projects parent directory and answer yes
+    to the SQLAlchemy prompt. The files will then be added, and existing
+    files will present a prompt on whether to replace them or leave the
+    current file.
 
 
-To see which version of SQLAlchemy you have, go to a Python shell and look at sqlalchemy.\_\_version\_\_ : 
+Configure SQLAlchemy
+--------------------
 
-.. code-block:: python
+When your Pylons application runs, it needs to know which database to connect to. Normally you put this information in *development.ini* and activate the model in *environment.py*. Put the following in *development.ini* in the `\[app:main\]` section, depending on your database, 
 
-    >>> import sqlalchemy 
-    >>> sqlalchemy.__version__ 
-    0.5.0
+For SQLite 
+^^^^^^^^^^
 
 
-Defining tables and ORM classes
--------------------------------
+.. code-block:: ini
+
+    sqlalchemy.url = sqlite:///%(here)s/mydatabasefilename.sqlite 
+
+
+Where `mydatabasefilename.db` is the path to your SQLite database file. "%(here)s" represents the directory containing the development.ini file. If you're using an absolute path, use four slashes after the colon: "sqlite:////var/lib/myapp/database.sqlite". Don't use a relative path (three slashes) because the current directory could be anything. The example has three slashes because the value of "%(here)s" always starts with a slash (or the platform equivalent; e.g., "C:\\foo" on Windows). 
+
+For MySQL 
+^^^^^^^^^
+
+.. code-block:: ini
+
+    sqlalchemy.url = mysql://username:password@host:port/database 
+    sqlalchemy.pool_recycle = 3600 
+
+Enter your username, password, host (localhost if it is on your machine), port number (usually 3306) and the name of your database. The second line is an example of setting `engine options <http://www.sqlalchemy.org/docs/04/dbengine.html#dbengine_options>`_. 
+
+It's important to set "pool_recycle" for MySQL to prevent "MySQL server has gone away" errors. This is because MySQL automatically closes idle database connections without informing the application. Setting the connection lifetime to 3600 seconds (1 hour) ensures that the connections will be expired and recreated before MySQL notices they're idle. 
+
+Don't be tempted to use the ".echo" option to enable SQL logging because it may cause duplicate log output. Instead see the `Logging`_ section below to integrate MySQL logging into Paste's logging system. 
+
+
+For PostgreSQL 
+^^^^^^^^^^^^^^
+
+.. code-block:: ini
+
+    sqlalchemy.url = postgres://username:password@host:port/database 
+
+
+Enter your username, password, host (localhost if it is on your machine), port number (usually 5432) and the name of your database. 
+
+
+Organizing
+==========
+
 When you answer "yes" to the SQLAlchemy question when creating a Pylons
 project, it configures a simple default model.  The model consists of two
-files: :file:`model/__init__.py` and :file:`model/meta.py`.  
+files: :file:`model/__init__.py` and :file:`model/meta.py`.
 
 :file:`model/__init__.py`
-+++++++++++++++++++++++++
+-------------------------
 The file :file:`model/__init__.py` contains the table definitions, the ORM 
 classes and an :func:`init_model` function. This :func:`init_model` function 
 must be called at application startup. In the Pylons default project template
 this call is made in the :func:`load_environment` function (in the file 
 :file:`config/environment.py`).
 
-A tactic for handling simple vs. complex models
-+++++++++++++++++++++++++++++++++++++++++++++++
-If your application is small, you can put your table definitions in 
-:file:`model/__init__.py` for simplicity.  If your application has many tables
-or uses multiple databases, you may prefer to split them up into multiple 
-modules within the model.
-
 :file:`model/meta.py`
-+++++++++++++++++++++
+---------------------
 :file:`model/meta.py` is merely a container for a few housekeeping objects 
-required by SQLAlchemy (:class:`Session`, ``metadata``, and ``engine``). The
-objects are optional in the context of other applications that do not make use 
-of them and so if you answer "no" to the SQLAlchem question when creating a 
-Pylons project, the creation of :file:`model/meta.py` is simply skipped.
+required by SQLAlchemy (:class:`Session`, ``metadata``, and ``engine``) to 
+avoid import issues. The objects are optional in the context of other applications that do not make use of them and so if you answer "no" to the SQLAlchemy question when creating a Pylons project, the creation of :file:`model/meta.py` is simply skipped.
+
+It's recommended that for each model, a new module inside the ``model/``
+directory should be created. This keeps the models tidy when they get larger as more domain specific code is added to each one.
 
 
-Definitions using the default SQLAlchemy approach
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Here is a sample :file:`model/__init__.py` with a "persons" table, based on 
-the default SQLAlchemy approach:
+Creating a Model
+================
 
-.. code-block:: python
-
-    """The application's model objects"""
-    import sqlalchemy as sa
-    from sqlalchemy import orm
-
-    from myapp.model import meta
-
-    def init_model(engine):
-        meta.Session.configure(bind=engine)
-        meta.engine = engine
-
-
-    t_persons = sa.Table("persons", meta.metadata,
-        sa.Column("id", sa.types.Integer, primary_key=True),
-        sa.Column("name", sa.types.String(100), primary_key=True),
-        sa.Column("email", sa.types.String(100)),
-        )
-
-    class Person(object):
-        pass
-
-    orm.mapper(Person, t_persons)
-
-This model has one table, "persons", assigned to the variable ``t_persons``.
-:class:`Person` is an ORM class which is bound to the table via the mapper.
-
-
-Definitions using "reflection" of an existing database table
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-If the table already exists, SQLAlchemy can read the column definitions 
-directly from the database. This is called *reflecting* the table.
-
-The advantage of this approach is that it allows you to dispense with the 
-task of specifying the column types in Python code.  
-
-Reflecting existing database tables must be done inside :func:`init_model` 
-because to perform the reflection, a live database engine is required and this 
-is not available when the module is imported. A live database engine is bound 
-explicitly in the :func:`init_model` function and so enables reflection. 
-
-(An *engine* is a SQLAlchemy object that knows how to connect to a particular
-database.)  
-
-Here's the second example with reflection:
-
-.. code-block:: python
-
-    """The application's model objects"""
-    import sqlalchemy as sa
-    from sqlalchemy import orm
-
-    from myapp.model import meta
-
-    def init_model(engine):
-        """Call me before using any of the tables or classes in the model"""
-        # Reflected tables must be defined and mapped here
-        global t_persons
-        t_persons = sa.Table("persons", meta.metadata, autoload=True,
-                             autoload_with=engine)
-        orm.mapper(Person, t_persons)
-
-        meta.Session.configure(bind=engine)
-        meta.engine = engine
-
-
-    t_persons = None
-
-    class Person(object):
-        pass
-
-Note how ``t_persons`` and the :func:`orm.mapper` call moved into 
-:func:`init_model`, while the ``Person`` class didn't have to.  Also note 
-the ``global t_persons`` statement.  This tells Python that ``t_persons`` 
-is a global variable outside the function.  ``global`` is required when 
-assigning to a global variable inside a function.  It's not required if 
-you're merely modifying a mutable object in place, which is why ``meta`` 
-doesn't have to be declared global.
-
-
-Definitions using SQLAlchemy's "DeclarativeBase" syntax
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 SQLAlchemy 0.5 has an optional Declarative syntax which offers the 
-convenience of defining the table and the ORM class in one step:
+convenience of defining the table and the ORM class in one step. This
+is the recommended usage of SQLAlchemy.
 
-.. code-block:: python
-
-    """The application's model objects"""
-    import sqlalchemy as sa
-    from sqlalchemy import orm
+First, ensure the ``declarative_base`` object is in the :file:`model/meta.py`
+file so it looks like::
+    
+    """SQLAlchemy Metadata and Session object"""
+    from sqlalchemy import MetaData
     from sqlalchemy.ext.declarative import declarative_base
+    from sqlalchemy.orm import scoped_session, sessionmaker
 
-    from myapp.model import meta
+    __all__ = ['Session', 'Base', 'metadata']
 
-    _Base = declarative_base()
+    # SQLAlchemy session manager. Updated by model.init_model()
+    Session = scoped_session(sessionmaker())
+
+    # Global metadata. If you have multiple databases with overlapping table
+    # names, you'll need a metadata for each database
+    metadata = MetaData()
+    
+    # The declarative Base
+    Base = declarative_base()
+
+.. note::
+    
+    New Pylons 1.0 projects will already look like this.
+
+Next, create a :file:`model/person.py` module::
+
+    """Person model"""
+    from sqlalchemy import Column
+    from sqlalchemy.types import Integer, String
+
+    from myapp.model.meta import Base
+
+    class Person(Base):
+        __tablename__ = "person"
+
+        id = Column(Integer, primary_key=True)
+        name = Column(String(100))
+        email = Column(String(100))
+        
+        def __init__(self, name='', email=''):
+            self.name = name
+            self.email = email
+        
+        def __repr__(self):
+            return "<Person('%s')" % self.name
+
+.. note::
+    
+    ``Base`` is imported from :file:`model/meta.py` to prevent recursive
+    import problems when added to :file:`model/__init__.py` in the next
+    step.
+
+Then for convenience when using the models, import it in :file:`model/__init__.py`::
+    
+    """The application's model objects"""
+    from myapp.model.meta import Session, metadata
+    
+    from myapp.model.person import Person
 
     def init_model(engine):
         """Call me before using any of the tables or classes in the model"""
-        meta.Session.configure(bind=engine)
-        meta.engine = engine
+        Session.configure(bind=engine)
 
 
-    class Person(_Base):
-        __tablename__ = "persons"
+Adding a Relation
+=================
 
-        id = sa.Column(sa.types.Integer, primary_key=True)
-        name = sa.Column(sa.types.String(100))
-        email = sa.Column(sa.types.String(100))
+Here's an example of a `Person` and an `Address` class with a one-to-many relationship on `person.addresses`.
+
+First, add a :file:`model/address.py` module::
+    
+    """Address model"""
+    from sqlalchemy import Column, ForeignKey
+    from sqlalchemy.types import Integer, String
+    from sqlalchemy.orm import relation, backref
+
+    from myapp.model.meta import Base
+
+    class Address(Base):
+        __tablename__ = "address"
+
+        id = Column(Integer, primary_key=True)
+        address = Column(String(100))
+        city = Column(String(100))
+        state = Column(String(2))
+        person_id = Column(Integer, ForeignKey('person.id'))
+        
+        person = relation('Person', backref=backref('addresses', order_by=id))
+
+        def __repr__(self):
+            return "<Person('%s')" % self.name
+
+When models are created using the declarative ``Base``, each one is added by
+name to a mapping. This allows the ``relation`` option above to locate the
+model it should be related to based on the text string ``'Person'``.
+
+Then add the import to the :file:`model/__init__.py` file::
+    
+    """The application's model objects"""
+    from myapp.model.meta import Session, metadata
+    
+    from myapp.model.address import Address
+    from myapp.model.person import Person
+
+    def init_model(engine):
+        """Call me before using any of the tables or classes in the model"""
+        Session.configure(bind=engine)
 
 
-Relation example 
-^^^^^^^^^^^^^^^^
+.. seealso::
+    `Building a Relation <http://www.sqlalchemy.org/docs/05/ormtutorial.html#building-a-relation>`_
+    and 
+    `SQLAlchemy manual`_
 
-Here's an example of a `Person` and an `Address` class with a many:many relationship on `people.my_addresses`. See `Relational Databases for People in a Hurry <http://wiki.pylonshq.com/display/pylonscookbook/Relational+databases+for+people+in+a+hurry>`_ and the `SQLAlchemy manual`_ for details. 
+Creating the Database
+=====================
+
+To actually create the tables in the database, you call the metadata's `.create_all()` method. You can do this interactively or use `paster`'s application initialization feature. To do this, put the code in :file:`myapp/websetup.py`. After the `load_environment()` call, put: 
 
 .. code-block:: python
 
-    t_people = sa.Table('people', meta.metadata, 
-        sa.Column('id', sa.types.Integer, primary_key=True), 
-        sa.Column('name', sa.types.String(100)), 
-        sa.Column('email', sa.types.String(100)),
-        ) 
+    from myapp.model.meta import Base
+    log.info("Creating tables")
+    Base.metadata.drop_all(checkfirst=True)
+    Base.metadata.create_all()
+    log.info("Successfully setup")
 
-    t_addresses_people = sa.Table('addresses_people', meta.metadata, 
-        sa.Column('id', sa.types.Integer, primary_key=True), 
-        sa.Column('person_id', sa.types.Integer, sa.ForeignKey('people.id')), 
-        sa.Column('address_id', sa.types.Integer, sa.ForeignKey('addresses.id')),
-        ) 
+Then run the following on the command line: 
 
-    t_addresses = sa.Table('addresses', meta.metadata, 
-        sa.Column('id', sa.types.Integer, primary_key=True), 
-        sa.Column('address', sa.types.String(100)),
-        ) 
+.. code-block:: bash
 
-    class Person(object): 
-        pass 
+    $ paster setup-app development.ini
 
-    class Address(object): 
-        pass 
+Diving into SQLAlchemy
+======================
 
-    orm.mapper(Address, t_addresses) 
-    orm.mapper(Person, t_people, properties = { 
-        'my_addresses' : orm.relation(Address, secondary = t_addresses_people), 
-        }) 
-
-
-Using SQLAlchemy's SQL Layer
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+SQLAlchemy's SQL Layer
+----------------------
 
 SQLAlchemy's lower level SQL expressions can be used along with your ORM
 models, and organizing them as class methods can be an effective way to keep
@@ -359,195 +325,9 @@ it easy:
     
     SQLAlchemy's `SQL Expression Language Tutorial <http://www.sqlalchemy.org/docs/05/sqlexpression.html>`_
 
-Using the model standalone 
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-You now have everything necessary to use the model in a standalone script such as a cron job, or to test it interactively. You just need to create a SQLAlchemy engine and connect it to the model. This example uses a database "test.sqlite" in the current directory: 
-
-.. code-block:: pycon
-
-    % python 
-    Python 2.5.1 (r251:54863, Oct 5 2007, 13:36:32) 
-    [GCC 4.1.3 20070929 (prerelease) (Ubuntu 4.1.2-16ubuntu2)] on linux2 
-    Type "help", "copyright", "credits" or "license" for more information. 
-    >>> import sqlalchemy as sa 
-    >>> engine = sa.create_engine("sqlite:///test.sqlite") 
-    >>> from myapp import model 
-    >>> model.init_model(engine) 
-
-Now you can use the tables, classes, and Session as described in the
-`SQLAlchemy manual`_.  For example:
-
-.. code-block:: python
-
-    #!/usr/bin/env python
-    import sqlalchemy as sa
-    import tmpapp.model as model
-    import tmpapp.model.meta as meta
-
-    DB_URL = "sqlite:///test.sqlite" 
-
-    engine = sa.create_engine(DB_URL)
-    model.init_model(engine)
-
-    # Create all tables, overwriting them if they exist.
-    if hasattr(model, "_Base"):
-        # SQLAlchemy 0.5 Declarative syntax
-        model._Base.metadata.drop_all(bind=engine, checkfirst=True)
-        model._Base.metadata.create_all(bind=engine)
-    else:
-        # SQLAlchemy 0.4 and 0.5 syntax without Declarative
-        meta.metadata.drop_all(bind=engine, checkfirst=True)
-        meta.metadataa.create_all(bind=engine)
-
-    # Create two records and insert them into the database using the ORM.
-    a = model.Person()
-    a.name = "Aaa"
-    a.email = "aaa@example.com"
-    meta.Session.add(a)
-
-    b = model.Person()
-    b.name = "Bbb"
-    b.email = "bbb@example.com"
-    meta.Session.add(b)
-
-    meta.Session.commit()
-
-    # Display all records in the persons table.
-    print "Database data:"
-    for p in meta.Session.query(model.Person):
-        print "id:", p.id
-        print "name:", p.name
-        print "email:", p.email
-        print
-
-
-
-The config file
----------------
-
-When your Pylons application runs, it needs to know which database to connect to. Normally you put this information in *development.ini* and activate the model in *environment.py*. Put the following in *development.ini* in the `\[app:main\]` section, depending on your database, 
-
-For SQLite 
-^^^^^^^^^^
-
-
-.. code-block:: ini
-
-    sqlalchemy.url = sqlite:///%(here)s/mydatabasefilename.sqlite 
-
-
-Where `mydatabasefilename.db` is the path to your SQLite database file. "%(here)s" represents the directory containing the development.ini file. If you're using an absolute path, use four slashes after the colon: "sqlite:////var/lib/myapp/database.sqlite". Don't use a relative path (three slashes) because the current directory could be anything. The example has three slashes because the value of "%(here)s" always starts with a slash (or the platform equivalent; e.g., "C:\\foo" on Windows). 
-
-For MySQL 
-^^^^^^^^^
-
-
-.. code-block:: ini
-
-    sqlalchemy.url = mysql://username:password@host:port/database 
-    sqlalchemy.pool_recycle = 3600 
-
-
-Enter your username, password, host (localhost if it is on your machine), port number (usually 3306) and the name of your database. The second line is an example of setting `engine options <http://www.sqlalchemy.org/docs/04/dbengine.html#dbengine_options>`_. 
-
-It's important to set "pool_recycle" for MySQL to prevent "MySQL server has gone away" errors. This is because MySQL automatically closes idle database connections without informing the application. Setting the connection lifetime to 3600 seconds (1 hour) ensures that the connections will be expired and recreated before MySQL notices they're idle. 
-
-Don't be tempted to use the ".echo" option to enable SQL logging because it may cause duplicate log output. Instead see the `Logging`_ section below to integrate MySQL logging into Paste's logging system. 
-
-For PostgreSQL 
-^^^^^^^^^^^^^^
-
-
-.. code-block:: ini
-
-    sqlalchemy.url = postgres://username:password@host:port/database 
-
-
-Enter your username, password, host (localhost if it is on your machine), port number (usually 5432) and the name of your database. 
-
-The engine
-----------
-
-
-Put this at the top of *myapp/config/environment.py*: 
-
-.. code-block:: python
-
-    from sqlalchemy import engine_from_config 
-    from myapp.model import init_model 
-
-
-And this in the `load_environment` function: 
-
-.. code-block:: python
-
-    engine = engine_from_config(config, 'sqlalchemy.') 
-    init_model(engine) 
-
-
-The second argument is the prefix to look for. If you named your keys "sqlalchemy.default.url", you would put "sqlalchemy.default." here. The prefix may be anything, as long as it's consistent between the config file and this function call. 
-
-Controller
-----------
-
-
-The paster create SQLAlchemy option adds the following to the top of
-*myapp/lib/base.py* (the base controller):
-
-.. code-block:: python
-
-    from myapp.model import meta
-
-
-and also changes the `.\_\_call\_\_` method to: 
-
-.. code-block:: python
-
-    def __call__(self, environ, start_response): 
-        try: 
-            return WSGIController.__call__(self, environ, start_response) 
-        finally: 
-            meta.Session.remove() 
-
-
-The .remove() method is so that any leftover ORM data in the current web request is discarded. This usually happens automatically as a product of garbage collection but calling .remove() ensures this is the case.
-
-Building the database
----------------------
-
-
-To actually create the tables in the database, you call the metadata's `.create_all()` method. You can do this interactively or use `paster`'s application initialization feature. To do this, put the code in *myapp/websetup.py*. After the `load_environment()` call, put: 
-
-.. code-block:: python
-
-    from myapp.model import meta 
-    log.info("Creating tables") 
-    meta.metadata.drop_all(bind=meta.engine, checkfirst=True)
-    meta.metadata.create_all(bind=meta.engine) 
-    log.info("Successfully setup") 
-
-Or for the new SQLAlchemy 0.5 Declarative syntax:
-
-.. code-block:: python
-
-    from myapp import model
-    log.info("Creating tables") 
-    model._Base.metadata.drop_all(bind=meta.engine, checkfirst=True)
-    model._Base.metadata.create_all(bind=meta.engine) 
-    log.info("Successfully setup") 
-
-
-Then run the following on the command line: 
-
-.. code-block:: bash
-
-    $ paster setup-app development.ini 
-
 
 Data queries and modifications
 ------------------------------
-
 
 .. important::  
    
@@ -622,7 +402,6 @@ To delete an entry use the following:
 
 Working with joined objects 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 
 Recall that the `my_addresses` property is a list of `Address` objects 
 
@@ -730,9 +509,9 @@ Then, any items removed from `mr_jones.my_addresses` is automatically deleted fr
 
 For any relationship, you can add `cascade = "all, delete-orphan"` as an extra argument to `relation()` in your mappers to ensure that when a join is deleted the joined object is deleted as well, so that the above delete() operation is not needed - only the removal from the `my_addresses` list. Beware though that despite its name, `delete-orphan` removes joined objects even if another object is joined to it. 
 
+
 Non-ORM SQL queries 
 ^^^^^^^^^^^^^^^^^^^
-
 
 Use `meta.Session.execute()` to execute a non-ORM SQL query within the session's transaction. Bulk updates and deletes can modify records significantly faster than looping through a query and modifying the ORM instances. 
 
@@ -766,12 +545,10 @@ Use `meta.Session.execute()` to execute a non-ORM SQL query within the session's
 Further reading 
 ^^^^^^^^^^^^^^^
 
-
 The Query object has many other features, including filtering on conditions, ordering the results, grouping, etc. These are excellently described in the `SQLAlchemy manual`_. See especially the `Data Mapping <http://www.sqlalchemy.org/docs/datamapping.html>`_ and `Session / Unit of Work <http://www.sqlalchemy.org/docs/unitofwork.html>`_ chapters. 
 
-Testing Your Models
--------------------
-
+Testing the Models
+==================
 
 Normal model usage works fine in model tests, however to use the metadata you must specify an engine connection for it. To have your tables created for every unit test in your project, use a test_models.py such as: 
 
@@ -785,7 +562,7 @@ Normal model usage works fine in model tests, however to use the metadata you mu
 
         def setUp(self): 
             meta.Session.remove() 
-            meta.metadata.create_all(meta.engine) 
+            meta.Base.metadata.create_all(meta.engine) 
 
         def test_index(self): 
             # test your models 
@@ -797,53 +574,11 @@ Normal model usage works fine in model tests, however to use the metadata you mu
 
 "nosetests --with-pylons=/path/to/test.ini ..." is another way to ensure that your model is properly initialized before the tests are run. This can be used when running non-controller tests. 
 
-Multiple engines
-----------------
 
+Coding style, the Session object, and bound metadata
+====================================================
 
-Some applications need to connect to multiple databases (engines). Some always bind certain tables to the same engines (e.g., a general database and a logging database); this is called "horizontal partitioning". Other applications have several databases with the same structure, and choose one or another depending on the current request. A blogging app with a separate database for each blog, for instance. A few large applications store different records from the same logical table in different databases to prevent the database size from getting too large; this is called "vertical partitioning" or "sharding". The pattern above can accommodate any of these schemes with a few minor changes. 
-
-First, you can define multiple engines in your config file like this: 
-
-.. code-block:: ini
-
-    sqlalchemy.default.url = "mysql://..." 
-    sqlalchemy.default.pool_recycle = 3600 
-    sqlalchemy.log.url = "sqlite://..." 
-
-This defines two engines, "default" and "log", each with its own set of options. Now you have to instantiate every engine you want to use. 
-
-.. code-block:: python
-
-    default_engine = engine_from_config(config, 'sqlalchemy.default.') 
-    log_engine = engine_from_config(config, 'sqlalchemy.log.') 
-    init_model(default_engine, log_engine) 
-
-
-Of course you'll have to modify `init_model()` to accept both arguments and create two engines. 
-
-To bind different tables to different databases, but always with a particular table going to the same engine, use the `binds` argument to `sessionmaker` rather than `bind`: 
-
-.. code-block:: python
-
-    binds = {"table1": engine1, "table2": engine2} 
-    Session = scoped_session(sessionmaker(binds=binds))
-
-
-To choose the bindings on a per-request basis, skip the sessionmaker bind(s) argument, and instead put this in your base controller's `\_\_call\_\_` method before the superclass call, or directly in a specific action method: 
-
-.. code-block:: python
-
-    meta.Session.configure(bind=meta.engine) 
-
-
-`binds=` works the same way here too. 
-
-Discussion on coding style, the Session object, and bound metadata
-------------------------------------------------------------------
-
-
-All ORM operations require a `Session` and an engine. All non-ORM SQL operations require an engine. (Strictly speaking, they can use a connection instead, but that's beyond the scope of this tutorial.) You can either pass the engine as the `bind=` argument to every SQLAlchemy method that does an actual database query, or bind the engine to a session or metadata. This tutorial recommends binding the session because that is the most flexible, as shown in the "Multiple Engines" section above. 
+All ORM operations require a `Session` and an engine. All non-ORM SQL operations require an engine. (Strictly speaking, they can use a connection instead, but that's beyond the scope of this tutorial.) You can either pass the engine as the `bind=` argument to every SQLAlchemy method that does an actual database query, or bind the engine to a session or metadata. This tutorial recommends binding the session because that is the most flexible, as shown in the :ref:`multiple_databases` section. 
 
 It's also possible to bind a metadata to an engine using the `MetaData(engine)` syntax, or to change its binding with `metadata.bind = engine`. This would allow you to do autoloading without the `autoload_with` argument, and certain SQL operations without specifying an engine or session. Bound metadata was common in earlier versions of SQLAlchemy but is no longer recommended for beginners because it can cause unexpected behavior when ORM and non-ORM operations are mixed. 
 
@@ -855,7 +590,6 @@ The `Session` variable in this chapter is _not_ a SQLAlchemy session object; it'
 
 Fancy classes
 -------------
-
 
 Here's an ORM class with some extra features: 
 
@@ -914,8 +648,7 @@ You can do many more things in SQLAlchemy, such as a read-write property on a hi
 If you have any more clever ideas for fancy classes, please add a comment to this article. 
 
 Logging
--------
-
+=======
 
 SQLAlchemy has several loggers that chat about the various aspects of its operation. To log all SQL statements executed along with their parameter values, put the following in :file:`development.ini`: 
 
@@ -938,26 +671,33 @@ To log the results along with the SQL statements, set the level to DEBUG. This c
 
 SQLAlchemy has several other loggers you can configure in the same way. "sqlalchemy.pool" level INFO tells when connections are checked out from the engine's connection pool and when they're returned. "sqlalchemy.orm" and buddies log various ORM operations. See "Configuring Logging" in the `SQLAlchemy manual`_. 
 
-Multiple application instances
-------------------------------
+About SQLAlchemy
+================
 
+`SQLAlchemy <http://www.sqlalchemy.org/>`_ is by far the most common approach for Pylons databases.  It provides a connection pool, a SQL statement builder, an object-relational mapper (ORM), and transaction support.  SQLAlchemy works with several database engines (MySQL, PostgreSQL, SQLite, Oracle, Firebird, MS-SQL, Access via ODBC, etc) and understands the peculiar SQL dialect of each, making it possible to port a program from one engine to another by simply changing the connection string.  Although its API is still changing gradually, SQLAlchemy is well tested, widely deployed, has excellent documentation, and its mailing list is quick with answers.
 
-If you're running multiple instances of the _same_ Pylons application in the same WSGI process (e.g., with Paste HTTPServer's "composite" application), you may run into concurrency issues. The problem is that :class:`Session` is thread local but not application-instance local. We're not sure how much this is really an issue if ``Session.remove()`` is properly called in the base controller, but just in case it becomes an issue, here are possible remedies: 
+SQLAlchemy lets you work at three different levels, and you can even use
+multiple levels in the same program:
 
-1) Attach the engine(s) to ``pylons.g`` (aka. ``config["pylons.g"]``) rather than to the `meta` module. The globals object is not shared between application instances. 
+* The object-relational mapper (ORM) lets you interact with the database using your own object classes rather than writing SQL code. 
+* The SQL expression language has many methods to create customized SQL statements, and the result cursor is more friendly than DBAPI's. 
+* The low-level execute methods accept literal SQL strings if you find something the SQL builder can't do, such as adding a column to an existing table or modifying the column's type. If they return results, you still get the benefit of SQLAlchemy's result cursor. 
 
-2) Add a scoping function. This prevents the application instances from sharing the same session objects. Add the following function to your model, and pass it as the second argument to `scoped_session`: 
+The first two levels are *database neutral*, meaning they hide the differences between the databases' SQL dialects. Changing to a different database is merely a matter of supplying a new connection URL. Of course there are limits to this, but SQLAlchemy is 90% easier than rewriting all your SQL queries. 
 
-.. code-block:: python
+The `SQLAlchemy manual`_ should be your next stop for questions not covered here. It's very well written and thorough.
 
-    def pylons_scope(): 
-        import thread 
-        from pylons import config 
-        return "Pylons|%s|%s" % (thread.get_ident(), config._current_obj()) 
+SQLAlchemy add-ons
+------------------
 
-    Session = scoped_session(sessionmaker(), pylons_scope) 
+Most of these provide a higher-level ORM, either by combining the table definition and ORM class definition into one step, or supporting an "active record" style of access.  
 
+*Please take the time to learn how to do things "the regular way" before using these shortcuts in a production application*.  
 
-If you're affected by this, or think you might be, please bring it up on the pylons-discuss mailing list. We need feedback from actual users in this situation to verify that our advice is correct. 
+Understanding what these add-ons do behind the scenes will help if you have to troubleshoot a database error or work around a limitation in the add-on later.
+
+`SQLSoup <http://www.sqlalchemy.org/docs/05/plugins.html#plugins_sqlsoup>`_, an extension to SQLAlchemy, provides a quick way to generate ORM classes based on existing database tables.
+
+If you're familiar with ActiveRecord, used in Ruby on Rails, then you may want to use the `Elixir <http://elixir.ematia.de/>`_ layer on top of SQLAlchemy. This approach is less common since the introduction of the declarative extension, but has other features the declarative does not.
 
 .. _`SQLAlchemy manual`: http://www.sqlalchemy.org/docs/

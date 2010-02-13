@@ -1,13 +1,76 @@
 .. _debugging:
 
-===========================
-Troubleshooting & Debugging
-===========================
+======================================
+Errors, Troubleshooting, and Debugging
+======================================
+
+.. _errors:
+
+Handling Errors
+===============
+
+When a web application has an error in production, a few different options for handling it are available. Pylons comes with error handlers to allow the following options:
+
+* E-mail the traceback as HTML to the administrators
+* Show the :ref:`interactve_debugging` interface to the developer
+* Programmatically handle the error in another controller
+* Display a plain error on the web page
+
+Some of these options can be combined by enabling or disabling the appropriate middleware.
+
+Error Middleware
+----------------
+
+In a new Pylons project, the error handling middleware is configured in the projects :file:`config/middleware.py`::
+    
+    # Excerpt of applicable section
+    
+    if asbool(full_stack):
+        # Handle Python exceptions
+        app = ErrorHandler(app, global_conf, **config['pylons.errorware'])
+
+        # Display error documents for 401, 403, 404 status codes (and
+        # 500 when debug is disabled)
+        if asbool(config['debug']):
+            app = StatusCodeRedirect(app)
+        else:
+            app = StatusCodeRedirect(app, [400, 401, 403, 404, 500])
+    
+The first middleware configured, :def:`~pylons.middleware.ErrorHandler`, actually configures one of two :mod:`WebError <weberror>` middlewares depending on whether the project is in ``debug`` mode or not. If it is in ``debug`` mode, then the :ref:`interactive_debugging` is enabled, otherwise, the :ref:`e-mail error handling <error_emails>` will be used.
+
+The second middleware configured is the :class:`~pylons.middleware.StatusCodeRedirect` middleware. This middleware watches the request, and if the application returns a response containing one of the status code's listed, it will call back into the application to the error controller, and use that output instead.
+
+None of these are required for a Pylons project to run, and commenting them all out results in the plain text of the error to display on the web page.
+
+.. warning::
+    
+    If no middleware at all is used, the error will appear on the screen in
+    its entirety, *including full traceback output*.
+
+Recommended Configurations
+--------------------------
+
+* For plain-text output or errors and non-200 status codes, comment out the :class:`~pylons.middleware.StatusCodeRedirect`. Tracebacks will be e-mailed to you in production, and the :ref:`interactive_debugging` will be used during development.
+
+* For programmatic error and non-200 status code handling, keep the stack as-is.
+
+* To *not* have tracebacks e-mailed, remove only the :def:`~pylons.middleware.ErrorHandler` middleware. This will also disable :ref:`interactive_debugging` however. To retain :ref:`interactive_debugging` but disable traceback e-mails::
+    
+    if asbool(config['debug']):
+        app = ErrorHandler(app, global_conf, **config['pylons.errorware'])
+
+.. note::
+    
+    To only capture specific non-200 status codes, the :class:`~pylons.middleware.StatusCodeRedirect` middleware can be passed a list of the codes that it should intercept and redirect to the error controller. When in non-debug mode, it captures the 400-404, and 500 status codes. Altering the list will capture more or less types of requests as desired.
+
+
+
+
 
 .. _interactive_debugging:
 
-Interactive debugging
----------------------
+Interactive Debugging
+=====================
 
 Things break, and when they do, quickly pinpointing what went wrong and why makes a huge difference. By default, Pylons uses a customized version of `Ian Bicking's <http://blog.ianbicking.org/>`_ EvalException middleware that also includes full Mako/Myghty Traceback information. 
 
@@ -59,8 +122,10 @@ Here's what exploring the Traceback from the above example looks like (Excerpt o
     :width: 750px
     :height: 260px
 
-Email Options 
--------------
+.. _error_emails:
+
+E-mailing Errors
+================
 
 You can make all sorts of changes to how the debugging works. For example if you disable the ``debug`` variable in the config file Pylons will email you an error report instead of displaying it as long as you provide your email address at the top of the config file: 
 
