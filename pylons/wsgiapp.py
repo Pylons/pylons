@@ -54,7 +54,7 @@ class PylonsApp(object):
         self.config = config = config or pylons.config._current_obj()
         package_name = config['pylons.package']
         self.helpers = config['pylons.h']
-        self.globals = config.get('pylons.app_globals') or config['pylons.g']
+        self.globals = config.get('pylons.app_globals')
         self.environ_config = config['pylons.environ_config']
         self.package_name = package_name
         self.request_options = config['pylons.request_options']

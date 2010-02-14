@@ -67,7 +67,6 @@ are included in the template's namespace are:
 - :term:`tmpl_context` -- Template context object
 - :data:`config` -- Pylons :class:`~pylons.configuration.PylonsConfig`
   object (acts as a dict)
-- :term:`g` -- Project application globals object
 - :term:`app_globals` -- Project application globals object
 - :term:`h` -- Project helpers module reference
 - :data:`request` -- Pylons :class:`~pylons.controllers.util.Request`
@@ -123,7 +122,7 @@ def pylons_globals():
     namespace if possible.
     
     Pylons variables that are returned in the dictionary:
-        ``c``, ``g``, ``h``, ``_``, ``N_``, config, request, response, 
+        ``c``, ``h``, ``_``, ``N_``, config, request, response, 
         translator, ungettext, ``url``
     
     If SessionMiddleware is being used, ``session`` will also be
@@ -132,12 +131,12 @@ def pylons_globals():
     """
     conf = pylons.config._current_obj()
     c = pylons.tmpl_context._current_obj()
-    g = conf.get('pylons.app_globals') or conf['pylons.g']
+    app_globals = conf.get('pylons.app_globals')
     pylons_vars = dict(
         c=c,
         tmpl_context=c,
         config=conf,
-        app_globals=g,
+        app_globals=app_globals,
         h=conf.get('pylons.h'),
         request=pylons.request._current_obj(),
         response=pylons.response._current_obj(),

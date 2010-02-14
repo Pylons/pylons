@@ -1815,12 +1815,12 @@ SQLAlchemy には、同様の方法で構成できる他のロガーがいくつ
 す:
 
 
-.. 1) Attach the engine(s) to ``pylons.g`` (aka. ``config["pylons.g"]``)
+.. 1) Attach the engine(s) to ``pylons.app_globals`` (aka. ``config["pylons.app_globals"]``)
 ..    rather than to the `meta` module. The globals object is not shared
 ..    between application instances.
 
-1) `meta` モジュールの代わりに ``pylons.g`` (別名
-   ``config["pylons.g"]``) にエンジンを取り付けます。 globals オブジェ
+1) `meta` モジュールの代わりに ``pylons.app_globals`` (別名
+   ``config["pylons.app_globals"]``) にエンジンを取り付けます。 globals オブジェ
    クトはアプリケーションインスタンスの間で共有されません。
 
 
