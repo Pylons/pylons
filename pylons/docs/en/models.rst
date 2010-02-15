@@ -399,6 +399,99 @@ This example of shows the freedom that the Pylons user has to make repeated chan
         redirect_to('pages')
 
 
+Using multiple databases
+------------------------
+
+In order to use multiple databases, in :file:`MYAPP/model/meta.py` create as many instances of :class:`Base` as there are databases to connect to:
+
+.. code-block:: python
+
+    """SQLAlchemy Metadata and Session object"""
+    from sqlalchemy.ext.declarative import declarative_base
+    from sqlalchemy.orm import scoped_session, sessionmaker
+
+    __all__ = ['Base','Base2', 'Session']
+
+    # SQLAlchemy session manager. Updated by model.init_model()
+    Session = scoped_session(sessionmaker())
+
+    # The declarative Base
+    Base = declarative_base()
+    Base2 = declarative_base()
+
+Declare the different database URLs in :file:`development.ini`, appending an integer to the ``sqlalchemy`` keyword in order to differentiate between them.
+
+.. code-block:: ini
+
+    sqlalchemy.url = sqlite:///%(here)s/database_one.sqlite
+    sqlalchemy.echo = true
+    sqlalchemy2.url = sqlite:///%(here)s/database_two.sqlite
+    sqlalchemy2.echo = false
+
+In :file:`MYAPP/config/environment.py`, pick up those db URL declarations by using the different keywords (in this example: `sqlalchemy` and `sqlalchemy2`). Create the engines and call :func:`model.init_model`, passing through both engines as parameters.
+
+.. code-block:: python
+
+    # Setup the SQLAlchemy database engine
+    # Engine 0
+    engine = engine_from_config(config, 'sqlalchemy.')
+    engine2 = engine_from_config(config, 'sqlalchemy2.')
+    model.init_model(engine, engine2)
+
+Bind the engines appropriately to the :class:`Base`-specific metadata in :file:`MYAPP/model/\_\_init\_\_.py` - note :func:`init_model` is expecting both engines to be supplied as formal parameters.
+
+.. code-block:: python
+
+    def init_model(engine, engine2):
+        meta.Base.metadata.bind = engine
+        meta.Base2.metadata.bind = engine2
+
+Then import :class:`Base` and/or :class:`Base2`
+
+.. code-block:: python
+
+    from MYAPP.model.meta import Base, Base2
+
+and use as required, e.g.
+
+.. code-block:: python
+
+    class Author(Base2):
+        __tablename__ = 'authors'
+        id = Column(Integer, primary_key=True)
+        keywords = relation("Keyword", secondary=keywords)
+
+Avoiding the "circular imports" problem of model interdependency
+----------------------------------------------------------------
+
+:file:`MYAPP/model/meta.py`
+
+.. code-block:: python
+
+    """The application's model objects"""
+    import sqlalchemy as sa
+    from MYAPP.model import meta
+    from sqlalchemy.orm import scoped_session, sessionmaker
+
+    def init_model(engine):
+        """Call me before using any of the tables or classes in the model"""
+        meta.Base.metadata.bind = engine
+    
+        import MYAPP.model.user
+        User = MYAPP.model.user.User
+        global User
+    
+        import MYAPP.model.newsletter
+        Newsletter = MYAPP.model.newsletter.Newsletter
+        global Newsletter
+    
+        import MYAPP.model.submission
+        Submission = MYAPP.model.submission.Submission
+        global Submission
+
+Wrap up
+-------
+
 The `Object Relational tutorial <http://www.sqlalchemy.org/docs/ormtutorial.html>`_ in the SQLAlchemy documentation covers a basic SQLAlchemy object-relational mapping scenario in much more detail and the `SQL Expression tutorial <http://www.sqlalchemy.org/docs/sqlexpression.html>`_ covers the details of manipulating and marshalling the model entity objects.
 
 Logging
