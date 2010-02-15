@@ -464,7 +464,9 @@ and use as required, e.g.
 Avoiding the "circular imports" problem of model interdependency
 ----------------------------------------------------------------
 
-:file:`MYAPP/model/meta.py`
+Closely-interdependent models can sometimes cause "circular import" problems, where importing one model file causes a dependent model file to be imported, which then cause the first model file to be imported, and so on round and round in circles.
+
+In order to break the circle, define the model entities as globals in  :file:`MYAPP/model/meta.py`
 
 .. code-block:: python
 
