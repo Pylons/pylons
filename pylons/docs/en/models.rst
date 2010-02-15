@@ -273,18 +273,20 @@ Then run the following on the command line:
 A brief guide to using model objects in the Controller
 ======================================================
 
-In which we: query a model, update a model, save a model and work with a relation,
-all inside a Pylons controller.
+In which we: query a model, update a model entity, create a model entity and delete several model entities, all inside a Pylons controller.
 
-To illustrate some typical uses of model objects in the Controller, we will draw extensively from the example :class:`PagesController` code of the :ref:`QuickWiki Tutorial`.
+To illustrate some typical ways of handling model objects in the Controller, we will draw from the example :class:`PagesController` code of the :ref:`QuickWiki Tutorial`.
 
 The :class:`Session`
 --------------------
-The SQLAlchemy documentation describes a Session thus: "In the most general sense, the Session establishes all conversations with the database and represents a "holding zone" for all the mapped instances which you’ve loaded or created during its lifespan."
 
-All of the model access that takes place in a Pylons controller is done in the context of a :class:`Session`, a database connection reference that is created at the start of the processing of each request and destroyed at the end of the processing of the request.
+The SQLAlchemy-provided :class:`Session` object is a crucially important facet when working with models and model object entities.
 
-These creation and destruction operations are performed automatically by the :class:`BaseController` instantiated in :file:`MYAPP/lib/base.py` which is in turn subclassed for each standard Pylons controller, ensuring that controllers can access the database only in a request-specific context that protects against data accidentally leaking across requests.
+The SQLAlchemy documentation describes the :class:`Session` thus: "In the most general sense, the Session establishes all conversations with the database and represents a "holding zone" for all the mapped instances which you’ve loaded or created during its lifespan."
+
+All of the model access that takes place in a Pylons controller is done in the context of a :class:`Session` providing a database connection reference that is created at the start of the processing of each request and destroyed at the end of the processing of the request.
+
+These creation and destruction operations are performed automatically by the :class:`BaseController` instantiated in :file:`MYAPP/lib/base.py` which is in turn subclassed for each standard Pylons controller, ensuring that subclassed controllers can access the database only in a request-specific context which, in turn, protects against data accidentally leaking across requests.
 
 .. seeAlso:: 
     SQLAlchemy documentation for the `Session object <http://www.sqlalchemy.org/docs/session.html>`_
@@ -395,6 +397,7 @@ This example of shows the freedom that the Pylons user has to make repeated chan
             Session.delete(page)
         Session.commit()
         redirect_to('pages')
+
 
 The `Object Relational tutorial <http://www.sqlalchemy.org/docs/ormtutorial.html>`_ in the SQLAlchemy documentation covers a basic SQLAlchemy object-relational mapping scenario in much more detail and the `SQL Expression tutorial <http://www.sqlalchemy.org/docs/sqlexpression.html>`_ covers the details of manipulating and marshalling the model entity objects.
 
