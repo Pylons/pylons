@@ -341,11 +341,13 @@ and ``self.page_q`` is used in similarly direct manner for the :func:`show` acti
             return render('/pages/new.mako')
         abort(404)
 
-The ``title`` argument to the function is bound when the request is dispatched by the Routes map, typically of the form:
+.. note:: the ``title`` argument to the function is bound when the request is dispatched by the Routes map, typically of the form:
 
-.. code-block:: python
+    .. code-block:: python
 
-    map.connect('show_page', '/page/show/{title}', controller='page', action='show')
+        map.connect('show_page', '/page/show/{title}', controller='page', action='show')
+
+The :class:`Query` object has many other features, including filtering on conditions, ordering the results, grouping, etc. These are excellently described in the `SQLAlchemy manual`_. See especially the `Data Mapping <http://www.sqlalchemy.org/docs/datamapping.html>`_ and `Session / Unit of Work <http://www.sqlalchemy.org/docs/unitofwork.html>`_ chapters. 
 
 
 Creating, updating and deleting model entities
@@ -397,6 +399,8 @@ This example of shows the freedom that the Pylons user has to make repeated chan
             Session.delete(page)
         Session.commit()
         redirect_to('pages')
+
+The `Object Relational tutorial <http://www.sqlalchemy.org/docs/ormtutorial.html>`_ in the SQLAlchemy documentation covers a basic SQLAlchemy object-relational mapping scenario in much more detail and the `SQL Expression tutorial <http://www.sqlalchemy.org/docs/sqlexpression.html>`_ covers the details of manipulating and marshalling the model entity objects.
 
 
 Using multiple databases
@@ -491,10 +495,33 @@ In order to break the circle, define the model entities as globals in  :file:`MY
         Submission = MYAPP.model.submission.Submission
         global Submission
 
-Wrap up
--------
 
-The `Object Relational tutorial <http://www.sqlalchemy.org/docs/ormtutorial.html>`_ in the SQLAlchemy documentation covers a basic SQLAlchemy object-relational mapping scenario in much more detail and the `SQL Expression tutorial <http://www.sqlalchemy.org/docs/sqlexpression.html>`_ covers the details of manipulating and marshalling the model entity objects.
+Testing the Models
+------------------
+
+Normal model usage works fine in model tests, however to use the metadata you must specify an engine connection for it. To have your tables created for every unit test in your project, use a :file:`test_models.py` such as: 
+
+.. code-block:: python
+
+    from myapp.tests import * 
+    from myapp import model 
+    from myapp.model import meta 
+
+    class TestModels(TestController):
+
+        def setUp(self): 
+            meta.Session.remove() 
+            meta.Base.metadata.create_all(meta.engine) 
+
+        def test_index(self): 
+            # test your models 
+            pass
+
+
+.. note:: Notice that the tests inherit from TestController. This is to ensure that the application is setup so that the models will work. 
+
+
+"nosetests --with-pylons=/path/to/test.ini ..." is another way to ensure that your model is properly initialized before the tests are run. This can be used when running non-controller tests. 
 
 Logging
 =======
