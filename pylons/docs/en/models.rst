@@ -34,7 +34,7 @@ Model Basics
 
 Pylons provides a :data:`model` package to put your database code in but does not offer a database engine or API.  Instead there are several third-party APIs to choose from.
 
-The recommend and most common approach used in Pylons applications is to use SQLAlchemy with the declarative configuration style and develop with a relational database (Postgres, MySQL, etc). 
+The recommended and most commonly-adopted approach used in Pylons applications is to use SQLAlchemy with the declarative configuration style and develop with a relational database (Postgres, MySQL, etc). 
 
 **This is the documented and recommended approach for creating a Pylons project with a SQL database**.
 
@@ -72,21 +72,20 @@ See the `Python Package Index <http://pypi.python.org/>`_ (formerly the Cheesesh
 Create a Pylons Project with SQLAlchemy
 ---------------------------------------
 
-When creating a Pylons project, one of the questions asked is whether the project should be configured with SQLAlchemy. Before continuing, ensure that the project was created with this option, if its missing the :file:`model/meta.py` file, then the project should be re-created with this option.
+When creating a Pylons project, one of the questions asked as part of the project creation dialogue is whether the project should be configured with SQLAlchemy. Before continuing, ensure that the project was created with this option, if it's missing the :file:`model/meta.py` file, then the project should be re-created with this option.
     
 .. tip::
     
     The project doesn't need to be deleted to add this option, just re-run
-    the `paster` command in the projects parent directory and answer yes
-    to the SQLAlchemy prompt. The files will then be added, and existing
+    the `paster` command in the project's parent directory and answer "yes"
+    to the SQLAlchemy prompt. The files will then be added and existing
     files will present a prompt on whether to replace them or leave the
     current file.
-
 
 Configure SQLAlchemy
 --------------------
 
-When your Pylons application runs, it needs to know which database to connect to. Normally you put this information in *development.ini* and activate the model in *environment.py*. Put the following in *development.ini* in the `\[app:main\]` section, depending on your database, 
+When your Pylons application runs, it needs to know which database to connect to. Normally you put this information in *development.ini* and activate the model in *environment.py*: put the following in *development.ini* in the `\[app:main\]` section, depending on your database, 
 
 For SQLite 
 ^^^^^^^^^^
@@ -113,7 +112,6 @@ It's important to set "pool_recycle" for MySQL to prevent "MySQL server has gone
 
 Don't be tempted to use the ".echo" option to enable SQL logging because it may cause duplicate log output. Instead see the `Logging`_ section below to integrate MySQL logging into Paste's logging system. 
 
-
 For PostgreSQL 
 ^^^^^^^^^^^^^^
 
@@ -122,7 +120,8 @@ For PostgreSQL
     sqlalchemy.url = postgres://username:password@host:port/database 
 
 
-Enter your username, password, host (localhost if it is on your machine), port number (usually 5432) and the name of your database. 
+Enter your username, password, host (localhost if it is on your machine), 
+port number (usually 5432) and the name of your database. 
 
 
 Organizing
@@ -143,17 +142,22 @@ this call is made in the :func:`load_environment` function (in the file
 :file:`model/meta.py`
 ---------------------
 :file:`model/meta.py` is merely a container for a few housekeeping objects 
-required by SQLAlchemy (:class:`Session`, ``metadata``, and ``engine``) to 
-avoid import issues. The objects are optional in the context of other applications that do not make use of them and so if you answer "no" to the SQLAlchemy question when creating a Pylons project, the creation of :file:`model/meta.py` is simply skipped.
+required by SQLAlchemy such as :class:`Session`, ``metadata`` and ``engine``
+to avoid import issues. In the context of the default Pylons application, only
+the :class:`Session` object is instantiated. 
 
-It's recommended that for each model, a new module inside the ``model/``
-directory should be created. This keeps the models tidy when they get larger as more domain specific code is added to each one.
+The objects are optional in the context of other applications that do not make 
+use of them and so if you answer "no" to the SQLAlchemy question when creating 
+a Pylons project, the creation of :file:`model/meta.py` is simply skipped.
 
+It is recommended that, for each model, a new module inside the ``model/``
+directory should be created. This keeps the models tidy when they get 
+larger as more domain specific code is added to each one.
 
 Creating a Model
 ================
 
-SQLAlchemy 0.5 has an optional Declarative syntax which offers the 
+SQLAlchemy 0.5 has an optional `Declarative` syntax which offers the 
 convenience of defining the table and the ORM class in one step. This
 is the recommended usage of SQLAlchemy.
 
@@ -196,11 +200,11 @@ Then for convenience when using the models, import it in :file:`model/__init__.p
         """Call me before using any of the tables or classes in the model"""
         Session.configure(bind=engine)
 
-
 Adding a Relation
 =================
 
-Here's an example of a `Person` and an `Address` class with a one-to-many relationship on `person.addresses`.
+Here's an example of a :class:`Person` and an :class:`Address` class with a 
+one-to-many relationship on `person.addresses`.
 
 First, add a :file:`model/address.py` module::
     
@@ -266,362 +270,133 @@ Then run the following on the command line:
 
     $ paster setup-app development.ini
 
-Diving into SQLAlchemy
-======================
+A brief guide to using model objects in the Controller
+======================================================
 
-SQLAlchemy's SQL Layer
-----------------------
+In which we: query a model, update a model, save a model and work with a relation,
+all inside a Pylons controller.
 
-SQLAlchemy's lower level SQL expressions can be used along with your ORM
-models, and organizing them as class methods can be an effective way to keep
-the domain logic separate, and write efficient queries that return subsets
-of data that don't map cleanly to the ORM.
+To illustrate some typical uses of model objects in the Controller, we will draw extensively from the example :class:`PagesController` code of the :ref:`QuickWiki Tutorial`.
 
-Consider the case that you want to get all the unique addresses from the
-relation example above. The following method in the Address class can make
-it easy:
+The :class:`Session`
+--------------------
+The SQLAlchemy documentation describes a Session thus: "In the most general sense, the Session establishes all conversations with the database and represents a "holding zone" for all the mapped instances which you’ve loaded or created during its lifespan."
 
-.. code-block:: python
-    
-    # Additional imports
-    from sqlalchemy import select, func
-    
-    from myapp.model.meta import Session
-    
-    
-    class Address(object):
-        @classmethod
-        def unique_addresses(cls):
-            """Query the db for distinct addresses, return them as a list"""
-            query = select([func.distinct(t_addresses.c.address).label('address')],
-                           from_obj=[t_addresses])
-            return [row['address'] for row in Session.execute(query).fetchall()]
+All of the model access that takes place in a Pylons controller is done in the context of a :class:`Session`, a database connection reference that is created at the start of the processing of each request and destroyed at the end of the processing of the request.
 
-.. seealso::
-    
-    SQLAlchemy's `SQL Expression Language Tutorial <http://www.sqlalchemy.org/docs/05/sqlexpression.html>`_
+These creation and destruction operations are performed automatically by the :class:`BaseController` instantiated in :file:`MYAPP/lib/base.py` which is in turn subclassed for each standard Pylons controller, ensuring that controllers can access the database only in a request-specific context that protects against data accidentally leaking across requests.
 
+.. seeAlso:: 
+    SQLAlchemy documentation for the `Session object <http://www.sqlalchemy.org/docs/session.html>`_
 
-Data queries and modifications
-------------------------------
+The net effect of this is that a fully-instantiated :class:`Session` object is available for import and immediate use in the controller for, e.g. querying the model.
 
-.. important::  
-   
-   this section assumes you're putting the code in a high-level model function. If you're putting it directly into a controller method, you'll have to put a `model.` prefix in front of every object defined in the model, or import the objects individually. Also note that the `Session` object here (capital s) is not the same as the Beaker `session` object (lowercase s) in controllers. 
+Querying the model
+------------------
 
-Here's how to enter new data into the database: 
+The :class:`Session` object provides a :func:`query` function that, when applied to a class of mapped model object, returns a SQLAlchemy :class:`Query` object that can be passed around and repeatedly consulted.
+
+.. seealso:: 
+        SQLAlchemy documentation for the `Query object <http://www.sqlalchemy.org/docs/reference/orm/query.html>`_
+
+Standard usage is illustrated in this code for the :func:`__before__` function of the QuickWiki :class:`PagesController` in which ``self.page_q`` is bound to the :class:`Query` object returned by ``Session.query(Page)`` - where :class:`Page` is the class of mapped model object that will be the subject of the queries.
 
 .. code-block:: python
 
-    mr_jones = Person() 
-    mr_jones.name = 'Mr Jones' 
-    meta.Session.add(mr_jones) 
-    meta.Session.commit() 
+    from MYAPP.lib.base import Session
+    from MYAPP.model import Page
 
+    class PagesController(BaseController):
 
-`mr_jones` here is an instance of `Person`. Its properties correspond to the column titles of `t_people` and contain the data from the selected row. A more sophisticated application would have a `Person.\_\_init\_\_` method that automatically sets attributes based on its arguments. 
+        def __before__(self):
+            self.page_q = Session.query(Page)
 
+        # [ ... ]
 
-An example of loading a database entry in a controller method, performing a sex change, and saving it: 
+The :class:`Query` object that is bound to ``self.page_q`` is now specialised to perform queries of the :class:`Page` declarative base entity / mapped model entity. 
 
-.. code-block:: python
+.. seeAlso:: 
+        SQLAlchemy documentation for the `Querying the database <http://www.sqlalchemy.org/docs/ormtutorial.html#querying>`_
 
-    person_q = meta.Session.query(Person) # An ORM Query object for accessing the Person table 
-    mr_jones = person_q.filter(Person.name=='Mr Jones').one() 
-    print mr_jones.name # prints 'Mr Jones' 
-    mr_jones.name = 'Mrs Jones' # only the object instance is changed here ... 
-    meta.Session.commit() # ... only now is the database updated 
-
-
-To return a list of entries use: 
+Here, in the context of a controller's :func:`index` action, it is used in a very straighforward manner - :func:`self.page_q.all` - to fuel a list comprehension that returns a list containing the ``title`` of every :class:`Page` object in the database:
 
 .. code-block:: python
 
-    all_mr_joneses = person_q.filter(Person.name=='Mr Jones').all() 
+    def index(self):
+        c.titles = [page.title for page in self.page_q.all()]
+        return render('/pages/index.mako')
 
-
-To get all list of all the people in the table use: 
-
-.. code-block:: python
-
-    everyone = person_q.all() 
-
-
-To retrieve by id: 
+and ``self.page_q`` is used in similarly direct manner for the :func:`show` action that retrieves a Page with a given value of ``title`` and then calls the Page's  :func:`get_wiki_content` class method. 
 
 .. code-block:: python
 
-    someuser = person_q.get(5) 
+    def show(self, title):
+        page = self.page_q.filter_by(title=title).first()
+        if page:
+            c.content = page.get_wiki_content()
+            return render('/pages/show.mako')
+        elif wikiwords.match(title):
+            return render('/pages/new.mako')
+        abort(404)
 
-
-You can iterate over every person even more simply: 
-
-.. code-block:: python
-
-    print "All people" 
-    for p in person_q: 
-        print p.name 
-    print 
-    print "All Mr Joneses:" 
-    for p in person_q.filter(Person.name=='Mr Jones'): 
-        print p.name 
-
-
-To delete an entry use the following: 
+The ``title`` argument to the function is bound when the request is dispatched by the Routes map, typically of the form:
 
 .. code-block:: python
 
-    mr_jones = person_q.filter(Person.name=='Mr Jones').one() 
-    meta.Session.delete(mr_jones) 
-    meta.Session.commit() 
+    map.connect('show_page', '/page/show/{title}', controller='page', action='show')
 
 
-Working with joined objects 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Creating, updating and deleting model entities
+----------------------------------------------
 
-Recall that the `my_addresses` property is a list of `Address` objects 
+When performing operations that change the state of the database, the recommended approach is for Pylons users to take full advantage of the abstraction provided by the SQLAlchemy ORM and simply treat the retrieved or created model entities as Python objects, make changes to them in a conventional Pythonic way, add them to or delete them from the :class:`Session` "holding zone" and call :func:`Session.commit` to commit the changes to the database.
 
-.. code-block:: python
+The three examples shown below are condensed illustrations of how these operations are typically performed in controller actions.
 
-    print mr_jones.my_addresses[0].address # prints first address 
+Creating a model entity
+^^^^^^^^^^^^^^^^^^^^^^^
 
-
-To add an existing address to 'Mr Jones' we do the following: 
+SQLAlchemy's Declarative Base syntax allows model entity classes to act as constructors, accepting keyworded args and values. In this example, a new Page is created with the given title, the created model entity object is then added to the :class:`Session` and then the change is committed.
 
 .. code-block:: python
 
-    address_q = meta.Session.query(Address) 
-    
-    # Retrieve an existing address 
-    address = address_q.filter(Address.address=='33 Pine Marten Lane, Pleasantville').one()
-    
-    # Add to the list 
-    mr_jones.my_addresses.append(new_address)
-    
-    # issue updates to the join table
-    meta.Session.commit()  
+    def create(self, title):
+        page = Page(title=title)
+        Session.add(page)
+        Session.commit()
+        redirect_to('show_page', title=title)
 
+Updating a model entity
+^^^^^^^^^^^^^^^^^^^^^^^
 
-To add an entirely new address to 'Mr Jones' we do the following: 
+Perhaps the most straighforward use - a model entity object is retrieved from the database, a field value is updated and the change committed. 
 
-.. code-block:: python
-
-    new_address = Address() # Construct an empty address object 
-    new_address.address = '33 Pine Marten Lane, Pleasantville' 
-    mr_jones.my_addresses.append(new_address) # Add to the list 
-    meta.Session.commit() # Commit changes to the database 
-
-
-After making changes you must call `meta.Session.commit()` to store them permanently in the database; otherwise they'll be discarded at the end of the web request. You can also call `meta.Session.rollback()` at any time to undo any changes that haven't been committed. 
-
-To search on a joined object we can pass an entire object as a query: 
+(Note, this example is considerably abbreviated as a controller action - preliminary content checking has been omitted, as has exception handling for the database query.)
 
 .. code-block:: python
 
-    search_address = Address() 
-    search_address.address = '33 Pine Marten Lane, Pleasantville' 
-    residents_at_33_pine_marten_lane = \
-        person_q.filter(Person.my_addresses.contains(search_address)).all() 
+    def save(self, title):
+        page = self.page_q.filter_by(title=title).first()
+        page.content=escape(request.POST.getone('content'))
+        Session.commit()
+        redirect_to('show_page', title=title)
 
+Deleting a model entity
+^^^^^^^^^^^^^^^^^^^^^^^
 
-All attributes must match in the query object. 
-
-Or we can search on a joined objects' property, 
-
-.. code-block:: python
-
-    residents_at_33_pine_marten_lane = \
-     person_q.join('my_addresses').filter(
-        Address.address=='33 Pine Marten Lane, Pleasantville').all() 
-
-
-A shortcut for the above is to use `any()`:
+This example of shows the freedom that the Pylons user has to make repeated changes to the model (in this instance, repeatedly deleting entities from the database) before finally committing those changes by calling :func:`Session.commit`.
 
 .. code-block:: python
 
-    residents_at_33_pine_marten_lane = \
-     person_q.filter(Person.my_addresses.any(
-        Address.address=='33 Pine Marten Lane, Pleasantville')).all() 
-
-
-
-To disassociate an address from Mr Jones we do the following: 
-
-.. code-block:: python
-
-    del mr_jones.my_addresses[0] # Delete the reference to the address 
-    meta.Session.commit() 
-
-
-To delete the address itself in the address table, normally we'd have to issue a separate `delete()` for the `Address` object itself: 
-
-.. code-block:: python
-
-    meta.Session.delete(mr_jones.my_addresses[0]) # Delete the Address object 
-    del mr_jones.my_addresses[0] 
-    meta.Session.commit() # Commit both operations to the database 
-
-
-However, SQLAlchemy supports a shortcut for the above operation. Configure the mapper relation using `cascade = "all, delete-orphan"` instead: 
-
-.. code-block:: python
-
-    orm.mapper(Address, t_addresses) 
-    orm.mapper(Person, t_people, properties = { 
-    'my_addresses': orm.relation(
-            Address, secondary=t_addresses_people, cascade="all,delete-orphan"), 
-    }) 
-
-
-Then, any items removed from `mr_jones.my_addresses` is automatically deleted from the database: 
-
-
-.. code-block:: python
-
-    del mr_jones.my_addresses[0] # Delete the reference to the address, 
-                                 # also deletes the Address 
-    meta.Session.commit() 
-
-
-For any relationship, you can add `cascade = "all, delete-orphan"` as an extra argument to `relation()` in your mappers to ensure that when a join is deleted the joined object is deleted as well, so that the above delete() operation is not needed - only the removal from the `my_addresses` list. Beware though that despite its name, `delete-orphan` removes joined objects even if another object is joined to it. 
-
-
-Non-ORM SQL queries 
-^^^^^^^^^^^^^^^^^^^
-
-Use `meta.Session.execute()` to execute a non-ORM SQL query within the session's transaction. Bulk updates and deletes can modify records significantly faster than looping through a query and modifying the ORM instances. 
-
-.. code-block:: python
-
-    q = sa.select([table1.c.id, table1.c.name], order_by=[table1.c.name]) 
-    records = meta.Session.execute(q).fetchall() 
-
-    # Example of a bulk SQL UPDATE. 
-    update = table1.update(table1.c.name=="Jack") 
-    meta.Session.execute(update, name="Ed") 
-    meta.Session.commit() 
-
-    # Example of updating all matching records using an expression. 
-    update = table1.update(values={table1.c.entry_id: table1.c.entry_id + 1000}) 
-    meta.Session.exececute(update) 
-    meta.Session.commit() 
-
-    # Example of a bulk SQL DELETE. 
-    delete = table1.delete(table1.c.name.like("M%")) 
-    meta.Session.execute(delete) 
-    meta.Session.commit() 
-
-    # Database specific, use only if SQLAlchemy doesn't have methods to construct the desired query. 
-    meta.Session.execute("ALTER TABLE Foo ADD new_column (VARCHAR(255)) NOT NULL") 
-
-
-.. warning:: The last example changes the database structure and may adversely interact with ORM operations. 
-
-
-Further reading 
-^^^^^^^^^^^^^^^
-
-The Query object has many other features, including filtering on conditions, ordering the results, grouping, etc. These are excellently described in the `SQLAlchemy manual`_. See especially the `Data Mapping <http://www.sqlalchemy.org/docs/datamapping.html>`_ and `Session / Unit of Work <http://www.sqlalchemy.org/docs/unitofwork.html>`_ chapters. 
-
-Testing the Models
-==================
-
-Normal model usage works fine in model tests, however to use the metadata you must specify an engine connection for it. To have your tables created for every unit test in your project, use a test_models.py such as: 
-
-.. code-block:: python
-
-    from myapp.tests import * 
-    from myapp import model 
-    from myapp.model import meta 
-
-    class TestModels(TestController):
-
-        def setUp(self): 
-            meta.Session.remove() 
-            meta.Base.metadata.create_all(meta.engine) 
-
-        def test_index(self): 
-            # test your models 
-            pass
-
-
-.. note:: Notice that the tests inherit from TestController. This is to ensure that the application is setup so that the models will work. 
-
-
-"nosetests --with-pylons=/path/to/test.ini ..." is another way to ensure that your model is properly initialized before the tests are run. This can be used when running non-controller tests. 
-
-
-Coding style, the Session object, and bound metadata
-====================================================
-
-All ORM operations require a `Session` and an engine. All non-ORM SQL operations require an engine. (Strictly speaking, they can use a connection instead, but that's beyond the scope of this tutorial.) You can either pass the engine as the `bind=` argument to every SQLAlchemy method that does an actual database query, or bind the engine to a session or metadata. This tutorial recommends binding the session because that is the most flexible, as shown in the :ref:`multiple_databases` section. 
-
-It's also possible to bind a metadata to an engine using the `MetaData(engine)` syntax, or to change its binding with `metadata.bind = engine`. This would allow you to do autoloading without the `autoload_with` argument, and certain SQL operations without specifying an engine or session. Bound metadata was common in earlier versions of SQLAlchemy but is no longer recommended for beginners because it can cause unexpected behavior when ORM and non-ORM operations are mixed. 
-
-Don't confuse SQLAlchemy sessions and Pylons sessions; they're two different things! The `session` object used in controllers (`pylons.session`) is an industry standard used in web applications to maintain state between web requests by the same user. SQLAlchemy's session is an object that synchronizes ORM objects in memory with their corresponding records in the database. 
-
-The `Session` variable in this chapter is _not_ a SQLAlchemy session object; it's a "contextual session" class. Calling it returns the (new or existing) session object appropriate for this web request, taking into account threading and middleware issues. Calling its class methods (`Session.commit()`, `Session.query(...)`, etc) implicitly calls the corresponding method on the appropriate session. You can normally just call the `Session` class methods and ignore the internal session objects entirely. See "Contextual/Thread-local Sessions" in the `SQLAlchemy manual`_ for more information. This is equivalent to SQLAlchemy 0.3's `SessionContext` but with a different API. 
-
-"Transactional" sessions are a new feature in SQLAlchemy 0.4; this is why we're using `Session.commit()` instead of `Session.flush()`. The `autocommit=False` (`transactional=True` in SQLALchemy 0.4) and `autoflush=True` args (which are the defaults) to `sessionmaker` enable this, and should normally be used together. 
-
-Fancy classes
--------------
-
-Here's an ORM class with some extra features: 
-
-.. code-block:: python
-
-    class Person(object): 
-
-        def __init__(self, firstname, lastname, sex): 
-            if not firstname:
-                raise ValueError("arg 'firstname' cannot be blank") 
-            if not lastname:
-                raise ValueError("arg 'lastname' cannot be blank") 
-            if sex not in ["M", "F"]:
-                raise ValueError("sex must be 'M' or 'F'") 
-            self.firstname = firstname 
-            self.lastname = lastname 
-            self.sex = sex 
-
-        def __repr__(self): 
-            myclass = self.__class__.__name__ 
-            return "<%s %s %s>" % (myclass, self.firstname, self.lastname) 
-            #return "%s(%r, %r)" % (myclass, self.firstname, self.lastname, self.sex) 
-            #return "<%s %s>" % (self.firstname, self.lastname) 
-
-        @property 
-        def name(self): 
-            return "%s %s" % (self.firstname, self.lastname) 
-
-        @classmethod 
-        def all(cls, order=None, sex=None): 
-            """Return a Query of all Persons. The caller can iterate this,
-            do q.count(), add additional conditions, etc. 
-            """ 
-            q = meta.Session.query(Person) 
-            if order and order.lower().startswith("d"): 
-                q = q.order_by([Person.birthdate.desc()]) 
-            else: 
-                q = q.order_by([Person.lastname, Person.firstname]) 
-            return q 
-
-        @classmethod 
-        def recent(self, cutoff_days=30): 
-            cutoff = datetime.date.today() - datetime.timedelta(days=cutoff_days) 
-            q = meta.Session.query(Person).order_by(
-                    [Person.last_transaction_date.desc()]) 
-            q = q.filter(Person.last_transaction_date >= cutoff) 
-            return q 
-
-
-With this class you can create new records with constructor args. This is not only convenient but ensures the record starts off with valid data (no required field empty). `.\_\_init\_\_` is not called when loading an existing record from the database, so it doesn't interfere with that. Instances can print themselves in a friendly way, and a read-only property is calculated from multiple fields. 
-
-Class methods return high-level queries for the controllers. If you don't like the class methods you can have a separate `PersonSearch` class for them. The methods get the session from the `myapp.model.meta` module where we've stored it. Note that this module imported the `meta` module, not the `Session` object directly. That's because `init_model()` replaces the `Session` object, so if we'd imported the `Session` object directly we'd get its original value rather than its current value. 
-
-You can do many more things in SQLAlchemy, such as a read-write property on a hidden column, or specify relations or default ordering in the `orm.mapper` call. You can make a composite property like `person.location.latitude` and `person.location.longitude` where `latitude` and `longitude` come from different table columns. You can have a class that mimics a list or dict but is associated with a certain table. Some of these properties you'll make with Pylons normal property mechanism; others you'll do with the `property` argument to `orm.mapper`. And you can have relations up the gazoo, which can be lazily loaded if you don't use one side of the relation much of the time, or eagerly loaded to minimize the number of queries. (Only the latter use SQL joins.) You can have certain columns in your class lazily loaded too, although SQLAlchemy calls this "deferred" rather than "lazy". SQLAlchemy will automatically load the columns or related table when they're accessed. 
-
-If you have any more clever ideas for fancy classes, please add a comment to this article. 
+    def delete(self):
+        titles = request.POST.getall('title')
+        pages = self.page_q.filter(Page.title.in_(titles))
+        for page in pages:
+            Session.delete(page)
+        Session.commit()
+        redirect_to('pages')
+
+The `Object Relational tutorial <http://www.sqlalchemy.org/docs/ormtutorial.html>`_ in the SQLAlchemy documentation covers a basic SQLAlchemy object-relational mapping scenario in much more detail and the `SQL Expression tutorial <http://www.sqlalchemy.org/docs/sqlexpression.html>`_ covers the details of manipulating and marshalling the model entity objects.
 
 Logging
 =======
