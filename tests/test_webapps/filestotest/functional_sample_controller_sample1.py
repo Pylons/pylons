@@ -7,7 +7,7 @@ class TestSampleController(TestController):
         # Test response...
     
     def test_index(self):
-        response = self.app.get(url(controller='sample'))
+        response = self.app.get(url(controller='sample', action='index'))
         assert 'basic index page' in response
     
     def test_session(self):

@@ -15,5 +15,5 @@ class TestSample2Controller(TestController):
         assert 'It was a post' in response
 
     def test_head(self):
-        response = self.app._gen_request('HEAD', url(controller='sample'))
+        response = self.app._gen_request('HEAD', url(controller='sample', action='index'))
         assert '' == response.body

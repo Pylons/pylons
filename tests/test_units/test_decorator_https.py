@@ -3,7 +3,7 @@ from paste.registry import RegistryManager
 
 from routes.middleware import RoutesMiddleware
 
-from pylons import url
+from pylons import request, url
 from pylons.decorators.secure import https
 from pylons.controllers import WSGIController
 from pylons.testutil import ControllerWrap, SetupCacheGlobal
@@ -20,7 +20,7 @@ class HttpsController(WSGIController):
     def login2(self):
         return 'login2 page'
 
-    @https(lambda: url.current())
+    @https(lambda: request.url)
     def secure(self):
         return 'secure page'
 

@@ -29,7 +29,7 @@ class SampleController(BaseController):
         return str(app_globals.counter)
     
     def myself(self):
-        return url.current()
+        return request.url
     
     def myparams(self):
         return str(request.params)
