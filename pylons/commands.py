@@ -373,6 +373,64 @@ class RestControllerCommand(Command):
             raise BadCommand('An unknown error occurred. %s' % msg)
 
 
+class RoutesCommand(Command):
+    """Print the applications routes
+
+    The optional CONFIG_FILE argument specifies the config file to use.
+    CONFIG_FILE defaults to 'development.ini'.
+
+    Example::
+
+        $ paster routes my-development.ini
+
+    """
+    summary = __doc__.splitlines()[0]
+    usage = '\n' + __doc__
+
+    min_args = 0
+    max_args = 1
+    group_name = 'pylons'
+
+    parser = Command.standard_parser(simulate=True)
+    parser.add_option('-q',
+                      action='count',
+                      dest='quiet',
+                      default=0,
+                      help=("Do not load logging configuration from the "
+                            "config file"))
+
+    def command(self):
+        """Main command to create a new shell"""
+        self.verbose = 3
+        if len(self.args) == 0:
+            # Assume the .ini file is ./development.ini
+            config_file = 'development.ini'
+            if not os.path.isfile(config_file):
+                raise BadCommand('%sError: CONFIG_FILE not found at: .%s%s\n'
+                                 'Please specify a CONFIG_FILE' % \
+                                 (self.parser.get_usage(), os.path.sep,
+                                  config_file))
+        else:
+            config_file = self.args[0]
+
+        config_name = 'config:%s' % config_file
+        here_dir = os.getcwd()
+
+        if not self.options.quiet:
+            # Configure logging from the config file
+            self.logging_file_config(config_file)
+        
+        # Load the wsgi app first so that everything is initialized right
+        wsgiapp = loadapp(config_name, relative_to=here_dir)
+        test_app = paste.fixture.TestApp(wsgiapp)
+
+        # Query the test app to setup the environment and get the mapper
+        tresponse = test_app.get('/_test_vars')
+        mapper = tresponse.config.get('routes.map')
+        if mapper:
+            print mapper
+
+
 class ShellCommand(Command):
     """Open an interactive shell with the Pylons app loaded
 
