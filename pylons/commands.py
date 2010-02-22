@@ -209,7 +209,7 @@ class ControllerCommand(Command):
             
             file_op.template_vars.update(
                 {'name': controller_name,
-                 'fname': os.path.join(directory, name),
+                 'fname': os.path.join(directory, name).replace('\\', '/'),
                  'tmpl_name': name,
                  'package':base_package,
                  'importstatement': importstatement})

@@ -36,7 +36,7 @@ testenv = TestFileEnvironment(
 projenv = None
 
 def _get_script_name(script):
-    if sys.platform == 'win32':
+    if sys.platform == 'win32' and not script.lower().endswith('.exe'):
         script += '.exe'
     return script
 
