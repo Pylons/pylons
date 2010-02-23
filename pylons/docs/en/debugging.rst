@@ -4,22 +4,17 @@
 Errors, Troubleshooting, and Debugging
 ======================================
 
-.. _errors:
-
-Handling Errors
-===============
-
 When a web application has an error in production, a few different options for handling it are available. Pylons comes with error handlers to allow the following options:
 
 * E-mail the traceback as HTML to the administrators
-* Show the :ref:`interactve_debugging` interface to the developer
+* Show the :ref:`interactive_debugging` interface to the developer
 * Programmatically handle the error in another controller
 * Display a plain error on the web page
 
 Some of these options can be combined by enabling or disabling the appropriate middleware.
 
 Error Middleware
-----------------
+================
 
 In a new Pylons project, the error handling middleware is configured in the projects :file:`config/middleware.py`::
     
@@ -63,6 +58,30 @@ Recommended Configurations
     
     To only capture specific non-200 status codes, the :class:`~pylons.middleware.StatusCodeRedirect` middleware can be passed a list of the codes that it should intercept and redirect to the error controller. When in non-debug mode, it captures the 400-404, and 500 status codes. Altering the list will capture more or less types of requests as desired.
 
+Avoiding Displaying Tracebacks
+------------------------------
+
+When disabling the :func:`~pylons.middleware.ErrorHandler` middleware, a replacement middleware should be created and used that captures exceptions and changes them into a normal WSGI response, otherwise the raw traceback error will be displayed on the browser.
+
+An example middleware that just captures exceptions and changes them to a 500 error::
+    
+    from webob import Request, Response
+    
+    class EatExceptions(object):
+        def __init__(self, app):
+            self.app = app
+        
+        def __call__(self, environ, start_response):
+            req = Request(environ)
+            try:
+                response = req.get_response(self.app)    
+            except:
+                response = Response()
+                response.status_int = 500
+                response.body = 'An error has occured'
+            return response(environ, start_response)
+
+Replacing the ``ErrorHandler`` with this middleware will cause tracebacks to not be displayed to the user.
 
 
 .. _interactive_debugging:
@@ -125,15 +144,37 @@ Here's what exploring the Traceback from the above example looks like (Excerpt o
 E-mailing Errors
 ================
 
-You can make all sorts of changes to how the debugging works. For example if you disable the ``debug`` variable in the config file Pylons will email you an error report instead of displaying it as long as you provide your email address at the top of the config file: 
+You can make various of changes to how the debugging works. For example if you disable the ``debug`` variable in the config file Pylons will email you an error report instead of displaying it as long as you provide your email address at the top of the config file: 
 
 .. code-block:: ini 
 
     error_email_from = you@example.com 
 
-This is very useful for a production site. Emails are sent via SMTP so you need to specify a valid SMTP server too. 
+This is very useful for a production site. Emails are sent via SMTP so you need to specify a valid SMTP server too.
 
-Error Handling Options 
-====================== 
+Programmatically Handling Errors
+================================
 
-A number of error handling options can be specified in the config file. These are described in the :ref:`interactive_debugging` documentation but the important point to remember is that debug should always be set to ``false`` in production environments otherwise if an error occurs the visitor will be presented with the developer's interactive traceback which they could use to execute malicious code.
+By default, the :class:`~pylons.middleware.StatusCodeRedirect` will redirect any response with the designated status codes back into the application again. This will result in the ``error`` controller in the Pylons project being called. This is why there is a default route in :file:`config/routing.py` of::
+    
+    map.connect('/error/{action}', controller='error')
+    map.connect('/error/{action}/{id}', controller='error')
+    
+The error controller allows a project to theme the error message appropriately by changing it to render a template, or redirect as desired.
+
+Original Request Information
+----------------------------
+
+The original request and response that resulted in the error controller being called is available inside the error controller as::
+    
+    # Original request
+    request.environ['pylons.original_request']
+    
+    # Original response
+    request.environ['pylons.original_response']
+
+If an :exc:`~webob.exc.HTTPException` was thrown in the controller (the :func:`~pylons.controllers.util.abort` function throws these), the original object is available as::
+    
+    request.environ['pylons.controller.exception']
+
+This allows access to the error message on the exception object.
