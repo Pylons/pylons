@@ -252,15 +252,6 @@ def do_xmlrpc():
     ]
     _do_proj_test(copydict, empty)
 
-def do_legacy_app():
-    legacyenv = TestFileEnvironment(
-        os.path.join(testenv.base_path, 'legacyapp').replace('\\','/'),
-        start_clear=False,
-        template_path=template_path,
-        environ=test_environ)
-    res = legacyenv.run(_get_script_name('nosetests')+' legacyapp/tests',
-                      expect_stderr=True,
-                      cwd=os.path.join(testenv.cwd, 'legacyapp').replace('\\','/'))
 
 def make_tag():
     global tagenv
@@ -360,9 +351,6 @@ def test_project_do_jinja2():
 
 def test_project_do_xmlrpc():
     do_xmlrpc()
-
-#def test_project_do_legacy_app():
-#    do_legacy_app()
 
 #def test_project_make_tag():
 #    make_tag()
