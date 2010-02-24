@@ -15,6 +15,10 @@ Pylons Changelog
   the add_template_engine option.
 * WARNING: Removed legacy redirect_to function.
 * WARNING: @https decorator no longer accepts url_for-like arguments.
+* Add a "paster routes" command.  This prints the mapper, which from Routes
+  1.12 onwards gives sensibly formatted output.
+* Fix unit tests on Windows
+* Prepare for Routes 1.12, ensure tests don't assume implicit routing
 
 0.10b1 (February 5, 2009)
 * redirect_to is now deprecated, use redirect(url(*args, **kwargs)) instead.
@@ -34,6 +38,7 @@ Pylons Changelog
   StackedObjectProxy classes.
 * Changed PylonsConfig to be dict subclass, rather than DispatchingConfig
   subclass.
+
 
 0.9.7 (February 23, 2009)
 * WARNING: A new option is available to determine whether or not an actions

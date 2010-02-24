@@ -13,7 +13,7 @@ class TestXmlrpcController(TestController):
         return loads(response.body)[0][0]
     
     def setUp(self):
-        self.xmlurl = url(controller='xmlrpc')
+        self.xmlurl = url(controller='xmlrpc', action='index')
     
     def test_index(self):
         response = self.xmlreq('userstatus')

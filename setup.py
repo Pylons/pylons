@@ -106,6 +106,7 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
     [paste.paster_command]
     controller = pylons.commands:ControllerCommand
     restcontroller = pylons.commands:RestControllerCommand
+    routes = pylons.commands:RoutesCommand
     shell = pylons.commands:ShellCommand
 
     [paste.paster_create_template]
