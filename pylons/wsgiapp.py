@@ -190,6 +190,9 @@ class PylonsApp(object):
         pylons_obj.response = response
         pylons_obj.app_globals = self.globals
         pylons_obj.h = self.helpers
+        
+        if 'routes.url' in environ:
+            pylons_obj.url = environ['routes.url']
                 
         environ['pylons.pylons'] = pylons_obj
         
