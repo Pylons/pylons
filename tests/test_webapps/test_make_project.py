@@ -1,7 +1,7 @@
 """Tests against full Pylons projects created from scratch"""
 import os
 import sys
-from shutil import rmtree
+import shutil
 
 import pkg_resources
 import pylons
@@ -91,6 +91,8 @@ def paster_create(template_engine='mako', overwrite=False, sqlatesting=False):
     projenv.environ['PYTHONPATH'] = (
         projenv.environ.get('PYTHONPATH', '') + ':'
         + projenv.base_path)
+    
+    projenv.writefile('.coveragerc', frompath='coveragerc')
 
 def make_controller():
     res = projenv.run(_get_script_name('paster')+' controller sample')
@@ -362,5 +364,12 @@ def test_project_do_sqlaproject():
 
 def teardown():
     dir_to_clean = os.path.join(os.path.dirname(__file__), TEST_OUTPUT_DIRNAME)
-    rmtree(dir_to_clean)
-
+    cov_dir = os.path.join(dir_to_clean, 'ProjectName')
+    main_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+    
+    # Scan and move the coverage files
+    for name in os.listdir(cov_dir):
+        if name.startswith('.coverage.'):
+            shutil.move(os.path.join(cov_dir, name), main_dir)
+        
+    shutil.rmtree(dir_to_clean)
