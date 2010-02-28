@@ -219,7 +219,7 @@ Then, add this line at the end of the ``load_environment`` function:
 
 .. code-block:: python 
 
-    config['pylons.g'].sa_engine = \
+    config['pylons.app_globals'].sa_engine = \
         engine_from_config(config, 'sqlalchemy.default.') 
 
 This creates an **engine** for each instance of your application, which manages connections and is the base level at which SQLAlchemy communicates with the database. The engine is added to Pylons' ``config`` object, where you earlier saw it accessed in the ``base`` parameter for setting up SQLAlchemy's ``Session``. 
@@ -247,7 +247,7 @@ Now edit ``websetup.py``, used by the ``paster setup-app`` command, to look like
     import quickwiki.model as model 
 
     log.info("Setting up database connectivity...") 
-    engine = config['pylons.g'].sa_engine 
+    engine = config['pylons.app_globals'].sa_engine 
     log.info("Creating tables...") 
     model.metadata.create_all(bind=engine) 
     log.info("Successfully set up.") 

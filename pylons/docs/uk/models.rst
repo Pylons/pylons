@@ -842,7 +842,7 @@ Multiple application instances
 
 If you're running multiple instances of the _same_ Pylons application in the same WSGI process (e.g., with Paste HTTPServer's "composite" application), you may run into concurrency issues. The problem is that :class:`Session` is thread local but not application-instance local. We're not sure how much this is really an issue if ``Session.remove()`` is properly called in the base controller, but just in case it becomes an issue, here are possible remedies: 
 
-1) Attach the engine(s) to ``pylons.g`` (aka. ``config["pylons.g"]``) rather than to the `meta` module. The globals object is not shared between application instances. 
+1) Attach the engine(s) to ``pylons.app_globals`` (aka. ``config["pylons.app_globals"]``) rather than to the `meta` module. The globals object is not shared between application instances. 
 
 2) Add a scoping function. This prevents the application instances from sharing the same session objects. Add the following function to your model, and pass it as the second argument to `scoped_session`: 
 
