@@ -2,6 +2,7 @@
 import os
 import sys
 import shutil
+import re
 
 import pkg_resources
 import pylons
@@ -127,7 +128,7 @@ def make_restcontroller_subdirectory():
     assert '?' not in res.stdout
 
 
-def _do_proj_test(copydict, emptyfiles=None):
+def _do_proj_test(copydict, emptyfiles=None, match_routes_output=None):
     """Given a dict of files, where the key is a filename in filestotest, the value is
     the destination in the new projects dir. emptyfiles is a list of files that should
     be created and empty."""
@@ -153,6 +154,13 @@ def _do_proj_test(copydict, emptyfiles=None):
     res = projenv.run(_get_script_name('nosetests')+' -d --with-coverage --cover-package=pylons',
                       expect_stderr=True,
                       cwd=os.path.join(testenv.cwd, 'ProjectName').replace('\\','/'))
+    if match_routes_output:
+        res = projenv.run(_get_script_name('paster')+' routes',
+                          expect_stderr=False,
+                          cwd=os.path.join(testenv.cwd, 'ProjectName').replace('\\','/'))
+        for pattern in match_routes_output:
+            assert re.compile(pattern).search(res.stdout)
+        
 
 def do_nosetests():
     _do_proj_test({'development.ini':'development.ini'})
@@ -334,7 +342,11 @@ def test_project_do_rest_nosetests():
         'rest_routing.py':'projectname/config/routing.py',
         'development.ini':'development.ini',
     }
-    _do_proj_test(copydict)
+    match_routes_output = [
+        'Route name +Methods +Path',
+        'restsamples +GET +/restsamples'
+    ]
+    _do_proj_test(copydict, match_routes_output)
 
 # Tests with templating plugin dependencies
 def test_project_do_crazy_decorators():
