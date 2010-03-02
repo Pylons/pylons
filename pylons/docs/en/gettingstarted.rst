@@ -49,7 +49,7 @@ boot-strap Python script that sets up a "virtual" Python environment. Pylons wil
     
     .. code-block:: bash
     
-        $ curl http://pylonshq.com/download/1.0b1/go-pylons.py | python - mydevenv
+        $ curl http://pylonshq.com/download/1.0rc1/go-pylons.py | python - mydevenv
     
     To isolate further from additional system-wide Python libraries, run
     with the --no-site-packages option:
