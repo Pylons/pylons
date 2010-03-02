@@ -9,6 +9,9 @@ from pylons.controllers import WSGIController
 from __init__ import TestWSGIController, SetupCacheGlobal, ControllerWrap, TestMiddleware
 
 class BasicWSGIController(WSGIController):
+    def __init__(self):
+        self._pylons_log_debug = True
+
     def __before__(self):
         pylons.response.headers['Cache-Control'] = 'private'
     

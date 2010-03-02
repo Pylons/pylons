@@ -5,11 +5,15 @@ from paste.registry import RegistryManager
 import pylons
 from pylons.util import ContextObj
 from pylons.controllers import XMLRPCController
+import webob.exc as exc
 import xmlrpclib
 
 from __init__ import TestWSGIController, SetupCacheGlobal, ControllerWrap
 
 class BaseXMLRPCController(XMLRPCController):
+    def __init__(self):
+        self._pylons_log_debug = True
+    
     foo = 'bar'
     
     def userstatus(self):
@@ -95,6 +99,14 @@ class TestXMLRPCController(TestWSGIController):
     def test_unicode_method(self):
         data = xmlrpclib.dumps((), methodname=u'ОбсуждениеКомпаний')
         self.response = response = self.app.post('/', params=data, extra_environ=dict(CONTENT_TYPE='text/xml'))
+    
+    def test_no_length(self):
+        data = xmlrpclib.dumps((), methodname=u'ОбсуждениеКомпаний')
+        self.assertRaises(exc.HTTPLengthRequired, lambda: self.app.post('/', extra_environ=dict(CONTENT_LENGTH='')))
+    
+    def test_too_big(self):
+        data = xmlrpclib.dumps((), methodname=u'ОбсуждениеКомпаний')
+        self.assertRaises(exc.HTTPRequestEntityTooLarge, lambda: self.app.post('/', extra_environ=dict(CONTENT_LENGTH='4194314')))
     
     def test_badargs(self):
         self.assertRaises(xmlrpclib.Fault, self.xmlreq, 'system.methodHelp')

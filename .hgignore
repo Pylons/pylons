@@ -15,4 +15,5 @@ build/
 dist/
 docs/html/docs
 output/ProjectName
+tests/html_coverage
 syntax: glob
