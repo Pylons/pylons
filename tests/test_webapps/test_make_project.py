@@ -380,8 +380,8 @@ def teardown():
     main_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
     
     # Scan and move the coverage files
-    for name in os.listdir(cov_dir):
-        if name.startswith('.coverage.'):
-            shutil.move(os.path.join(cov_dir, name), main_dir)
-        
+    # for name in os.listdir(cov_dir):
+    #     if name.startswith('.coverage.'):
+    #         shutil.move(os.path.join(cov_dir, name), main_dir)
+    #     
     shutil.rmtree(dir_to_clean)
