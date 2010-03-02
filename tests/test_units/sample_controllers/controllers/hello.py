@@ -12,3 +12,6 @@ class HelloController(WSGIController):
 
     def index(self):
         return 'Hello World'
+    
+    def oops(self):
+        raise Exception('oops')

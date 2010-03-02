@@ -16,6 +16,10 @@ from pylons.testutil import SetupCacheGlobal, ControllerWrap
 from __init__ import data_dir, TestWSGIController
 
 class CacheController(WSGIController):
+    @beaker_cache(key=None, invalidate_on_startup=True)
+    def test_default_cache_decorator_invalidate(self):
+        pylons.app_globals.counter += 1
+        return 'Counter=%s' % pylons.app_globals.counter
 
     @beaker_cache(key=None)
     def test_default_cache_decorator(self):
@@ -96,6 +100,7 @@ class CacheController(WSGIController):
     def test_cache_key_dupe(self):
         return "Hello folks, time is %s" % time.time()
 
+
 cache_dir = os.path.join(data_dir, 'cache')
 
 try:
@@ -110,12 +115,38 @@ app = CacheMiddleware(app, {}, data_dir=cache_dir)
 app = RegistryManager(app)
 app = TestApp(app)
 
+# This one is missing cache middleware and the cache object to miss on purpsoe
+bad_app = ControllerWrap(CacheController)
+bad_app = SetupCacheGlobal(bad_app, environ, setup_cache=False)
+bad_app = RegistryManager(bad_app)
+bad_app = TestApp(bad_app)
+
+class TestBadCacheDecorator(TestWSGIController):
+    def setUp(self):
+        self.app = bad_app
+        TestWSGIController.setUp(self)
+        environ.update(self.environ)
+    
+    def test_no_cache(self):
+        self.assertRaises(Exception, lambda: self.get_response(action='test_default_cache_decorator'))
+
 class TestCacheDecorator(TestWSGIController):
     def setUp(self):
         self.app = app
         TestWSGIController.setUp(self)
         environ.update(self.environ)
-        
+
+    def test_default_cache_decorator(self):
+        sap.g.counter = 0
+        self.get_response(action='test_default_cache_decorator_invalidate')
+
+        response = self.get_response(action='test_default_cache_decorator_invalidate')
+        assert 'text/html' in response.headers['content-type']
+        assert 'Counter=1' in response
+
+        response = self.get_response(action='test_default_cache_decorator_invalidate')
+        assert 'Counter=1' in response
+    
     def test_default_cache_decorator(self):
         sap.g.counter = 0
         self.get_response(action='test_invalidate_cache')

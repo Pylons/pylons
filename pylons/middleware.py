@@ -82,25 +82,6 @@ PylonsHQ website in this browser.</p>
 <img src="{{prefix}}/media/pylons/img/pylons-powered-02.png" /></div>
 <div class="credits">Pylons version %s</div>"""
 
-class StaticJavascripts(object):
-    """Middleware for intercepting requests for WebHelpers' included 
-    javascript files.
-    
-    Triggered when PATH_INFO begins with '/javascripts/'.
-    
-    """
-    def __init__(self, **kwargs):
-        self.javascripts_app = \
-            StaticURLParser('/javascripts/', **kwargs)
-        
-    def __call__(self, environ, start_response):
-        if environ.get('PATH_INFO', '').startswith('/javascripts/'):
-            log.debug("Handling Javascript URL (Starts with /javascripts/)")
-            return self.javascripts_app(environ, start_response)
-        else:
-            return self.javascripts_app.not_found(environ, start_response)
-
-
 report_libs = ['pylons', 'genshi', 'sqlalchemy']
 
 def ErrorHandler(app, global_conf, **errorware):
