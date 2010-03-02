@@ -1,6 +1,12 @@
 Pylons Changelog
 ================
 
+1.0RC1 (**tip**)
+* Switched to using Routes 1.12 with support for no longer using the odd
+  routes singleton.
+* Removed pylons.middleware.StaticJavascripts, this is not used anymore.
+* Added more unit tests.
+
 1.0b1 (February 5, 2009)
 * Removed CacheMiddleware. cache object is now setup as an attribute on the
   app_globals object for use where needed.
