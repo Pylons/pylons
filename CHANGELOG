@@ -26,6 +26,9 @@ Pylons Changelog
 * Fix unit tests on Windows
 * Prepare for Routes 1.12, ensure tests don't assume implicit routing
 
+0.10RC1 (March 1, 2010)
+* No changes to Pylons core since b1.
+
 0.10b1 (February 5, 2010)
 * redirect_to is now deprecated, use redirect(url(*args, **kwargs)) instead.
 * url_for like args to the https decorator are now deprecated, pass it a url
