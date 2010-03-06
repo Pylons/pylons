@@ -8,7 +8,10 @@ from pylons.controllers import WSGIController
 from pylons.decorators.secure import authenticate_form, csrf_detected_message
 from pylons.testutil import ControllerWrap, SetupCacheGlobal
 from routes import request_config
-from webhelpers.html import secure_form
+try:
+    import webhelpers.html.secure_form as secure_form
+except ImportError:
+    import webhelpers.pylonslib.secure_form as secure_form
 
 from __init__ import data_dir, TestWSGIController
 
