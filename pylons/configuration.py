@@ -123,7 +123,8 @@ class PylonsConfig(dict):
     
     def __setitem__(self, name, value):
         if name in ['pylons.strict_c', 'pylons.c_attach_args']:
-            new_name = name.replace('c', 'tmpl_context')
+            new_name = name.replace('strict_c', 'strict_tmpl_context')
+            new_name = name.replace('c_attach', 'tmpl_context_attach')
             warnings.warn(pylons.legacy.c_attrib_moved % \
                           (name, new_name),
                           DeprecationWarning, 3)
