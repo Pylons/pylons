@@ -16,7 +16,7 @@ To upgrade to 1.0, first upgrade your project to 0.10. This is a Pylons release 
     
     .. code-block:: bash
         
-        $ easy_install -U http://pylonshq.com/download/0.10b1/Pylons-0.10b1.tar.gz
+        $ easy_install -U http://pylonshq.com/download/0.10rc1/Pylons-0.10rc1.tar.gz
 
 
 Beyond the warnings issued, you should also read the following list and ensure these changes have been applied.
@@ -153,6 +153,14 @@ Pylons changes from 0.9.7 to 1.0:
     
     :class:`url <routes.util.URLGenerator>` can be imported from ``pylons``.
 
+* Routes is now explicit by default
+    
+    This won't affect those already using :class:`url <routes.util.URLGenerator>` as it ignores route memory. This change does mean that some routes which relied on a default controller of 'content' and a default action of 'index' will not work.
+  
+    To restore the old behavior, in :file:`config/routing.py`, set the mapper
+    to explicit::
+    
+        map.explicit = True
 
 * By default, the :term:`tmpl_context` (a.k.a 'c'), is no longer a :class:`~pylons.util.AttribSafeContextObj`. This means accessing attributes that don't exist will raise an :exc:`AttributeError`. 
     
