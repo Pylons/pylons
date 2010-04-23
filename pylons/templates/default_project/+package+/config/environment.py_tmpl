@@ -7,7 +7,7 @@ from mako.lookup import TemplateLookup
 {{elif template_engine == 'genshi'}}
 from genshi.template import TemplateLoader
 {{elif template_engine == 'jinja2'}}
-from jinja2 import ChoiceLoader, Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader
 {{endif}}
 from pylons.configuration import PylonsConfig
 {{if template_engine == 'mako'}}
@@ -65,8 +65,8 @@ def load_environment(global_conf, app_conf):
     {{elif template_engine == 'jinja2'}}
 
     # Create the Jinja2 Environment
-    config['pylons.app_globals'].jinja2_env = Environment(loader=ChoiceLoader(
-            [FileSystemLoader(path) for path in paths['templates']]))
+    jinja2_env = Environment(loader=FileSystemLoader(paths['templates']))
+    config['pylons.app_globals'].jinja2_env = jinja2_env
 {{endif}}{{if sqlalchemy}}
     # Setup the SQLAlchemy database engine
     engine = engine_from_config(config, 'sqlalchemy.')

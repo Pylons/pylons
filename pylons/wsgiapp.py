@@ -242,6 +242,11 @@ class PylonsApp(object):
         """Locates a controller by attempting to import it then grab
         the SomeController instance from the imported module.
         
+        Controller name is assumed to be a module in the controllers
+        directory unless it contains a '.' or ':' which is then assumed
+        to be a dotted path to the module and name of the controller
+        object.
+        
         Override this to change how the controller object is found once
         the URL has been resolved.
         

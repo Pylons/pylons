@@ -152,6 +152,12 @@ inside it by a similar scheme (controller name + 'Controller', ie,
 HelloController). Upon finding a controller, its then called like any other
 WSGI application using the same WSGI interface that
 :class:`~pylons.wsgiapp.PylonsApp` was called with.
+
+.. versionadded:: 1.0
+    Controller name can also be a dotted path to the module / callable that
+    should be imported and called. For example, to use a controller named
+    'Foo' that is in the 'bar.controllers' package, the controller name
+    would be `bar.controllers:Foo`.
  
 This is why the BaseController that resides in a project's
 :file:`lib/base.py` module inherits from

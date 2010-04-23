@@ -44,6 +44,9 @@ class LazyString(object):
     def __mod__(self, other):
         return self.eval() % other
 
+    def format(self, other):
+        return self.eval().format(other)
+
 
 def lazify(func):
     """Decorator to return a lazy-evaluated version of the original"""
