@@ -6,172 +6,188 @@ Caching
 
 Inevitably, there will be occasions during applications development or deployment when some task is revealed to be taking a significant amount of time to complete. When this occurs, the best way to speed things up is with :term:`caching`. 
 
-Pylons comes with caching middleware enabled that is part of the same package that provides the session handling, `Beaker <http://beaker.groovie.org>`_. Beaker supports a variety of caching backends: memory-based, filesystem-based and the specialised `memcached` library. 
+Pylons comes with caching enabled that is part of the same package that provides the session handling, `Beaker`_. Beaker supports a variety of caching backends: in-memory, database, Google Datastore, filesystem, and memcached
+are built-in. Additional extensions are available that support Tokyo Cabinet,
+Redis, Dynomite, and Ringo. Back-ends can be added with Beaker's extension
+system.
 
-There are several ways to cache data under Pylons, depending on where the slowdown is occurring:
+.. seealso:: `Beaker Extension Add-ons <http://github.com/didip/beaker_extensions/tree/master>`_
 
-* Browser-side Caching - HTTP/1.1 supports the :term:`ETag` caching system that allows the browser to use its own cache instead of requiring regeneration of the entire page. ETag-based caching avoids repeated generation of content but if the browser has never seen the page before, the page will still be generated. Therefore using ETag caching in conjunction with one of the other types of caching listed here will achieve optimal throughput and avoid unnecessary calls on resource-intensive operations.
+Types of Caching
+================
 
-.. note:: the latter only helps if the entire page can be cached.
+Pylons offers a variety of caching options depending on the granularity of
+caching desired. Fine-grained caching down to specific sub-sections of a 
+template, arbitrary Python functions, all the way up to entire controller
+actions and browser-side full-page caching are available.
 
-* Controllers - The `cache` object can be imported in controllers used for caching anything in Python that can be pickled.
+Available caching options (ordered by granularity, least to most specific):
 
-* Templates - The results of an entire rendered template can be cached using the `3 cache keyword arguments to the render calls <pylons.templating.render_mako>`_. These render commands can also be used inside templates. 
+* **Browser-side** - HTTP/1.1 supports the :term:`ETag` caching system that allows the browser to use its own cache instead of requiring regeneration of the entire page. ETag-based caching avoids repeated generation of content but if the browser has never seen the page before, the page will still be generated. Therefore using ETag caching in conjunction with one of the other types of caching listed here will achieve optimal throughput and avoid unnecessary calls on resource-intensive operations.
 
-* Mako/Myghty Templates - Built-in caching options are available for both `Mako <http://www.makotemplates.org/docs/caching.html>`_ and `Myghty <http://www.myghty.org/docs/cache.myt>`_ template engines. They allow fine-grained caching of only certain sections of the template as well as caching of the entire template. 
+* **Controller Actions** - A Pylons controller action can have its entire
+  result cached, including response headers if desired.
 
-The two primary concepts to bear in mind when caching are i) caches have a *namespace* and ii) caches can have *keys* under that namespace. The reason for this is that, for a single template, there might be multiple versions of the template each requiring its own cached version. The keys in the namespace are the ``version`` and the name of the template is the ``namespace``. **Both of these values must be Python strings.** 
+* **Templates** - The results of an entire rendered template can be cached using the :meth:`3 cache keyword arguments to the render calls <pylons.templating.render_mako>`. These render commands can also be used inside templates. 
 
-In templates, the cache ``namespace`` will automatically be set to the name of the template being rendered. Nothing else is required for basic caching, unless the developer wishes to control for how long the template is cached and/or maintain caches of multiple versions of the template. 
+* **Arbitrary Functions** - Any function can be independently cached using
+  Beaker's cache decorators. This allow fine-grained caching of just the parts
+  of the code that can be cached.
+
+* **Template Fragments** - Built-in caching options are available for both `Mako`_ and `Myghty <http://www.myghty.org/docs/cache.myt>`_ template engines. They allow fine-grained caching of only certain sections of the template. This is also sometimes called fragment caching since individual fragments of a page can be cached.
+
+Namespaces and Keys
+===================
+
+`Beaker`_ is used for caching arbitrary Python functions, template results,
+and in `Mako`_ for caching individual `<def>` blocks. Browser-side caching
+does *not* utilize `Beaker`_.
+
+The two primary concepts to bear in mind when caching with `Beaker`_ are:
+
+1. Caches have a *namespace*, this is to organize a cache such that variations
+   of the same thing being cached are associated under a single place.
+2. Variations of something being cached, are *keys* which are under that 
+   namespace.
+
+For example, if there was a function that we wanted to cache, the function
+name along with a unique name for it would be considered the *namespace*. The
+arguments it takes to differentiate the output to cache, are the *keys*.
+
+An example of caching with the :func:`~beaker.cache.cache_region` decorator::
+    
+    @cache_region('short_term', 'search_func')
+    def get_results(search_param):
+        # do something to retrieve data
+        data = get_data(search_param)
+        return data
+
+    results = get_results('gophers')
+
+In this example, the namespace will be the function name + module +
+'search_func'. Since a single module might have multiple methods of the
+same name you wish to cache, the :func:`~beaker.cache.cache_region` decorator
+takes another argument in addition to the region to use, which is added to the
+namespace.
+
+The key in this example is the `search_param` value. For each value of it, a
+separate result will be cached.
 
 .. seealso::
     
     Stephen Pierzchala's `Caching for Performance <http://web.archive.org/web/20060424171425/http://www.webperformance.org/caching/caching_for_performance.pdf>`_ (stephen@pierzchala.com)
+    Beaker `Caching Docs <http://beaker.groovie.org/caching.html>`_
 
-Using the Cache object 
----------------------- 
+Configuring
+===========
 
-Inside the controller, the `cache` object needs to be imported before being
-used. If an action or block of code makes heavy use of resources or take a
-long time to complete, it can be convenient to cache the result. The `cache`
-object can cache any Python structure that can be `pickled <http://docs.python.org/lib/module-pickle.html>`_. 
+`Beaker`_'s cache options can be easily configured in the projects
+:file:`development.ini` file. Beaker's `configuration documentation
+<http://beaker.groovie.org/configuration.html>`_ explains how to setup
+the most common options.
 
-Consider an action where it is desirable to cache some code that does a 
-time-consuming or resource-intensive lookup and returns an object that can be 
-pickled (list, dict, tuple, etc.):
+The cache options specified will be used in the absence of more specific
+keyword arguments to individual cache functions. Functions that support
+:ref:`cache_regions` will use the settings for that region.
 
-.. code-block:: python
+.. _cache_regions:
+
+Cache Regions
+-------------
+
+Cache regions are groupings of cache options for specific backend's and
+expiration information. For example, in many web applications, there might
+be a few cache strategies used in a company, with short-term cached objects
+ending up in Memcached, and longer-term cached objects stored in the 
+filesystem or a database.
+
+Using cache regions makes it easy to declare the cache strategies in one
+place, then use them throughout the application by referencing the cache
+strategy name.
+
+Cache regions should be setup in the :file:`development.ini` file, but can
+also be configured and passed directly into the `CacheManager` instance that
+is created in the :file:`lib/app_globals.py` file.
+
+Example INI section for two cache regions (put these under your `[app:main]` 
+section):
+
+.. code-block:: ini
     
-    # Add to existing imports
-    from pylons import cache
+    beaker.cache.regions = short_term, long_term
+    beaker.cache.short_term.type = ext:memcached
+    beaker.cache.short_term.url = 127.0.0.1:11211
+    beaker.cache.short_term.expire = 3600
+
+    beaker.cache.long_term.type = ext:database
+    beaker.cache.long_term.url = mysql://dbuser:dbpass@127.0.0.1/cache_db
+    beaker.cache.long_term.expire = 86400
+
+This sets up two cache regions, `short_term` and `long_term`.
+
+
+Browser-Side
+============
+
+Browser-side caching can utilize one of several methods. The entire page can
+have cache headers associated with it to indicate to the browser that it 
+should be cached. Or, using the ETag Cache header, a page can have more 
+fine-grained caching rules applied.
+
+Cache Headers
+-------------
+
+Cache headers may be set directly on the
+:class:`~pylons.controllers.util.Response` object by setting the headers 
+directly using the :meth:`~webob.response.Response.headers` property, or
+by using the cache header helpers.
+
+By default, to ensure pages aren't accidentally cached in dynamic web 
+applications, Pylons sets the `Pragma` and `Cache-Control` headers to 
+`no-cache`. Before setting cache headers, these default values should be
+cleared.
+
+Clearing the default `no-cache` response headers::
     
+    class SampleController(BaseController):
+        def index(self):
+            # Clear the default cache headers
+            del response.headers['Cache-Control']
+            del response.headers['Pragma']
+            
+            return render('/index.html)
+
+Using the response cache helpers::
     
-    # Under the controller class
-    def some_action(self, day): 
-        # hypothetical action that uses a 'day' variable as its key 
-
-        def expensive_function(): 
-            # do something that takes a lot of cpu/resources
-            return expensive_call()
-
-        # Get a cache for a specific namespace, you can name it whatever 
-        # you want, in this case its 'my_function' 
-        mycache = cache.get_cache('my_function', type="memory") 
-
-        # Get the value, this will create the cache copy the first time 
-        # and any time it expires (in seconds, so 3600 = one hour) 
-        c.myvalue = mycache.get_value(key=day, createfunc=expensive_function, 
-                                      expiretime=3600)
-
-        return render('/some/template.myt')
-
-The `createfunc` option requires a callable object or a function which is then called by the cache whenever a value for the provided key is not in the cache, or has expired in the cache. 
-
-Because the `createfunc` is called with no arguments, the resource- or time-expensive function must correspondingly also not require any arguments.
-
-Other Cache Options 
-^^^^^^^^^^^^^^^^^^^
-
-The cache also supports the removal values from the cache, using the key(s) to identify the value(s) to be removed and it also supports clearing the cache completely, should it need to be reset.
-
-.. code-block:: python 
-
-    # Clear the cache 
-    mycache.clear() 
-
-    # Remove a specific key 
-    mycache.remove_value('some_key') 
-
-
-Using Cache keywords to `render` 
--------------------------------- 
-
-.. warning:: Needs to be extended to cover the specific render_* calls introduced in Pylons 0.9.7
-
-All :func:`render <pylons.templating.render_mako>` commands have caching
-functionality built in. To use it, merely add the appropriate cache keyword
-to the render call. 
-
-.. code-block:: python 
-
-    class SampleController(BaseController): 
-
-        def index(self): 
-            # Cache the template for 10 mins 
-            return render('/index.myt', cache_expire=600) 
-
-        def show(self, id): 
-            # Cache this version of the template for 3 mins 
-            return render('/show.myt', cache_key=id, cache_expire=180) 
-
-        def feed(self): 
-            # Cache for 20 mins to memory 
-            return render('/feed.myt', cache_type='memory', cache_expire=1200)
-
-        def home(self, user): 
-            # Cache this version of a page forever (until the cache dir
-            # is cleaned)
-            return render('/home.myt', cache_key=user, cache_expire='never') 
-
-
-Using the Cache Decorator 
--------------------------
-
-Pylons also provides the :func:`~pylons.decorators.cache.beaker_cache`
-decorator for caching in `pylons.cache` the results of a completed function call (memoizing).
-
-The cache decorator takes the same cache arguments (minus their `cache_` prefix), as the `render` function does. 
-
-.. code-block:: python 
-
-    from pylons.decorators.cache import beaker_cache 
-
-    class SampleController(BaseController): 
-
-        # Cache this controller action forever (until the cache dir is
-        # cleaned)
-        @beaker_cache() 
-        def home(self): 
-            c.data = expensive_call() 
-            return render('/home.myt') 
-
-        # Cache this controller action by its GET args for 10 mins to memory
-        @beaker_cache(expire=600, type='memory', query_args=True) 
-        def show(self, id): 
-            c.data = expensive_call(id) 
-            return render('/show.myt') 
-
-By default the decorator uses a composite of all of the decorated function's arguments as the cache key. It can alternatively use a composite of the `request.GET` query args as the cache key when the `query_args` option is enabled.
-
-The cache key can be further customized via the `key` argument.
-
-
-Caching Arbitrary Functions
----------------------------
-
-Arbitrary functions can use the :func:`~pylons.decorators.cache.beaker_cache`
-decorator, but should include an additional option. Since the decorator caches
-the :term:`response` object, its unlikely the status code and headers for
-non-controller methods should be cached. To avoid caching that data, the
-cache_response keyword argument should be set to false.
-
-.. code-block:: python
+    # Set an action response to expires in 30 seconds
+    class SampleController(BaseController):
+        def index(self):
+            # Clear the default cache headers
+            del response.headers['Cache-Control']
+            del response.headers['Pragma']
+            
+            response.cache_expires(seconds=30)
+            return render('/index.html')
     
-    from pylons.decorators.cache import beaker_cache
+    # Set the cache-control to private with a max-age of 30 seconds
+    class SampleController(BaseController):
+        def index(self):
+            # Clear the default cache headers
+            del response.headers['Cache-Control']
+            del response.headers['Pragma']
+            
+            response.cache_control = {'max-age': 30, 'public': True}
+            return render('/index.html')
     
-    @beaker_cache(expire=600, cache_response=False)
-    def generate_data():
-        # do expensive data generation
-        return data
+All of the values that can be passed to the `cache_control` property dict,
+also may be passed into the `cache_expires` function call. It's recommended
+that you use the `cache_expires` helper as it also sets the Last-Modified and
+Expires headers to the second interval as well.
 
-.. warning::
-    
-    When caching arbitrary functions, the ``query_args`` argument should not
-    be used since the result of arbitrary functions shouldn't depend on
-    the request parameters.
+.. seealso:: `Cache Control Header RFC <http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9>`_
 
-ETag Caching 
-------------
+E-Tag Caching
+-------------
 
 Caching via ETag involves sending the browser an ETag header so that it knows 
 to save and possibly use a cached copy of the page from its own cache, instead 
@@ -222,146 +238,124 @@ The frequency with which an ETag cache key is changed will depend on the web
 application and the developer's assessment of how often the browser should be 
 prompted to fetch a fresh copy of the page. 
 
-.. warning:: Stolen from Philip Cooper's `OpenVest wiki <http://www.openvest.com/trac/wiki/BeakerCache>`_  after which it was updated and edited ...
 
-Inside the Beaker Cache
------------------------
+Controller Actions
+==================
 
-Caching
-^^^^^^^
+The :func:`~pylons.decorators.cache.beaker_cache` decorator is for caching
+the results of a complete controller action.
 
-First lets start out with some **slow** function that we would like to cache.  This function is not slow but it will show us when it was cached so we can see things are working as we expect:
+Example:
 
-.. code-block:: python
+.. code-block:: python 
 
-    import time
-    def slooow(myarg):
-      # some slow database or template stuff here
-      return "%s at %s" % (myarg,time.asctime())
+    from pylons.decorators.cache import beaker_cache 
 
-When we have the cached function, multiple calls will tell us whether are seeing a cached or a new version.
+    class SampleController(BaseController): 
 
-DBMCache
-^^^^^^^^
+        # Cache this controller action forever (until the cache dir is
+        # cleaned)
+        @beaker_cache() 
+        def home(self): 
+            c.data = expensive_call() 
+            return render('/home.myt') 
 
-The DBMCache stores (actually pickles) the response in a dbm style database.
+        # Cache this controller action by its GET args for 10 mins to memory
+        @beaker_cache(expire=600, type='memory', query_args=True) 
+        def show(self, id): 
+            c.data = expensive_call(id) 
+            return render('/show.myt') 
 
-What may not be obvious is that there are two levels of keys.  They are essentially created as one for the function or template name (called the namespace) and one for the ''keys'' within that (called the key).  So for `Some_Function_name`, there is a cache created as one dbm file/database.  As that function is called with different arguments, those arguments are keys within the dbm file. First let's create and populate a cache.  This cache might be a cache for the function `Some_Function_name` called three times with three different arguments: `x`, `yy`, and `zzz`:
+By default the decorator uses a composite of all of the decorated function's arguments as the cache key. It can alternatively use a composite of the `request.GET` query args as the cache key when the `query_args` option is enabled.
 
-.. code-block:: python
+The cache key can be further customized via the `key` argument.
 
-    from beaker.cache import CacheManager
-    cm = CacheManager(type='dbm', data_dir='beaker.cache')
-    cache = cm.get_cache('Some_Function_name')
-    # the cache is setup but the dbm file is not created until needed 
-    # so let's populate it with three values:
-    cache.get_value('x', createfunc=lambda: slooow('x'), expiretime=15)
-    cache.get_value('yy', createfunc=lambda: slooow('yy'), expiretime=15)
-    cache.get_value('zzz', createfunc=lambda: slooow('zzz'), expiretime=15)
+.. warning::
+    
+    By default, the :func:`~pylons.decorators.cache.beaker_cache` decorator
+    will cache the entire response object. This means the headers that were
+    generated during the action will be cached as well. This can be disabled
+    by providing `cache_response = False` to the decorator.
 
-Nothing much new yet.  After getting the cache we can use the cache as per the Beaker Documentation.
+Templates
+=========
 
-.. code-block:: python
+All :func:`render <pylons.templating.render_mako>` commands have caching
+functionality built in. To use it, merely add the appropriate cache keyword
+to the render call.
 
-    import beaker.container as container
-    cc = container.ContainerContext()
-    nsm = cc.get_namespace_manager('Some_Function_name',
-                                   container.DBMContainer,data_dir='beaker.cache')
-    filename = nsm.file
+.. code-block:: python 
 
-Now we have the file name.  The file name is a `sha` hash of a string which is a join of the container class name and the function name (used in the `get_cache` function call).  It would return something like:
+    class SampleController(BaseController): 
+        def index(self): 
+            # Cache the template for 10 mins 
+            return render('/index.html', cache_expire=600) 
 
+        def show(self, id): 
+            # Cache this version of the template for 3 mins 
+            return render('/show.html', cache_key=id, cache_expire=180) 
 
-.. code-block:: python
+        def feed(self): 
+            # Cache for 20 mins to memory 
+            return render('/feed.html', cache_type='memory', cache_expire=1200)
 
-    'beaker.cache/container_dbm/a/a7/a768f120e39d0248d3d2f23d15ee0a20be5226de.dbm'
+        def home(self, user): 
+            # Cache this version of a page forever (until the cache dir
+            # is cleaned)
+            return render('/home.html', cache_key=user, cache_expire='never') 
 
-With that file name you could look directly inside the cache database (but only for your education and debugging experience, **not** your cache interactions!)
-
-.. code-block:: python
-
-    ## this file name can be used directly (for debug ONLY)
-    import anydbm
-    import pickle
-    db = anydbm.open(filename)
-    old_t, old_v = pickle.loads(db['zzz'])
-
-The database only contains the old time and old value.  Where did the expire time and the function to create/update the value go?.  They never make it to the database.  They reside in the `cache` object returned from `get_cache` call above.  
-
-Note that the createfunc, and expiretime values are stored during the first call to `get_value`. Subsequent calls with (say) a different expiry time will **not** update that value.  This is a tricky part of the caching but perhaps is a good thing since different processes may have different policies in effect.
-
-If there are difficulties with these values, remember that one call to :func:`cache.clear` resets everything.
-
-Database Cache
-^^^^^^^^^^^^^^
-
-Using the `ext:database` cache type.
-
-.. code-block:: python
-
-    from beaker.cache import CacheManager
-    #cm = CacheManager(type='dbm', data_dir='beaker.cache')
-    cm = CacheManager(type='ext:database', 
-                      url="sqlite:///beaker.cache/beaker.sqlite",
-                      data_dir='beaker.cache')
-    cache = cm.get_cache('Some_Function_name')
-    # the cache is setup but the dbm file is not created until needed 
-    # so let's populate it with three values:
-    cache.get_value('x', createfunc=lambda: slooow('x'), expiretime=15)
-    cache.get_value('yy', createfunc=lambda: slooow('yy'), expiretime=15)
-    cache.get_value('zzz', createfunc=lambda: slooow('zzz'), expiretime=15)
+.. note::
+    
+    At the moment, these functions do not support the use of cache region
+    pre-defined argument sets.
 
 
-This is identical to the cache usage above with the only difference being the creation of the `CacheManager`.  It is much easier to view the caches outside the beaker code (again for edification and debugging, not for api usage).
+Arbitrary Functions
+===================
 
-SQLite was used in this instance and the SQLite data file can be directly accessed using the SQLite command-line utility or the Firefox plug-in:
+Any Python function that returns a pickle-able result can be cached using
+`Beaker`_. The recommended way to cache functions is to use the
+:meth:`~beaker.cache.cache_region` decorator. This decorator requires the
+:ref:`cache_regions` to be configured.
 
-.. code-block:: text
+Using the :meth:`~beaker.cache.cache_region` decorator::
+    
+    @cache_region('short_term', 'search_func')
+    def get_results(search_param):
+        # do something to retrieve data
+        data = get_data(search_param)
+        return data
 
-    sqlite3 beaker.cache/beaker.sqlite
-    # from inside sqlite:
-    sqlite> .schema
-    CREATE TABLE beaker_cache (
-            id INTEGER NOT NULL, 
-            namespace VARCHAR(255) NOT NULL, 
-            key VARCHAR(255) NOT NULL, 
-            value BLOB NOT NULL, 
-            PRIMARY KEY (id), 
-             UNIQUE (namespace, key)
-    );
-    select * from beaker_cache;
+    results = get_results('gophers')
 
-.. warning:: The data structure is different in Beaker 0.8 ...
+.. seealso:: `Beaker Caching Documentation <http://beaker.groovie.org/caching.html>`_
 
-.. code-block:: python
+Invalidating
+------------
 
-    cache = sa.Table(table_name, meta,
-                     sa.Column('id', types.Integer, primary_key=True),
-                     sa.Column('namespace', types.String(255), nullable=False),
-                     sa.Column('accessed', types.DateTime, nullable=False),
-                     sa.Column('created', types.DateTime, nullable=False),
-                     sa.Column('data', types.BLOB(), nullable=False),
-                     sa.UniqueConstraint('namespace')
-    )
+A cached function can be manually invalidated by using the
+:meth:`~beaker.cache.region_invalidate` function.
+
+Example::
+    
+    region_invalidate(get_results, None, 'search_func', search_param)
 
 
-It includes the access time but stores rows on a one-row-per-namespace basis, (storing a pickled dict) rather than one-row-per-namespace/key-combination. This is a more efficient approach when the problem is handling a large number of namespaces with limited keys --- like sessions.
+Fragments
+=========
 
-Memcached Cache
-^^^^^^^^^^^^^^^
+Individual template files, and `<def>` blocks within them can be independently 
+cached. Since the caching system utilizes `Beaker`_, any available `Beaker`_
+back-ends are present in `Mako`_ as well.
 
-For large numbers of keys with expensive pre-key lookups memcached it the way to go.
+Example::
+    
+    <%def name="mycomp" cached="True" cache_timeout="30" cache_type="memory">
+        other text
+    </%def>
 
-If memcached is running on the the default port of 11211:
+.. seealso:: `Mako Caching Documentation <http://www.makotemplates.org/docs/caching.html>`_
 
-.. code-block:: python
-
-    from beaker.cache import CacheManager
-    cm = CacheManager(type='ext:memcached', url='127.0.0.1:11211',
-                      lock_dir='beaker.cache')
-    cache = cm.get_cache('Some_Function_name')
-    # the cache is setup but the dbm file is not created until needed 
-    # so let's populate it with three values:
-    cache.get_value('x', createfunc=lambda: slooow('x'), expiretime=15)
-    cache.get_value('yy', createfunc=lambda: slooow('yy'), expiretime=15)
-    cache.get_value('zzz', createfunc=lambda: slooow('zzz'), expiretime=15)
+.. _cache: http://en.wikipedia.org/wiki/Cache
+.. _Beaker: http://beaker.groovie.org
+.. _Mako: http://www.makotemplates.org/

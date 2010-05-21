@@ -116,6 +116,13 @@ Pylons changes from 0.9.7 to 1.0:
                 self.app = TestApp(wsgiapp)
                 url._push_object(URLGenerator(config['routes.map'], environ))
                 TestCase.__init__(self, *args, **kwargs)
+
+    .. note::
+        
+        Change the use of ``url_for`` in your tests to use 
+        :class:`url <routes.util.URLGenerator>`, which is imported from
+        :file:`tests/__init__.py` in your unit tests.
+
     
     Finally, update websetup.py to avoid the duplicate app creation that
     previously could occur during the unit tests::
@@ -152,6 +159,17 @@ Pylons changes from 0.9.7 to 1.0:
         url.current()
     
     :class:`url <routes.util.URLGenerator>` can be imported from ``pylons``.
+
+* Change ``config`` import statement if needed
+    
+    Previously, the config object could be imported as if it was a module::
+        
+        import pylons.config
+    
+    The config object is now an object in :file:`pylons/__init__.py` so the
+    import needs to be changed to::
+        
+        from pylons import config
 
 * Routes is now explicit by default
     
