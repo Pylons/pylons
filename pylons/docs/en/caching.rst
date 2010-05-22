@@ -81,8 +81,8 @@ separate result will be cached.
 Configuring
 ===========
 
-`Beaker`_'s cache options can be easily configured in the projects
-:file:`development.ini` file. Beaker's `configuration documentation
+`Beaker`_'s cache options can be easily configured in the project's
+INI file. Beaker's `configuration documentation
 <http://beaker.groovie.org/configuration.html>`_ explains how to setup
 the most common options.
 
@@ -95,11 +95,7 @@ keyword arguments to individual cache functions. Functions that support
 Cache Regions
 -------------
 
-Cache regions are groupings of cache options for specific backend's and
-expiration information. For example, in many web applications, there might
-be a few cache strategies used in a company, with short-term cached objects
-ending up in Memcached, and longer-term cached objects stored in the 
-filesystem or a database.
+Cache regions are named groupings of related options. For example, in many web applications, there might be a few cache strategies used in a company, with short-term cached objects ending up in Memcached, and longer-term cached objects stored in the filesystem or a database.
 
 Using cache regions makes it easy to declare the cache strategies in one
 place, then use them throughout the application by referencing the cache
@@ -194,17 +190,13 @@ to save and possibly use a cached copy of the page from its own cache, instead
 of requesting the application to send a fresh copy. 
 
 Because the ETag cache relies on sending headers to the browser, it works in a 
-slightly different manner to the other caching mechanisms described above. 
+slightly different manner to the other caching mechanisms. 
 
 The :func:`~pylons.controllers.util.etag_cache` function will set the proper HTTP headers if
 the browser doesn't yet have a copy of the page. Otherwise, a 304 HTTP
 Exception will be thrown that is then caught by Paste middleware and
 turned into a proper 304 response to the browser. This will cause the
 browser to use its own locally-cached copy.
-
-:func:`~pylons.controllers.util.etag_cache` returns 
-:class:`~pylons.controllers.util.Response` for legacy purposes
-(:class:`~pylons.controllers.util.Response` should be used directly instead).
 
 ETag-based caching requires a single key which is sent in the ETag HTTP header
 back to the browser. The `RFC specification for HTTP headers <http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html>`_ indicates that an 
@@ -225,18 +217,11 @@ Or to change other aspects of the response:
     def my_action(self): 
         etag_cache('somekey') 
         response.headers['content-type'] = 'text/plain' 
-        return render('/show.myt', cache_expire=3600) 
-
-.. note:: 
-    In this example that we are using template caching in addition to ETag
-    caching. If a new visitor comes to the site, we avoid re-rendering the
-    template if a cached copy exists and repeat hits to the page by that user
-    will then trigger the ETag cache. This example also will never change the
-    ETag key, so the browsers cache will always be used if it has one.
+        return render('/show.myt')
 
 The frequency with which an ETag cache key is changed will depend on the web 
 application and the developer's assessment of how often the browser should be 
-prompted to fetch a fresh copy of the page. 
+prompted to fetch a fresh copy of the page.
 
 
 Controller Actions
