@@ -6,8 +6,8 @@ Caching
 
 Inevitably, there will be occasions during applications development or deployment when some task is revealed to be taking a significant amount of time to complete. When this occurs, the best way to speed things up is with :term:`caching`. 
 
-Pylons comes with caching enabled that is part of the same package that provides the session handling, `Beaker`_. Beaker supports a variety of caching backends: in-memory, database, Google Datastore, filesystem, and memcached
-are built-in. Additional extensions are available that support Tokyo Cabinet,
+Caching is enabled in Pylons using `Beaker`_, the same package that
+provides session handling. Beaker supports a variety of caching backends: in-memory, database, Google Datastore, filesystem, and memcached. Additional extensions are available that support Tokyo Cabinet,
 Redis, Dynomite, and Ringo. Back-ends can be added with Beaker's extension
 system.
 
@@ -31,8 +31,8 @@ Available caching options (ordered by granularity, least to most specific):
 * **Templates** - The results of an entire rendered template can be cached using the :meth:`3 cache keyword arguments to the render calls <pylons.templating.render_mako>`. These render commands can also be used inside templates. 
 
 * **Arbitrary Functions** - Any function can be independently cached using
-  Beaker's cache decorators. This allow fine-grained caching of just the parts
-  of the code that can be cached.
+  Beaker's cache decorators. This allows fine-grained caching of just the
+  parts of the code that can be cached.
 
 * **Template Fragments** - Built-in caching options are available for both `Mako`_ and `Myghty <http://www.myghty.org/docs/cache.myt>`_ template engines. They allow fine-grained caching of only certain sections of the template. This is also sometimes called fragment caching since individual fragments of a page can be cached.
 
@@ -50,7 +50,7 @@ The two primary concepts to bear in mind when caching with `Beaker`_ are:
 2. Variations of something being cached, are *keys* which are under that 
    namespace.
 
-For example, if there was a function that we wanted to cache, the function
+For example, if we want to cache a function, the function
 name along with a unique name for it would be considered the *namespace*. The
 arguments it takes to differentiate the output to cache, are the *keys*.
 
@@ -142,8 +142,8 @@ Cache headers may be set directly on the
 directly using the :meth:`~webob.response.Response.headers` property, or
 by using the cache header helpers.
 
-By default, to ensure pages aren't accidentally cached in dynamic web 
-applications, Pylons sets the `Pragma` and `Cache-Control` headers to 
+To ensure pages aren’t accidentally cached in dynamic web
+applications, Pylons default behavior sets the `Pragma` and `Cache-Control` headers to 
 `no-cache`. Before setting cache headers, these default values should be
 cleared.
 
