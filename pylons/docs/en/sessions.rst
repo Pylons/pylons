@@ -7,212 +7,151 @@ Sessions
 Sessions
 ========
 
-.. note:: The session code is due an extensive rewrite. It uses the Caching container API in Beaker which is optimized for use patterns that are more common in caching (infrequent updates / frequent reads). Unlike caching, a session is a single load, then a single save and multiple simultaneous writes to the same session occur only rarely. In consequence, the excessive but necessary locking that the cache interface currently performs is just a waste of performance where sessions are concerned.
+Pylons includes a session object: a session is a server-side, semi-permanent
+storage for data associated with a client.
 
-Session Objects
-===============
+The session object is provided by the `Beaker library`_ which also provides
+caching functionality as described in :ref:`caching`.
 
-SessionObject
--------------
+The Session Object
+==================
 
-This session proxy / lazy creator object handles access to the real session object. If the session hasn't been used before a session object will automatically be created and set up. Using a proxy in this fashion to handle access to the real session object avoids creating and loading the session from persistent store unless it is actually used during the request.
+The Pylons session object is available at :data:`pylons.session`. Controller
+modules created via :command:`paster controller/restcontroller` import the
+session object by default.
 
-CookieSession
--------------
+The basic session API is simple, it implements a dict-like interface with a few
+additional methods. The following is an example of using the session to store a
+token identifying if a client is logged in.
 
-Pure cookie-based session. The options recognized when using cookie-based sessions are slightly more restricted than general sessions.
-    
-* ``key``
-    The name the cookie should be set to.
-* ``timeout``
-    How long session data is considered valid. This is used  regardless of the cookie being present or not to determine whether session data is still valid.
-* ``encrypt_key``
-    The key to use for the session encryption, if not provided the session will not be encrypted.
-* ``validate_key``
-        The key used to sign the encrypted session
+.. code-block :: python
+
+    class LoginController(BaseController):
+
+        def authenicate(self):
+            name = request.POST['name']
+            password = request.POST['password']
+            user = Session.query(User).filter_by(name=name,
+                                                 password=password).first()
+            if user:
+                msg = 'Successfully logged in as %s' % name
+                location = url('index')
+                session['logged_in'] = True
+                session.save()
+            else:
+                msg = 'Invalid username/password'
+                location = url('login')
+            flash(msg)
+            redirect(location)
+
+        def logout(self):
+            # Clear all values in the session associated with the client
+            session.clear()
+            session.save()
+
+Subsequent requests can then determine if a client is logged in or not by
+checking the session:
+
+.. code-block :: python 
+
+    if not session.get('logged_in'):
+        flash('Please login')
+        redirect(url('login'))
+        
+The session object acts lazily: it does not load the session data (from disk or
+whichever backend is used) until the data is first accessed. This lazyness is
+facilitated via an intermediary :class:`beaker.session.SessionObject` that
+wraps the actual :class:`beaker.session.Session` object. Furthermore the
+session will not write changes to its backend without an explicit call to its
+:meth:`beaker.session.Session.save` method (unless configured with the ``auto``
+option).
+
+Session data is generally serialized for storage via the Python :mod:`pickle`
+module, so anything stored in the session must be pickleable.
+
+The lightweight SessionObject wrapper is created by the:
+:class:`beaker.middleware.SessionMiddleware` WSGI middleware. SessionMiddleware
+stores the wrapper in the WSGI environ where Pylons sets a reference to it from
+pylons.session.
+
+Sessions are associated with a client via a client-side cookie. The WSGI
+middleware is also responsible for sending said cookie to the client.
+
+Configuring the Session
+=======================
+
+The basic session defaults are:
+
+* File based sessions (session data is stored on disk)
+* Session cookies have no expiration date (cookies expire at the end of the browser session)
+* Session cookie domain/path matches the current host/path
+
+Pylons projects by default sets the following couple of session options via
+their .ini files. All Beaker specific session options in the ini file are
+prefixed with `beaker.session`:
+
+.. code-block :: ini
+
+    cache_dir = %(here)s/data
+    beaker.session.key = foo
+    beaker.session.secret = somesecret
+
+``cache_dir`` acts a base directory for both session and cache storage. Session
+data is stored in this location under a :file:`sessions/` sub-directory.
+
+``session.key`` is the name attribute of the cookie sent to the browser. This
+defaults to your project's name.
+
+``session.secret`` is the secret token used to hash the cookie data sent to the
+client. This should be a secret, ideally randomly generated value on production
+environments. :command:`paster make-config` will generate a random secret for
+you when creating a production ini file.
+
+
+Other Session Options
+---------------------
+
+Some other commonly used session options are:
+
+* ``type``
+  The type of the back-end for storing session data. Beaker supports many
+  different backends, see `Beaker Configuration Documentation`_ for the
+  choices. Defaults to 'file'.
+
 * ``cookie_domain``
-        Domain to use for the cookie.
-* ``secure``
-        Whether or not the cookie should only be sent over SSL.
+  The domain name to use for the session Cookie. For example, when using
+  sub-domains, set this to the parent domain name so that the cookie is valid
+  for all sub-domains.
 
-Beaker
-======
+To enable pure `Cookie-based Sessions`_ and force the cookie domain to be valid
+for all sub-domains of 'example.com', add the following to your Pylons ini
+file:
 
-.. code-block:: ini 
+.. code-block :: ini
 
-    beaker.session.key = wiki 
-    beaker.session.secret = ${app_instance_secret} 
+    beaker.session.type = cookie
+    beaker.session.cookie_domain = .example.com
 
-Pylons comes with caching middleware enabled that is part of the same package that provides the session handling, `Beaker <http://beaker.groovie.org>`_. Beaker supports several different types of cache back-end: memory, filesystem, memcached and database. The supported database packages are: SQLite, SQLAlchemy and Google BigTable.
+See the `Beaker Configuration Documentation`_ for an exhaustive list of Session
+options.
 
 
-Beaker's cache and session options are configured via a dictionary.
+Storing SQLAlchemy mapped objects in Beaker sessions
+====================================================
 
-.. note:: When used with the Paste package, all Beaker options should be prefixed with ``beaker.`` so that Beaker can discriminate its options from other application configuration options.
+Mapped objects from SQLAlchemy can be serialized into the beaker session, but
+care must be taken when retrieving these objects back from the beaker
+session. They will not be associated with the SQLAlchemy Unit-of-Work Session,
+however these objects can be reconciled via the SQLAlchemy Session's ``merge``
+method, as follows:
 
+    .. code-block:: python
 
-General Config Options
-----------------------
-
-Config options should be prefixed with either ``session.`` or ``cache.``
-
-data_dir
-^^^^^^^^
-
-*Accepts:* string
-*Default:* None
-
-The data directory where cache data will be stored. If this argument is not present, the regular data_dir parameter is used, with the path "./sessions" appended to it.
-
-type
-^^^^
-
-*Accepts:* string
-*Default:* dbm
-
-Type of storage used for the session, current types are "dbm", "file", "memcached", "database", and "memory". The storage uses the Container API that is also used by the cache system.
-
-When using dbm files, each user's session is stored in its own dbm file, via the :class:`beaker.container.DBMNamespaceManager` class.
-
-When using 'database' or 'memcached', additional configuration options are required as documented in the appropriate section below.
-
-For sessions only, there is an additional choice of a "cookie" type, which requires the Sessions "secret" option to be set as well.
-
-
-Database Configuration
-----------------------
-When the type is set to 'database', the following additional options can be used.
-
-url (*required*)
-^^^^^^^^^^^^^^^^
-
-*Accepts:* string (formatted as required for an `SQLAlchemy db uri`__)
-*Default:* None
-
-.. __: http://www.sqlalchemy.org/docs/04/dbengine.html#dbengine_establishing
-
-The database URI as formatted for SQLAlchemy to use for the database. The appropriate database packages for the database must also be installed.
-
-table_name
-^^^^^^^^^^
-
-*Accepts:* string
-*Default:* beaker_cache
-
-Table name to use for beaker's storage.
-
-optimistic
-^^^^^^^^^^
-
-*Accepts:* boolean
-*Default:* False
-
-Use optimistic session locking, note that this will result in an select when updating a cache value to compare version numbers.
-
-sa_opts (*Only for SQLAlchemy 0.3*)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-*Accepts:* dict
-*Default:* None
-
-A dictionary of values to use that are passed directly to SQLAlchemy's engine. Note that this is only applicable for SQLAlchemy 0.3.
-
-sa.*
-^^^^
-
-*Accepts:* Valid `SQLAlchemy 0.4 database options`__
-*Default:* None
-
-.. __: http://www.sqlalchemy.org/docs/04/dbengine.html#dbengine_options
-
-When using SQLAlchemy 0.4 and above, all options prefixed with ``sa.`` are passed to the SQLAlchemy database engine. Common parameters are ``pool_size``, ``pool_recycle``, etc.
-
-
-Memcached Options
------------------
-
-url (required)
-^^^^^^^^^^^^^^
-
-*Accepts:* string
-*Default:* None
-
-The url should be a single IP address, or list of semi-colon separated IP addresses that should be used for memcached.
-
-Beaker can use either py-memcached or cmemcache to communicate with memcached, but it should be noted that cmemcache can cause Python to segfault should memcached become unreachable.
-
-
-Session Options
----------------
-
-cookie_expires
-^^^^^^^^^^^^^^
-
-*Accepts:* boolean, datetime, timedelta
-*Default:* True
-
-The expiration time to use on the session cookie. Defaults to "True" which means, don't specify any expiration time (the cookie will expire when the browser is closed). A value of "False" means, never expire (specifies the maximum date that can be stored in a datetime object and uses that). The value can also be a {{datetime.timedelta()}} object which will be added to the current date and time, or a {{datetime.datetime()}} object.
-
-cookie_domain
-^^^^^^^^^^^^^
-
-*Accepts:* string
-*Default:* The entire domain name being used, including sub-domain, etc.
-
-By default, Beaker's sessions are set to the cookie domain of the entire hostname. For sub-domains, this should be set to the top domain the cookie should be valid for.
-
-id
-^^
-
-*Accepts:* string
-*Default:* None
-
-Session id for this session. When using sessions with cookies, this parameter is not needed as the session automatically creates, writes and retrieves the value from the request. When using a URL-based method for the session, the id should be retrieved from the id data member when the session is first created, and then used in writing new URLs.
-
-key
-^^^
-
-*Accepts:* string
-*Default:* beaker_session_id
-
-The key that will be used as a cookie key to identify sessions. Changing this could allow several different applications to have different sessions underneath the same hostname.
-
-secret
-^^^^^^
-
-*Accepts:* string
-*Default:* None
-
-Secret key to enable encrypted session ids. When non-None, the session ids are generated with an MD5-signature created against this value.
-
-When used with the "cookie" Session type, the secret is used for encrypting the contents of the cookie, and should be a reasonably secure randomly generated string of characters no more than 54 characters.
-
-timeout
-^^^^^^^
-
-*Accepts:* integer
-*Default:* None
-
-Time in seconds before the session times out. A timeout occurs when the session has not been loaded for more than timeout seconds.
-
-Session Options (For use with cookie-based Sessions)
-----------------------------------------------------
-
-encrypt_key
-^^^^^^^^^^^
-
-*Accepts:* string
-*Default:* None
-
-The key to use for the session encryption, if not provided the session will not be encrypted. This will only work if a strong hash scheme is available, such as pycryptopp's or Python 2.5's hashlib.sha256.
-
-validate_key
-^^^^^^^^^^^^
-
-*Accepts:* string
-*Default:* None
-
-The key used to sign the encrypted session, this is used instead of a secret option.
+        address = DBSession.query(Address).get(id)
+        session[id] = address
+        ...
+        address = session.get(id)
+        address = DBSession.merge(address)
 
 
 Custom and caching middleware
@@ -225,7 +164,7 @@ if the middleware should run *before* the session object or routing is handled:
 
 .. code-block:: python
 
-    # Routing/Session/Cache Middleware
+    # Routing/Session Middleware
     app = RoutesMiddleware(app, config['routes.map'])
     app = SessionMiddleware(app, config)
     
@@ -238,11 +177,6 @@ Some of the Pylons middleware layers such as the ``Session``, ``Routes``, and ``
 objects to the `environ` dict, or add HTTP headers to the response (the Session middleware for 
 example adds the session cookie header). Others, such as the ``Status Code Redirect``, and the ``Error 
 Handler`` may fully intercept the request entirely, and change how its responded to.
-
-Bulk deletion of expired db-held sessions
-=========================================
-
-The db schema for Session stores a "last accessed time" for each session. This enables bulk deletion of expired sessions through the use of a simple SQL command, run every day, that clears those sessions which have a "last accessed" timestamp > 2 days, or whatever is required.
 
 Using `Session` in Internationalization
 =======================================
@@ -367,53 +301,7 @@ How to allow called WSGI apps to share a common session management utility.
     full_stack = true
     cache_dir = %(here)s/data
 
-storing SA mapped objects in Beaker sessions
-============================================
 
-Taken from pylons-discuss Google group discussion:
-
-.. code-block:: text 
-
-    > I wouldn't expect a SA object to be serializable.  It just doesn't
-    > make sense to me.  I don't even want to think about complications with
-    > the database and ACID, nor do I want to consider the scalability
-    > concerns (the SA object should be tied to a particular SA session,
-    > right?).
-
-SA objects are serializable (as long as you aren't using :func:`assign_mapper`, which can complicate things unless you define a custom  :func:`__getstate__` method).
-
-The error above is because the entity is not being detached from its original session. If you are going to  
-serialize, you have to manually shuttle the object to and from the appropriate sessions.
-
-Three ways to get an object out of serialization and back into an SA  
-Session are:
-
-1. A mapped class that has a :func:`__getstate__` which only copies desired properties and won't copy SA session pointers:
-
-    .. code-block:: python
-
-         beaker.put(key, obj)
-         ...
-         obj = beaker.get(key)
-         Session.add(obj)
-
-2. A regular old mapped class.  Add an :func:`expunge` step.
-
-    .. code-block:: python
-
-         Session.expunge(obj)
-         beaker.put(key, obj)
-         ...
-         obj = beaker.get(key)
-         Session.add(obj)
-
-3. Don't worry about :func:`__getstate__` or :func:`expunge` on the original object, use :func:`merge`. This is "cleaner" than the :func:`expunge` method shown above but will usually force a load of the object from the database and therefore is not necessarily as "efficient", also it copies the state of the given object to the target object which may be error-prone.
-
-    .. code-block:: python
-
-        beaker.put(key, obj)
-        ...
-        obj = beaker.get(key)
-        obj = Session.merge(obj)
-
-
+.. _`Beaker library`: http://beaker.groovie.org
+.. _`Beaker Configuration Documentation`: http://beaker.groovie.org/configuration.html#session-options
+.. _`Cookie-based Sessions`: http://beaker.groovie.org/sessions.html#cookie-based
