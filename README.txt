@@ -3,7 +3,7 @@ Pylons
 
 Pylons is a rapid web application development framework.
 
-Full documentation is available online at http://pylonshq.com/docs/en/0.9.7/
+Full documentation is available online at http://pylonshq.com/docs/en/1.0/
 
 Install
 =======

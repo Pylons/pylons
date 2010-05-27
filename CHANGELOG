@@ -1,6 +1,9 @@
 Pylons Changelog
 ================
 
+1.0 (May 27, 2010)
+* Minor tweak to allow proper importing of pylons.
+
 1.0RC1 (March 1, 2010)
 * Switched to using Routes 1.12 with support for no longer using the odd
   routes singleton.
