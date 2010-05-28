@@ -29,7 +29,7 @@ Pylons Changelog
 * Fix unit tests on Windows
 * Prepare for Routes 1.12, ensure tests don't assume implicit routing
 
-0.10RC2 (**tip**)
+0.10 (May 27, 2010)
 * Fix legacy warning replacement.
 
 0.10RC1 (March 1, 2010)

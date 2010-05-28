@@ -102,14 +102,14 @@
             <hr/>
             <div id="left">
                 <h2>Let's begin!</h2>
-                <p>If you haven't used Pylons before, start with the <a href="http://pylonshq.com/docs/en/0.9.7/gettingstarted/"
+                <p>If you haven't used Pylons before, start with the <a href="http://pylonshq.com/docs/en/1.0/gettingstarted/"
                         style="text-decoration:underline;">beginners' tutorial</a>.</p>
             </div>
             <div id="right">
                 <h2>Help</h2>
                 <ul>
                     <li>
-                        <a href="http://pylonshq.com/docs/en/0.9.7/">Official documentation</a>
+                        <a href="http://pylonshq.com/docs/en/1.0/">Official documentation</a>
                     </li>
                     <li>
                         <a href="http://wiki.pylonshq.com/display/pylonsfaq/Home">FAQ</a>
