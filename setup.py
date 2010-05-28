@@ -85,7 +85,7 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
         "WebTest>=1.1", "Tempita>=0.2",
     ],
     dependency_links=[
-        "http://www.pylonshq.com/download/1.0"
+        "http://www.pylonshq.com/download/0.10"
     ],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
