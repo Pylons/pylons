@@ -138,6 +138,7 @@ By default, all templates have a set of variables present in them to make it eas
 - :func:`_` -- Unicode capable gettext translate function
 - :func:`N_` -- gettext no-op function to mark a string for
   translation, but doesn't actually translate
+- :class:`url <routes.util.URLGenerator>` -- An instance of the :class:`routes.util.URLGenerator` configured for this request.
 
 
 ****************************

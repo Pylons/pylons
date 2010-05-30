@@ -1,6 +1,11 @@
+import pylons
 from projectname.tests import *
 
 class TestSampleController(TestController):
+    def test_conf_with_app_globals(self):
+        assert 'pylons.app_globals' in pylons.config
+        assert hasattr(pylons.app_globals, 'cache')
+    
     def test_root_index(self):
         response = self.app.get('/')
         assert 'Welcome' in response

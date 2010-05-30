@@ -16,7 +16,7 @@ To upgrade to 1.0, first upgrade your project to 0.10. This is a Pylons release 
     
     .. code-block:: bash
         
-        $ easy_install -U http://pylonshq.com/download/0.10rc1/Pylons-0.10rc1.tar.gz
+        $ easy_install -U http://pylonshq.com/download/0.10/Pylons-0.10.tar.gz
 
 
 Beyond the warnings issued, you should also read the following list and ensure these changes have been applied.

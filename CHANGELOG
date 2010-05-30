@@ -1,6 +1,10 @@
 Pylons Changelog
 ================
 
+1.0.1 (**tip**)
+* Added setup of app_globals and config to Pylons nose testing extension
+* Documentation updates
+
 1.0 (May 27, 2010)
 * Minor tweak to allow proper importing of pylons.
 
