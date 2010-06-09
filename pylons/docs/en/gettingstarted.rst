@@ -16,6 +16,9 @@ Requirements
 * Python 2 series above and including 2.4 (Python 3 or later not supported at 
     this time)
 
+
+.. _installing_pylons:
+
 **********
 Installing
 **********
@@ -57,8 +60,24 @@ boot-strap Python script that sets up a "virtual" Python environment. Pylons wil
     .. code-block:: bash
     
         $ python go-pylons.py --no-site-packages mydevenv
+    
+    | **How it Works**
+    
+    The ``go-pylons.py`` script is little more than a basic :term:`virtualenv`
+    bootstrap script, that then does ``easy_install Pylons==1.0``. You could
+    do the equivilant steps by manually fetching the ``virtualenv.py`` script
+    and then installing Pylons like so:
+    
+    .. code-block:: bash
+        
+        curl -O http://bitbucket.org/ianb/virtualenv/raw/8dd7663d9811/virtualenv.py
+        python virtualenv.py mydevenv
+        mydevenv/bin/easy_install Pylons==1.0
+    
 
 This will leave a functional virtualenv and Pylons installation.
+    
+    
 Activate the virtual environment (scripts may also be run by specifying the
 full path to the mydevenv/bin dir):
 

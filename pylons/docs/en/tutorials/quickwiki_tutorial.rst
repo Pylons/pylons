@@ -9,25 +9,25 @@ Introduction
 
 If you haven't done so already, please first read the :ref:`getting_started` guide. 
 
-In this tutorial we are going to create a working wiki from scratch using Pylons 0.9.7 and `SQLAlchemy`_. Our wiki will allow visitors to add, edit or delete formatted wiki pages. 
+In this tutorial we are going to create a working wiki from scratch using Pylons 1.0 and `SQLAlchemy`_. Our wiki will allow visitors to add, edit or delete formatted wiki pages. 
 
 Starting at the End 
 =================== 
 
 Pylons is designed to be easy for everyone, not just developers, so let's start by downloading and installing the finished QuickWiki in exactly the same way that end users of QuickWiki might do. Once we have explored its features we will set about writing it from scratch.
 
-After you have installed `Easy Install <http://peak.telecommunity.com/DevCenter/EasyInstall>`_ run these commands to install QuickWiki and create a config file: 
+After you have :ref:`installed Pylons <installing_pylons>`, install the QuickWiki project: 
 
 .. code-block :: bash 
 
-    $ easy_install QuickWiki==0.1.6 
+    $ easy_install QuickWiki==0.1.8
     $ paster make-config QuickWiki test.ini 
 
-Next, ensure that the ``sqlalchemy.url`` variable in the ``[app:main]`` section of the configuration file (``development.ini``) specifies a value that is suitable for your setup. The data source name points to the database you wish to use. 
+Next, ensure that the ``sqlalchemy.url`` variable in the ``[app:main]`` section of the configuration file (``development.ini``) specifies a value that is suitable for your setup. The data source name points to the database you wish to use.
 
 .. note :: 
 
-    The default ``sqlite:///%(here)s/quickwiki.db`` uses a (file-based) SQLite database named ``quickwiki.db`` in the ini's top-level directory. This SQLite database will be created for you when running the :command:`paster setup-app` command below, but you could also use MySQL, Oracle or PostgreSQL. Firebird and MS-SQL may also work. See the `SQLAlchemy documentation <http://www.sqlalchemy.org/docs/04/dbengine.html#dbengine_establishing>`_ for more information on how to connect to different databases. SQLite for example requires additional forward slashes in its URI, where the client/server databases should only use two. You will also need to make sure you have the appropriate Python driver for the database you wish to use. If you're using Python 2.5, a version of the `pysqlite adapter <http://www.initd.org/tracker/pysqlite/wiki/pysqlite>`_ is already included, so you can jump right in with the tutorial. You may need to get `SQLite itself <http://www.sqlite.org/download.html>`_. 
+    The default ``sqlite:///%(here)s/quickwiki.db`` uses a (file-based) SQLite database named ``quickwiki.db`` in the ini's top-level directory. This SQLite database will be created for you when running the :command:`paster setup-app` command below, but you could also use MySQL, Oracle or PostgreSQL. Firebird and MS-SQL may also work. See the `SQLAlchemy documentation <http://www.sqlalchemy.org/docs/05/dbengine.html#create-engine-url-arguments>`_ for more information on how to connect to different databases. SQLite for example requires additional forward slashes in its URI, where the client/server databases should only use two. You will also need to make sure you have the appropriate Python driver for the database you wish to use. If you're using Python 2.5, a version of the `pysqlite adapter <http://www.initd.org/tracker/pysqlite/wiki/pysqlite>`_ is already included, so you can jump right in with the tutorial. You may need to get `SQLite itself <http://www.sqlite.org/download.html>`_. 
 
 Finally create the database tables and serve the finished application: 
 
@@ -77,7 +77,7 @@ Now let's start the server and see what we have:
 
 .. note :: We have started :command:`paster serve` with the :option:`--reload` option. This means any changes that we make to code will cause the server to restart (if necessary); your changes are immediately reflected on the live site. 
 
-Visit http://127.0.0.1:5000 where you will see the introduction page. Now delete the file :file:`public/index.html` so we can see the front page of the wiki instead of this welcome page. If you now refresh the page, the Pylons built-in error document support will kick in and display an ``Error 404`` page, indicating the file could not be found. We'll setup a controller to handle this location later. 
+Visit http://127.0.0.1:5000 where you will see the introduction page. Now delete the file :file:`public/index.html` so we can see the front page of the wiki instead of this welcome page. If you now refresh the page, the Pylons built-in error document support will kick in and display an ``Error 404`` page, indicating the file could not be found. We'll setup a controller to handle this location later.
 
 
 The Model 
@@ -89,32 +89,29 @@ Pylons uses a Model-View-Controller architecture; we'll start by creating the mo
 
 SQLAlchemy provides a full suite of well known enterprise-level persistence patterns, designed for efficient and high-performance database access, adapted into a simple and Pythonic domain language. It has full and detailed documentation available on the SQLAlchemy website: http://sqlalchemy.org/docs/.
 
-The most basic way of using SQLAlchemy is with explicit sessions where you create :class:`Session` objects as needed. 
+The most basic way of using SQLAlchemy is with explicit sessions where you create :class:`Session` objects as needed.
 
 Pylons applications typically employ a slightly more sophisticated setup, using SQLAlchemy's "contextual" thread-local sessions created via the :meth:`sqlalchemy.orm.scoped_session` function. With this configuration, the application can use a single :class:`Session` instance per web request, avoiding the need to pass it around explicitly. Instantiating a new scoped :class:`Session` will actually find an existing one in the current thread if available. Pylons has setup a :class:`Session` for us in the :file:`model/meta.py` file. For further details, refer to the `SQLAlchemy documentation on the Session <http://www.sqlalchemy.org/docs/05/session.html#contextual-thread-local-sessions>`_.
 
-.. note :: It is important to recognize the difference between SQLAlchemy's (or possibly another DB abstraction layer's) :class:`Session` object and Pylons' standard :dfn:`session` (with a lowercase 's') for web requests. See :mod:`beaker` for more on the latter. It is customary to reference the database session by :class:`model.Session` or (more recently) :class:`Session` outside of model classes. 
+.. note :: It is important to recognize the difference between SQLAlchemy's (or possibly another DB abstraction layer's) :class:`Session` object and Pylons' standard :dfn:`session` (with a lowercase 's') for web requests. See :mod:`beaker` for more on the latter. It is customary to reference the database session by :class:`model.Session` or (more recently) :class:`Session` outside of model classes.
 
-The default imports already present in :file:`model/__init__.py` provide SQLAlchemy objects such as the :mod:`sqlalchemy` module (aliased as :mod:`sa`) as well as the ``metadata`` object. ``metadata`` is used when defining and managing tables. Next we'll use these to build our wiki's model: we can remove the commented out Foo example and add the following to the end of the :file:`model/__init__.py` file: 
+The :file:`model/__init__.py` file starts out rather bare-bones. It initializes the SQLAlchemy database engine, and imports the Session object.
+
+At the top, add the following imports::
+    
+    from sqlalchemy import orm, Column, Unicode, UnicodeText
+    from quickwiki.model.meta import Session, Base
+
+Then add the following to the end of the :file:`model/__init__.py` file: 
 
 .. code-block :: python 
     
-    pages_table = sa.Table('pages', meta.metadata, 
-                    sa.Column('title', sa.types.Unicode(40), primary_key=True), 
-                    sa.Column('content', sa.types.UnicodeText(), default='') 
-                    )
+    class Page(Base):
+        __tablename__ = 'pages'
+        title = Column(Unicode(40), primary_key=True)
+        content = Column(UnicodeText(), default=u'')
 
-We've defined a table called ``pages`` which has two columns: ``title`` (the primary key), a VARCHAR of 40 characters, and ``content`` a TEXT column of variable sized length. 
-
-.. note :: 
-    SQLAlchemy also supports reflecting table information directly from a database. If we had already created the ``pages`` table in our database, SQLAlchemy could have constructed the ``pages_table`` object for us via the ``autoload=True`` parameter in place of the :class:`Column` definitions, like this: 
-
-    .. code-block :: python 
-
-        pages_table = sa.Table('pages', meta.metadata, autoload=True
-                               autoload_with_engine)
-
-    The ideal way to create autoloaded tables is within the :func:`init_model` function (lazily), so the database isn't accessed when simply importing the :mod:`model` package. See `SQLAlchemy table reflection documentation <http://www.sqlalchemy.org/docs/05/metadata.html#reflecting-tables>`_ for more information.
+We've defined a table called ``pages`` which has two columns: ``title`` (the primary key), a Unicode VARCHAR of 40 characters, and ``content`` a Unicode TEXT column of variable sized length. 
 
 .. note :: A primary key is a unique ID for each row in a database table. In the example above we are using the page title as a natural primary key. Some prefer to integer primary keys for all tables, so-called surrogate primary keys. The author of this tutorial uses both methods in his own code and is not advocating one method over the other, what's important is to choose the best database structure for your application. See the Pylons Cookbook for `a quick general overview of relational databases <http://wiki.pylonshq.com/display/pylonscookbook/Relational+databases+for+people+in+a+hurry>`_ if you're not familiar with these concepts. 
 
