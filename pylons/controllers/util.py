@@ -74,13 +74,26 @@ class Request(WebObRequest):
         """
         cookie = self.str_cookies.get(name)
         if not cookie:
-            return
+            return None
         try:
-            sig, pickled = cookie[:40], base64.decodestring(cookie[40:])
+            input_sig, pickled = cookie[:40], base64.standard_b64decode(cookie[40:])
         except binascii.Error:
             # Badly formed data can make base64 die
-            return
-        if hmac.new(secret, pickled, sha1).hexdigest() == sig:
+            return None
+        
+        sig = hmac.new(secret, pickled, sha1).hexdigest()
+        
+        # Avoid timing attacks
+        invalid_bits = 0
+        if len(sig) != len(input_sig):
+            return None
+        
+        for a, b in zip(sig, input_sig):
+            invalid_bits += a != b
+        
+        if invalid_bits:
+            return None
+        else:
             return pickle.loads(pickled)
 
 
@@ -120,7 +133,7 @@ class Response(WebObResponse):
         """
         pickled = pickle.dumps(data, pickle.HIGHEST_PROTOCOL)
         sig = hmac.new(secret, pickled, sha1).hexdigest()
-        self.set_cookie(name, sig + base64.encodestring(pickled), **kwargs)
+        self.set_cookie(name, sig + base64.standard_b64encode(pickled), **kwargs)
 
 
 def etag_cache(key=None):
