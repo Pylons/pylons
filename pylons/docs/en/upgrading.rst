@@ -4,6 +4,25 @@
 Upgrading
 =========
 
+1.0 -> 1.0.1
+============
+
+No changes are necessary, however to take advantage of MarkupSafe's faster
+HTML escaping, the default filter in ``environment.py`` that Mako is 
+configured with should be changed from::
+    
+    from webhelpers.html import escape
+
+To::
+    from markupsafe import escape
+
+MarkupSafe utilizes a C extension where available for faster escaping which
+can help on larger pages with substantial variable substitutions.
+
+
+0.9.7 -> 1.0
+============
+
 Upgrading your project is slightly different depending on which versions you're upgrading from and to. It's recommended that upgrades be done in minor revision steps, as deprecation warnings are added between revisions to help in the upgrade process.
 
 For any project prior to 0.9.7, you should first follow the applicable docs to upgrade to 0.9.7 before proceeding.

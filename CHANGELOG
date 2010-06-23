@@ -2,6 +2,7 @@ Pylons Changelog
 ================
 
 1.0.1 (**tip**)
+* Utilize MarkupSafe for faster HTML escaping.
 * Fix signed cookies by using standard base64 alphabet, and prevent timing
   attacks on signature comparison.
 * Added setup of app_globals and config to Pylons config.init_app to ensure
