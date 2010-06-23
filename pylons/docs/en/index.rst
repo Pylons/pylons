@@ -16,14 +16,6 @@ Getting Started with Pylons
     gettingstarted
     concepts
 
-Tutorials
----------
-
-.. toctree::
-    :maxdepth: 2
-
-    tutorials/index
-
 MVC Reference
 -------------
 
@@ -33,6 +25,7 @@ MVC Reference
     controllers
     views
     models
+    advanced_models
 
 Project Configuration and Logging
 ---------------------------------
