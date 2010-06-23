@@ -82,7 +82,7 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
         "Paste>=1.7.2", "PasteDeploy>=1.3.3", "PasteScript>=1.7.3",
         "FormEncode>=1.2.1", "simplejson>=2.0.8", "decorator>=2.3.2",
         "nose>=0.10.4", "Mako>=0.2.4", "WebOb>=0.9.6.1", "WebError>=0.10.1",
-        "WebTest>=1.1", "Tempita>=0.2", "MarkupSafe>=0.9.2", "Marco>=0.1a1"
+        "WebTest>=1.1", "Tempita>=0.2", "MarkupSafe>=0.9.2", "Marco>=0.1a2"
     ],
     dependency_links=[
         "http://www.pylonshq.com/download/1.0"
