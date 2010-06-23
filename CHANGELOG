@@ -1,6 +1,9 @@
 Pylons Changelog
 ================
 
+1.1 (**tip**)
+* Require Marco for event system.
+
 1.0.1 (**tip**)
 * Utilize MarkupSafe for faster HTML escaping.
 * Fix signed cookies by using standard base64 alphabet, and prevent timing
