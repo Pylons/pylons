@@ -63,12 +63,6 @@ class PylonsApp(object):
         self.log_debug = False
         self.config.setdefault('lang', None)
         
-        # Create the redirect function we'll use and save it
-        def redirect_to(url):
-            log.debug("Raising redirect to %s", url)
-            raise HTTPFound(location=url)
-        self.redirect_to = redirect_to
-                
         # Cache some options for use during requests
         self._session_key = self.environ_config.get('session', 'beaker.session')
         self._cache_key = self.environ_config.get('cache', 'beaker.cache')
