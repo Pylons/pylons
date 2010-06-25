@@ -17,7 +17,7 @@ import pylons
 import pylons.templating
 from pylons.controllers.core import WSGIController
 from pylons.controllers.util import Request, Response
-from pylons.events import NewRequest, NewResponse
+from pylons.events import NewRequest, NewResponse, WSGIApplicationCreated
 from pylons.i18n.translation import _get_translator
 from pylons.util import (AttribSafeContextObj, ContextObj, PylonsContext,
                          class_name_from_module_name)
@@ -68,6 +68,9 @@ class PylonsApp(object):
         # Cache some options for use during requests
         self._session_key = self.environ_config.get('session', 'beaker.session')
         self._cache_key = self.environ_config.get('cache', 'beaker.cache')
+        
+        # Fire the app created event
+        self.config.events.publish(WSGIApplicationCreated(self))
     
     def __call__(self, environ, start_response):
         """Setup and handle a web request

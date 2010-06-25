@@ -50,3 +50,11 @@ class NewResponse(object):
     object."""
     def __init__(self, response):
         self.response = response
+
+
+class WSGIApplicationCreated(object):
+    """ An instance of this class is emitted when the PylonsApp
+    wsgi object is created. The instance has an attribute, 
+    ``application``, which is the WSGI application object."""
+    def __init__(self, application):
+        self.application = application
