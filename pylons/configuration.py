@@ -16,7 +16,10 @@ and Routes.
 import copy
 import logging
 import os
+import sys
 
+import venusian
+from marco.events import Events
 from paste.config import DispatchingConfig
 from paste.deploy.converters import asbool
 from webhelpers.mimehelper import MIMETypes
@@ -103,7 +106,23 @@ class PylonsConfig(dict):
         'pylons.strict_tmpl_context': True,
         'pylons.tmpl_context_attach_args': False,
     }
-
+    
+    def begin(self):
+        """Intializes the configuration object for an application"""
+        self.events = Events()
+        self._scanner = venusian.Scanner(config=self)
+    
+    def scan(self, package=None):
+        """Scan a package for Pylons decorated functions"""
+        if package:
+            self._scanner.scan(package, categories=('pylons',))
+        else:
+            self._scanner.scan(self._package, categories=('pylons',))
+    
+    def add_subscriber(self, func, event):
+        """Add an event subscriber"""
+        self.events.subscribe(func, event)
+    
     def init_app(self, global_conf, app_conf, package=None, paths=None):
         """Initialize configuration for the application
         
@@ -142,6 +161,11 @@ class PylonsConfig(dict):
                 
         """
         log.debug("Initializing configuration, package: '%s'", package)
+        
+        # Backwards compat in case begin() was not called
+        if not hasattr(self, 'events'):
+            self.begin()
+        
         conf = global_conf.copy()
         conf.update(app_conf)
         conf.update(dict(app_conf=app_conf, global_conf=global_conf))
@@ -149,7 +173,17 @@ class PylonsConfig(dict):
 
         if paths:
             conf['pylons.paths'] = paths
+        
         conf['pylons.package'] = package
+        
+        # Handle cases where the package might be invalid or not found
+        if package:
+            if package not in sys.modules:
+                try:
+                    __import__(package)
+                except ImportError:
+                    pass
+            self._package = sys.modules.get(package)
 
         conf['debug'] = asbool(conf.get('debug'))
                 

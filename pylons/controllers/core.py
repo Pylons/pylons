@@ -6,6 +6,7 @@ import types
 from webob.exc import HTTPException, HTTPNotFound
 
 import pylons
+from pylons.events import NewResponse
 
 __all__ = ['WSGIController']
 
@@ -255,7 +256,8 @@ class WSGIController(object):
         if hasattr(self, '__after__'):
             after = self._inspect_call(self.__after__)
             if hasattr(after, '_exception'):
-                return after(environ, self.start_response)
+                after.wsgi_response = True
+                response = after
         
         if hasattr(response, 'wsgi_response'):
             # Copy the response object into the testing vars if we're testing
@@ -263,6 +265,10 @@ class WSGIController(object):
                 environ['paste.testing_variables']['response'] = response
             if log_debug:
                 log.debug("Calling Response object to return WSGI data")
+            
+            # Emit the NewResponse event
+            self._py_object.config.events.publish(NewResponse(response))
+            
             return response(environ, self.start_response)
         
         if log_debug:

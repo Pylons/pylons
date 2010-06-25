@@ -9,6 +9,8 @@ import pylons
 from nose import SkipTest
 from paste.fixture import TestFileEnvironment
 
+raise SkipTest()
+
 try:
     import sqlalchemy as sa
     SQLAtesting = True

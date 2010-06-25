@@ -16,6 +16,7 @@ from webob.exc import HTTPFound, HTTPNotFound
 import pylons
 import pylons.templating
 from pylons.controllers.util import Request, Response
+from pylons.events import NewRequest, NewResponse
 from pylons.i18n.translation import _get_translator
 from pylons.util import (AttribSafeContextObj, ContextObj, PylonsContext,
                          class_name_from_module_name)
@@ -171,6 +172,7 @@ class PylonsApp(object):
                       unicode_errors=req_options['errors'],
                       decode_param_names=req_options['decode_param_names'])
         req.language = req_options['language']
+        req.config = self.config
         
         response = Response(
             content_type=self.response_options['content_type'],
@@ -207,6 +209,9 @@ class PylonsApp(object):
             pylons_obj.session = environ[self._session_key]
         if self._cache_key in environ:
             pylons_obj.cache = environ[self._cache_key]
+        
+        # Publish the new request event
+        self.config.events.publish(NewRequest(req))
         
         # Load the globals with the registry if around
         if 'paste.registry' in environ:
