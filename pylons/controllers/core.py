@@ -8,9 +8,111 @@ from webob.exc import HTTPException, HTTPNotFound
 import pylons
 from pylons.events import NewResponse
 
-__all__ = ['WSGIController']
+__all__ = ['WSGIController', 'RouteResponder']
 
 log = logging.getLogger(__name__)
+
+
+class RouteResponder(object):
+    """RouteResponder implements the responder paradigm for Routes
+    based action dispatch
+    
+    The RouteResponder handles calling the appropriate controller
+    method given an action. It's initialized with a request object,
+    and is then called. A webob Response compatible object is then
+    returned.
+    
+    Methods wishing to terminate early may raise a webob HTTPException
+    subclass which will be captured and passed up.
+    
+    Special RouteResponder methods you may define:
+    
+    ``_before``
+        This method is called before your action is, and should be used
+        for setting up variables/objects, restricting access to other
+        actions, or other tasks which should be executed before the
+        action is called. It will be called with no arguments.
+
+    ``_after``
+        This method is called after the action is, unless an unexpected
+        exception was raised. Subclasses of
+        :class:`~webob.exc.HTTPException` (such as those raised by
+        ``redirect_to`` and ``abort``) are expected; e.g. ``__after__``
+        will be called on redirects.
+    
+    The method will be called with *all* of the params present in the
+    Routes match dict *except* ``controller``, ``action``, and
+    ``sub_domain``. This list can be changed by overriding the
+    RouteResponder's ``pull_route_vars`` list.
+    
+    """
+    pull_route_vars = ['responder', 'controller', 'action', 'sub_domain']
+    
+    def __init__(self, request):
+        """Initialize the RouteResponder with the request"""
+        self._request = request
+
+    def __call__(self):
+        """Dispatch to a method based on route args"""
+        # Avoid self lookup
+        req = self._request
+        log_debug = self._pylons_log_debug
+        
+        try:
+            action_name = req.route_dict['action'].replace('-', '_')
+        except KeyError:
+            raise Exception("No action matched from Routes, unable to"
+                            "determine action dispatch.")
+        
+        # Keep private methods private
+        if action_name[0] == '_':
+            if log_debug:
+                log.debug("Action starts with _, private action not "
+                          "allowed. Returning a 404 response")
+            return HTTPNotFound()
+        
+        if log_debug:
+            log.debug("Looking for %r method to handle the request",
+                      action_name)
+        
+        # Try and get the function to dispatch to
+        try:
+            action = getattr(self, action_name, None)
+        except UnicodeEncodeError:
+            if log_debug:
+                log.debug("Couldn't find %r method to handle response", action_name)
+            if req.config['debug']:
+                raise NotImplementedError('Action %r is not implemented' %
+                                          action_name)
+            else:
+                return HTTPNotFound()
+        
+        action_args = req.route_dict.copy()
+        # Remove the special vars
+        for var in self.pull_route_vars:
+            if var in action_args:
+                del action_args[var]
+        
+        # Call the before if its around, return if its an HTTPException
+        if hasattr(self, '_before'):
+            try:
+                self._before()
+            except HTTPException, httpe:
+                return httpe
+        
+        try:
+            response = action(**action_args)
+        except HTTPException, httpe:
+            response = httpe
+        except TypeError:
+            # Raised when attempting to call a non-callable
+            if log_debug:
+                log.debug("Can't debug to non-callable action %r", action_name)
+            response = HTTPNotFound()
+        
+        if hasattr(self, '_after'):
+            self._after()
+        return response
 
 
 class WSGIController(object):

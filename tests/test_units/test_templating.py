@@ -29,7 +29,7 @@ def make_app(global_conf, full_stack=True, static_files=True, include_cache_midd
                  templates=os.path.join(root, 'sample_controllers', 'templates'))
     sys.path.append(root)
 
-    config = configuration.pylons_config
+    config = configuration.PylonsConfig()
     config.init_app(global_conf, app_conf, package='sample_controllers', paths=paths)
     map = Mapper(directory=config['pylons.paths']['controllers'])
     map.connect('/{controller}/{action}')

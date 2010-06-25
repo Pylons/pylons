@@ -22,6 +22,7 @@ import venusian
 from marco.events import Events
 from paste.config import DispatchingConfig
 from paste.deploy.converters import asbool
+from routes import Mapper
 from webhelpers.mimehelper import MIMETypes
 
 
@@ -109,6 +110,10 @@ class PylonsConfig(dict):
         """Intializes the configuration object for an application"""
         self.events = Events()
         self._scanner = venusian.Scanner(config=self)
+        
+        # Ensure all the keys from defaults are present, load them if not
+        for key, val in copy.deepcopy(PylonsConfig.defaults).iteritems():
+            self.setdefault(key, val)
     
     def scan(self, package=None):
         """Scan a package for Pylons decorated functions"""
@@ -120,6 +125,18 @@ class PylonsConfig(dict):
     def add_subscriber(self, func, event):
         """Add an event subscriber"""
         self.events.subscribe(func, event)
+    
+    def add_route(self, *args, **kwargs):
+        """Connect a route to the mapper
+        
+        This will create a Routes mapper on the 'routes.map' key on
+        this object if its not already present.
+        
+        """
+        if 'routes.map' not in self:
+            self['routes.map'] = Mapper()
+        mapper = self['routes.map']
+        mapper.connect(*args, **kwargs)
     
     def init_app(self, global_conf, app_conf, package=None, paths=None):
         """Initialize configuration for the application

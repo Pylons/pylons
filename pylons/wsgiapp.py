@@ -15,6 +15,7 @@ from webob.exc import HTTPFound, HTTPNotFound
 
 import pylons
 import pylons.templating
+from pylons.controllers.core import WSGIController
 from pylons.controllers.util import Request, Response
 from pylons.events import NewRequest, NewResponse
 from pylons.i18n.translation import _get_translator
@@ -107,10 +108,7 @@ class PylonsApp(object):
         
         try:
             if hasattr(response, 'wsgi_response'):
-                # Transform Response objects from legacy Controller
-                if log_debug:
-                    log.debug("Transforming legacy Response object into WSGI "
-                              "response")
+                self.config.events.publish(NewResponse(response))
                 return response(environ, start_response)
             elif response is not None:
                 return response
@@ -173,6 +171,7 @@ class PylonsApp(object):
                       decode_param_names=req_options['decode_param_names'])
         req.language = req_options['language']
         req.config = self.config
+        req.link, req.route_dict = environ['wsgiorg.routing_args']
         
         response = Response(
             content_type=self.response_options['content_type'],
@@ -202,11 +201,11 @@ class PylonsApp(object):
             tmpl_context = ContextObj()
         else:
             tmpl_context = AttribSafeContextObj()
-        pylons_obj.tmpl_context = tmpl_context
+        pylons_obj.tmpl_context = req.tmpl_context = tmpl_context
         
         econf = self.config['pylons.environ_config']
         if self._session_key in environ:
-            pylons_obj.session = environ[self._session_key]
+            pylons_obj.session = req.session = environ[self._session_key]
         if self._cache_key in environ:
             pylons_obj.cache = environ[self._cache_key]
         
@@ -229,7 +228,7 @@ class PylonsApp(object):
         """
         match = environ['wsgiorg.routing_args'][1]
         environ['pylons.routes_dict'] = match
-        controller = match.get('controller')
+        controller = match.get('controller', match.get('responder'))
         if not controller:
             return
 
@@ -250,6 +249,11 @@ class PylonsApp(object):
         the URL has been resolved.
         
         """
+        # If this isn't a basestring, its an object, assume that its the
+        # proper instance to begin with
+        if not isinstance(controller, basestring):
+            return controller
+        
         # Check to see if we've cached the class instance for this name
         if controller in self.controller_classes:
             return self.controller_classes[controller]
@@ -295,12 +299,25 @@ class PylonsApp(object):
                 log.debug("No controller found, returning 404 HTTP Not Found")
             return HTTPNotFound()(environ, start_response)
 
-        # If it's a class, instantiate it
+        # Is it a class?
         if hasattr(controller, '__bases__'):
-            if log_debug:
-                log.debug("Controller appears to be a class, instantiating")
-            controller = controller()
-            controller._pylons_log_debug = log_debug
+            # Is it a WSGIController?
+            if issubclass(controller, WSGIController):
+                if log_debug:
+                    log.debug("Controller appears to be a class, instantiating")
+                controller = controller()
+                controller._pylons_log_debug = log_debug
+            else:
+                # It's a class, but not a WSGIController, so we instantiate it with
+                # the request object
+                if log_debug:
+                    log.debug("Controller appears to be a class, instantiating")
+                controller = controller(environ['pylons.pylons'].request)
+                controller._pylons_log_debug = log_debug
+            
+                # In this case, the controller is expected to return a response 
+                # object
+                return controller()
         
         # Add a reference to the controller app located
         environ['pylons.controller'] = controller
