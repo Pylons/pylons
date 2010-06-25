@@ -2,6 +2,8 @@ Pylons Changelog
 ================
 
 1.1 (**tip**)
+* Added event system for extensions/plugins to hook in with.
+* Add venusian for use with events.
 * Require Marco for event system.
 
 1.0.1 (**tip**)
