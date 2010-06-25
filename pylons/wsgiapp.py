@@ -321,3 +321,5 @@ class PylonsApp(object):
             testenv['session'] = pylons_obj.session
         if hasattr(pylons_obj, 'cache'):
             testenv['cache'] = pylons_obj.cache
+        elif hasattr(pylons_obj.app_globals, 'cache'):
+            testenv['cache'] = pylons_obj.app_globals.cache

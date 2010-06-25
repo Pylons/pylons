@@ -8,22 +8,11 @@ from webob.exc import HTTPNotFound
 
 log = logging.getLogger(__name__)
 
-class HelloController(WSGIController):
+class Smithy(WSGIController):
     def __init__(self):
         self._pylons_log_debug = True
 
     def index(self):
         return 'Hello World'
     
-    def oops(self):
-        raise Exception('oops')
-    
-    def abort(self):
-        abort(404)
-
-
-def special_controller(environ, start_response):
-    return HTTPNotFound()
-
-def empty_wsgi(environ, start_response):
-    return
+__controller__ = 'Smithy'

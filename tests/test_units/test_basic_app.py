@@ -1,10 +1,12 @@
 import os
+import re
 import sys
 
 import pylons
 import pylons.configuration as configuration
 from beaker.cache import CacheManager
-from beaker.middleware import SessionMiddleware
+from beaker.middleware import SessionMiddleware, CacheMiddleware
+from nose.tools import raises
 from paste.fixture import TestApp
 from paste.registry import RegistryManager
 from paste.deploy.converters import asbool
@@ -19,7 +21,7 @@ from routes.util import URLGenerator
 from nose.tools import raises
 
 
-def make_app(global_conf, full_stack=True, static_files=True, **app_conf):
+def make_app(global_conf, full_stack=True, static_files=True, include_cache_middleware=False, attribsafe=False, **app_conf):
     root = os.path.dirname(os.path.abspath(__file__))
     paths = dict(root=os.path.join(root, 'sample_controllers'), controllers=os.path.join(root, 'sample_controllers', 'controllers'))
     sys.path.append(root)
@@ -28,13 +30,23 @@ def make_app(global_conf, full_stack=True, static_files=True, **app_conf):
     config.init_app(global_conf, app_conf, package='sample_controllers', paths=paths)
     map = Mapper(directory=config['pylons.paths']['controllers'])
     map.connect('/{controller}/{action}')
+    map.connect('/test_func', controller='sample_controllers.controllers.hello:special_controller')
+    map.connect('/test_empty', controller='sample_controllers.controllers.hello:empty_wsgi')
     config['routes.map'] = map
     
-    class AppGlobals(object): pass
+    class AppGlobals(object):
+        def __init__(self):
+            self.cache = 'Nothing here but a string'
+    
     config['pylons.app_globals'] = AppGlobals()
+    
+    if attribsafe:
+        config['pylons.strict_tmpl_context'] = False
     
     app = PylonsApp(config=config)
     app = RoutesMiddleware(app, config['routes.map'], singleton=False)
+    if include_cache_middleware:
+        app = CacheMiddleware(app, config)
     app = SessionMiddleware(app, config)
 
     if asbool(full_stack):
@@ -47,6 +59,43 @@ def make_app(global_conf, full_stack=True, static_files=True, **app_conf):
 
     app.config = config
     return app
+
+class TestWsgiApp(object):
+    def setUp(self):
+        self.app = TestApp(make_app({}))
+        url._push_object(URLGenerator(configuration.pylons_config['routes.map'], {}))
+    
+    def test_testvars(self):
+        resp = self.app.get('/_test_vars', extra_environ={'paste.testing_variables': True})
+        assert re.match(r'^\d+$', resp.body)
+    
+    def test_exception_resp_attach(self):
+        resp = self.app.get('/test_func', expect_errors=True)
+        assert resp.status == 404
+    
+    @raises(Exception)
+    def test_no_content(self):
+        resp = self.app.get('/test_empty', expect_errors=True)
+        assert 'wontgethre'
+    
+    def test_middleware_cache_obj_instance(self):
+        app = TestApp(make_app({}, include_cache_middleware=True))
+        resp = app.get('/hello/index')
+        assert resp.cache
+    
+    def test_attribsafe_tmpl_context(self):
+        app = TestApp(make_app({}, attribsafe=True))
+        resp = app.get('/hello/index')
+        assert 'Hello World' in resp
+    
+    def test_cache_obj_appglobals(self):
+        resp = self.app.get('/hello/index', extra_environ={'paste.testing_variables': True})
+        assert resp.cache == 'Nothing here but a string'
+    
+    def test_controller_name_override(self):
+        resp = self.app.get('/goodbye/index')
+        assert 'Hello World' in resp
+
 
 class TestJsonifyDecorator(object):
     def setUp(self):
