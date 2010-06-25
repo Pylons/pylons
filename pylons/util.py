@@ -152,10 +152,9 @@ class PylonsTemplate(Template):
             # Rename the app logger in the rare case a project is named 'root'
             package_logger = 'app'
         vars['package_logger'] = package_logger
+        vars['template_engine'] = 'mako'
 
-        template_engine = \
-            vars.setdefault('template_engine',
-                            pylons.configuration.default_template_engine)
+        template_engine = 'mako'
 
         if template_engine == 'mako':
             # Support a Babel extractor default for Mako

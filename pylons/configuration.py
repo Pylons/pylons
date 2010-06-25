@@ -25,8 +25,6 @@ from paste.deploy.converters import asbool
 from webhelpers.mimehelper import MIMETypes
 
 
-default_template_engine = 'mako'
-
 request_defaults = dict(charset='utf-8', errors='replace',
                         decode_param_names=False, language='en-us')
 response_defaults = dict(content_type='text/html',
