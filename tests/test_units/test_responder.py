@@ -8,7 +8,6 @@ import pylons.configuration as configuration
 from nose.tools import raises
 from paste.fixture import TestApp
 from pylons import url
-from pylons.controllers import RouteResponder
 from pylons.controllers.util import abort, Response
 from pylons.wsgiapp import PylonsApp
 from routes import Mapper
@@ -19,11 +18,17 @@ from nose.tools import raises
 
 config = None
 
-class Smith(RouteResponder):
+class Smith(object):
+    def __init__(self, req):
+        self.req = req
+    
     def index(self):
         return Response('Hello World')
 
-class Doe(RouteResponder):
+class Doe(object):
+    def __init__(self, req):
+        self.req = req
+    
     def _before(self):
         self.msg = 'Hello World'
     
@@ -34,9 +39,12 @@ class Doe(RouteResponder):
         abort(401)
     
     def _after(self):
-        self._request.after_msg = 'Hi there'
+        self.req.after_msg = 'Hi there'
 
-class Epsy(RouteResponder):
+class Epsy(object):
+    def __init__(self, req):
+        self.req = req
+    
     def _before(self):
         abort(404)
     

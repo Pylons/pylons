@@ -18,6 +18,7 @@ import binascii
 import hmac
 import logging
 import re
+import sys
 try:
     import cPickle as pickle
 except ImportError:
@@ -27,18 +28,46 @@ try:
 except ImportError:
     import sha as sha1
 
+import pkg_resources
 from webob import Request as WebObRequest
 from webob import Response as WebObResponse
 from webob.exc import status_map
 
 import pylons
+from pylons.util import class_name_from_module_name
 
-__all__ = ['abort', 'etag_cache', 'redirect', 'redirect_to', 'Request',
-           'Response']
+__all__ = ['abort', 'etag_cache', 'lookup_controller', 'redirect', 
+           'redirect_to', 'Request', 'Response']
 
 log = logging.getLogger(__name__)
 
 IF_NONE_MATCH = re.compile('(?:W/)?(?:"([^"]*)",?\s*)')
+
+
+def lookup_controller(controller, package_name=None):
+    # Check to see if its a dotted name
+    if '.' in controller or ':' in controller:
+        mycontroller = pkg_resources.EntryPoint.parse(
+            'x=%s' % controller).load(False)
+        return mycontroller
+    
+    if not package_name:
+        raise Exception('Unable to load controller %s, perhaps a package'
+                        ' name is needed?', controller)
+
+    # Pull the controllers class name, import controller
+    full_module_name = package_name + '.controllers.' \
+        + controller.replace('/', '.')
+
+    __import__(full_module_name)
+    if hasattr(sys.modules[full_module_name], '__controller__'):
+        mycontroller = getattr(sys.modules[full_module_name],
+            sys.modules[full_module_name].__controller__)
+    else:
+        module_name = controller.split('/')[-1]
+        class_name = class_name_from_module_name(module_name) + 'Controller'
+        mycontroller = getattr(sys.modules[full_module_name], class_name)
+    return mycontroller
 
 
 class Request(WebObRequest):

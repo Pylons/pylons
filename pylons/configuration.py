@@ -26,6 +26,8 @@ from routes import Mapper
 from webhelpers.mimehelper import MIMETypes
 
 
+from pylons.controllers.core import route_responder
+
 request_defaults = dict(charset='utf-8', errors='replace',
                         decode_param_names=False, language='en-us')
 response_defaults = dict(content_type='text/html',
@@ -136,6 +138,9 @@ class PylonsConfig(dict):
         if 'routes.map' not in self:
             self['routes.map'] = Mapper()
         mapper = self['routes.map']
+        responder = kwargs.pop('responder', None)
+        if isinstance(responder, basestring) or hasattr(responder, '__bases__'):
+            kwargs['responder'] = route_responder(responder, self['pylons.package'])
         mapper.connect(*args, **kwargs)
     
     def init_app(self, global_conf, app_conf, package=None, paths=None):

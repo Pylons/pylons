@@ -7,31 +7,33 @@ from webob.exc import HTTPException, HTTPNotFound
 
 import pylons
 from pylons.events import NewResponse
+from pylons.controllers.util import lookup_controller
 
 __all__ = ['WSGIController', 'RouteResponder']
 
 log = logging.getLogger(__name__)
 
 
-class RouteResponder(object):
-    """RouteResponder implements the responder paradigm for Routes
+def route_responder(controller, package_name=None):
+    """route_responder implements the responder paradigm for Routes
     based action dispatch
     
     The RouteResponder handles calling the appropriate controller
-    method given an action. It's initialized with a request object,
-    and is then called. A webob Response compatible object is then
-    returned.
+    method given an action. It's initialized with a controller class
+    which it will then initialized with a request object before calling
+    the appropriate method on it. A wrapper is returned that implements
+    the responder call-style.
     
     Methods wishing to terminate early may raise a webob HTTPException
     subclass which will be captured and passed up.
     
-    Special RouteResponder methods you may define:
+    Special methods you may define on your controller:
     
     ``_before``
         This method is called before your action is, and should be used
-        for setting up variables/objects, restricting access to other
-        actions, or other tasks which should be executed before the
-        action is called. It will be called with no arguments.
+        for restricting access to other actions, or other tasks which
+        may result in an HTTPException being thrown. Setup tasks should
+        be done in your controller's ``__init__`` method.
 
     ``_after``
         This method is called after the action is, unless an unexpected
@@ -42,24 +44,30 @@ class RouteResponder(object):
     
     The method will be called with *all* of the params present in the
     Routes match dict *except* ``controller``, ``action``, and
-    ``sub_domain``. This list can be changed by overriding the
-    RouteResponder's ``pull_route_vars`` list.
+    ``sub_domain``. This list can be changed by providng your own
+    class attribute called ``pull_route_vars`` that should be a list
+    of strings indicating the params to remove.
     
     """
-    pull_route_vars = ['responder', 'controller', 'action', 'sub_domain']
+    # If its not the actual controller instance, find it now
+    if isinstance(controller, basestring):
+        controller = lookup_controller(controller, package_name)
     
-    def __init__(self, request):
-        """Initialize the RouteResponder with the request"""
-        self._request = request
-
-    def __call__(self):
-        """Dispatch to a method based on route args"""
-        # Avoid self lookup
-        req = self._request
-        log_debug = self._pylons_log_debug
+    def controller_wrapper(request):
+        """The controller wrapper that is dispatched to by Pylons
+        
+        This wrapper implements the responder paradigm.
+        
+        """
+        pull_route_vars = getattr(controller, 'pull_route_vars',
+                                  ['responder', 'controller', 'action', 'sub_domain'])
+        log_debug = request.environ['pylons.log_debug']
+        
+        # Instantiate the controller with the request
+        controller_obj = controller(request)
         
         try:
-            action_name = req.route_dict['action'].replace('-', '_')
+            action_name = request.route_dict['action'].replace('-', '_')
         except KeyError:
             raise Exception("No action matched from Routes, unable to"
                             "determine action dispatch.")
@@ -72,31 +80,30 @@ class RouteResponder(object):
             return HTTPNotFound()
         
         if log_debug:
-            log.debug("Looking for %r method to handle the request",
-                      action_name)
+            log.debug("Looking for %r method to handle the request", action_name)
         
         # Try and get the function to dispatch to
         try:
-            action = getattr(self, action_name, None)
+            action = getattr(controller_obj, action_name, None)
         except UnicodeEncodeError:
             if log_debug:
                 log.debug("Couldn't find %r method to handle response", action_name)
-            if req.config['debug']:
+            if request.config['debug']:
                 raise NotImplementedError('Action %r is not implemented' %
                                           action_name)
             else:
                 return HTTPNotFound()
         
-        action_args = req.route_dict.copy()
+        action_args = request.route_dict.copy()
         # Remove the special vars
-        for var in self.pull_route_vars:
+        for var in pull_route_vars:
             if var in action_args:
                 del action_args[var]
         
         # Call the before if its around, return if its an HTTPException
-        if hasattr(self, '_before'):
+        if hasattr(controller_obj, '_before'):
             try:
-                self._before()
+                controller_obj._before()
             except HTTPException, httpe:
                 return httpe
         
@@ -110,9 +117,10 @@ class RouteResponder(object):
                 log.debug("Can't debug to non-callable action %r", action_name)
             response = HTTPNotFound()
         
-        if hasattr(self, '_after'):
-            self._after()
+        if hasattr(controller_obj, '_after'):
+            controller_obj._after()
         return response
+    return controller_wrapper
 
 
 class WSGIController(object):

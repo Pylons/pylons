@@ -15,7 +15,6 @@ from webob.exc import HTTPFound, HTTPNotFound
 
 import pylons
 import pylons.templating
-from pylons.controllers.core import WSGIController
 from pylons.controllers.util import Request, Response
 from pylons.events import NewRequest, NewResponse, WSGIApplicationCreated
 from pylons.i18n.translation import _get_translator
@@ -93,6 +92,7 @@ class PylonsApp(object):
         """
         # Cache the logging level for the request
         log_debug = self.log_debug = logging.DEBUG >= log.getEffectiveLevel()
+        environ['pylons.log_debug'] = log_debug
 
         self.setup_app_env(environ, start_response)
         if 'paste.testing_variables' in environ:
@@ -105,8 +105,7 @@ class PylonsApp(object):
         controller = self.resolve(environ, start_response)
         response = self.dispatch(controller, environ, start_response)
         
-        if 'paste.testing_variables' in environ and hasattr(response,
-                                                            'wsgi_response'):
+        if 'paste.testing_variables' in environ and hasattr(response, 'wsgi_response'):
             environ['paste.testing_variables']['response'] = response
         
         try:
@@ -198,7 +197,7 @@ class PylonsApp(object):
         
         # Setup the translator object
         lang = self.config['lang']
-        pylons_obj.translator = req.translator = _get_translator(lang, pylons_config=self.config)
+        pylons_obj.translator = _get_translator(lang, pylons_config=self.config)
         
         if self.config['pylons.strict_tmpl_context']:
             tmpl_context = ContextObj()
@@ -302,26 +301,17 @@ class PylonsApp(object):
                 log.debug("No controller found, returning 404 HTTP Not Found")
             return HTTPNotFound()(environ, start_response)
 
+        # Is it a responder?
+        if 'responder' in environ['pylons.routes_dict']:
+            return controller(environ['pylons.pylons'].request)
+
         # Is it a class?
         if hasattr(controller, '__bases__'):
-            # Is it a WSGIController?
-            if issubclass(controller, WSGIController):
-                if log_debug:
-                    log.debug("Controller appears to be a class, instantiating")
-                controller = controller()
-                controller._pylons_log_debug = log_debug
-            else:
-                # It's a class, but not a WSGIController, so we instantiate it with
-                # the request object
-                if log_debug:
-                    log.debug("Controller appears to be a class, instantiating")
-                controller = controller(environ['pylons.pylons'].request)
-                controller._pylons_log_debug = log_debug
-            
-                # In this case, the controller is expected to return a response 
-                # object
-                return controller()
-        
+            if log_debug:
+                log.debug("Controller appears to be a class, instantiating")
+            controller = controller()
+            controller._pylons_log_debug = log_debug
+                
         # Add a reference to the controller app located
         environ['pylons.controller'] = controller
         
