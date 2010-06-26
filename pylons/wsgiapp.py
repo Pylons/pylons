@@ -305,7 +305,7 @@ class PylonsApp(object):
         if 'responder' in environ['pylons.routes_dict']:
             return controller(environ['pylons.pylons'].request)
 
-        # Is it a class?
+        # Is it a class? Then its a WSGIController
         if hasattr(controller, '__bases__'):
             if log_debug:
                 log.debug("Controller appears to be a class, instantiating")

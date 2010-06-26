@@ -18,6 +18,10 @@ def route_responder(controller, package_name=None):
     """route_responder implements the responder paradigm for Routes
     based action dispatch
     
+    In the event that the controller references something that is
+    itself a valid rseponder, that responder will be returned directly
+    and not wrapped.
+    
     The RouteResponder handles calling the appropriate controller
     method given an action. It's initialized with a controller class
     which it will then initialized with a request object before calling
@@ -52,6 +56,12 @@ def route_responder(controller, package_name=None):
     # If its not the actual controller instance, find it now
     if isinstance(controller, basestring):
         controller = lookup_controller(controller, package_name)
+    
+    # If the controller is not a class, like we're expecting it
+    # to be for a route handler, assume its a proper responder
+    # and return it
+    if not hasattr(controller, '__bases__'):
+        return controller
     
     def controller_wrapper(request):
         """The controller wrapper that is dispatched to by Pylons

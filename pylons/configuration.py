@@ -139,8 +139,7 @@ class PylonsConfig(dict):
             self['routes.map'] = Mapper()
         mapper = self['routes.map']
         responder = kwargs.pop('responder', None)
-        if isinstance(responder, basestring) or hasattr(responder, '__bases__'):
-            kwargs['responder'] = route_responder(responder, self['pylons.package'])
+        kwargs['responder'] = route_responder(responder, self['pylons.package'])
         mapper.connect(*args, **kwargs)
     
     def init_app(self, global_conf, app_conf, package=None, paths=None):
