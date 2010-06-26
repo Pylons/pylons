@@ -198,7 +198,7 @@ class PylonsApp(object):
         
         # Setup the translator object
         lang = self.config['lang']
-        pylons_obj.translator = _get_translator(lang, pylons_config=self.config)
+        pylons_obj.translator = req.translator = _get_translator(lang, pylons_config=self.config)
         
         if self.config['pylons.strict_tmpl_context']:
             tmpl_context = ContextObj()
