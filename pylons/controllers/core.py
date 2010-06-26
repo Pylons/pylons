@@ -9,12 +9,35 @@ import pylons
 from pylons.events import NewResponse
 from pylons.controllers.util import lookup_controller
 
-__all__ = ['WSGIController', 'RouteResponder']
+__all__ = ['WSGIController']
 
 log = logging.getLogger(__name__)
 
 
-def route_responder(controller, package_name=None):
+def map_responder(responder, package_name=None):
+    """Given a responder name, handle looking it up and returning
+    a callable responder"""
+    # If its a string, determine if its a legacy controller name
+    # or a resource specification
+    if isinstance(responder, basestring):
+        responder_result = lookup_controller(responder, package_name)
+    else:
+        responder_result = responder
+    
+    # If the controller is not a class, like we're expecting it
+    # to be for a route handler, assume its a proper responder
+    # and return it
+    if not hasattr(responder_result, '__bases__'):
+        if not callable(responder_result):
+            raise Exception("Can't map %s to a valid callable responder, got"
+                            " %r instead.", responder, responder_result)
+        return responder_result
+    
+    # It must be a newstyle route based responder
+    return route_responder(responder_result)
+
+
+def route_responder(controller):
     """route_responder implements the responder paradigm for Routes
     based action dispatch
     
@@ -53,16 +76,6 @@ def route_responder(controller, package_name=None):
     of strings indicating the params to remove.
     
     """
-    # If its not the actual controller instance, find it now
-    if isinstance(controller, basestring):
-        controller = lookup_controller(controller, package_name)
-    
-    # If the controller is not a class, like we're expecting it
-    # to be for a route handler, assume its a proper responder
-    # and return it
-    if not hasattr(controller, '__bases__'):
-        return controller
-    
     def controller_wrapper(request):
         """The controller wrapper that is dispatched to by Pylons
         
