@@ -69,21 +69,19 @@ def route_responder(controller):
         ``redirect_to`` and ``abort``) are expected; e.g. ``__after__``
         will be called on redirects.
     
-    The method will be called with *all* of the params present in the
-    Routes match dict *except* ``controller``, ``action``, and
-    ``sub_domain``. This list can be changed by providng your own
-    class attribute called ``pull_route_vars`` that should be a list
-    of strings indicating the params to remove.
+    The method will be called with no arguments.
     
     """
+    # Record whether we have before/after to call
+    before = hasattr(controller, '_before')
+    after = hasattr(controller, '_after')
+    
     def controller_wrapper(request):
         """The controller wrapper that is dispatched to by Pylons
         
         This wrapper implements the responder paradigm.
         
         """
-        pull_route_vars = getattr(controller, 'pull_route_vars',
-                                  ['responder', 'controller', 'action', 'sub_domain'])
         log_debug = request.environ['pylons.log_debug']
         
         # Instantiate the controller with the request
@@ -117,21 +115,15 @@ def route_responder(controller):
             else:
                 return HTTPNotFound()
         
-        action_args = request.route_dict.copy()
-        # Remove the special vars
-        for var in pull_route_vars:
-            if var in action_args:
-                del action_args[var]
-        
         # Call the before if its around, return if its an HTTPException
-        if hasattr(controller_obj, '_before'):
+        if before:
             try:
                 controller_obj._before()
             except HTTPException, httpe:
                 return httpe
         
         try:
-            response = action(**action_args)
+            response = action()
         except HTTPException, httpe:
             response = httpe
         except TypeError:
@@ -140,7 +132,7 @@ def route_responder(controller):
                 log.debug("Can't debug to non-callable action %r", action_name)
             response = HTTPNotFound()
         
-        if hasattr(controller_obj, '_after'):
+        if after:
             controller_obj._after()
         return response
     return controller_wrapper
