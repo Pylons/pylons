@@ -123,8 +123,8 @@ class TestJsonifyDecorator(object):
     def _test_set_lang(self, action):
         response = self.app.get(url(controller='i18nc', action=action, lang='ja'))
         assert u'\u8a00\u8a9e\u8a2d\u5b9a\u3092\u300cja\u300d\u306b\u5909\u66f4\u3057\u307e\u3057\u305f'.encode('utf-8') in response
-        response = self.app.get(url(controller='i18nc', action=action, lang='fr'))
-        assert 'Could not set language to "fr"' in response
+        response = self.app.get(url(controller='i18nc', action=action, lang='ch'))
+        assert 'Could not set language to "ch"' in response
 
     def test_detect_lang(self):
         response = self.app.get(url(controller='i18nc', action='i18n_index'), headers={

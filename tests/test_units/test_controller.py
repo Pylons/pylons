@@ -45,6 +45,9 @@ class BasicWSGIController(WSGIController):
         pylons.response.headers['Content-Type'] = 'text/plain'
         return "Hello all!"
     
+    def swallow_all(self, **kwargs):
+        return "We got back %s" % kwargs
+    
     def nothing(self):
         return
 
@@ -166,6 +169,12 @@ class TestBasicWSGI(TestWSGIController):
     def test_list(self):
         self.baseenviron['pylons.routes_dict']['action'] = 'list'
         assert 'from a list' in self.app.get('/')
+    
+    def test_eat_kwargs(self):
+        pylons.config['pylons.tmpl_context_attach_args'] = True
+        self.baseenviron['pylons.routes_dict']['action'] = 'swallow_all'
+        assert "We got back {'action': 'swallow_all'," in self.app.get('/')
+
 
 class TestFilteredWSGI(TestWSGIController):
     def __init__(self, *args, **kargs):

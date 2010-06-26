@@ -167,7 +167,7 @@ def _get_translator(lang, **kwargs):
     return translator
 
 
-def set_lang(lang, **kwargs):
+def set_lang(lang, set_environ=True, **kwargs):
     """Set the current language used for translations.
 
     ``lang`` should be a string or a list of strings. If a list of
@@ -175,6 +175,8 @@ def set_lang(lang, **kwargs):
     languages are added as fallbacks.
     """
     translator = _get_translator(lang, **kwargs)
+    if not set_environ:
+        return translator
     environ = pylons.request.environ
     environ['pylons.pylons'].translator = translator
     if 'paste.registry' in environ:
