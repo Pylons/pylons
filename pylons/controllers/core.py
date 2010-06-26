@@ -76,6 +76,9 @@ def route_responder(controller):
     before = hasattr(controller, '_before')
     after = hasattr(controller, '_after')
     
+    # Find all the valid method's
+    methods = dict(inspect.getmembers(controller, inspect.ismethod))
+    
     def controller_wrapper(request):
         """The controller wrapper that is dispatched to by Pylons
         
@@ -104,9 +107,9 @@ def route_responder(controller):
             log.debug("Looking for %r method to handle the request", action_name)
         
         # Try and get the function to dispatch to
-        try:
-            action = getattr(controller_obj, action_name, None)
-        except UnicodeEncodeError:
+        if action_name in methods:
+            action = methods[action_name]
+        else:
             if log_debug:
                 log.debug("Couldn't find %r method to handle response", action_name)
             if request.config['debug']:
@@ -123,7 +126,7 @@ def route_responder(controller):
                 return httpe
         
         try:
-            response = action()
+            response = action(controller_obj)
         except HTTPException, httpe:
             response = httpe
         except TypeError:
