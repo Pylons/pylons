@@ -104,3 +104,9 @@ class TestWsgiApp(object):
         config = configuration.PylonsConfig()
         config.begin()
         config.add_route('/smith', view=not_callable)
+    
+    @raises(Exception)
+    def test_no_action(self):
+        config = configuration.PylonsConfig()
+        config.begin()
+        config.add_route('/smith', view=Doe, action='no_action_here')
