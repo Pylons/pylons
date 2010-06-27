@@ -34,3 +34,6 @@ def special_controller(environ, start_response):
 
 def empty_wsgi(environ, start_response):
     return
+
+def a_view(request):
+    return Response('A View')
