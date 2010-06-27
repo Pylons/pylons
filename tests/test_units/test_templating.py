@@ -2,8 +2,6 @@ import os
 import re
 import sys
 
-import pylons
-import pylons.configuration as configuration
 from beaker.cache import CacheManager
 from beaker.middleware import SessionMiddleware, CacheMiddleware
 from mako.lookup import TemplateLookup
@@ -11,23 +9,27 @@ from nose.tools import raises
 from paste.fixture import TestApp
 from paste.registry import RegistryManager
 from paste.deploy.converters import asbool
-from pylons import url
-from pylons.decorators import jsonify
-from pylons.middleware import ErrorHandler, StatusCodeRedirect
-from pylons.error import handle_mako_error
-from pylons.wsgiapp import PylonsApp
 from routes import Mapper
 from routes.middleware import RoutesMiddleware
-from routes.util import URLGenerator
 
 from nose.tools import raises
 
+from __init__ import test_root
+
 
 def make_app(global_conf, full_stack=True, static_files=True, include_cache_middleware=False, attribsafe=False, **app_conf):
+    import pylons
+    import pylons.configuration as configuration
+    from pylons import url
+    from pylons.decorators import jsonify
+    from pylons.middleware import ErrorHandler, StatusCodeRedirect
+    from pylons.error import handle_mako_error
+    from pylons.wsgiapp import PylonsApp
+
     root = os.path.dirname(os.path.abspath(__file__))
-    paths = dict(root=os.path.join(root, 'sample_controllers'), controllers=os.path.join(root, 'sample_controllers', 'controllers'),
-                 templates=os.path.join(root, 'sample_controllers', 'templates'))
-    sys.path.append(root)
+    paths = dict(root=os.path.join(test_root, 'sample_controllers'), controllers=os.path.join(test_root, 'sample_controllers', 'controllers'),
+                 templates=os.path.join(test_root, 'sample_controllers', 'templates'))
+    sys.path.append(test_root)
 
     config = configuration.PylonsConfig()
     config.init_app(global_conf, app_conf, package='sample_controllers', paths=paths)
@@ -66,7 +68,6 @@ def make_app(global_conf, full_stack=True, static_files=True, include_cache_midd
 class TestTemplatingApp(object):
     def setUp(self):
         self.app = TestApp(make_app({'cache_dir': os.path.join(os.path.dirname(__file__), 'cache')}, include_cache_middleware=True))
-        url._push_object(URLGenerator(configuration.pylons_config['routes.map'], {}))
     
     def test_testvars(self):
         resp = self.app.get('/hello/intro_template')

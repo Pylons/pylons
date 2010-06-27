@@ -3,7 +3,6 @@ import warnings
 from paste.fixture import TestApp
 from paste.registry import RegistryManager
 
-
 from __init__ import TestWSGIController
 
 def make_cache_controller_app():
@@ -31,6 +30,7 @@ def make_cache_controller_app():
     app = RegistryManager(app)
     app = TestApp(app)
     return app, environ
+
 
 class TestJsonifyDecorator(TestWSGIController):
     def setUp(self):

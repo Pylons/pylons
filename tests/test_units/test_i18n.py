@@ -4,31 +4,28 @@ import sys
 
 from paste.fixture import TestApp
 
-import pylons
-from pylons.i18n.translation import *
-from pylons.i18n.translation import lazify
-from pylons.i18n.translation import _get_translator
+from __init__ import test_root
 
-from test_events import make_app
+lang_setup = None
 
-file_root = os.path.dirname(os.path.abspath(__file__))
-root = os.path.join(file_root, 'sample_controllers')
-lang_setup = {'pylons.paths': {'root': root}, 'pylons.package': 'sample_controllers'}
-sys.path.append(file_root)
-pylons.translator._push_object(_get_translator(None, pylons_config=lang_setup))
-
-foo = N_('Hello')
-
-foo_now = gettext('Hello')
-foo_later = lazy_gettext('Hello')
-lots = _(u'This should be in lots of languages')
-lazy_lots = lazy_ugettext(u'This should be in lots of languages')
-lazy_multi = ngettext('There is %(num)d file here', 'There are %(num)d files here', 2)
+def setup_py_trans():
+    global lang_setup
+    import pylons
+    from pylons.i18n.translation import _get_translator
+    root = os.path.join(test_root, 'sample_controllers')
+    lang_setup = {'pylons.paths': {'root': root}, 'pylons.package': 'sample_controllers'}
+    sys.path.append(test_root)
+    pylons.translator._push_object(_get_translator(None, pylons_config=lang_setup))
 
 glob_set = []
 
 class TestI18N(object):
+    def setUp(self):
+        setup_py_trans()
+    
     def test_lazify(self):
+        from pylons.i18n.translation import lazify
+        
         def show_str(st):
             return '%s%s' % (st, len(glob_set))
         lazy_show_str = lazify(show_str)
@@ -39,6 +36,9 @@ class TestI18N(object):
         assert str(result1) != str(result2)
     
     def test_noop(self):
+        import pylons
+        from pylons.i18n.translation import _, N_, set_lang
+        foo = N_('Hello')
         class Bar(object):
             def __init__(self):
                 self.local_foo = _(foo)

@@ -1,4 +1,5 @@
 import os
+import sys
 from unittest import TestCase
 from xmlrpclib import loads, dumps
     
@@ -12,6 +13,8 @@ except:
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 pylons_root = os.path.dirname(os.path.dirname(cur_dir))
 test_root = os.path.join(pylons_root, 'test_files')
+
+sys.path.append(test_root)
 
 class TestMiddleware(object):
     def __init__(self, app):

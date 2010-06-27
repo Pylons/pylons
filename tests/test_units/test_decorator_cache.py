@@ -7,98 +7,116 @@ from paste.registry import RegistryManager
 
 from beaker.middleware import CacheMiddleware
 
-import pylons
-from pylons.decorators.cache import beaker_cache, create_cache_key
-
-from pylons.controllers import WSGIController, XMLRPCController
-from pylons.testutil import SetupCacheGlobal, ControllerWrap
-
 from __init__ import data_dir, TestWSGIController
 
-class CacheController(WSGIController):
-    @beaker_cache(key=None, invalidate_on_startup=True)
-    def test_default_cache_decorator_invalidate(self):
-        pylons.app_globals.counter += 1
-        return 'Counter=%s' % pylons.app_globals.counter
+environ = {}
+sap = None
 
-    @beaker_cache(key=None)
-    def test_default_cache_decorator(self):
-        pylons.app_globals.counter += 1
-        return 'Counter=%s' % pylons.app_globals.counter
+def make_cache_controller():
+    global sap
+    import pylons
+    from pylons.decorators.cache import beaker_cache, create_cache_key
 
-    def test_default_cache_decorator_func(self):
-        def func():
-            pylons.app_globals.counter += 1
-            return 'Counter=%s' % pylons.app_globals.counter
-        func = beaker_cache(key=None)(func)
-        return func()
+    from pylons.controllers import WSGIController, XMLRPCController
+    from pylons.testutil import SetupCacheGlobal, ControllerWrap
     
-    def test_response_cache_func(self, use_cache_status=True):
-        pylons.response.status_int = 404
-        def func():
+    class CacheController(WSGIController):
+        @beaker_cache(key=None, invalidate_on_startup=True)
+        def test_default_cache_decorator_invalidate(self):
             pylons.app_globals.counter += 1
             return 'Counter=%s' % pylons.app_globals.counter
-        if use_cache_status:
+
+        @beaker_cache(key=None)
+        def test_default_cache_decorator(self):
+            pylons.app_globals.counter += 1
+            return 'Counter=%s' % pylons.app_globals.counter
+
+        def test_default_cache_decorator_func(self):
+            def func():
+                pylons.app_globals.counter += 1
+                return 'Counter=%s' % pylons.app_globals.counter
             func = beaker_cache(key=None)(func)
-        else:
-            func = beaker_cache(key=None, cache_response=False)(func)
-        return func()
+            return func()
+    
+        def test_response_cache_func(self, use_cache_status=True):
+            pylons.response.status_int = 404
+            def func():
+                pylons.app_globals.counter += 1
+                return 'Counter=%s' % pylons.app_globals.counter
+            if use_cache_status:
+                func = beaker_cache(key=None)(func)
+            else:
+                func = beaker_cache(key=None, cache_response=False)(func)
+            return func()
 
-    @beaker_cache(key=None, type='dbm')
-    def test_dbm_cache_decorator(self):
-        pylons.app_globals.counter += 1
-        return 'Counter=%s' % pylons.app_globals.counter
+        @beaker_cache(key=None, type='dbm')
+        def test_dbm_cache_decorator(self):
+            pylons.app_globals.counter += 1
+            return 'Counter=%s' % pylons.app_globals.counter
 
-    @beaker_cache(key="param", query_args=True)
-    def test_get_cache_decorator(self):
-        pylons.app_globals.counter += 1
-        return 'Counter=%s' % pylons.app_globals.counter
+        @beaker_cache(key="param", query_args=True)
+        def test_get_cache_decorator(self):
+            pylons.app_globals.counter += 1
+            return 'Counter=%s' % pylons.app_globals.counter
 
-    @beaker_cache(query_args=True)
-    def test_get_cache_default(self):
-        pylons.app_globals.counter += 1
-        return 'Counter=%s' % pylons.app_globals.counter
+        @beaker_cache(query_args=True)
+        def test_get_cache_default(self):
+            pylons.app_globals.counter += 1
+            return 'Counter=%s' % pylons.app_globals.counter
 
-    @beaker_cache(expire=1)
-    def test_expire_cache_decorator(self):
-        pylons.app_globals.counter += 1
-        return 'Counter=%s' % pylons.app_globals.counter
+        @beaker_cache(expire=1)
+        def test_expire_cache_decorator(self):
+            pylons.app_globals.counter += 1
+            return 'Counter=%s' % pylons.app_globals.counter
 
-    @beaker_cache(expire=1)
-    def test_expire_dbm_cache_decorator(self):
-        pylons.app_globals.counter += 1
-        return 'Counter=%s' % pylons.app_globals.counter
+        @beaker_cache(expire=1)
+        def test_expire_dbm_cache_decorator(self):
+            pylons.app_globals.counter += 1
+            return 'Counter=%s' % pylons.app_globals.counter
 
-    @beaker_cache(key="id")
-    def test_key_cache_decorator(self, id):
-        pylons.app_globals.counter += 1
-        return 'Counter=%s, id=%s' % (pylons.app_globals.counter, id)
+        @beaker_cache(key="id")
+        def test_key_cache_decorator(self, id):
+            pylons.app_globals.counter += 1
+            return 'Counter=%s, id=%s' % (pylons.app_globals.counter, id)
 
-    @beaker_cache(key=["id", "id2"])
-    def test_keyslist_cache_decorator(self, id, id2="123"):
-        pylons.app_globals.counter += 1
-        return 'Counter=%s, id=%s' % (pylons.app_globals.counter, id)
+        @beaker_cache(key=["id", "id2"])
+        def test_keyslist_cache_decorator(self, id, id2="123"):
+            pylons.app_globals.counter += 1
+            return 'Counter=%s, id=%s' % (pylons.app_globals.counter, id)
 
-    def test_invalidate_cache(self):
-        ns, key = create_cache_key(CacheController.test_default_cache_decorator)
-        c = pylons.cache.get_cache(ns)
-        c.remove_value(key)
+        def test_invalidate_cache(self):
+            ns, key = create_cache_key(CacheController.test_default_cache_decorator)
+            c = pylons.cache.get_cache(ns)
+            c.remove_value(key)
 
-    def test_invalidate_dbm_cache(self):
-        ns, key = create_cache_key(CacheController.test_dbm_cache_decorator)
-        c = pylons.cache.get_cache(ns, type='dbm')
-        c.remove_value(key)
+        def test_invalidate_dbm_cache(self):
+            ns, key = create_cache_key(CacheController.test_dbm_cache_decorator)
+            c = pylons.cache.get_cache(ns, type='dbm')
+            c.remove_value(key)
 
-    @beaker_cache(cache_headers=('content-type','content-length', 'x-powered-by'))
-    def test_header_cache(self):
-        pylons.response.headers['Content-Type'] = 'application/special'
-        pylons.response.headers['x-powered-by'] = 'pylons'
-        pylons.response.headers['x-dont-include'] = 'should not be included'
-        return "Hello folks, time is %s" % time.time()
+        @beaker_cache(cache_headers=('content-type','content-length', 'x-powered-by'))
+        def test_header_cache(self):
+            pylons.response.headers['Content-Type'] = 'application/special'
+            pylons.response.headers['x-powered-by'] = 'pylons'
+            pylons.response.headers['x-dont-include'] = 'should not be included'
+            return "Hello folks, time is %s" % time.time()
 
-    @beaker_cache(query_args=True)
-    def test_cache_key_dupe(self):
-        return "Hello folks, time is %s" % time.time()
+        @beaker_cache(query_args=True)
+        def test_cache_key_dupe(self):
+            return "Hello folks, time is %s" % time.time()
+    
+    app = ControllerWrap(CacheController)
+    app = sap = SetupCacheGlobal(app, environ, setup_cache=True)
+    app = CacheMiddleware(app, {}, data_dir=cache_dir)
+    app = RegistryManager(app)
+    app = TestApp(app)
+
+    # This one is missing cache middleware and the cache object to miss on purpsoe
+    bad_app = ControllerWrap(CacheController)
+    bad_app = SetupCacheGlobal(bad_app, environ, setup_cache=False)
+    bad_app = RegistryManager(bad_app)
+    bad_app = TestApp(bad_app)
+    return app, bad_app
 
 
 cache_dir = os.path.join(data_dir, 'cache')
@@ -108,21 +126,10 @@ try:
 except:
     pass
 
-environ = {}
-app = ControllerWrap(CacheController)
-app = sap = SetupCacheGlobal(app, environ, setup_cache=True)
-app = CacheMiddleware(app, {}, data_dir=cache_dir)
-app = RegistryManager(app)
-app = TestApp(app)
-
-# This one is missing cache middleware and the cache object to miss on purpsoe
-bad_app = ControllerWrap(CacheController)
-bad_app = SetupCacheGlobal(bad_app, environ, setup_cache=False)
-bad_app = RegistryManager(bad_app)
-bad_app = TestApp(bad_app)
 
 class TestBadCacheDecorator(TestWSGIController):
     def setUp(self):
+        app, bad_app = make_cache_controller()
         self.app = bad_app
         TestWSGIController.setUp(self)
         environ.update(self.environ)
@@ -132,6 +139,7 @@ class TestBadCacheDecorator(TestWSGIController):
 
 class TestCacheDecorator(TestWSGIController):
     def setUp(self):
+        app, bad_app = make_cache_controller()
         self.app = app
         TestWSGIController.setUp(self)
         environ.update(self.environ)
@@ -229,6 +237,8 @@ class TestCacheDecorator(TestWSGIController):
         assert "Counter=2" in response
         
     def test_cache_key(self):
+        from pylons.decorators.cache import beaker_cache, create_cache_key
+        
         key = create_cache_key(TestCacheDecorator.test_default_cache_decorator)
         assert key == ('%s.TestCacheDecorator' % self.__module__, 'test_default_cache_decorator')
         
@@ -264,6 +274,7 @@ class TestCacheDecorator(TestWSGIController):
         assert 'x-dont-include' not in response.headers
         
     def test_nocache(self):
+        import pylons
         sap.g.counter = 0
         pylons.config['cache_enabled'] = 'False'
         response = self.get_response(action='test_default_cache_decorator')

@@ -7,12 +7,6 @@ from beaker.middleware import SessionMiddleware
 from paste.fixture import TestApp
 from paste.registry import RegistryManager
 from routes import request_config
-from webhelpers.pylonslib import secure_form
-
-from pylons import request
-from pylons.controllers import WSGIController
-from pylons.decorators.secure import authenticate_form, csrf_detected_message
-from pylons.testutil import ControllerWrap, SetupCacheGlobal
 
 from __init__ import data_dir, TestWSGIController
 
@@ -35,18 +29,28 @@ class NullHandler(logging.Handler):
 my_logger.addHandler(NullHandler())
 
 
-class ProtectedController(WSGIController):
-    def form(self):
-        request_config().environ = request.environ
-        return secure_form.authentication_token()
+def make_protected():
+    from pylons.controllers import WSGIController
+    from pylons.decorators.secure import authenticate_form
+    from webhelpers.pylonslib import secure_form
+    from pylons import request
+    
+    class ProtectedController(WSGIController):
+        def form(self):
+            request_config().environ = request.environ
+            return secure_form.authentication_token()
 
-    @authenticate_form
-    def protected(self):
-        request_config().environ = request.environ
-        return 'Authenticated'
+        @authenticate_form
+        def protected(self):
+            request_config().environ = request.environ
+            return 'Authenticated'
+    return ProtectedController
+
 
 class TestAuthenticateFormDecorator(TestWSGIController):
     def setUp(self):
+        from pylons.testutil import ControllerWrap, SetupCacheGlobal
+        ProtectedController = make_protected()
         TestWSGIController.setUp(self)
         app = ControllerWrap(ProtectedController)
         app = SetupCacheGlobal(app, self.environ, setup_session=True)
@@ -55,6 +59,8 @@ class TestAuthenticateFormDecorator(TestWSGIController):
         self.app = TestApp(app)
 
     def test_unauthenticated(self):
+        from pylons.decorators.secure import csrf_detected_message
+        
         self.environ['pylons.routes_dict']['action'] = 'protected'
         response = self.app.post('/protected', extra_environ=self.environ,
                                  expect_errors=True)
@@ -62,6 +68,8 @@ class TestAuthenticateFormDecorator(TestWSGIController):
         assert csrf_detected_message in response
 
     def test_authenticated(self):
+        from webhelpers.pylonslib import secure_form
+        
         self.environ['pylons.routes_dict']['action'] = 'form'
         response = self.app.get('/form', extra_environ=self.environ)
         token = response.body

@@ -23,7 +23,6 @@ def make_app(global_conf, full_stack=True, static_files=True, include_cache_midd
     from routes.middleware import RoutesMiddleware
     
     paths = dict(root=os.path.join(test_root, 'sample_controllers'), controllers=os.path.join(test_root, 'sample_controllers', 'controllers'))
-    sys.path.append(test_root)
 
     config = configuration.pylons_config
     config.init_app(global_conf, app_conf, package='sample_controllers', paths=paths)

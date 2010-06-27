@@ -3,16 +3,10 @@ import os
 import re
 import sys
 
-import pylons
-import pylons.configuration as configuration
 from nose.tools import raises
 from paste.fixture import TestApp
-from pylons import url
-from pylons.controllers.util import abort, Response
-from pylons.wsgiapp import PylonsApp
 from routes import Mapper
 from routes.middleware import RoutesMiddleware
-from routes.util import URLGenerator
 
 from nose.tools import raises
 
@@ -23,6 +17,7 @@ class Smith(object):
         self.req = req
     
     def __call__(self):
+        from pylons.controllers.util import Response
         return Response('Hello Smith')
 
 class Doe(object):
@@ -30,9 +25,11 @@ class Doe(object):
         self.req = req
     
     def index(self):
+        from pylons.controllers.util import Response
         return Response('Hello Doe')
     
     def not_here(self):
+        from pylons.controllers.util import abort
         abort(404)
     
     not_callable = 42
@@ -40,13 +37,22 @@ class Doe(object):
 
 class Fawn(object):
     def __init__(self, req):
+        from pylons.controllers.util import abort
         abort(401)
 
 def plain_view(request):
+    from pylons.controllers.util import Response
     return Response('Plain View')
 
 
 def make_app(global_conf, debug=True, **app_conf):
+    import pylons
+    import pylons.configuration as configuration
+    
+    from pylons import url
+    from pylons.controllers.util import abort, Response
+    from pylons.wsgiapp import PylonsApp
+    
     global config
     config = configuration.PylonsConfig()
     config.begin()
@@ -68,7 +74,6 @@ def make_app(global_conf, debug=True, **app_conf):
 class TestWsgiApp(object):
     def setUp(self):
         self.app = TestApp(make_app({}))
-        url._push_object(URLGenerator(config['routes.map'], {}))
     
     def test_class_view(self):
         resp = self.app.get('/smith')

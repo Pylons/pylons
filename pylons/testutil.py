@@ -69,6 +69,8 @@ class SetupCacheGlobal(object):
         
         environ.update(self.environ)
         py_obj.config = pylons.config._current_obj()
+        if not hasattr(py_obj.config, 'events'):
+            py_obj.config.begin()
         py_obj.request = req
         py_obj.response = response
         py_obj.tmpl_context = ContextObj()

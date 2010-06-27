@@ -3,33 +3,36 @@ from paste.registry import RegistryManager
 
 from routes.middleware import RoutesMiddleware
 
-from pylons import request, url
-from pylons.decorators.secure import https
-from pylons.controllers import WSGIController
-from pylons.testutil import ControllerWrap, SetupCacheGlobal
-
 from __init__ import TestWSGIController
 
-class HttpsController(WSGIController):
+def make_httpscontroller():
+    from pylons import request, url
+    from pylons.controllers import WSGIController
+    from pylons.decorators.secure import https
+    
+    class HttpsController(WSGIController):
 
-    @https('/pylons')
-    def index(self):
-        return 'index page'
+        @https('/pylons')
+        def index(self):
+            return 'index page'
 
-    @https(lambda: url(controller='auth', action='login'))
-    def login2(self):
-        return 'login2 page'
+        @https(lambda: url(controller='auth', action='login'))
+        def login2(self):
+            return 'login2 page'
 
-    @https(lambda: request.url)
-    def secure(self):
-        return 'secure page'
+        @https(lambda: request.url)
+        def secure(self):
+            return 'secure page'
 
-    @https()
-    def get(self):
-        return 'get page'
+        @https()
+        def get(self):
+            return 'get page'
+    return HttpsController
 
 class TestHttpsDecorator(TestWSGIController):
     def setUp(self):
+        from pylons.testutil import ControllerWrap, SetupCacheGlobal
+        HttpsController = make_httpscontroller()
         TestWSGIController.setUp(self)
         from routes import Mapper
         map = Mapper()
