@@ -32,7 +32,7 @@ website development in Python easy. Several key points:
 * Harness existing knowledge about Python
 
 Knowing Python makes Pylons easy
----------------------------------
+--------------------------------
 
 Pylons makes it easy to expand on your knowledge of Python to master Pylons for
 web development. Using a MVC style dispath, Python knowledge is used at various

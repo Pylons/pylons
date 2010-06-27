@@ -11,6 +11,7 @@ import sys
 
 import paste.registry
 import pkg_resources
+from webob import Response as WebObResponse
 from webob.exc import HTTPFound, HTTPNotFound
 
 import pylons
@@ -105,11 +106,12 @@ class PylonsApp(object):
         controller = self.resolve(environ, start_response)
         response = self.dispatch(controller, environ, start_response)
         
-        if 'paste.testing_variables' in environ and hasattr(response, 'wsgi_response'):
+        response_obj = callable(response)
+        if 'paste.testing_variables' in environ and response_obj:
             environ['paste.testing_variables']['response'] = response
         
         try:
-            if hasattr(response, 'wsgi_response'):
+            if response_obj:
                 self.config.events.publish(NewResponse(response))
                 return response(environ, start_response)
             elif response is not None:

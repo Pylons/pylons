@@ -1,6 +1,7 @@
 """Decorator internal utilities"""
 import pylons
 from pylons.controllers import WSGIController
+print "OH MY, WHY NOW? %s" % __file__
 
 def get_pylons(decorator_args):
     """Return the `pylons` object: either the :mod`~pylons` module or

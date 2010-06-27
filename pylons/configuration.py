@@ -26,7 +26,7 @@ from routes import Mapper
 from webhelpers.mimehelper import MIMETypes
 
 
-from pylons.controllers.core import map_responder
+from pylons.view import map_view
 
 request_defaults = dict(charset='utf-8', errors='replace',
                         decode_param_names=False, language='en-us')
@@ -112,6 +112,7 @@ class PylonsConfig(dict):
         """Intializes the configuration object for an application"""
         self.events = Events()
         self._scanner = venusian.Scanner(config=self)
+        self._delayed_views = {}
         
         # Ensure all the keys from defaults are present, load them if not
         for key, val in copy.deepcopy(PylonsConfig.defaults).iteritems():
@@ -138,8 +139,7 @@ class PylonsConfig(dict):
         if 'routes.map' not in self:
             self['routes.map'] = Mapper()
         mapper = self['routes.map']
-        responder = kwargs.pop('responder', None)
-        kwargs['responder'] = map_responder(responder, self['pylons.package'])
+        args, kwargs = map_view(self, args, kwargs)
         mapper.connect(*args, **kwargs)
     
     def init_app(self, global_conf, app_conf, package=None, paths=None):
