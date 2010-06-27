@@ -5,6 +5,8 @@ import sys
 
 from nose.tools import raises
 
+from __init__ import test_root
+
 
 def make_app(global_conf, full_stack=True, static_files=True, include_cache_middleware=False, attribsafe=False, **app_conf):
     import pylons
@@ -20,9 +22,8 @@ def make_app(global_conf, full_stack=True, static_files=True, include_cache_midd
     from routes import Mapper
     from routes.middleware import RoutesMiddleware
     
-    root = os.path.dirname(os.path.abspath(__file__))
-    paths = dict(root=os.path.join(root, 'sample_controllers'), controllers=os.path.join(root, 'sample_controllers', 'controllers'))
-    sys.path.append(root)
+    paths = dict(root=os.path.join(test_root, 'sample_controllers'), controllers=os.path.join(test_root, 'sample_controllers', 'controllers'))
+    sys.path.append(test_root)
 
     config = configuration.pylons_config
     config.init_app(global_conf, app_conf, package='sample_controllers', paths=paths)

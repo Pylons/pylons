@@ -3,7 +3,6 @@ from paste.fixture import TestApp
 from paste.registry import RegistryManager
 from webob.exc import status_map
 
-
 from __init__ import TestWSGIController, TestMiddleware
 
 def make_controllers():

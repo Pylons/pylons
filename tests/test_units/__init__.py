@@ -9,6 +9,10 @@ try:
 except:
     pass
 
+cur_dir = os.path.dirname(os.path.abspath(__file__))
+pylons_root = os.path.dirname(os.path.dirname(cur_dir))
+test_root = os.path.join(pylons_root, 'test_files')
+
 class TestMiddleware(object):
     def __init__(self, app):
         self.app = app
