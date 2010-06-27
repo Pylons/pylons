@@ -11,11 +11,12 @@ from pylons.controllers.util import etag_cache
 from pylons.decorators import jsonify as orig_jsonify
 from pylons.util import ContextObj
 
-from __init__ import ControllerWrap, SetupCacheGlobal, TestWSGIController
+from __init__ import TestWSGIController
 
 class SimpleTestWSGIController(TestWSGIController):
     wsgi_app = None
     def __init__(self, *args, **kargs):
+        from pylons.testutil import ControllerWrap, SetupCacheGlobal        
         TestWSGIController.__init__(self, *args, **kargs)
         self.baseenviron = {}
         app = ControllerWrap(self.wsgi_app)

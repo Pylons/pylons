@@ -3,35 +3,38 @@ import warnings
 from paste.fixture import TestApp
 from paste.registry import RegistryManager
 
-import pylons
-from pylons.decorators import jsonify
-from pylons.controllers import WSGIController, XMLRPCController
 
-from __init__ import TestWSGIController, SetupCacheGlobal, ControllerWrap
+from __init__ import TestWSGIController
 
-class CacheController(WSGIController):
-
-    @jsonify
-    def test_bad_json(self):
-        return ["this is neat"]
-
-    @jsonify
-    def test_bad_json2(self):
-        return ("this is neat",)
+def make_cache_controller_app():
+    from pylons.testutil import ControllerWrap, SetupCacheGlobal
+    from pylons.decorators import jsonify
+    from pylons.controllers import WSGIController
     
-    @jsonify
-    def test_good_json(self):
-        return dict(fred=42)
+    class CacheController(WSGIController):
 
-environ = {}
-app = ControllerWrap(CacheController)
-app = sap = SetupCacheGlobal(app, environ)
-app = RegistryManager(app)
-app = TestApp(app)
+        @jsonify
+        def test_bad_json(self):
+            return ["this is neat"]
+
+        @jsonify
+        def test_bad_json2(self):
+            return ("this is neat",)
+    
+        @jsonify
+        def test_good_json(self):
+            return dict(fred=42)
+
+    environ = {}
+    app = ControllerWrap(CacheController)
+    app = sap = SetupCacheGlobal(app, environ)
+    app = RegistryManager(app)
+    app = TestApp(app)
+    return app, environ
 
 class TestJsonifyDecorator(TestWSGIController):
     def setUp(self):
-        self.app = app
+        self.app, environ = make_cache_controller_app()
         TestWSGIController.setUp(self)
         environ.update(self.environ)
         warnings.simplefilter('error', Warning)

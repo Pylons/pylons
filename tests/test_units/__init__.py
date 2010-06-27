@@ -1,12 +1,7 @@
 import os
 from unittest import TestCase
 from xmlrpclib import loads, dumps
-
-import pylons
-from pylons.util import ContextObj, PylonsContext
-from pylons.testutil import ControllerWrap, SetupCacheGlobal
-from routes import request_config
-
+    
 data_dir = os.path.dirname(os.path.abspath(__file__))
 
 try:
@@ -28,6 +23,9 @@ class TestMiddleware(object):
 
 class TestWSGIController(TestCase):
     def setUp(self):
+        import pylons
+        from pylons.util import ContextObj, PylonsContext
+        
         c = ContextObj()
         py_obj = PylonsContext()
         py_obj.tmpl_context = c
@@ -38,6 +36,7 @@ class TestWSGIController(TestCase):
         pylons.tmpl_context._push_object(c)
 
     def tearDown(self):
+        import pylons
         pylons.tmpl_context._pop_object()
     
     def get_response(self, **kargs):
@@ -59,4 +58,3 @@ class TestWSGIController(TestCase):
         self.response = response = self.app.post('/', params = data, extra_environ=ee)
         return loads(response.body)[0][0]
     
-

@@ -5,11 +5,12 @@ import shutil
 import re
 
 import pkg_resources
-import pylons
 from nose import SkipTest
 from paste.fixture import TestFileEnvironment
 
 raise SkipTest()
+
+import pylons
 
 try:
     import sqlalchemy as sa

@@ -2,60 +2,63 @@
 from paste.fixture import TestApp
 from paste.registry import RegistryManager
 
-import pylons
-from pylons.util import ContextObj
-from pylons.controllers import XMLRPCController
 import webob.exc as exc
 import xmlrpclib
 
-from __init__ import TestWSGIController, SetupCacheGlobal, ControllerWrap
+from __init__ import TestWSGIController
 
-class BaseXMLRPCController(XMLRPCController):
-    def __init__(self):
-        self._pylons_log_debug = True
+def make_basexmlrpc():
+    from pylons.controllers import XMLRPCController
+    class BaseXMLRPCController(XMLRPCController):
+        def __init__(self):
+            self._pylons_log_debug = True
     
-    foo = 'bar'
+        foo = 'bar'
     
-    def userstatus(self):
-        return 'basic string'
-    userstatus.signature = [ ['string'] ]
+        def userstatus(self):
+            return 'basic string'
+        userstatus.signature = [ ['string'] ]
     
-    def docs(self):
-        "This method has a docstring"
-        return dict(mess='a little somethin', a=1, b=[1,2,3], c=('all','the'))
-    docs.signature = [ ['struct'] ]
+        def docs(self):
+            "This method has a docstring"
+            return dict(mess='a little somethin', a=1, b=[1,2,3], c=('all','the'))
+        docs.signature = [ ['struct'] ]
     
-    def uni(self):
-        "This method has a docstring"
-        return dict(mess=u'A unicode string, oh boy')
-    uni.signature = [ ['struct'] ]
+        def uni(self):
+            "This method has a docstring"
+            return dict(mess=u'A unicode string, oh boy')
+        uni.signature = [ ['struct'] ]
     
-    def intargcheck(self, arg):
-        if not isinstance(arg, int):
-            return xmlrpclib.Fault(0, 'Integer required')
-        else:
-            return "received int"
-    intargcheck.signature = [ ['string', 'int'] ]
+        def intargcheck(self, arg):
+            if not isinstance(arg, int):
+                return xmlrpclib.Fault(0, 'Integer required')
+            else:
+                return "received int"
+        intargcheck.signature = [ ['string', 'int'] ]
     
-    def nosig(self):
-        return 'not much'
+        def nosig(self):
+            return 'not much'
     
-    def structured_methodname(self, arg):
-        "This method has a docstring"
-        return 'Transform okay'
-    structured_methodname.signature = [ ['string', 'string'] ]
+        def structured_methodname(self, arg):
+            "This method has a docstring"
+            return 'Transform okay'
+        structured_methodname.signature = [ ['string', 'string'] ]
     
-    def longdoc(self):
-        """This function
-        has multiple lines
-        in it"""
-        return "hi all"
+        def longdoc(self):
+            """This function
+            has multiple lines
+            in it"""
+            return "hi all"
     
-    def _private(self):
-        return 'private method'
+        def _private(self):
+            return 'private method'
+    return BaseXMLRPCController
     
 class TestXMLRPCController(TestWSGIController):
     def __init__(self, *args, **kargs):
+        from pylons.testutil import ControllerWrap, SetupCacheGlobal
+        BaseXMLRPCController = make_basexmlrpc()
+        
         TestWSGIController.__init__(self, *args, **kargs)
         self.baseenviron = {}
         self.baseenviron['pylons.routes_dict'] = {}

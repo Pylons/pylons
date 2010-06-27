@@ -1,15 +1,11 @@
 # -*- coding: utf-8 -*-
+import formencode
+from formencode.htmlfill import html_quote
 from paste.fixture import TestApp
 from paste.registry import RegistryManager
 
-from pylons.decorators import validate
+from __init__ import TestWSGIController
 
-from pylons.controllers import WSGIController
-
-from __init__ import ControllerWrap, SetupCacheGlobal, TestWSGIController
-
-import formencode
-from formencode.htmlfill import html_quote
 
 def custom_error_formatter(error):
     return '<p><span class="pylons-error">%s</span></p>\n' % html_quote(error)
@@ -22,9 +18,13 @@ class NetworkForm(formencode.Schema):
 class HelloForm(formencode.Schema):
     hello = formencode.ForEach(formencode.validators.Int())
 
-class ValidatingController(WSGIController):
-    def new_network(self):
-        return """
+def make_validating_controller():
+    from pylons.decorators import validate
+    from pylons.controllers import WSGIController
+    
+    class ValidatingController(WSGIController):
+        def new_network(self):
+            return """
 <html>
   <form action="/dhcp/new_form" method="POST">
     <table>
@@ -40,12 +40,12 @@ class ValidatingController(WSGIController):
 </html>
 """
 
-    @validate(schema=NetworkForm, form='new_network')
-    def network(self):
-        return 'Your network is: %s' % self.form_result.get('new_network')
+        @validate(schema=NetworkForm, form='new_network')
+        def network(self):
+            return 'Your network is: %s' % self.form_result.get('new_network')
 
-    def view_hello(self):
-        return """
+        def view_hello(self):
+            return """
 <html>
   <form action="/hello" method="POST">
     <table>
@@ -64,25 +64,29 @@ class ValidatingController(WSGIController):
 </html>
 """
 
-    @validate(schema=HelloForm(), post_only=False, form='view_hello')
-    def hello(self):
-        return str(self.form_result)
+        @validate(schema=HelloForm(), post_only=False, form='view_hello')
+        def hello(self):
+            return str(self.form_result)
 
-    @validate(schema=HelloForm(), post_only=False, form='view_hello',
-              auto_error_formatter=custom_error_formatter)
-    def hello_custom(self):
-        return str(self.form_result)
+        @validate(schema=HelloForm(), post_only=False, form='view_hello',
+                  auto_error_formatter=custom_error_formatter)
+        def hello_custom(self):
+            return str(self.form_result)
 
-    @validate(schema=NetworkForm, form='hello_recurse')
-    def hello_recurse(self, environ):
-        if environ['REQUEST_METHOD'] == 'GET':
-            return self.new_network()
-        else:
-            return 'Your network is: %s' % self.form_result.get('new_network')
+        @validate(schema=NetworkForm, form='hello_recurse')
+        def hello_recurse(self, environ):
+            if environ['REQUEST_METHOD'] == 'GET':
+                return self.new_network()
+            else:
+                return 'Your network is: %s' % self.form_result.get('new_network')
+    return ValidatingController
 
 
 class TestValidateDecorator(TestWSGIController):
     def setUp(self):
+        from pylons.testutil import ControllerWrap, SetupCacheGlobal
+        ValidatingController = make_validating_controller()
+        
         TestWSGIController.setUp(self)
         app = SetupCacheGlobal(ControllerWrap(ValidatingController),
                                self.environ)
