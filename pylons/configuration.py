@@ -142,13 +142,13 @@ class PylonsConfig(dict):
         args, kwargs = map_view(self, args, kwargs)
         mapper.connect(*args, **kwargs)
     
-    def add_route_view(self, route_name, view, **predicates):
+    def add_route_view(self, route_name, view, attr=None, **predicates):
         """Add a view for an existing route name"""
         if route_name not in self._delayed_views:
             raise Exception('The route "%s" has already been declared with its view' % route_name)
         
         dv = self._delayed_views[route_name]
-        dv.views.append((view, predicates))
+        dv.views.append((view, attr, predicates))
     
     def end(self):
         """Finish tasks and things that accumulated during configuration"""

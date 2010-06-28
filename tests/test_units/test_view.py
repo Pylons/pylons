@@ -110,18 +110,3 @@ class TestWsgiApp(object):
         config = configuration.PylonsConfig()
         config.begin()
         config.add_route('/smith', view=Doe, action='no_action_here')
-    
-    def test_delayed_view(self):
-        import pylons.configuration as configuration
-        config = configuration.PylonsConfig()
-        config.begin()
-        config.add_route('smith', '/smith')
-        config.add_route_view('smith', view=Doe)
-        config.end()
-
-    @raises(Exception)
-    def test_bad_arg_todelay(self):
-        import pylons.configuration as configuration
-        config = configuration.PylonsConfig()
-        config.begin()
-        config.add_route('/smith')

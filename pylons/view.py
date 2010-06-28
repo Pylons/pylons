@@ -7,33 +7,6 @@ from webob.exc import HTTPException, HTTPNotFound
 log = logging.getLogger(__name__)
 
 
-class DelayedView(object):
-    def __init__(self, route_name):
-        self.route_name = route_name
-        self.views = []
-    
-    def __call__(self, request):
-        try:
-            return self.view(request)
-        except AttributeError:
-            raise Exception('No view registered for route: %s' % self.route_name)
-    
-    def finalize(self):
-        pass
-        #self.view = multi_view(self.views)
-
-
-def multi_view(views):
-    """Creates a view that evaluates predicates to call the view that
-    matches the most
-    
-    Initialized with a list of tuples in the format::
-        
-        (view_responder, predicates)
-    
-    """
-    
-
 def lookup_view(view, package_name=None):
     """Load a view based on a resource specification"""
     return pkg_resources.EntryPoint.parse('x=%s' % view).load(False)
@@ -43,21 +16,6 @@ def map_view(config, args, kwargs):
     """Given a responder name, handle looking it up and returning
     a callable responder"""
     view = kwargs.pop('view', None)
-    
-    # If no view was listed, this should have a view added later unless
-    # a responder is being added directly
-    if not view and 'responder' not in kwargs:
-        # The first arg is assumed to be a route name
-        if len(args) < 2:
-            raise Exception("When adding a route with no view, a route "
-                            " name must be specified. Route: %s", args[0])
-        route_name = args[0]
-        dv = DelayedView(route_name)
-        kwargs['responder'] = config._delayed_views[route_name] = dv
-        return args, kwargs
-    elif 'responder' in kwargs:
-        # We have a responder directly, retain it
-        return args, kwargs
     
     # If its a string, determine if its a legacy controller name
     # or a resource specification
