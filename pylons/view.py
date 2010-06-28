@@ -111,24 +111,15 @@ def class_responder(view, action=None):
 
 
 def func_inst_responder(view, action=None):
-    """func_inst_responder wraps a function or callable
+    """func_inst_responder wraps a function or instance
     
     If an action is supplied, it must be an attribute on the view that
     is callable with a request, and returns a response.
     
     """
+    responder = view
     if action:
-        if not hasattr(view, action):
-            raise Exception("Unable to locate method %s on %r" % (action, view))
-        view_obj = getattr(view, action)
-    else:
-        view_obj = view
-    
-    def view_wrapper(request):
-        """The view that is dispatched to by Pylons
-        
-        This wrapper implements the responder paradigm.
-        
-        """
-        return view_obj(request)
-    return view_wrapper
+        responder =  getattr(view, action, None)
+        if responder is None:
+            raise Exception('No such action %r on view %r' % action, view)
+    return responder
