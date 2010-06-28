@@ -2,7 +2,6 @@
 # Import pkg_resources first so namespace handling is properly done so the
 # paste imports work
 import pkg_resources
-
 from paste.registry import StackedObjectProxy
 
 from pylons.configuration import config

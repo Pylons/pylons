@@ -28,6 +28,9 @@ except:
     SQLAtesting = False
 
 import os
+import pylons
+from pylons.i18n.translation import _get_translator
+
 from paste.deploy import appconfig
 from projectname.config.environment import load_environment
 
@@ -43,17 +46,21 @@ if SQLAtesting:
     init_model(engine)
 
 # Invoke websetup with the current config file
-SetupCommand('setup-app').run([pylons.test.pylonsapp.config['__file__']])
+SetupCommand('setup-app').run([test_file])
 
 environ = {}
 
 class TestController(TestCase):
     def __init__(self, *args, **kwargs):
-        wsgiapp = pylons.test.pylonsapp
+        wsgiapp = loadapp('config:test.ini', relative_to=conf_dir)
         config = wsgiapp.config
-        self.app = TestApp(wsgiapp)
+        pylons.app_globals._push_object(config['pylons.app_globals'])
+        pylons.config._push_object(config)
+        
+        # Initialize a translator for tests that utilize i18n
+        translator = _get_translator(pylons.config.get('lang'))
+        pylons.translator._push_object(translator)
+        
         url._push_object(URLGenerator(config['routes.map'], environ))
+        self.app = TestApp(wsgiapp)
         TestCase.__init__(self, *args, **kwargs)
-    
-
-

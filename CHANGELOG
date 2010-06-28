@@ -2,6 +2,7 @@ Pylons Changelog
 ================
 
 1.1 (**tip**)
+* Remove Pylons nose plugin. Increase globals that default tests setup.
 * Added event system for extensions/plugins to hook in with.
 * Add venusian for use with events.
 * Require Marco for event system.

@@ -11,6 +11,7 @@ from paste.fixture import TestFileEnvironment
 raise SkipTest()
 
 import pylons
+import pylons.test
 
 try:
     import sqlalchemy as sa
@@ -96,7 +97,6 @@ def paster_create(template_engine='mako', overwrite=False, sqlatesting=False):
         projenv.environ.get('PYTHONPATH', '') + ':'
         + projenv.base_path)
     
-    projenv.writefile('.coveragerc', frompath='coveragerc')
 
 def make_controller():
     res = projenv.run(_get_script_name('paster')+' controller sample')
@@ -154,7 +154,7 @@ def _do_proj_test(copydict, emptyfiles=None, match_routes_output=None):
     # sys.path.pop(-1)
     # os.chdir(here_dir)
     
-    res = projenv.run(_get_script_name('nosetests')+' -d --with-coverage --cover-package=pylons',
+    res = projenv.run(_get_script_name('nosetests')+' -d',
                       expect_stderr=True,
                       cwd=os.path.join(testenv.cwd, 'ProjectName').replace('\\','/'))
     if match_routes_output:
@@ -224,6 +224,7 @@ def do_jinja2():
     copydict = {
         'controller_sample.py':'projectname/controllers/sample.py',
         'testjinja2.html':'projectname/templates/testjinja2.html',
+        'environment_def_engine.py':'projectname/config/environment.py',
         'functional_sample_controller_jinja2.py':'projectname/tests/functional/test_jinja2.py',
     }
     copydict.update(reset)
