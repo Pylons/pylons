@@ -142,6 +142,19 @@ class PylonsConfig(dict):
         args, kwargs = map_view(self, args, kwargs)
         mapper.connect(*args, **kwargs)
     
+    def add_route_view(self, route_name, view, **predicates):
+        """Add a view for an existing route name"""
+        if route_name not in self._delayed_views:
+            raise Exception('The route "%s" has already been declared with its view' % route_name)
+        
+        dv = self._delayed_views[route_name]
+        dv.views.append((view, predicates))
+    
+    def end(self):
+        """Finish tasks and things that accumulated during configuration"""
+        for route_name, dv in self._delayed_views.iteritems():
+            dv.finalize()
+    
     def init_app(self, global_conf, app_conf, package=None, paths=None):
         """Initialize configuration for the application
         
@@ -195,15 +208,6 @@ class PylonsConfig(dict):
         
         conf['pylons.package'] = package
         
-        # Handle cases where the package might be invalid or not found
-        if package:
-            if package not in sys.modules:
-                try:
-                    __import__(package)
-                except ImportError:
-                    pass
-            self._package = sys.modules.get(package)
-
         conf['debug'] = asbool(conf.get('debug'))
                 
         # Load the MIMETypes with its default types

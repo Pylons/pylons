@@ -7,6 +7,7 @@ from nose.tools import raises
 from paste.fixture import TestApp
 from routes import Mapper
 from routes.middleware import RoutesMiddleware
+from webob.exc import HTTPException
 
 from nose.tools import raises
 
@@ -83,9 +84,9 @@ class TestWsgiApp(object):
         resp = self.app.get('/doe')
         assert 'Hello Doe' in resp
     
+    @raises(HTTPException)
     def test_401_class_init(self):
-        resp = self.app.get('/fawn', expect_errors=True)
-        assert resp.status == 401
+        resp = self.app.get('/fawn')
     
     def test_plain_view(self):
         resp = self.app.get('/plainview')
@@ -94,22 +95,14 @@ class TestWsgiApp(object):
     def test_a_view(self):
         resp = self.app.get('/aview')
         assert 'A View' in resp
-
+    
+    @raises(HTTPException)
     def test_404_class_method(self):
-        resp = self.app.get('/doe/not_here', expect_errors=True)
-        assert resp.status == 404
+        resp = self.app.get('/doe/not_here')
 
     @raises(Exception)
     def test_non_callable(self):
         resp = self.app.get('/doe/not_callable')
-    
-    @raises(Exception)
-    def test_not_callable_view(self):
-        import pylons.configuration as configuration
-        not_callable = 42
-        config = configuration.PylonsConfig()
-        config.begin()
-        config.add_route('/smith', view=not_callable)
     
     @raises(Exception)
     def test_no_action(self):
@@ -117,3 +110,18 @@ class TestWsgiApp(object):
         config = configuration.PylonsConfig()
         config.begin()
         config.add_route('/smith', view=Doe, action='no_action_here')
+    
+    def test_delayed_view(self):
+        import pylons.configuration as configuration
+        config = configuration.PylonsConfig()
+        config.begin()
+        config.add_route('smith', '/smith')
+        config.add_route_view('smith', view=Doe)
+        config.end()
+
+    @raises(Exception)
+    def test_bad_arg_todelay(self):
+        import pylons.configuration as configuration
+        config = configuration.PylonsConfig()
+        config.begin()
+        config.add_route('/smith')
