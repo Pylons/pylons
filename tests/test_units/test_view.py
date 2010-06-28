@@ -105,6 +105,7 @@ class TestWsgiApp(object):
     
     @raises(Exception)
     def test_not_callable_view(self):
+        import pylons.configuration as configuration
         not_callable = 42
         config = configuration.PylonsConfig()
         config.begin()
@@ -112,6 +113,7 @@ class TestWsgiApp(object):
     
     @raises(Exception)
     def test_no_action(self):
+        import pylons.configuration as configuration
         config = configuration.PylonsConfig()
         config.begin()
         config.add_route('/smith', view=Doe, action='no_action_here')
