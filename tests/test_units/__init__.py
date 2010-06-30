@@ -1,6 +1,8 @@
+import json
 import os
 import sys
 from unittest import TestCase
+from urllib import quote_plus
 from xmlrpclib import loads, dumps
     
 data_dir = os.path.dirname(os.path.abspath(__file__))
@@ -62,6 +64,17 @@ class TestWSGIController(TestCase):
             args = ()
         ee = dict(CONTENT_TYPE='text/xml')
         data = dumps(args, methodname=method)
-        self.response = response = self.app.post('/', params = data, extra_environ=ee)
+        self.response = response = self.app.post('/', params = data,
+                                                 extra_environ=ee)
         return loads(response.body)[0][0]
-    
+
+    def jsonreq(self, method, args=()):
+        assert(isinstance(args, list) or isinstance(args, tuple))
+        ee = dict(CONTENT_TYPE='application/json')
+        data = json.dumps(dict(id='test',
+                               method=method,
+                               params=args))
+        self.response = response = self.app.post('/', params=quote_plus(data),
+                                                 extra_environ=ee)
+        return json.loads(response.body)
+        

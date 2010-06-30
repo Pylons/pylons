@@ -25,11 +25,9 @@ class JSONRPCError(BaseException):
 
 def jsonrpc_error(req_id, message):
     """Generate a Response object with a JSON-RPC error body"""
-    jrpc_err = JSONRPCError(message)
-    return Response(body=json.dumps(dict(
-                id=req_id,
-                result=None,
-                error=str(jrpc_err))))
+    return Response(body=json.dumps(dict(id=req_id,
+                                         result=None,
+                                         error=message)))
 
 class JSONRPCController(WSGIController):
     """
@@ -60,17 +58,19 @@ class JSONRPCController(WSGIController):
         controller and if it exists, dispatch to it.
         """
         length = 0
-        if not environ.has_key('CONTENT_LENGTH'):
+        if 'CONTENT_LENGTH' not in environ:
             log.debug("No Content-Length")
             abort(411)
         else:
+            if environ['CONTENT_LENGTH'] == '':
+                abort(411)
             length = int(environ['CONTENT_LENGTH'])
             log.debug('Content-Length: %s', length)
         if length == 0:
             log.debug("Content-Length is 0")
-            abort(413)
+            abort(411)
  
-        raw_body = environ['wsgi.input'].read(length)[0:-1]
+        raw_body = environ['wsgi.input'].read(length)
         json_body = json.loads(urllib.unquote_plus(raw_body))
 
         self._req_id = json_body['id']
@@ -85,7 +85,7 @@ class JSONRPCController(WSGIController):
         try:
             self._func = self._find_method()
         except AttributeError, e:
-            return jsonrpc_error(self._req_id, str(e))
+            return jsonrpc_error(self._req_id, str(e))(environ, start_response)
 
         # now that we have a method, add self._req_params to
         # self.kargs and dispatch control to WGIController
