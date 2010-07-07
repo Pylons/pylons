@@ -18,15 +18,11 @@ import logging
 import os
 import sys
 
-import venusian
-from marco.events import Events
 from paste.config import DispatchingConfig
 from paste.deploy.converters import asbool
 from routes import Mapper
 from webhelpers.mimehelper import MIMETypes
 
-
-from pylons.view import map_view
 
 request_defaults = dict(charset='utf-8', errors='replace',
                         decode_param_names=False, language='en-us')
@@ -108,53 +104,6 @@ class PylonsConfig(dict):
         'pylons.tmpl_context_attach_args': False,
     }
     
-    def begin(self):
-        """Intializes the configuration object for an application"""
-        self.events = Events()
-        self._scanner = venusian.Scanner(config=self)
-        self._delayed_views = {}
-        
-        # Ensure all the keys from defaults are present, load them if not
-        for key, val in copy.deepcopy(PylonsConfig.defaults).iteritems():
-            self.setdefault(key, val)
-    
-    def scan(self, package=None):
-        """Scan a package for Pylons decorated functions"""
-        if package:
-            self._scanner.scan(package, categories=('pylons',))
-        else:
-            self._scanner.scan(self._package, categories=('pylons',))
-    
-    def add_subscriber(self, func, event):
-        """Add an event subscriber"""
-        self.events.subscribe(func, event)
-    
-    def add_route(self, *args, **kwargs):
-        """Connect a route to the mapper
-        
-        This will create a Routes mapper on the 'routes.map' key on
-        this object if its not already present.
-        
-        """
-        if 'routes.map' not in self:
-            self['routes.map'] = Mapper()
-        mapper = self['routes.map']
-        args, kwargs = map_view(self, args, kwargs)
-        mapper.connect(*args, **kwargs)
-    
-    def add_route_view(self, route_name, view, attr=None, **predicates):
-        """Add a view for an existing route name"""
-        if route_name not in self._delayed_views:
-            raise Exception('The route "%s" has already been declared with its view' % route_name)
-        
-        dv = self._delayed_views[route_name]
-        dv.views.append((view, attr, predicates))
-    
-    def end(self):
-        """Finish tasks and things that accumulated during configuration"""
-        for route_name, dv in self._delayed_views.iteritems():
-            dv.finalize()
-    
     def init_app(self, global_conf, app_conf, package=None, paths=None):
         """Initialize configuration for the application
         
@@ -193,10 +142,6 @@ class PylonsConfig(dict):
                 
         """
         log.debug("Initializing configuration, package: '%s'", package)
-        
-        # Backwards compat in case begin() was not called
-        if not hasattr(self, 'events'):
-            self.begin()
         
         conf = global_conf.copy()
         conf.update(app_conf)

@@ -6,7 +6,6 @@ import types
 from webob.exc import HTTPException, HTTPNotFound
 
 import pylons
-from pylons.events import NewResponse
 
 __all__ = ['WSGIController']
 
@@ -265,9 +264,6 @@ class WSGIController(object):
                 environ['paste.testing_variables']['response'] = response
             if log_debug:
                 log.debug("Calling Response object to return WSGI data")
-            
-            # Emit the NewResponse event
-            self._py_object.config.events.publish(NewResponse(response))
             
             return response(environ, self.start_response)
         
