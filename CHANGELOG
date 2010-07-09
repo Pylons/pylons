@@ -1,11 +1,11 @@
 Pylons Changelog
 ================
 
+bfg_branch
+* Add dependency on repoze.bfg 1.3a4+.
+
 1.1 (**tip**)
 * Remove Pylons nose plugin. Increase globals that default tests setup.
-* Added event system for extensions/plugins to hook in with.
-* Add venusian for use with events.
-* Require Marco for event system.
 
 1.0.1 (**tip**)
 * Utilize MarkupSafe for faster HTML escaping.
