@@ -11,8 +11,7 @@ import sys
 
 import paste.registry
 import pkg_resources
-from webob import Response as WebObResponse
-from webob.exc import HTTPFound, HTTPNotFound
+from webob.exc import HTTPNotFound
 
 import pylons
 import pylons.templating
@@ -202,7 +201,6 @@ class PylonsApp(object):
             tmpl_context = AttribSafeContextObj()
         pylons_obj.tmpl_context = req.tmpl_context = tmpl_context
         
-        econf = self.config['pylons.environ_config']
         if self._session_key in environ:
             pylons_obj.session = req.session = environ[self._session_key]
         if self._cache_key in environ:
