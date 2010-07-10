@@ -181,6 +181,13 @@ class MinimalPylonsTemplate(PylonsTemplate):
             default='mako'),
     ]
 
+class LegacyPylonsTemplate(PylonsTemplate):
+    _template_dir = ('pylons', 'templates/legacy_project')
+    summary = 'Pylons legacy application template'
+    vars = [
+        var('template_engine', 'mako/genshi/jinja2/etc: Template language', 
+            default='mako'),
+    ]
 
 class PylonsInstaller(Installer):
     use_cheetah = False
