@@ -16,12 +16,13 @@ and Routes.
 import copy
 import logging
 import os
-import sys
+import re
 
 from paste.config import DispatchingConfig
 from paste.deploy.converters import asbool
-from routes import Mapper
 from webhelpers.mimehelper import MIMETypes
+
+from repoze.bfg.configuration import Configurator as BFGConfigurator
 
 
 request_defaults = dict(charset='utf-8', errors='replace',
@@ -205,3 +206,26 @@ pylons_config = PylonsConfig()
 # built in the paste.app_factory entry point.
 pylons_config.update(copy.deepcopy(PylonsConfig.defaults))
 config.push_process_config(pylons_config)
+
+class Configurator(BFGConfigurator):
+
+    pylons_route_re = re.compile(r'(/{[a-zA-Z]\w*})')
+
+    def add_route(self, name, path, **kw):
+        """ Support the syntax supported by
+        :meth:`repoze.bfg.configuration.Configurator.add_route` but
+        also support the ``/{squiggly}`` segment syntax by
+        transforming it into ``/:colon``-style syntax."""
+        parts = self.pylons_route_re.split(path)
+        pattern = []
+
+        for part in parts:
+            match = self.pylons_route_re.match(part)
+            if match:
+                pattern.append('/:%s' % match.group()[2:-1])
+            else:
+                pattern.append(part)
+
+        pattern = ''.join(pattern)
+
+        BFGConfigurator.add_route(self, name, pattern, **kw)
