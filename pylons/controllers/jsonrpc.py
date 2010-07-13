@@ -119,9 +119,12 @@ class JSONRPCController(WSGIController):
             err = jsonrpc_error(self._req_id, 'JSONRPC_METHOD_NOT_FOUND')
             return err(environ, start_response)
 
-        # now that we have a method, add self._req_params to
-        # self.kargs and dispatch control to WGIController
+        # now that we have a method, make sure we have enough
+        # parameters and pass off control to the controller.
         arglist = inspect.getargspec(self._func)[0][1:]
+        if len(self._req_params) < len(arglist):
+            err = jsonrpc_error(self._req_id, 'JSONRPC_INVALID_PARAMS')
+            return err(environ, start_response)
         kargs = dict(zip(arglist, self._req_params))
         kargs['action'], kargs['environ'] = self._req_method, environ
         kargs['start_response'] = start_response
@@ -151,8 +154,9 @@ class JSONRPCController(WSGIController):
             self._error = application_error(e)
         except Exception as e:
             log.debug('Encountered unhandled exception: %s', repr(e))
+            err = _reserved_errors['JSONRPC_INTERNAL_ERROR']
             self._error = application_error(
-                _reserved_errors['JSONRPC_INTERNAL_ERROR'])
+                JSONRPCError(err['code'], err['message']))
 
         if self._error is not None:
             response = dict(

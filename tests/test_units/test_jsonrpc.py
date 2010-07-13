@@ -27,6 +27,12 @@ def make_basejsonrpc():
         def return_garbage(self):
             return JSONRPCController
 
+        def subtract(self, x, y):
+            if not isinstance(x, int) and not isinstance(y, int):
+                raise JSONRPCError(1, 'That is not an integer')
+            else:
+                return x - y
+
         def _private(self):
             return 'private method'
 
@@ -102,3 +108,16 @@ class TestJSONRPCController(TestWSGIController):
         self.assertRaises(exc.HTTPLengthRequired,
                           lambda: self.app.post('/', extra_environ=\
                                                     dict(CONTENT_LENGTH='0')))
+
+    def test_positional_params(self):
+        response = self.jsonreq('subtract', args=[4, 2])
+        assert dict(jsonrpc='2.0',
+                    id='test',
+                    result=2) == response
+
+    def test_missing_positional_param(self):
+        response = self.jsonreq('subtract', args=[1])
+        assert dict(jsonrpc='2.0',
+                    id='test',
+                    error={'code': -32602,
+                           'message': "Invalid params"}) == response
