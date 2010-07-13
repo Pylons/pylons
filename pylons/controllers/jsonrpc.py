@@ -9,22 +9,12 @@ from paste.response import replace_header
 from pylons.controllers import WSGIController
 from pylons.controllers.util import abort, Response
 
-__all__ = ['JSONRPCController', 'JSONRPCError']
+__all__ = ['JSONRPCController', 'JSONRPC_PARSE_ERROR',
+           'JSONRPC_INVALID_REQUEST', 'JSONRPC_METHOD_NOT_FOUND',
+           'JSONRPC_INVALID_PARAMS', 'JSONRPC_INTERNAL_ERROR',
+           'JSONRPCError']
 
 log = logging.getLogger(__name__)
-
-# See section 5.1 of the JSON-RPC 2.0 Spec
-_reserved_errors = dict(
-    JSONRPC_PARSE_ERROR = {'code': -32700,
-                           'message': "Parse error"},
-    JSONRPC_INVALID_REQUEST = {'code': -32600,
-                               'message': "Invalid Request"},
-    JSONRPC_METHOD_NOT_FOUND = {'code': -32601,
-                                'message': "Method not found"},
-    JSONRPC_INVALID_PARAMS = {'code': -32602,
-                              'message': "Invalid params"},
-    JSONRPC_INTERNAL_ERROR = {'code': -32603,
-                              'message': "Internal error"})
 
 JSONRPC_VERSION = '2.0'
 
@@ -34,9 +24,33 @@ class JSONRPCError(BaseException):
     def __init__(self, code, message):
         self.code = code
         self.message = message
+        self.data = None
 
     def __str__(self):
         return str(self.code) + ': ' + self.message
+
+    def as_dict(self):
+        """ Return a dictionary representation of the error suitable
+        for output in a JSON-RPC Response."""
+        error = dict(code=self.code,
+                     message=self.message)
+        if self.data:
+            error['data'] = self.data
+
+        return data
+
+
+JSONRPC_PARSE_ERROR = JSONRPCError(-32700, "Parse error")
+JSONRPC_INVALID_REQUEST = JSONRPCError(-32600, "Invalid Request")
+JSONRPC_METHOD_NOT_FOUND = JSONRPCError(-32601, "Method not found")
+JSONRPC_INVALID_PARAMS = JSONRPCError(-32602, "Invalid params")
+JSONRPC_INTERNAL_ERROR = JSONRPCError(-32603, "Internal error")
+_reserved_errors = dict(
+    parse_error=JSONRPC_PARSE_ERROR,
+    invalid_request=JSONRPC_INVALID_REQUEST,
+    method_not_found=JSONRPC_METHOD_NOT_FOUND,
+    invalid_params=JSONRPC_INVALID_PARAMS,
+    internal_error=JSONRPC_INTERNAL_ERROR)
 
 
 def jsonrpc_error(req_id, error):
@@ -44,18 +58,10 @@ def jsonrpc_error(req_id, error):
     raise top-level pre-defined errors that happen outside the
     controller."""
     if error in _reserved_errors:
+        e = _reserved_errors[error]
         return Response(body=json.dumps(dict(jsonrpc=JSONRPC_VERSION,
                                              id=req_id,
-                                             error=_reserved_errors[error])))
-
-def application_error(exc):
-    """Format a caught JSONRPCError object for a JSON-RPC Response as
-    per section 5.1 of the spec."""
-    err = dict(code=exc.code,
-               message=exc.message)
-    if hasattr(exc, 'data'):
-        err['data'] = exc.data
-    return err
+                                             error=e.as_dict())))
 
 class JSONRPCController(WSGIController):
     """
@@ -116,14 +122,14 @@ class JSONRPCController(WSGIController):
         try:
             self._func = self._find_method()
         except AttributeError, e:
-            err = jsonrpc_error(self._req_id, 'JSONRPC_METHOD_NOT_FOUND')
+            err = jsonrpc_error(self._req_id, 'method_not_found')
             return err(environ, start_response)
 
         # now that we have a method, make sure we have enough
         # parameters and pass off control to the controller.
         arglist = inspect.getargspec(self._func)[0][1:]
         if len(self._req_params) < len(arglist):
-            err = jsonrpc_error(self._req_id, 'JSONRPC_INVALID_PARAMS')
+            err = jsonrpc_error(self._req_id, 'invalid_params')
             return err(environ, start_response)
         kargs = dict(zip(arglist, self._req_params))
         kargs['action'], kargs['environ'] = self._req_method, environ
@@ -151,32 +157,28 @@ class JSONRPCController(WSGIController):
         try:
             raw_response = self._inspect_call(self._func)
         except JSONRPCError as e:
-            self._error = application_error(e)
+            self._error = e.to_dict()
         except Exception as e:
             log.debug('Encountered unhandled exception: %s', repr(e))
-            err = _reserved_errors['JSONRPC_INTERNAL_ERROR']
-            self._error = application_error(
-                JSONRPCError(err['code'], err['message']))
+            err = _reserved_errors['internal_error']
+            self._error = err.to_dict()
 
+        response = dict(jsonrpc=JSONRPC_VERSION,
+                        id=self._req_id)
         if self._error is not None:
-            response = dict(
-                jsonrpc=JSONRPC_VERSION,
-                id=self._req_id,
-                error=self._error)
+            response['error'] = self._error
         else:
-            response = dict(
-                jsonrpc=JSONRPC_VERSION,
-                id=self._req_id,
-                result=raw_response)
+            response['result'] = raw_response
 
         try:
             return json.dumps(response)
         except TypeError, e:
             log.debug('Error encoding response: %s', e)
+            err = _reserved_errors['internal_error']
             return json.dumps(dict(
                     jsonrpc=JSONRPC_VERSION,
                     id=self._req_id,
-                    error=_reserved_errors['JSONRPC_INTERNAL_ERROR']))
+                    error=err.to_dict()))
 
     def _find_method(self):
         """Return method named by `self._req_method` in controller if able"""
