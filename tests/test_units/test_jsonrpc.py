@@ -20,7 +20,7 @@ def make_basejsonrpc():
 
         def int_arg_check(self, arg):
             if not isinstance(arg, int):
-                raise JSONRPCError('That is not an integer')
+                raise JSONRPCError(1, 'That is not an integer')
             else:
                 return 'got an integer'
 
@@ -50,26 +50,25 @@ class TestJSONRPCController(TestWSGIController):
     def test_echo(self):
         response = self.jsonreq('echo', args=('hello, world',))
         assert dict(id='test',
-                    result='hello, world',
-                    error=None) == response
+                    result='hello, world') == response
 
     def test_int_arg_check(self):
         response = self.jsonreq('int_arg_check', args=('1',))
         assert dict(id='test',
-                    result=None,
-                    error='That is not an integer') == response
+                    error={'code': 1,
+                           'message': 'That is not an integer'}) == response
 
     def test_return_garbage(self):
         response = self.jsonreq('return_garbage')
         assert dict(id='test',
-                    result=None,
-                    error='Error encoding response') == response
+                    error={'code': -32603,
+                           'message': "Internal error"}) == response
 
     def test_private_method(self):
         response = self.jsonreq('_private')
         assert dict(id='test',
-                    result=None,
-                    error='Method not allowed') == response
+                    error={'code': -32601,
+                           'message': "Method not found"}) == response
 
     def test_content_type(self):
         response = self.jsonreq('echo', args=('foo',))
@@ -78,8 +77,8 @@ class TestJSONRPCController(TestWSGIController):
     def test_missing_method(self):
         response = self.jsonreq('foo')
         assert dict(id='test',
-                    result=None,
-                    error='No such method: foo') == response
+                    error={'code': -32601,
+                           'message': "Method not found"}) == response
 
     def test_no_content_length(self):
         data = json.dumps(dict(id='test',
