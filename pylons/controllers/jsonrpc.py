@@ -9,10 +9,12 @@ from paste.response import replace_header
 from pylons.controllers import WSGIController
 from pylons.controllers.util import abort, Response
 
-__all__ = ['JSONRPCController', 'JSONRPC_PARSE_ERROR',
-           'JSONRPC_INVALID_REQUEST', 'JSONRPC_METHOD_NOT_FOUND',
-           'JSONRPC_INVALID_PARAMS', 'JSONRPC_INTERNAL_ERROR',
-           'JSONRPCError']
+__all__ = ['JSONRPCController', 'JSONRPCError',
+           'JSONRPC_PARSE_ERROR',
+           'JSONRPC_INVALID_REQUEST',
+           'JSONRPC_METHOD_NOT_FOUND',
+           'JSONRPC_INVALID_PARAMS',
+           'JSONRPC_INTERNAL_ERROR']
 
 log = logging.getLogger(__name__)
 
@@ -30,38 +32,36 @@ class JSONRPCError(BaseException):
         return str(self.code) + ': ' + self.message
 
     def as_dict(self):
-        """ Return a dictionary representation of the error suitable
-        for output in a JSON-RPC Response."""
+        """Return a dictionary representation of this object for
+        serialization in a JSON-RPC response."""
         error = dict(code=self.code,
                      message=self.message)
         if self.data:
             error['data'] = self.data
 
-        return data
+        return error
 
 
 JSONRPC_PARSE_ERROR = JSONRPCError(-32700, "Parse error")
-JSONRPC_INVALID_REQUEST = JSONRPCError(-32600, "Invalid Request")
-JSONRPC_METHOD_NOT_FOUND = JSONRPCError(-32601, "Method not found")
-JSONRPC_INVALID_PARAMS = JSONRPCError(-32602, "Invalid params")
-JSONRPC_INTERNAL_ERROR = JSONRPCError(-32603, "Internal error")
-_reserved_errors = dict(
-    parse_error=JSONRPC_PARSE_ERROR,
-    invalid_request=JSONRPC_INVALID_REQUEST,
-    method_not_found=JSONRPC_METHOD_NOT_FOUND,
-    invalid_params=JSONRPC_INVALID_PARAMS,
-    internal_error=JSONRPC_INTERNAL_ERROR)
-
+JSONRPC_INVALID_REQUEST = JSONRPCError( -32600, "Invalid Request")
+JSONRPC_METHOD_NOT_FOUND = JSONRPCError( -32601, "Method not found")
+JSONRPC_INVALID_PARAMS = JSONRPCError( -32602, "Invalid params")
+JSONRPC_INTERNAL_ERROR = JSONRPCError( -32603, "Internal error")
+_reserved_errors = dict(parse_error=JSONRPC_PARSE_ERROR,
+                        invalid_request=JSONRPC_INVALID_REQUEST,
+                        method_not_found=JSONRPC_METHOD_NOT_FOUND,
+                        invalid_params=JSONRPC_INVALID_PARAMS,
+                        internal_error=JSONRPC_INTERNAL_ERROR)
 
 def jsonrpc_error(req_id, error):
     """Generate a Response object with a JSON-RPC error body. Used to
     raise top-level pre-defined errors that happen outside the
     controller."""
     if error in _reserved_errors:
-        e = _reserved_errors[error]
+        err = _reserved_errors[error]
         return Response(body=json.dumps(dict(jsonrpc=JSONRPC_VERSION,
                                              id=req_id,
-                                             error=e.as_dict())))
+                                             error=err.as_dict())))
 
 class JSONRPCController(WSGIController):
     """
@@ -157,11 +157,11 @@ class JSONRPCController(WSGIController):
         try:
             raw_response = self._inspect_call(self._func)
         except JSONRPCError as e:
-            self._error = e.to_dict()
+            self._error = e.as_dict()
         except Exception as e:
             log.debug('Encountered unhandled exception: %s', repr(e))
             err = _reserved_errors['internal_error']
-            self._error = err.to_dict()
+            self._error = err.as_dict()
 
         response = dict(jsonrpc=JSONRPC_VERSION,
                         id=self._req_id)
@@ -178,7 +178,7 @@ class JSONRPCController(WSGIController):
             return json.dumps(dict(
                     jsonrpc=JSONRPC_VERSION,
                     id=self._req_id,
-                    error=err.to_dict()))
+                    error=err.as_dict()))
 
     def _find_method(self):
         """Return method named by `self._req_method` in controller if able"""
