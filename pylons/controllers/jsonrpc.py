@@ -26,6 +26,8 @@ _reserved_errors = dict(
     JSONRPC_INTERNAL_ERROR = {'code': -32603,
                               'message': "Internal error"})
 
+JSONRPC_VERSION = '2.0'
+
 
 class JSONRPCError(BaseException):
 
@@ -42,13 +44,15 @@ def jsonrpc_error(req_id, error):
     raise top-level pre-defined errors that happen outside the
     controller."""
     if error in _reserved_errors:
-        return Response(body=json.dumps(dict(id=req_id,
+        return Response(body=json.dumps(dict(jsonrpc=JSONRPC_VERSION,
+                                             id=req_id,
                                              error=_reserved_errors[error])))
 
 def application_error(exc):
     """Format a caught JSONRPCError object for a JSON-RPC Response as
     per section 5.1 of the spec."""
-    err = dict(code=exc.code, message=exc.message)
+    err = dict(code=exc.code,
+               message=exc.message)
     if hasattr(exc, 'data'):
         err['data'] = exc.data
     return err
@@ -152,10 +156,12 @@ class JSONRPCController(WSGIController):
 
         if self._error is not None:
             response = dict(
+                jsonrpc=JSONRPC_VERSION,
                 id=self._req_id,
                 error=self._error)
         else:
             response = dict(
+                jsonrpc=JSONRPC_VERSION,
                 id=self._req_id,
                 result=raw_response)
 
@@ -164,6 +170,7 @@ class JSONRPCController(WSGIController):
         except TypeError, e:
             log.debug('Error encoding response: %s', e)
             return json.dumps(dict(
+                    jsonrpc=JSONRPC_VERSION,
                     id=self._req_id,
                     error=_reserved_errors['JSONRPC_INTERNAL_ERROR']))
 

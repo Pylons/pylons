@@ -49,24 +49,28 @@ class TestJSONRPCController(TestWSGIController):
 
     def test_echo(self):
         response = self.jsonreq('echo', args=('hello, world',))
-        assert dict(id='test',
+        assert dict(jsonrpc='2.0',
+                    id='test',
                     result='hello, world') == response
 
     def test_int_arg_check(self):
         response = self.jsonreq('int_arg_check', args=('1',))
-        assert dict(id='test',
+        assert dict(jsonrpc='2.0',
+                    id='test',
                     error={'code': 1,
                            'message': 'That is not an integer'}) == response
 
     def test_return_garbage(self):
         response = self.jsonreq('return_garbage')
-        assert dict(id='test',
+        assert dict(jsonrpc='2.0',
+                    id='test',
                     error={'code': -32603,
                            'message': "Internal error"}) == response
 
     def test_private_method(self):
         response = self.jsonreq('_private')
-        assert dict(id='test',
+        assert dict(jsonrpc='2.0',
+                    id='test',
                     error={'code': -32601,
                            'message': "Method not found"}) == response
 
@@ -76,12 +80,14 @@ class TestJSONRPCController(TestWSGIController):
 
     def test_missing_method(self):
         response = self.jsonreq('foo')
-        assert dict(id='test',
+        assert dict(jsonrpc='2.0',
+                    id='test',
                     error={'code': -32601,
                            'message': "Method not found"}) == response
 
     def test_no_content_length(self):
-        data = json.dumps(dict(id='test',
+        data = json.dumps(dict(jsonrpc='2.0',
+                               id='test',
                                method='echo',
                                args=('foo',)))
         self.assertRaises(exc.HTTPLengthRequired,
@@ -89,7 +95,8 @@ class TestJSONRPCController(TestWSGIController):
                                                     dict(CONTENT_LENGTH='')))
 
     def test_zero_content_length(self):
-        data = json.dumps(dict(id='test',
+        data = json.dumps(dict(jsonrpc='2.0',
+                               id='test',
                                method='echo',
                                args=('foo',)))
         self.assertRaises(exc.HTTPLengthRequired,
