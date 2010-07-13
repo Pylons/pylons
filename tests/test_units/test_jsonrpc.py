@@ -121,3 +121,10 @@ class TestJSONRPCController(TestWSGIController):
                     id='test',
                     error={'code': -32602,
                            'message': "Invalid params"}) == response
+
+    def test_wrong_param_type(self):
+        response = self.jsonreq('subtract', args=['1', '2'])
+        assert dict(jsonrpc='2.0',
+                    id='test',
+                    error={'code': 1,
+                           'message': "That is not an integer"}) == response
