@@ -5,3 +5,11 @@ class LegacyView(object):
     def __call__(self, request):
         return request.get_response(self.app)
     
+class expose(object):
+    def __init__(self, **kw):
+        self.kw = kw
+
+    def __call__(self, wrapped):
+        wrapped.__exposed__ = self.kw
+        return wrapped
+    
