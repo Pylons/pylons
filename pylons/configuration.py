@@ -14,6 +14,7 @@ and Routes.
 
 """
 import copy
+import inspect
 import logging
 import os
 import re
@@ -23,6 +24,9 @@ from paste.deploy.converters import asbool
 from webhelpers.mimehelper import MIMETypes
 
 from repoze.bfg.configuration import Configurator as BFGConfigurator
+from repoze.bfg.exceptions import ConfigurationError
+
+from pylons.util import resolve_dotted
 
 
 request_defaults = dict(charset='utf-8', errors='replace',
@@ -228,4 +232,49 @@ class Configurator(BFGConfigurator):
 
         pattern = ''.join(pattern)
 
-        BFGConfigurator.add_route(self, name, pattern, **kw)
+        controller = kw.pop('controller', None)
+
+        result = BFGConfigurator.add_route(self, name, pattern, **kw)
+
+        if controller is not None:
+            if isinstance(controller, basestring):
+                controller = resolve_dotted(controller)
+            if not inspect.isclass(controller):
+                raise TypeError('controller must be a class, not %r' %
+                                controller)
+            autoexpose = getattr(controller, '__autoexpose__', r'[A-Za-z]+')
+            if autoexpose:
+                try:
+                    autoexpose = re.compile(autoexpose).match
+                except (re.error, TypeError), why:
+                    raise ConfigurationError(why[0])
+            for method_name, method in inspect.getmembers(
+                controller, inspect.ismethod):
+                expose_config = getattr(method, '__exposed__', {})
+                if expose_config or (autoexpose and autoexpose(method_name)):
+                    action = expose_config.pop('action', method_name)
+                    preds = list(expose_config.pop('custom_predicates', []))
+                    preds.append(ActionPredicate(action))
+                    expose_config['custom_predicates'] = preds
+                    self.add_view(view=controller, attr=method_name,
+                                  route_name=name, **expose_config)
+
+        return result
+
+class ActionPredicate(object):
+    action_name = 'action'
+    def __init__(self, action):
+        try:
+            self.action_re = re.compile(action)
+        except (re.error, TypeError), why:
+            raise ConfigurationError(why[0])
+
+    def __call__(self, context, request):
+        matchdict = getattr(request, 'matchdict', None)
+        if matchdict is None:
+            return False
+        action = matchdict.get(self.action_name)
+        if action is None:
+            return False
+        return bool(self.action_re.match(action))
+        

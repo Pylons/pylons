@@ -212,3 +212,6 @@ class PylonsInstaller(Installer):
                     vars, filename=self.config_file)
         # Legacy support for the old location in egg-info
         return super(PylonsInstaller, self).config_content(command, vars)
+
+def resolve_dotted(name):
+    return pkg_resources.EntryPoint.parse('x=%s' % name).load(False)
