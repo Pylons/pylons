@@ -1,6 +1,6 @@
 import unittest
 
-from pylons import Configurator
+from pylons.configuration import Configurator
 
 class MyControllerTests(unittest.TestCase):
     def setUp(self):
@@ -15,9 +15,10 @@ class MyControllerTests(unittest.TestCase):
         return MyController(request)
 
     def test_index(self):
-        request = testing.DummyRequest()
+        request = DummyRequest()
         controller = self._makeOne(request)
         info = controller.index()
         self.assertEqual(info['project'], '{{project}}')
 
-
+class DummyRequest(object):
+    pass

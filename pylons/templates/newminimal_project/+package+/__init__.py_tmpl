@@ -1,11 +1,10 @@
-from pylons.configuration import Configurator
-
 def main(global_config, **settings):
     """ This function returns a WSGI application.
     
     It is usually called by the PasteDeploy framework during 
     ``paster serve``.
     """
+    from pylons.configuration import Configurator
     config = Configurator(settings=settings)
     config.begin()
     config.add_static_view('static', 'templates/static')
