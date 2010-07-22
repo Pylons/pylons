@@ -114,5 +114,6 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
     pylons = pylons.util:PylonsTemplate
     pylons_minimal = pylons.util:MinimalPylonsTemplate
     pylons_legacy = pylons.util:LegacyPylonsTemplate
+    pylons_newminimal = pylons.util:NewMinimalPylonsTemplate
     """,
 )

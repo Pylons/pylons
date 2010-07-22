@@ -1,0 +1,9 @@
+from pylons.views import expose
+
+class MyController(object):
+    def __init__(self, request):
+        self.request = request
+
+    @expose(renderer='templates/mytemplate.pt')
+    def index(self):
+        return {'project':'{{project}}'}

@@ -189,6 +189,11 @@ class LegacyPylonsTemplate(PylonsTemplate):
             default='mako'),
     ]
 
+class NewMinimalPylonsTemplate(PylonsTemplate):
+    _template_dir = ('pylons', 'templates/newminimal_project')
+    summary = 'Pylons "newstyle" minimal application template'
+    vars = []
+
 class PylonsInstaller(Installer):
     use_cheetah = False
     config_file = 'config/deployment.ini_tmpl'
