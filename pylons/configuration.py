@@ -26,6 +26,8 @@ from webhelpers.mimehelper import MIMETypes
 from repoze.bfg.configuration import Configurator as BFGConfigurator
 from repoze.bfg.exceptions import ConfigurationError
 
+from repoze.bfg.mako import renderer_factory as mako_renderer_factory
+
 from pylons.util import resolve_dotted
 
 
@@ -214,6 +216,12 @@ config.push_process_config(pylons_config)
 class Configurator(BFGConfigurator):
 
     pylons_route_re = re.compile(r'(/{[a-zA-Z]\w*})')
+
+    def __init__(self, *arg, **kw):
+        result = BFGConfigurator.__init__(self, *arg, **kw)
+        for extension in ('.mak', '.mako'):
+            self.add_renderer(extension, mako_renderer_factory)
+        return result
 
     def add_route(self, name, path, **kw):
         """ Support the syntax supported by

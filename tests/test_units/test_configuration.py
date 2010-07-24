@@ -19,6 +19,16 @@ class TestConfigurator(unittest.TestCase):
     def _makeOne(self, *arg, **kw):
         return self._getTargetClass()(*arg, **kw)
 
+    def test_ctor(self):
+        from repoze.bfg.interfaces import IRendererFactory
+        config = self._makeOne()
+        from repoze.bfg.mako import renderer_factory
+        self.assertEqual(config.registry.getUtility(IRendererFactory, '.mak'),
+                         renderer_factory)
+        self.assertEqual(config.registry.getUtility(IRendererFactory, '.mako'),
+                         renderer_factory)
+        
+
     def test_add_route_squiggly_syntax(self):
         config = self._makeOne()
         config.add_route('name', '/abc/{def}/:ghi/jkl/{mno}{/:p')
