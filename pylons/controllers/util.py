@@ -29,7 +29,7 @@ except ImportError:
     import sha as sha1
 
 import pkg_resources
-from webob import Request as WebObRequest
+from repoze.bfg.request import Request as RepozeBFGRequest
 from webob import Response as WebObResponse
 from webob.exc import status_map
 
@@ -43,7 +43,7 @@ log = logging.getLogger(__name__)
 IF_NONE_MATCH = re.compile('(?:W/)?(?:"([^"]*)",?\s*)')
 
 
-class Request(WebObRequest):
+class Request(RepozeBFGRequest):
     """WebOb Request subclass
     
     The WebOb :class:`webob.Request` has no charset, or other defaults. This subclass
