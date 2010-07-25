@@ -1,9 +1,20 @@
 # -*- coding: utf-8 -*-
+import unittest
+
 from paste.fixture import TestApp
 from paste.registry import RegistryManager
 from webob.exc import status_map
 
 from __init__ import TestWSGIController, TestMiddleware
+
+class Test_session_subclass(unittest.TestCase):
+    def test_session(self):
+        from pylons.controllers.util import Request
+        req = Request({})
+        assert not hasattr(req, 'session')
+        req = Request({'beaker.session': True})
+        assert req.session == True
+
 
 def make_controllers():
     import pylons

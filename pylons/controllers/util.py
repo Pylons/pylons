@@ -50,7 +50,13 @@ class Request(RepozeBFGRequest):
     adds defaults, along with several methods for backwards 
     compatibility with paste.wsgiwrappers.WSGIRequest.
     
-    """    
+    """
+    def __init__(self, *args, **kw):
+        RepozeBFGRequest.__init__(self, *args, **kw)
+        environ = self.environ
+        if 'beaker.session' in environ:
+            self.__dict__['session'] = environ['beaker.session']
+    
     def determine_browser_charset(self):
         """Legacy method to return the
         :attr:`webob.Request.accept_charset`"""
