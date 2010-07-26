@@ -25,7 +25,6 @@ from webhelpers.mimehelper import MIMETypes
 
 from repoze.bfg.configuration import Configurator as BFGConfigurator
 from repoze.bfg.exceptions import ConfigurationError
-from repoze.bfg.interfaces import ISettings
 from repoze.bfg.threadlocal import get_current_registry
 from repoze.bfg.threadlocal import get_current_request
 from repoze.bfg.url import route_url
@@ -268,7 +267,8 @@ class Configurator(BFGConfigurator):
         """ Support the syntax supported by
         :meth:`repoze.bfg.configuration.Configurator.add_route` but
         also support the ``/{squiggly}`` segment syntax by
-        transforming it into ``/:colon``-style syntax."""
+        transforming it into ``/:colon``-style syntax.  Also deal
+        specially with a controller argument."""
         parts = self.pylons_route_re.split(path)
         pattern = []
 
@@ -281,18 +281,19 @@ class Configurator(BFGConfigurator):
 
         pattern = ''.join(pattern)
 
-        controller = kw.pop('controller', None)
+        view = kw.get('view')
+        if isinstance(view, basestring):
+            view = resolve_dotted(view)
+            kw['view'] = view
         
-        if 'view' in kw and isinstance(kw['view'], basestring):
-            kw['view'] = resolve_dotted(kw['view'])
-        
-        if 'action' in kw:
-            kw['view_attr'] = kw.pop('action')
+        action = kw.pop('action', None)
+        if action is not None:
+            kw['view_attr'] = action
 
-        result = BFGConfigurator.add_route(self, name, pattern, **kw)
-
-        if 'view_attr' not in kw and '{action}' in path:
-            view = kw['view']
+        if (view is not None
+            and action is None
+            and ('{action}' in path or ':action' in path)):
+            view = kw.pop('view', None)
             if not inspect.isclass(view):
                 raise TypeError('view must be a class when {action} is'
                                 ' in the path, not %r' % view)
@@ -313,7 +314,7 @@ class Configurator(BFGConfigurator):
                     self.add_view(view=view, attr=method_name,
                                   route_name=name, **expose_config)
 
-        return result
+        return BFGConfigurator.add_route(self, name, pattern, **kw)
 
 class ActionPredicate(object):
     action_name = 'action'
