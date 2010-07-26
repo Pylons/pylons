@@ -26,10 +26,13 @@ from webhelpers.mimehelper import MIMETypes
 from repoze.bfg.configuration import Configurator as BFGConfigurator
 from repoze.bfg.exceptions import ConfigurationError
 from repoze.bfg.interfaces import ISettings
+from repoze.bfg.threadlocal import get_current_registry
+from repoze.bfg.threadlocal import get_current_request
 from repoze.bfg.url import route_url
 
 from repoze.bfg.mako import renderer_factory as mako_renderer_factory
 
+from pylons.controllers.util import Request
 from pylons.events import TemplateGlobals
 from pylons.util import resolve_dotted
 
@@ -219,16 +222,22 @@ config.push_process_config(pylons_config)
 
 def globals_factory(system):
     req = system['request']
-    registry = req.registry
+    if req is None:
+        registry = get_current_registry()
+        req = get_current_request()
+        system['request'] = req
+    else:
+        registry = req.registry
     has_listeners = registry.has_listeners
     d = {
         'url': route_url,
         'h': registry.helpers,
-        'c': req.tmpl_context,
-        'tmpl_context': req.tmpl_context,
     }
-    if 'session' in req.__dict__:
-        d['session'] = req.session
+    if req:
+        d['c'] = req.tmpl_context
+        d['tmpl_context'] = req.tmpl_context
+        if 'session' in req.__dict__:
+            d['session'] = req.session
     
     has_listeners and registry.notify(TemplateGlobals(d))
     system.update(d)
@@ -245,6 +254,7 @@ class Configurator(BFGConfigurator):
             self.add_renderer(extension, mako_renderer_factory)
         self.set_renderer_globals_factory(globals_factory)
         self.registry.helpers = None
+        self.set_request_factory(Request)
         return result
     
     def add_helpers(self, module_ref):
