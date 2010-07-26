@@ -34,6 +34,7 @@ from webob import Response as WebObResponse
 from webob.exc import status_map
 
 import pylons
+from pylons.util import PylonsContext
 
 __all__ = ['abort', 'etag_cache', 'lookup_controller', 'redirect', 
            'redirect_to', 'Request', 'Response']
@@ -54,8 +55,10 @@ class Request(RepozeBFGRequest):
     def __init__(self, *args, **kw):
         RepozeBFGRequest.__init__(self, *args, **kw)
         environ = self.environ
+        attrs = self.__dict__
         if 'beaker.session' in environ:
-            self.__dict__['session'] = environ['beaker.session']
+            attrs['session'] = environ['beaker.session']
+        attrs['tmpl_context'] = PylonsContext()
     
     def determine_browser_charset(self):
         """Legacy method to return the

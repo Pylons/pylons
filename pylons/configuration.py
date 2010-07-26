@@ -25,10 +25,14 @@ from webhelpers.mimehelper import MIMETypes
 
 from repoze.bfg.configuration import Configurator as BFGConfigurator
 from repoze.bfg.exceptions import ConfigurationError
+from repoze.bfg.interfaces import ISettings
+from repoze.bfg.url import route_url
 
 from repoze.bfg.mako import renderer_factory as mako_renderer_factory
 
+from pylons.events import TemplateGlobals
 from pylons.util import resolve_dotted
+
 
 
 request_defaults = dict(charset='utf-8', errors='replace',
@@ -213,6 +217,24 @@ pylons_config = PylonsConfig()
 pylons_config.update(copy.deepcopy(PylonsConfig.defaults))
 config.push_process_config(pylons_config)
 
+def globals_factory(system):
+    req = system['request']
+    registry = req.registry
+    has_listeners = registry.has_listeners
+    d = {
+        'url': route_url,
+        'h': registry.helpers,
+        'c': req.tmpl_context,
+        'tmpl_context': req.tmpl_context,
+    }
+    if 'session' in req.__dict__:
+        d['session'] = req.session
+    
+    has_listeners and registry.notify(TemplateGlobals(d))
+    system.update(d)
+    return d
+
+
 class Configurator(BFGConfigurator):
 
     pylons_route_re = re.compile(r'(/{[a-zA-Z]\w*})')
@@ -221,7 +243,16 @@ class Configurator(BFGConfigurator):
         result = BFGConfigurator.__init__(self, *arg, **kw)
         for extension in ('.mak', '.mako'):
             self.add_renderer(extension, mako_renderer_factory)
+        self.set_renderer_globals_factory(globals_factory)
+        self.registry.helpers = None
         return result
+    
+    def add_helpers(self, module_ref):
+        """ Add a reference to the helpers module, or load the module
+        ref if its a dotted notation string."""
+        if isinstance(module_ref, basestring):
+            module_ref = resolve_dotted(module_ref)
+        self.registry.helpers = module_ref
 
     def add_route(self, name, path, **kw):
         """ Support the syntax supported by
