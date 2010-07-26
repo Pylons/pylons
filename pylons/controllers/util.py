@@ -29,6 +29,7 @@ except ImportError:
     import sha as sha1
 
 import pkg_resources
+from repoze.bfg.interfaces import ISettings
 from repoze.bfg.request import Request as RepozeBFGRequest
 from webob import Response as WebObResponse
 from webob.exc import status_map
@@ -59,6 +60,10 @@ class Request(RepozeBFGRequest):
         if 'beaker.session' in environ:
             attrs['session'] = environ['beaker.session']
         attrs['tmpl_context'] = PylonsContext()
+    
+    @property
+    def settings(self):
+        return self.registry.queryUtility(ISettings)
     
     def determine_browser_charset(self):
         """Legacy method to return the
