@@ -282,30 +282,35 @@ class Configurator(BFGConfigurator):
         pattern = ''.join(pattern)
 
         controller = kw.pop('controller', None)
+        
+        if 'view' in kw and isinstance(kw['view'], basestring):
+            kw['view'] = resolve_dotted(kw['view'])
+        
+        if 'action' in kw:
+            kw['view_attr'] = kw.pop('action')
 
         result = BFGConfigurator.add_route(self, name, pattern, **kw)
 
-        if controller is not None:
-            if isinstance(controller, basestring):
-                controller = resolve_dotted(controller)
-            if not inspect.isclass(controller):
-                raise TypeError('controller must be a class, not %r' %
-                                controller)
-            autoexpose = getattr(controller, '__autoexpose__', r'[A-Za-z]+')
+        if 'view_attr' not in kw and '{action}' in path:
+            view = kw['view']
+            if not inspect.isclass(view):
+                raise TypeError('view must be a class when {action} is'
+                                ' in the path, not %r' % view)
+            autoexpose = getattr(view, '__autoexpose__', r'[A-Za-z]+')
             if autoexpose:
                 try:
                     autoexpose = re.compile(autoexpose).match
                 except (re.error, TypeError), why:
                     raise ConfigurationError(why[0])
             for method_name, method in inspect.getmembers(
-                controller, inspect.ismethod):
+                view, inspect.ismethod):
                 expose_config = getattr(method, '__exposed__', {})
                 if expose_config or (autoexpose and autoexpose(method_name)):
                     action = expose_config.pop('action', method_name)
                     preds = list(expose_config.pop('custom_predicates', []))
                     preds.append(ActionPredicate(action))
                     expose_config['custom_predicates'] = preds
-                    self.add_view(view=controller, attr=method_name,
+                    self.add_view(view=view, attr=method_name,
                                   route_name=name, **expose_config)
 
         return result
