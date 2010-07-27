@@ -268,7 +268,9 @@ class Configurator(BFGConfigurator):
         :meth:`repoze.bfg.configuration.Configurator.add_route` but
         also support the ``/{squiggly}`` segment syntax by
         transforming it into ``/:colon``-style syntax.  Also deal
-        specially with a controller argument."""
+        specially with a route add which names both a view and has an
+        {action} in the route path, and routes added with an
+        ``action=`` argument"""
         parts = self.pylons_route_re.split(path)
         pattern = []
 
@@ -281,38 +283,48 @@ class Configurator(BFGConfigurator):
 
         pattern = ''.join(pattern)
 
-        view = kw.get('view')
+        action = kw.pop('action', None)
+        view = kw.pop('view', None)
         if isinstance(view, basestring):
             view = resolve_dotted(view)
-            kw['view'] = view
-        
-        action = kw.pop('action', None)
-        if action is not None:
-            kw['view_attr'] = action
 
-        if (view is not None
-            and action is None
-            and ('{action}' in path or ':action' in path)):
-            view = kw.pop('view', None)
-            if not inspect.isclass(view):
-                raise TypeError('view must be a class when {action} is'
-                                ' in the path, not %r' % view)
-            autoexpose = getattr(view, '__autoexpose__', r'[A-Za-z]+')
-            if autoexpose:
-                try:
-                    autoexpose = re.compile(autoexpose).match
-                except (re.error, TypeError), why:
-                    raise ConfigurationError(why[0])
-            for method_name, method in inspect.getmembers(
-                view, inspect.ismethod):
+        if action and not view:
+            raise ConfigurationError(
+                'action= (%r) disallowed without view=' % action)
+
+        path_has_action = '{action}' in path or ':action' in path
+
+        if action and path_has_action:
+            raise ConfigurationError(
+                'action= (%r) disallowed when an action is in the route '
+                'path %r' % (action, path))
+        
+        if view is not None:
+            if path_has_action:
+                autoexpose = getattr(view, '__autoexpose__', r'[A-Za-z]+')
+                if autoexpose:
+                    try:
+                        autoexpose = re.compile(autoexpose).match
+                    except (re.error, TypeError), why:
+                        raise ConfigurationError(why[0])
+                for method_name, method in inspect.getmembers(
+                    view, inspect.ismethod):
+                    expose_config = getattr(method, '__exposed__', {})
+                    if expose_config or (autoexpose and autoexpose(method_name)):
+                        action = expose_config.pop('action', method_name)
+                        preds = list(expose_config.pop('custom_predicates', []))
+                        preds.append(ActionPredicate(action))
+                        expose_config['custom_predicates'] = preds
+                        self.add_view(view=view, attr=method_name,
+                                      route_name=name, **expose_config)
+            else:
+                method_name = action
+                if method_name is None:
+                    method_name = '__call__'
+                method = getattr(view, method_name, None)
                 expose_config = getattr(method, '__exposed__', {})
-                if expose_config or (autoexpose and autoexpose(method_name)):
-                    action = expose_config.pop('action', method_name)
-                    preds = list(expose_config.pop('custom_predicates', []))
-                    preds.append(ActionPredicate(action))
-                    expose_config['custom_predicates'] = preds
-                    self.add_view(view=view, attr=method_name,
-                                  route_name=name, **expose_config)
+                self.add_view(view=view, attr=action, route_name=name,
+                              **expose_config)
 
         return BFGConfigurator.add_route(self, name, pattern, **kw)
 

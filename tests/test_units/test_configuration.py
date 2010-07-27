@@ -34,12 +34,12 @@ class TestConfigurator(unittest.TestCase):
         config.add_route('name', '/abc/{def}/:ghi/jkl/{mno}{/:p')
         self._assertRoute(config, 'name', '/abc/:def/:ghi/jkl/:mno{/:p', 0)
         
-    def test_kwargs_passed(self):
+    def test_add_route_kwargs_passed(self):
         config = self._makeOne()
         config.add_route('name', '/abc', xhr=True)
         self._assertRoute(config, 'name', '/abc', 1)
 
-    def test_with_view_defaults(self):
+    def test_add_route_with_view_defaults(self):
         config = self._makeOne()
         views = []
         def dummy_add_view(**kw):
@@ -73,7 +73,7 @@ class TestConfigurator(unittest.TestCase):
         self.assertEqual(view['attr'], 'action2')
         self.assertEqual(view['view'], DummyView)
 
-    def test_with_view_overridden_autoexpose_None(self):
+    def test_add_route_with_view_overridden_autoexpose_None(self):
         config = self._makeOne()
         views = []
         def dummy_add_view(**kw):
@@ -85,7 +85,7 @@ class TestConfigurator(unittest.TestCase):
         self._assertRoute(config, 'name', '/:action', 0)
         self.assertEqual(len(views), 0)
 
-    def test_with_view_overridden_autoexpose_broken_regex1(self):
+    def test_add_route_with_view_overridden_autoexpose_broken_regex1(self):
         from repoze.bfg.exceptions import ConfigurationError
         config = self._makeOne()
         views = []
@@ -97,7 +97,7 @@ class TestConfigurator(unittest.TestCase):
         self.assertRaises(ConfigurationError, config.add_route,
                           'name', '/{action}', view=MyView)
 
-    def test_with_view_overridden_autoexpose_broken_regex2(self):
+    def test_add_route_with_view_overridden_autoexpose_broken_regex2(self):
         from repoze.bfg.exceptions import ConfigurationError
         config = self._makeOne()
         views = []
@@ -109,7 +109,7 @@ class TestConfigurator(unittest.TestCase):
         self.assertRaises(ConfigurationError, config.add_route,
                           'name', '/{action}', view=MyView)
 
-    def test_with_view_method_has_expose_config(self):
+    def test_add_route_with_view_method_has_expose_config(self):
         config = self._makeOne()
         views = []
         def dummy_add_view(**kw):
@@ -129,7 +129,7 @@ class TestConfigurator(unittest.TestCase):
         self.assertEqual(view['attr'], 'action')
         self.assertEqual(view['view'], MyView)
 
-    def test_with_view_method_has_expose_config_with_action(self):
+    def test_add_route_with_view_method_has_expose_config_with_action(self):
         config = self._makeOne()
         views = []
         def dummy_add_view(**kw):
@@ -154,7 +154,8 @@ class TestConfigurator(unittest.TestCase):
         self.assertEqual(view['attr'], 'action')
         self.assertEqual(view['view'], MyView)
 
-    def test_with_view_method_has_expose_config_with_action_regex(self):
+    def test_add_route_with_view_method_has_expose_config_with_action_regex(
+        self):
         config = self._makeOne()
         views = []
         def dummy_add_view(**kw):
@@ -178,6 +179,79 @@ class TestConfigurator(unittest.TestCase):
         self.assertEqual(view['route_name'], 'name')
         self.assertEqual(view['attr'], 'action')
         self.assertEqual(view['view'], MyView)
+
+    def test_add_route_with_action_and_action_in_path(self):
+        from repoze.bfg.exceptions import ConfigurationError
+        config = self._makeOne()
+        myview = object()
+        self.assertRaises(ConfigurationError, config.add_route, 'name',
+                          '/{action}', action='abc', view=myview)
+
+    def test_add_route_with_action_noview(self):
+        from repoze.bfg.exceptions import ConfigurationError
+        config = self._makeOne()
+        self.assertRaises(ConfigurationError, config.add_route, 'name',
+                          '/{action}', action='abc')
+
+    def test_with_explicit_action(self):
+        config = self._makeOne()
+        class DummyView(object):
+            def index(self): pass
+            index.__exposed__ = {'a':'1'}
+        views = []
+        def dummy_add_view(**kw):
+            views.append(kw)
+        config.add_view = dummy_add_view
+        config.add_route('name','/abc', view=DummyView, action='index')
+        self.assertEqual(len(views), 1)
+        view = views[0]
+        self.assertEqual(view['a'], '1')
+        self.assertEqual(view['attr'], 'index')
+        self.assertEqual(view['route_name'], 'name')
+        self.assertEqual(view['view'], DummyView)
+
+    def test_with_implicit_action(self):
+        config = self._makeOne()
+        class DummyView(object):
+            def __call__(self): pass
+            __call__.__exposed__ = {'a':'1'}
+        views = []
+        def dummy_add_view(**kw):
+            views.append(kw)
+        config.add_view = dummy_add_view
+        config.add_route('name','/abc', view=DummyView)
+        self.assertEqual(len(views), 1)
+        view = views[0]
+        self.assertEqual(view['a'], '1')
+        self.assertEqual(view['attr'], None)
+        self.assertEqual(view['route_name'], 'name')
+        self.assertEqual(view['view'], DummyView)
+
+    def test_string_view(self):
+        import pylons
+        views = []
+        config = self._makeOne()
+        def dummy_add_view(**kw):
+            views.append(kw)
+        config.add_view = dummy_add_view
+        config.add_route('name','/abc', view='pylons')
+        self.assertEqual(len(views), 1)
+        view = views[0]
+        self.assertEqual(view['view'], pylons)
+
+    def test_add_helpers_string(self):
+        import pylons
+        config = self._makeOne()
+        config.add_helpers('pylons')
+        self.assertEqual(config.registry.helpers, pylons)
+        
+    def test_add_helpers_notstring(self):
+        import pylons
+        config = self._makeOne()
+        config.add_helpers(pylons)
+        self.assertEqual(config.registry.helpers, pylons)
+        
+        
 
 class TestActionPredicate(unittest.TestCase):
     def _getTargetClass(self):
