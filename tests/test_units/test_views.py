@@ -13,8 +13,8 @@ class LegacyViewTests(unittest.TestCase):
 
 class Test_expose(unittest.TestCase):
     def _makeOne(self, **kw):
-        from pylons.views import expose
-        return expose(**kw)
+        from pylons.views import action
+        return action(**kw)
 
     def test_call(self):
         inst = self._makeOne(a=1, b=2)
