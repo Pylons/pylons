@@ -27,13 +27,13 @@ from repoze.bfg.configuration import Configurator as BFGConfigurator
 from repoze.bfg.exceptions import ConfigurationError
 from repoze.bfg.threadlocal import get_current_registry
 from repoze.bfg.threadlocal import get_current_request
-from repoze.bfg.url import route_url
 
 from repoze.bfg.mako import renderer_factory as mako_renderer_factory
 
 from pylons.controllers.util import Request
 from pylons.events import TemplateGlobals
 from pylons.util import resolve_dotted
+from pylons.url import route_url
 
 
 
