@@ -11,5 +11,5 @@ class TemplateGlobals(object):
     
     """
     implements(ITemplateGlobals)
-    def __init__(self, globs):
-        self.globals = globals
+    def __init__(self, system):
+        self.system = system
