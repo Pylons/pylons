@@ -1,4 +1,7 @@
+from repoze.bfg.encode import urlencode
 from repoze.bfg.threadlocal import get_current_registry
+from repoze.bfg.url import _join_elements
+
 from pylons.interfaces import IRoutesMapper
 
 def route_url(route_name, request, *elements, **kw):
@@ -9,9 +12,8 @@ def route_url(route_name, request, *elements, **kw):
     mapper = reg.getUtility(IRoutesMapper)
 
     route = mapper.routes.get(route_name)
-    if 'custom_url_generator' in route.__dict__:
-        return route.custom_url_generator(route_name, request, *elements, **kw)
-
+    if route and 'custom_url_generator' in route.__dict__:
+         route_name, request, elements, kw = route.custom_url_generator(route_name, request, *elements, **kw)
     anchor = ''
     qs = ''
     app_url = None
