@@ -311,7 +311,7 @@ class Configurator(BFGConfigurator):
                     view, inspect.ismethod):
                     expose_config = getattr(method, '__exposed__', {})
                     if expose_config or (autoexpose and autoexpose(method_name)):
-                        action = expose_config.pop('action', method_name)
+                        action = expose_config.pop('name', method_name)
                         preds = list(expose_config.pop('custom_predicates', []))
                         preds.append(ActionPredicate(action))
                         expose_config['custom_predicates'] = preds

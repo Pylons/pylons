@@ -250,8 +250,41 @@ class TestConfigurator(unittest.TestCase):
         config = self._makeOne()
         config.add_helpers(pylons)
         self.assertEqual(config.registry.helpers, pylons)
+
+
+class TestConfiguratorGlobals(unittest.TestCase):
+    def setUp(self):
+        from pylons.configuration import Configurator
+        self.config = Configurator()
+        self.config.begin()
+
+    def test_add_globals(self):
+        import pylons
+        from pylons.configuration import globals_factory
+        config = self.config
+        req = Dummy()
+        req.tmpl_context = Dummy()
+        req.registry = config.registry
+        sys = {'request': None}
+        config.add_helpers(pylons)
         
+        globals_factory(sys)
+        assert pylons == sys['h']
         
+        sys = {'request': req}
+        globals_factory(sys)
+        assert pylons == sys['h']
+        assert sys['tmpl_context'] == req.tmpl_context
+        assert 'session' not in sys
+        
+        req.session = Dummy()
+        sys = {'request': req}
+        globals_factory(sys)
+        assert sys['session'] == req.session
+    
+    def tearDown(self):
+        self.config.end()
+
 
 class TestActionPredicate(unittest.TestCase):
     def _getTargetClass(self):
