@@ -115,5 +115,11 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
     pylons_minimal = pylons.util:MinimalPylonsTemplate
     pylons_legacy = pylons.util:LegacyPylonsTemplate
     pylons_newminimal = pylons.util:NewMinimalPylonsTemplate
+    
+    [paste.filter_factory]
+    debugger = pylons.middleware:debugger_filter_factory
+    
+    [paste.filter_app_factory]
+    debugger = pylons.middleware:debugger_filter_app_factory
     """,
 )
