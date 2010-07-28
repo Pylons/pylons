@@ -334,7 +334,7 @@ class ActionPredicate(object):
     action_name = 'action'
     def __init__(self, action):
         try:
-            self.action_re = re.compile(action)
+            self.action_re = re.compile(action + '$')
         except (re.error, TypeError), why:
             raise ConfigurationError(why[0])
 
