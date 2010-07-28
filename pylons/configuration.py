@@ -298,7 +298,7 @@ class Configurator(BFGConfigurator):
             raise ConfigurationError(
                 'action= (%r) disallowed when an action is in the route '
                 'path %r' % (action, path))
-        
+
         if view is not None:
             if path_has_action:
                 autoexpose = getattr(view, '__autoexpose__', r'[A-Za-z]+')
@@ -309,15 +309,20 @@ class Configurator(BFGConfigurator):
                         raise ConfigurationError(why[0])
                 for method_name, method in inspect.getmembers(
                     view, inspect.ismethod):
-                    configs = getattr(method, '__exposed__', [{}])
-                    if configs[0] or (autoexpose and autoexpose(method_name)):
-                        for expose_config in configs:
-                            action = expose_config.pop('name', method_name)
-                            preds = list(expose_config.pop('custom_predicates', []))                            
-                            preds.append(ActionPredicate(action))
-                            expose_config['custom_predicates'] = preds
-                            self.add_view(view=view, attr=method_name,
-                                          route_name=name, **expose_config)
+                    configs = getattr(method, '__exposed__', [])
+                    if autoexpose and not configs:
+                        if autoexpose(method_name):
+                            configs = [{}]
+                    for expose_config in configs:
+                        # we don't want to mutate the dict in __expose__,
+                        # so we copy it
+                        view_args = expose_config.copy()
+                        action = view_args.pop('name', method_name)
+                        preds = list(view_args.pop('custom_predicates',[]))
+                        preds.append(ActionPredicate(action))
+                        view_args['custom_predicates'] = preds
+                        self.add_view(view=view, attr=method_name,
+                                      route_name=name, **view_args)
             else:
                 method_name = action
                 if method_name is None:

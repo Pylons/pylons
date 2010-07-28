@@ -138,7 +138,7 @@ class TestConfigurator(unittest.TestCase):
         class MyView(object):
             def action(self):
                 return 'response'
-            action.__exposed__ = [{'action':'action3000'}]
+            action.__exposed__ = [{'name':'action3000'}]
         config.add_route('name', '/{action}', view=MyView)
         self._assertRoute(config, 'name', '/:action', 0)
         self.assertEqual(len(views), 1)
@@ -164,7 +164,7 @@ class TestConfigurator(unittest.TestCase):
         class MyView(object):
             def action(self):
                 return 'response'
-            action.__exposed__ = [{'action':'^action3000$'}]
+            action.__exposed__ = [{'name':'^action3000$'}]
         config.add_route('name', '/{action}', view=MyView)
         self._assertRoute(config, 'name', '/:action', 0)
         self.assertEqual(len(views), 1)
@@ -179,6 +179,20 @@ class TestConfigurator(unittest.TestCase):
         self.assertEqual(view['route_name'], 'name')
         self.assertEqual(view['attr'], 'action')
         self.assertEqual(view['view'], MyView)
+
+    def test_add_route_doesnt_mutate_expose_dict(self):
+        config = self._makeOne()
+        views = []
+        def dummy_add_view(**kw):
+            views.append(kw)
+        config.add_view = dummy_add_view
+        exposed = [{'name':'^action3000$'}]
+        class MyView(object):
+            def action(self):
+                return 'response'
+            action.__exposed__ = exposed
+        config.add_route('name', '/{action}', view=MyView)
+        self.assertEqual(exposed[0], {'name':'^action3000$'}) # not mutated
 
     def test_add_route_with_action_and_action_in_path(self):
         from repoze.bfg.exceptions import ConfigurationError
@@ -297,7 +311,7 @@ class TestActionPredicate(unittest.TestCase):
     def test_bad_action_regex_string(self):
         from repoze.bfg.exceptions import ConfigurationError
         cls = self._getTargetClass()
-        self.assertRaises(ConfigurationError, cls, 'a\\')
+        self.assertRaises(ConfigurationError, cls, '[a-z')
 
     def test_bad_action_regex_None(self):
         from repoze.bfg.exceptions import ConfigurationError
