@@ -309,22 +309,24 @@ class Configurator(BFGConfigurator):
                         raise ConfigurationError(why[0])
                 for method_name, method in inspect.getmembers(
                     view, inspect.ismethod):
-                    expose_config = getattr(method, '__exposed__', {})
-                    if expose_config or (autoexpose and autoexpose(method_name)):
-                        action = expose_config.pop('name', method_name)
-                        preds = list(expose_config.pop('custom_predicates', []))
-                        preds.append(ActionPredicate(action))
-                        expose_config['custom_predicates'] = preds
-                        self.add_view(view=view, attr=method_name,
-                                      route_name=name, **expose_config)
+                    configs = getattr(method, '__exposed__', [{}])
+                    if configs[0] or (autoexpose and autoexpose(method_name)):
+                        for expose_config in configs:
+                            action = expose_config.pop('name', method_name)
+                            preds = list(expose_config.pop('custom_predicates', []))                            
+                            preds.append(ActionPredicate(action))
+                            expose_config['custom_predicates'] = preds
+                            self.add_view(view=view, attr=method_name,
+                                          route_name=name, **expose_config)
             else:
                 method_name = action
                 if method_name is None:
                     method_name = '__call__'
                 method = getattr(view, method_name, None)
-                expose_config = getattr(method, '__exposed__', {})
-                self.add_view(view=view, attr=action, route_name=name,
-                              **expose_config)
+                configs = getattr(method, '__exposed__', [{}])
+                for expose_config in configs:
+                    self.add_view(view=view, attr=action, route_name=name,
+                                  **expose_config)
 
         return BFGConfigurator.add_route(self, name, pattern, **kw)
 

@@ -118,7 +118,7 @@ class TestConfigurator(unittest.TestCase):
         class MyView(object):
             def action(self):
                 return 'response'
-            action.__exposed__ = {'custom_predicates':(1,)}
+            action.__exposed__ = [{'custom_predicates':(1,)}]
         config.add_route('name', '/{action}', view=MyView)
         self._assertRoute(config, 'name', '/:action', 0)
         self.assertEqual(len(views), 1)
@@ -138,7 +138,7 @@ class TestConfigurator(unittest.TestCase):
         class MyView(object):
             def action(self):
                 return 'response'
-            action.__exposed__ = {'action':'action3000'}
+            action.__exposed__ = [{'action':'action3000'}]
         config.add_route('name', '/{action}', view=MyView)
         self._assertRoute(config, 'name', '/:action', 0)
         self.assertEqual(len(views), 1)
@@ -164,7 +164,7 @@ class TestConfigurator(unittest.TestCase):
         class MyView(object):
             def action(self):
                 return 'response'
-            action.__exposed__ = {'action':'^action3000$'}
+            action.__exposed__ = [{'action':'^action3000$'}]
         config.add_route('name', '/{action}', view=MyView)
         self._assertRoute(config, 'name', '/:action', 0)
         self.assertEqual(len(views), 1)
@@ -197,7 +197,7 @@ class TestConfigurator(unittest.TestCase):
         config = self._makeOne()
         class DummyView(object):
             def index(self): pass
-            index.__exposed__ = {'a':'1'}
+            index.__exposed__ = [{'a':'1'}]
         views = []
         def dummy_add_view(**kw):
             views.append(kw)
@@ -214,7 +214,7 @@ class TestConfigurator(unittest.TestCase):
         config = self._makeOne()
         class DummyView(object):
             def __call__(self): pass
-            __call__.__exposed__ = {'a':'1'}
+            __call__.__exposed__ = [{'a':'1'}]
         views = []
         def dummy_add_view(**kw):
             views.append(kw)

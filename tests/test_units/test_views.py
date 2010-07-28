@@ -22,7 +22,7 @@ class Test_expose(unittest.TestCase):
             """ """
         result = inst(wrapped)
         self.failUnless(result is wrapped)
-        self.assertEqual(result.__exposed__, {'a':1, 'b':2})
+        self.assertEqual(result.__exposed__, [{'a':1, 'b':2}])
 
 def dummyapp(environ, start_response):
     """ """

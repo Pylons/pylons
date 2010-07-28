@@ -10,6 +10,9 @@ class action(object):
         self.kw = kw
 
     def __call__(self, wrapped):
-        wrapped.__exposed__ = self.kw
+        if hasattr(wrapped, '__exposed__'):
+            wrapped.__exposed__.append(self.kw)
+        else:
+            wrapped.__exposed__ = [self.kw]
         return wrapped
     
