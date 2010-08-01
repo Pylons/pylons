@@ -263,77 +263,83 @@ class Configurator(BFGConfigurator):
             module_ref = resolve_dotted(module_ref)
         self.registry.helpers = module_ref
 
-    def add_route(self, name, path, **kw):
+    def add_route(self, name, pattern, **kw):
         """ Support the syntax supported by
         :meth:`repoze.bfg.configuration.Configurator.add_route` but
         also support the ``/{squiggly}`` segment syntax by
-        transforming it into ``/:colon``-style syntax.  Also deal
-        specially with a route add which names both a view and has an
-        {action} in the route path, and routes added with an
-        ``action=`` argument"""
-        parts = self.pylons_route_re.split(path)
-        pattern = []
+        transforming it into ``/:colon``-style syntax. """
+        parts = self.pylons_route_re.split(pattern)
+        npattern = []
 
         for part in parts:
             match = self.pylons_route_re.match(part)
             if match:
-                pattern.append('/:%s' % match.group()[2:-1])
+                npattern.append('/:%s' % match.group()[2:-1])
             else:
-                pattern.append(part)
+                npattern.append(part)
 
-        pattern = ''.join(pattern)
+        npattern = ''.join(npattern)
 
-        action = kw.pop('action', None)
-        view = kw.pop('view', None)
-        if isinstance(view, basestring):
-            view = resolve_dotted(view)
+        return BFGConfigurator.add_route(self, name, npattern, **kw)
 
-        if action and not view:
-            raise ConfigurationError(
-                'action= (%r) disallowed without view=' % action)
+    def add_handler(self, handler, pattern, action=None, route_name=None, **kw):
+        """ Add a Pylons handler.  The route_name is the
+        handler.__name__ unless it is explicitly passed as
+        ``route_name``. If ``{action}`` or ``:action`` is in the
+        pattern, the exposed methods of the handler will be used as
+        views.  If ``action`` is passed, it will be considered the
+        method name of the handler to use as a view.  Passing both
+        ``action`` and having an ``{action}`` in the route pattern is
+        disallowed.  This method returns the result of add_route."""
+        if isinstance(handler, basestring):
+            handler = resolve_dotted(handler)
 
-        path_has_action = '{action}' in path or ':action' in path
+        if route_name is None:
+            route_name = handler.__name__
+
+        route = self.add_route(route_name, pattern, **kw)
+
+        path_has_action = ':action' in pattern or '{action}' in pattern
 
         if action and path_has_action:
             raise ConfigurationError(
                 'action= (%r) disallowed when an action is in the route '
-                'path %r' % (action, path))
+                'path %r' % (action, pattern))
 
-        if view is not None:
-            if path_has_action:
-                autoexpose = getattr(view, '__autoexpose__', r'[A-Za-z]+')
-                if autoexpose:
-                    try:
-                        autoexpose = re.compile(autoexpose).match
-                    except (re.error, TypeError), why:
-                        raise ConfigurationError(why[0])
-                for method_name, method in inspect.getmembers(
-                    view, inspect.ismethod):
-                    configs = getattr(method, '__exposed__', [])
-                    if autoexpose and not configs:
-                        if autoexpose(method_name):
-                            configs = [{}]
-                    for expose_config in configs:
-                        # we don't want to mutate the dict in __expose__,
-                        # so we copy it
-                        view_args = expose_config.copy()
-                        action = view_args.pop('name', method_name)
-                        preds = list(view_args.pop('custom_predicates',[]))
-                        preds.append(ActionPredicate(action))
-                        view_args['custom_predicates'] = preds
-                        self.add_view(view=view, attr=method_name,
-                                      route_name=name, **view_args)
-            else:
-                method_name = action
-                if method_name is None:
-                    method_name = '__call__'
-                method = getattr(view, method_name, None)
-                configs = getattr(method, '__exposed__', [{}])
+        if path_has_action:
+            autoexpose = getattr(handler, '__autoexpose__', r'[A-Za-z]+')
+            if autoexpose:
+                try:
+                    autoexpose = re.compile(autoexpose).match
+                except (re.error, TypeError), why:
+                    raise ConfigurationError(why[0])
+            for method_name, method in inspect.getmembers(
+                handler, inspect.ismethod):
+                configs = getattr(method, '__exposed__', [])
+                if autoexpose and not configs:
+                    if autoexpose(method_name):
+                        configs = [{}]
                 for expose_config in configs:
-                    self.add_view(view=view, attr=action, route_name=name,
-                                  **expose_config)
+                    # we don't want to mutate any dict in __exposed__,
+                    # so we copy each
+                    view_args = expose_config.copy()
+                    action = view_args.pop('name', method_name)
+                    preds = list(view_args.pop('custom_predicates',[]))
+                    preds.append(ActionPredicate(action))
+                    view_args['custom_predicates'] = preds
+                    self.add_view(view=handler, attr=method_name,
+                                  route_name=route_name, **view_args)
+        else:
+            method_name = action
+            if method_name is None:
+                method_name = '__call__'
+            method = getattr(handler, method_name, None)
+            configs = getattr(method, '__exposed__', [{}])
+            for expose_config in configs:
+                self.add_view(view=handler, attr=action, route_name=route_name,
+                              **expose_config)
 
-        return BFGConfigurator.add_route(self, name, pattern, **kw)
+        return route
 
 class ActionPredicate(object):
     action_name = 'action'
