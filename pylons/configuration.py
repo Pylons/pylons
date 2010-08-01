@@ -227,7 +227,6 @@ def globals_factory(system):
         system['request'] = req
     else:
         registry = req.registry
-    has_listeners = registry.has_listeners
     d = {
         'url': route_url,
         'h': registry.helpers,
@@ -238,8 +237,8 @@ def globals_factory(system):
         if 'session' in req.__dict__:
             d['session'] = req.session
     
+    has_listeners = registry.has_listeners
     has_listeners and registry.notify(TemplateGlobals(d))
-    system.update(d)
     return d
 
 

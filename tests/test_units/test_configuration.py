@@ -275,19 +275,19 @@ class TestConfiguratorGlobals(unittest.TestCase):
         sys = {'request': None}
         config.add_helpers(pylons)
         
-        globals_factory(sys)
-        assert pylons == sys['h']
+        result = globals_factory(sys)
+        assert pylons == result['h']
         
         sys = {'request': req}
-        globals_factory(sys)
-        assert pylons == sys['h']
-        assert sys['tmpl_context'] == req.tmpl_context
-        assert 'session' not in sys
+        result = globals_factory(sys)
+        assert pylons == result['h']
+        assert result['tmpl_context'] == req.tmpl_context
+        assert 'session' not in result
         
         req.session = Dummy()
         sys = {'request': req}
-        globals_factory(sys)
-        assert sys['session'] == req.session
+        result = globals_factory(sys)
+        assert result['session'] == req.session
     
     def tearDown(self):
         self.config.end()
