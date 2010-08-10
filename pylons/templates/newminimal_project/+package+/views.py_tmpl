@@ -1,9 +1,9 @@
-from pylons.views import expose
+from pylons.views import action
 
 class MyController(object):
     def __init__(self, request):
         self.request = request
 
-    @expose(renderer='mytemplate.mak')
+    @action(renderer='mytemplate.mak')
     def index(self):
         return {'project':'{{project}}'}

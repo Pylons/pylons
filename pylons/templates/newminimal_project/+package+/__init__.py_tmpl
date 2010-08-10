@@ -5,8 +5,10 @@ def main(global_config, **settings):
     config = Configurator(settings=settings)
     config.begin()
     config.add_static_view('static', '{{package}}:templates/static')
-    config.add_route('action_default', '/{action}',
-                     controller='{{package}}.views:MyController')
+    config.add_handler('{{package}}.views:MyController', pattern='/{action}',
+                       route_name='action')
+    config.add_handler('{{package}}.views:MyController', pattern='/',
+                       route_name='home', action='index')
     config.end()
     return config.make_wsgi_app()
 
