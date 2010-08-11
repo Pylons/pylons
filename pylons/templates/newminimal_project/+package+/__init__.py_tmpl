@@ -5,9 +5,9 @@ def main(global_config, **settings):
     config = Configurator(settings=settings)
     config.begin()
     config.add_static_view('static', '{{package}}:templates/static')
-    config.add_handler('{{package}}.views:MyController', pattern='/{action}',
+    config.add_handler('{{package}}.handlers:MyHandler', pattern='/{action}',
                        route_name='action')
-    config.add_handler('{{package}}.views:MyController', pattern='/',
+    config.add_handler('{{package}}.handlers:MyHandler', pattern='/',
                        route_name='home', action='index')
     config.end()
     return config.make_wsgi_app()

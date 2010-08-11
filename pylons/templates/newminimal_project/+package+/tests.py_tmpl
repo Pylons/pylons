@@ -11,8 +11,8 @@ class MyControllerTests(unittest.TestCase):
         self.config.end()
 
     def _makeOne(self, request):
-        from {{package}}.views import MyController
-        return MyController(request)
+        from {{package}}.handlers import MyHandler
+        return MyHandler(request)
 
     def test_index(self):
         request = DummyRequest()
