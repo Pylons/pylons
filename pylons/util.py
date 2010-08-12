@@ -194,6 +194,11 @@ class NewMinimalPylonsTemplate(PylonsTemplate):
     summary = 'Pylons "newstyle" minimal application template'
     vars = []
 
+class NewSQLAlchemyTemplate(PylonsTemplate):
+    _template_dir = ('pylons', 'templates/newsqla_project')
+    summary = 'Pylons "newstyle" SQLAlchemy template'
+    vars = []
+
 class PylonsInstaller(Installer):
     use_cheetah = False
     config_file = 'config/deployment.ini_tmpl'

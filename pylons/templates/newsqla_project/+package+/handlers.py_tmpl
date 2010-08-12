@@ -1,0 +1,14 @@
+from pylons.views import action
+
+from {{package}}.models import DBSession
+from {{package}}.models import Model
+
+class MyHandler(object):
+    def __init__(self, request):
+        self.request = request
+
+    @action(renderer='mytemplate.mak')
+    def index(self):
+        dbsession = DBSession()
+        root = dbsession.query(Model).filter(Model.name==u'root').first()
+        return {'root':root, 'project':'{{package}}'}

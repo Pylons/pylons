@@ -1,0 +1,19 @@
+[app:wiki]
+use = egg:{{project}}
+reload_templates = true
+mako.directories = {{project}}:templates
+debug_authorization = false
+debug_notfound = false
+debug_templates = true
+default_locale_name = en
+db_string = sqlite:///%(here)s/tutorial.db
+
+[pipeline:main]
+pipeline =
+    egg:repoze.tm2#tm
+    wiki
+
+[server:main]
+use = egg:Paste#http
+host = 0.0.0.0
+port = 5000

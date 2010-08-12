@@ -115,6 +115,7 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
     pylons_minimal = pylons.util:MinimalPylonsTemplate
     pylons_legacy = pylons.util:LegacyPylonsTemplate
     pylons_newminimal = pylons.util:NewMinimalPylonsTemplate
+    pylons_newsqla = pylons.util:NewSQLAlchemyTemplate
     
     [paste.filter_factory]
     debugger = pylons.middleware:debugger_filter_factory
