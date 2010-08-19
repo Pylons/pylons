@@ -282,16 +282,31 @@ class Configurator(BFGConfigurator):
         return BFGConfigurator.add_route(self, name, npattern, **kw)
 
     def add_handler(self, route_name, pattern, handler, action=None, **kw):
-        """ Add a Pylons handler (add a route and some number of views
-        based on a class).  The route_name is ``handler.__name__``
-        unless it is explicitly passed as ``route_name``. If
-        ``{action}`` or ``:action`` is in the pattern, the exposed
-        methods of the handler will be used as views.  If ``action``
-        is passed, it will be considered the method name of the
-        handler to use as a view.  Passing both ``action`` and having
-        an ``{action}`` in the route pattern is disallowed.  Any extra
-        keyword arguments are passed along to ``add_route``.  This
-        method returns the result of add_route."""
+        """ Add a Pylons handler.  This function adds a route and some
+        number of views based on a handler object (usually a class).
+        
+        ``route_name`` is the name of the route (to be used later in
+        URL generation).
+
+        ``pattern`` is the matching pattern, e.g. ``'/blog/{action}'``
+        
+        ``handler`` is a dotted name of (or direct reference to) a
+        Python handler class,
+        e.g. ``'my.package.handlers.MyHandler'``.
+
+        If ``{action}`` or ``:action`` is in
+        the pattern, the exposed methods of the handler will be used
+        as views.
+
+        If ``action`` is passed, it will be considered the method name
+        of the handler to use as a view.
+
+        Passing both ``action`` and having an ``{action}`` in the
+        route pattern is disallowed.
+
+        Any extra keyword arguments are passed along to ``add_route``.
+
+        This method returns the result of add_route."""
         if isinstance(handler, basestring):
             handler = resolve_dotted(handler)
 
