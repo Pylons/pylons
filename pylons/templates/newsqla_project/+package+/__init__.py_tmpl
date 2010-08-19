@@ -15,13 +15,14 @@ def main(global_config, **settings):
         '{{package}}:templates/static'
         )
     config.add_handler(
+        'main',
+        '/{action}',
         '{{package}}.handlers:MyHandler',
-        pattern='/{action}'
         )
     config.add_handler(
+        'home',
+        '/',
         '{{package}}.handlers:MyHandler',
-        pattern='/',
-        route_name='home',
         action='index'
         )
     config.end()

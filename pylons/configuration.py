@@ -281,7 +281,7 @@ class Configurator(BFGConfigurator):
 
         return BFGConfigurator.add_route(self, name, npattern, **kw)
 
-    def add_handler(self, handler, pattern, action=None, route_name=None, **kw):
+    def add_handler(self, route_name, pattern, handler, action=None, **kw):
         """ Add a Pylons handler (add a route and some number of views
         based on a class).  The route_name is ``handler.__name__``
         unless it is explicitly passed as ``route_name``. If
@@ -294,9 +294,6 @@ class Configurator(BFGConfigurator):
         method returns the result of add_route."""
         if isinstance(handler, basestring):
             handler = resolve_dotted(handler)
-
-        if route_name is None:
-            route_name = handler.__name__
 
         route = self.add_route(route_name, pattern, **kw)
 
