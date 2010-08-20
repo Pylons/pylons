@@ -14,6 +14,7 @@ and Routes.
 
 """
 import copy
+import functools
 import inspect
 import logging
 import os
@@ -353,6 +354,123 @@ class Configurator(BFGConfigurator):
                               **expose_config)
 
         return route
+
+    def add_rest_handler(self, collection_name, member_name, handler):
+        """ Add a special kind of handler, a 'REST handler`.
+
+        A 'REST handler' is a class that has a particular interface.
+        This is the interface::
+
+          class MyRestHandler(object):
+              def __init__(self, request):
+                  self.request = request
+                  
+              def index(self):
+                  ''' Return an index of links to members '''
+
+              def create(self):
+                  ''' Create a new member '''
+
+              def new(self):
+                  ''' Returns a new member prototoype '''
+
+              def update(self, id):
+                  ''' Update a member '''
+
+              def delete(self, id):
+                  ''' Delete a member '''
+
+              def show(self, id):
+                  ''' Show a member '''
+
+              def edit(self, id):
+                  ''' Edit a member '''
+
+        All methods should return a Python object, which will be
+        serialized to JSON (or a webob.Response, which will not be).
+
+        The configuration call for
+        ``config.add_rest_handler('message', 'messages', Messages)``
+        is shortcut for a set of ``add_route`` calls which makes the
+        following result table true where ``messages`` below is an
+        instance of the ``Messages`` class::
+
+          GET    /messages        => messages.index()    => url("messages")
+          POST   /messages        => messages.create()   => url("messages")
+          GET    /messages/new    => messages.new()      => url("new_message")
+          PUT    /messages/1      => messages.update(id) => url("message", id=1)
+          DELETE /messages/1      => messages.delete(id) => url("message", id=1)
+          GET    /messages/1      => messages.show(id)   => url("message", id=1)
+          GET    /messages/1/edit => messages.edit(id)   => url("edit_message", id=1)
+
+        XXX need a lot more docs
+
+        """
+        if isinstance(handler, basestring):
+            handler = resolve_dotted(handler)
+
+        handler = self._make_rest_handler(handler)
+        add = functools.partial(self.add_route, view_renderer='json',
+                                view=handler)
+        add(collection_name, collection_name,
+            request_method='GET', view_attr='index')
+        add(collection_name + '_create', collection_name,
+            request_method='POST', view_attr='create')
+        add('new_%s' % member_name, '%s/new' % collection_name,
+            request_method='GET', view_attr='new')
+        add(member_name, '%s/:id' % collection_name,
+            request_method='GET', view_attr='show')
+        add(member_name + '_update', '%s/:id' % collection_name,
+            request_method='PUT', view_attr='update')
+        add(member_name + '_delete', '%s/:id' % collection_name,
+            request_method='DELETE', view_attr='delete')
+        add('edit_%s' % member_name, '%s/:id/edit' % collection_name,
+            request_method='GET', view_attr='edit')
+        return handler
+
+    def _make_rest_handler(self, handler_factory):
+        class RestHandlerWrapper(object):
+            factory = handler_factory
+            def __init__(self, request):
+                self.request = request
+                
+            def _get_handler(self):
+                handler =  handler_factory(self.request)
+                return handler
+
+            def index(self):
+                handler = self._get_handler()
+                return handler.index()
+
+            def create(self):
+                handler = self._get_handler()
+                return handler.create()
+
+            def new(self):
+                handler = self._get_handler()
+                return handler.new()
+
+            def update(self):
+                handler = self._get_handler()
+                id = self.request.matchdict['id']
+                return handler.update(id)
+
+            def delete(self):
+                handler = self._get_handler()
+                id = self.request.matchdict['id']
+                return handler.delete(id)
+
+            def show(self):
+                handler = self._get_handler()
+                id = self.request.matchdict['id']
+                return handler.show(id)
+
+            def edit(self):
+                handler = self._get_handler()
+                id = self.request.matchdict['id']
+                return handler.edit(id)
+
+        return RestHandlerWrapper
 
 class ActionPredicate(object):
     action_name = 'action'

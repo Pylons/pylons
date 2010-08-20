@@ -5,12 +5,12 @@ class TestConfigurator(unittest.TestCase):
         from pylons.configuration import Configurator
         return Configurator
 
-    def _assertRoute(self, config, name, path, num_predicates=0):
+    def _assertRoute(self, config, name, path, num_predicates=0, num_routes=1):
         from repoze.bfg.interfaces import IRoutesMapper
         mapper = config.registry.getUtility(IRoutesMapper)
         routes = mapper.get_routes()
         route = routes[0]
-        self.assertEqual(len(routes), 1)
+        self.assertEqual(len(routes), num_routes)
         self.assertEqual(route.name, name)
         self.assertEqual(route.path, path)
         self.assertEqual(len(routes[0].predicates), num_predicates)
@@ -258,6 +258,51 @@ class TestConfigurator(unittest.TestCase):
         config.add_helpers(pylons)
         self.assertEqual(config.registry.helpers, pylons)
 
+    def test_add_rest_handler(self):
+        from repoze.bfg.testing import DummyRequest
+        from repoze.bfg.interfaces import IRoutesMapper
+        config = self._makeOne()
+        hdlr = config.add_rest_handler('messages', 'message', DummyRestHandler)
+        mapper = config.registry.getUtility(IRoutesMapper)
+        routes = mapper.get_routes()
+        self.assertEqual(len(routes), 7)
+        self.assertEqual(routes[0].name, 'messages')
+        self.assertEqual(routes[0].path, 'messages')
+        self.assertEqual(len(routes[0].predicates), 1)
+        self.assertEqual(routes[1].name, 'messages_create')
+        self.assertEqual(routes[1].path, 'messages')
+        self.assertEqual(len(routes[1].predicates), 1)
+        self.assertEqual(routes[2].name, 'new_message')
+        self.assertEqual(routes[2].path, 'messages/new')
+        self.assertEqual(len(routes[2].predicates), 1)
+        self.assertEqual(routes[3].name, 'message')
+        self.assertEqual(routes[3].path, 'messages/:id')
+        self.assertEqual(len(routes[3].predicates), 1)
+        self.assertEqual(routes[4].name, 'message_update')
+        self.assertEqual(routes[4].path, 'messages/:id')
+        self.assertEqual(len(routes[4].predicates), 1)
+        self.assertEqual(routes[5].name, 'message_delete')
+        self.assertEqual(routes[5].path, 'messages/:id')
+        self.assertEqual(len(routes[5].predicates), 1)
+        self.assertEqual(routes[6].name, 'edit_message')
+        self.assertEqual(routes[6].path, 'messages/:id/edit')
+        self.assertEqual(len(routes[6].predicates), 1)
+        request = DummyRequest()
+        request.matchdict = {'id':1}
+        handler = hdlr(request)
+        self.assertEqual(handler.index(), 'index')
+        self.assertEqual(handler.create(), 'create')
+        self.assertEqual(handler.new(), 'new')
+        self.assertEqual(handler.update(), 1)
+        self.assertEqual(handler.delete(), 1)
+        self.assertEqual(handler.show(), 1)
+        self.assertEqual(handler.edit(), 1)
+
+    def test_add_rest_handler_dottedname(self):
+        import pylons
+        config = self._makeOne()
+        hdlr = config.add_rest_handler('messages', 'message', 'pylons')
+        self.assertEqual(hdlr.factory, pylons)
 
 class TestConfiguratorGlobals(unittest.TestCase):
     def setUp(self):
@@ -347,3 +392,29 @@ class DummyHandler(object):
 
     def action2(self):
         return 'response 2'
+
+class DummyRestHandler(object):
+    def __init__(self, request):
+        self.request = request
+        
+    def index(self):
+        return 'index'
+
+    def create(self):
+        return 'create'
+
+    def new(self):
+        return 'new'
+
+    def update(self, id):
+        return id
+
+    def delete(self, id):
+        return id
+
+    def show(self, id):
+        return id
+
+    def edit(self, id):
+        return id
+    
