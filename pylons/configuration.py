@@ -347,6 +347,29 @@ class Configurator(BFGConfigurator):
             method_name = action
             if method_name is None:
                 method_name = '__call__'
+            
+            # Scan the controller for any other methods with this action name
+            for meth_name, method in inspect.getmembers(
+                handler, inspect.ismethod):
+                configs = getattr(method, '__exposed__', [{}])
+                for expose_config in configs:
+                    # Don't re-register the same view if this method name is
+                    # the action name
+                    if meth_name == action:
+                        continue
+                    configs = getattr(method, '__exposed__', [])
+                    for expose_config in configs:
+                        # We only reg a view if the name matches the action
+                        if expose_config.get('name') != method_name:
+                            continue
+                        # we don't want to mutate any dict in __exposed__,
+                        # so we copy each
+                        view_args = expose_config.copy()
+                        action = view_args.pop('name', method_name)
+                        self.add_view(view=handler, attr=method_name,
+                                      route_name=route_name, **view_args)
+            
+            # Now register the method itself
             method = getattr(handler, method_name, None)
             configs = getattr(method, '__exposed__', [{}])
             for expose_config in configs:

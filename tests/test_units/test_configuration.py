@@ -233,6 +233,23 @@ class TestConfigurator(unittest.TestCase):
         self.assertEqual(view['attr'], None)
         self.assertEqual(view['route_name'], 'name')
         self.assertEqual(view['view'], DummyHandler)
+    
+    def test_with_multiple_action(self):
+        config = self._makeOne()
+        class DummyHandler(object):
+            def index(self): pass
+            def create(self): pass
+            create.__exposed__ = [{'name': 'index'}]
+        views = []
+        def dummy_add_view(**kw):
+            views.append(kw)
+        config.add_view = dummy_add_view
+        config.add_handler('name', '/abc', DummyHandler, action='index')
+        self.assertEqual(len(views), 2)
+        view = views[0]
+        self.assertEqual(view['attr'], 'index')
+        self.assertEqual(view['route_name'], 'name')
+        self.assertEqual(view['view'], DummyHandler)
 
     def test_string_handler(self):
         import pylons
