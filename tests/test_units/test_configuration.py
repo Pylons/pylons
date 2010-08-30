@@ -250,6 +250,8 @@ class TestConfigurator(unittest.TestCase):
         self.assertEqual(view['attr'], 'create')
         self.assertEqual(view['route_name'], 'name')
         self.assertEqual(view['view'], DummyHandler)
+        view = views[1]
+        self.assertEqual(view['attr'], 'index')
 
     def test_string_handler(self):
         import pylons
