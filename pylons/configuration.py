@@ -364,7 +364,7 @@ class Configurator(BFGConfigurator):
                     # so we copy each
                     view_args = expose_config.copy()
                     del view_args['name']
-                    self.add_view(view=handler, attr=method_name,
+                    self.add_view(view=handler, attr=meth_name,
                                   route_name=route_name, **view_args)
             
             # Now register the method itself

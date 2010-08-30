@@ -247,7 +247,7 @@ class TestConfigurator(unittest.TestCase):
         config.add_handler('name', '/abc', DummyHandler, action='index')
         self.assertEqual(len(views), 2)
         view = views[0]
-        self.assertEqual(view['attr'], 'index')
+        self.assertEqual(view['attr'], 'create')
         self.assertEqual(view['route_name'], 'name')
         self.assertEqual(view['view'], DummyHandler)
 
