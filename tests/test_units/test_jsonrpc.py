@@ -33,6 +33,22 @@ def make_basejsonrpc():
             else:
                 return x - y
 
+        def v2_echo(self, message='Default message'):
+            return message
+
+        def v2_int_arg_check(self, arg=99):
+            if not isinstance(arg, int):
+                raise JSONRPCError(1, 'That is not an integer')
+            else:
+                return 'got an integer'
+
+        def v2_decrement(self, x, y=1):
+            """Like subtract, but decrements by default."""
+            if not isinstance(x, int) and not isinstance(y, int):
+                raise JSONRPCError(1, 'That is not an integer')
+            else:
+                return x - y
+
         def _private(self):
             return 'private method'
 
@@ -128,3 +144,54 @@ class TestJSONRPCController(TestWSGIController):
                     id='test',
                     error={'code': 1,
                            'message': "That is not an integer"}) == response
+
+    def test_v2_echo(self):
+        response = self.jsonreq('v2_echo', args={'message': 'hello, world'})
+        assert dict(jsonrpc='2.0',
+                    id='test',
+                    result='hello, world') == response
+
+    def test_v2_echo_default(self):
+        response = self.jsonreq('v2_echo', args={})
+        assert dict(jsonrpc='2.0',
+                    id='test',
+                    result='Default message') == response
+
+    def test_v2_int_arg_check_valid(self):
+        response = self.jsonreq('v2_int_arg_check', args={'arg': 5})
+        assert dict(jsonrpc='2.0',
+                    id='test',
+                    result='got an integer')
+
+    def test_v2_int_arg_check_default_keyword_argument(self):
+        response = self.jsonreq('v2_int_arg_check', args={})
+        assert dict(jsonrpc='2.0',
+                    id='test',
+                    result='got an integer')
+
+    def test_v2_int_arg_check(self):
+        response = self.jsonreq('v2_int_arg_check', args={'arg': 'abc'})
+        assert dict(jsonrpc='2.0',
+                    id='test',
+                    error={'code': 1,
+                           'message': "That is not an integer"}) == response
+
+    def test_v2_decrement(self):
+        response = self.jsonreq('v2_decrement', args={'x': 50, 'y': 100})
+        assert dict(jsonrpc='2.0',
+                    id='test',
+                    result=-50) == response
+
+    def test_v2_decrement_default_keywoard_argument(self):
+        response = self.jsonreq('v2_decrement', args={'x': 50})
+        assert dict(jsonrpc='2.0',
+                    id='test',
+                    result=49) == response
+
+    def test_v2_decrement_missing_keyword_argument(self):
+        response = self.jsonreq('v2_decrement', args={})
+        print response
+        assert dict(jsonrpc='2.0',
+                    id='test',
+                    error={'code': -32602,
+                           'message': "Invalid params"}) == response

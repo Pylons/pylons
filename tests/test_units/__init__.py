@@ -69,7 +69,10 @@ class TestWSGIController(TestCase):
         return loads(response.body)[0][0]
 
     def jsonreq(self, method, args=()):
-        assert(isinstance(args, list) or isinstance(args, tuple))
+        assert(isinstance(args, list) or
+               isinstance(args, tuple) or
+               isinstance(args, dict))
+
         ee = dict(CONTENT_TYPE='application/json')
         data = json.dumps(dict(id='test',
                                method=method,

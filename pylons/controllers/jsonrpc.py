@@ -106,7 +106,7 @@ class JSONRPCController(WSGIController):
         if length == 0:
             log.debug("Content-Length is 0")
             abort(411)
- 
+
         raw_body = environ['wsgi.input'].read(length)
         json_body = json.loads(urllib.unquote_plus(raw_body))
 
@@ -127,11 +127,21 @@ class JSONRPCController(WSGIController):
 
         # now that we have a method, make sure we have enough
         # parameters and pass off control to the controller.
-        arglist = inspect.getargspec(self._func)[0][1:]
-        if len(self._req_params) < len(arglist):
-            err = jsonrpc_error(self._req_id, 'invalid_params')
-            return err(environ, start_response)
-        kargs = dict(zip(arglist, self._req_params))
+        if not isinstance(self._req_params, dict):
+            # JSON-RPC version 1 request.
+            arglist = inspect.getargspec(self._func)[0][1:]
+            if len(self._req_params) < len(arglist):
+                err = jsonrpc_error(self._req_id, 'invalid_params')
+                return err(environ, start_response)
+            else:
+                kargs = dict(zip(arglist, self._req_params))
+        else:
+            # JSON-RPC version 2 request.  Params may be default, and
+            # are already a dict, so skip the parameter length check here.
+            kargs = self._req_params
+
+        # XX Fix this namespace clash. One cannot use names below as
+        # method argument names as this stands!
         kargs['action'], kargs['environ'] = self._req_method, environ
         kargs['start_response'] = start_response
         self._rpc_args = kargs
@@ -156,9 +166,16 @@ class JSONRPCController(WSGIController):
         """Implement dispatch interface specified by WSGIController"""
         try:
             raw_response = self._inspect_call(self._func)
-        except JSONRPCError as e:
+        except JSONRPCError, e:
             self._error = e.as_dict()
-        except Exception as e:
+        except TypeError, e:
+            # Insufficient args in an arguments dict v2 call.
+            if 'takes at least' in str(e):
+                err = _reserved_errors['invalid_params']
+                self._error = err.as_dict()
+            else:
+                raise
+        except Exception, e:
             log.debug('Encountered unhandled exception: %s', repr(e))
             err = _reserved_errors['internal_error']
             self._error = err.as_dict()
