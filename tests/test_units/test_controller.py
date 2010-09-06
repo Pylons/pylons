@@ -55,6 +55,21 @@ class Test_session_subclass(unittest.TestCase):
         def throw_no_sess():
             req.abort_session()
         self.assertRaises(Exception, throw_no_sess)
+    
+    def test_session_abort_exception(self):
+        from pylons.controllers.util import Response
+        req = self._make_req()
+        assert len(req.response_callbacks) == 0
+        req.session['fred'] = 42
+        req.session.save()
+        assert req.session.accessed() == True
+        assert len(req.response_callbacks) > 0
+        
+        resp = Response()
+        req.exception = True
+        assert req.response_callbacks[0](req, resp) == None
+        assert 'Set-Cookie' not in resp.headers
+        
 
 
 def make_controllers():

@@ -254,6 +254,7 @@ class Configurator(BFGConfigurator):
         self.set_renderer_globals_factory(globals_factory)
         self.registry.helpers = None
         self.registry.session_options = None
+        self.registry.session_exception = True
         self.set_request_factory(Request)
         return result
     
@@ -264,16 +265,28 @@ class Configurator(BFGConfigurator):
             module_ref = resolve_dotted(module_ref)
         self.registry.helpers = module_ref
     
-    def add_sessions(self, settings=None, **fallback):
+    def add_sessions(self, settings=None, exception_abort=True, **fallback):
         """Add's session support to the WSGI app
         
-        Provided a settings dict, it will pull out session options
-        that begin with either 'beaker.session.' or 'session.'. A
-        settings dict is optional, and in the event it is not present,
-        the fallback keyword arguments will be used instead.
+        The ``settings`` argument should be a dict, usually the same
+        settings dict that the :class:`Configurator` was instantiated
+        with. Values will be pulled out of the dict that have a key
+        that begin with either 'beaker.session.' or 'session.'. Options
+        from this dict replace any options of the same name from the
+        fallback keyword args.
         
-        If a settings dict is provided, the fallback keyword arguments
-        will be merged such that settings arguments will be used first.
+        The ``exception_abort`` argument determines whether the session
+        will be persisted to the database and a cookie sent to the
+        browser in the event that an exception occurs during the request
+        processing. By default, this is set to ``True`` to prevent the 
+        session from being saved if an exception in the framework
+        occurs. Exceptions raised from view code that are not handled
+        by the framework will always cause the session to be aborted.
+        
+        ``fallback`` keyword arguments should be provided to ensure a
+        working application in the event no INI settings are found
+        since many features in a website will depend on sessions. These
+        options 
         
         """
         session_settings = fallback
@@ -283,8 +296,8 @@ class Configurator(BFGConfigurator):
                 if key.startswith(prefix):
                     name = key.split(prefix)[1]
                     session_settings[name] = settings[key]
+        self.registry.session_exception = exception_abort
         self.registry.session_options = session_settings
-        
 
     def add_route(self, name, pattern, **kw):
         """ Support the syntax supported by

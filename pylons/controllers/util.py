@@ -73,11 +73,15 @@ class Request(RepozeBFGRequest):
         set if necessary on the response object.
         
         """
+        attrs = self.__dict__
+        exception_abort = self.registry.session_exception
         sess_opts = self.registry.session_options
         if not sess_opts:
             raise Exception("Can't use the session without configuring sessions")
         session = SessionObject(self.environ)
         def session_callback(request, response):
+            if 'exception' in attrs and exception_abort:
+                return None
             if session.accessed():
                 session.persist()
                 if session.__dict__['_headers']['set_cookie']:
