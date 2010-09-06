@@ -253,15 +253,40 @@ class Configurator(BFGConfigurator):
             self.add_renderer(extension, mako_renderer_factory)
         self.set_renderer_globals_factory(globals_factory)
         self.registry.helpers = None
+        self.registry.session_options = None
         self.set_request_factory(Request)
         return result
     
     def add_helpers(self, module_ref):
         """ Add a reference to the helpers module, or load the module
-        ref if its a dotted notation string."""
+        ref if its a dotted notation string. If the module_ref is a list
+        then the modules specified will be searched in order for names
+        and be available as a single object 'h'."""
         if isinstance(module_ref, basestring):
             module_ref = resolve_dotted(module_ref)
         self.registry.helpers = module_ref
+    
+    def add_sessions(self, settings=None, **fallback):
+        """Add's session support to the WSGI app
+        
+        Provided a settings dict, it will pull out session options
+        that begin with either 'beaker.session.' or 'session.'. A
+        settings dict is optional, and in the event it is not present,
+        the fallback keyword arguments will be used instead.
+        
+        If a settings dict is provided, the fallback keyword arguments
+        will be merged such that settings arguments will be used first.
+        
+        """
+        session_settings = fallback
+        settings = settings or {}
+        for key in settings.keys():
+            for prefix in ['beaker.session.', 'session.']:
+                if key.startswith(prefix):
+                    name = key.split(prefix)[1]
+                    session_settings[name] = settings[key]
+        self.registry.session_options = session_settings
+        
 
     def add_route(self, name, pattern, **kw):
         """ Support the syntax supported by

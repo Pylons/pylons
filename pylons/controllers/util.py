@@ -29,6 +29,8 @@ except ImportError:
     import sha as sha1
 
 import pkg_resources
+from beaker.session import SessionObject
+from repoze.bfg.decorator import reify
 from repoze.bfg.interfaces import ISettings
 from repoze.bfg.request import Request as RepozeBFGRequest
 from webob import Response as WebObResponse
@@ -55,15 +57,35 @@ class Request(RepozeBFGRequest):
     """
     def __init__(self, *args, **kw):
         RepozeBFGRequest.__init__(self, *args, **kw)
-        environ = self.environ
         attrs = self.__dict__
-        if 'beaker.session' in environ:
-            attrs['session'] = environ['beaker.session']
         attrs['tmpl_context'] = PylonsContext()
     
-    @property
+    @reify
     def settings(self):
         return self.registry.queryUtility(ISettings)
+    
+    @reify
+    def session(self):
+        """Create and return the session object
+        
+        This also adds a response callback, which ensures that the
+        session is written out, and the appropriate cookie's are
+        set if necessary on the response object.
+        
+        """
+        sess_opts = self.registry.session_options
+        if not sess_opts:
+            raise Exception("Can't use the session without configuring sessions")
+        session = SessionObject(self.environ)
+        def session_callback(request, response):
+            if session.accessed():
+                session.persist()
+                if session.__dict__['_headers']['set_cookie']:
+                    cookie = session.__dict__['_headers']['cookie_out']
+                    if cookie:
+                        response.headerlist.append(('Set-cookie', cookie))
+        self.add_response_callback(session_callback)
+        return session
     
     def determine_browser_charset(self):
         """Legacy method to return the

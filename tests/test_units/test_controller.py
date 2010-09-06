@@ -8,12 +8,36 @@ from webob.exc import status_map
 from __init__ import TestWSGIController, TestMiddleware
 
 class Test_session_subclass(unittest.TestCase):
-    def test_session(self):
+    def _make_req(self, use_sessions=True):
+        from pylons.configuration import Configurator
         from pylons.controllers.util import Request
+        config = Configurator(settings={})
+        config.begin()
+        if use_sessions:
+            config.add_sessions({'session.key':'groovie'})
         req = Request({})
-        assert not hasattr(req, 'session')
-        req = Request({'beaker.session': True})
-        assert req.session == True
+        req.registry = config.registry
+        config.end()
+        return req
+        
+    def test_session(self):
+        from pylons.controllers.util import Response
+        req = self._make_req()
+        assert len(req.response_callbacks) == 0
+        req.session['fred'] = 42
+        req.session.save()
+        assert req.session.accessed() == True
+        assert len(req.response_callbacks) > 0
+        
+        resp = Response()
+        req.response_callbacks[0](req, resp)
+        assert 'Set-Cookie' in resp.headers
+    
+    def test_no_session(self):
+        req = self._make_req(use_sessions=False)
+        def throw_no_session():
+            req.session['fred'] = 42
+        self.assertRaises(Exception, throw_no_session)
 
 
 def make_controllers():
