@@ -259,8 +259,19 @@ class Configurator(BFGConfigurator):
         return result
     
     def add_helpers(self, module_ref):
-        """ Add a reference to the helpers module, or load the module
-        ref if its a dotted notation string."""
+        """ Add a reference to the helpers module
+                
+        The ``module_ref`` argument should be either an actual
+        reference to the module object that should be used, or a
+        :term:`dotted name string` which will be imported and
+        assigned as the helpers module.
+        
+        The helpers module is generally used with templates to provide
+        a common place to put additional functions needed within all
+        templates. Names present in the helpers module will be
+        available under the 'h' namespace in templates.
+        
+        """
         if isinstance(module_ref, basestring):
             module_ref = resolve_dotted(module_ref)
         self.registry.helpers = module_ref

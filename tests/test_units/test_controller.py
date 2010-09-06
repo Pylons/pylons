@@ -69,7 +69,6 @@ class Test_session_subclass(unittest.TestCase):
         req.exception = True
         assert req.response_callbacks[0](req, resp) == None
         assert 'Set-Cookie' not in resp.headers
-        
 
 
 def make_controllers():
