@@ -259,9 +259,7 @@ class Configurator(BFGConfigurator):
     
     def add_helpers(self, module_ref):
         """ Add a reference to the helpers module, or load the module
-        ref if its a dotted notation string. If the module_ref is a list
-        then the modules specified will be searched in order for names
-        and be available as a single object 'h'."""
+        ref if its a dotted notation string."""
         if isinstance(module_ref, basestring):
             module_ref = resolve_dotted(module_ref)
         self.registry.helpers = module_ref
