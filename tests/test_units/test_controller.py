@@ -38,6 +38,23 @@ class Test_session_subclass(unittest.TestCase):
         def throw_no_session():
             req.session['fred'] = 42
         self.assertRaises(Exception, throw_no_session)
+    
+    def test_session_abort(self):
+        from pylons.controllers.util import Response
+        req = self._make_req()
+        assert len(req.response_callbacks) == 0
+        req.add_response_callback(lambda x,y: x)
+        req.session['fred'] = 42
+        req.session.save()
+        assert req.session.accessed() == True
+        req.abort_session()
+        assert len(req.response_callbacks) == 1
+    
+    def test_session_abort_fail(self):
+        req = self._make_req(use_sessions=False)
+        def throw_no_sess():
+            req.abort_session()
+        self.assertRaises(Exception, throw_no_sess)
 
 
 def make_controllers():

@@ -84,8 +84,33 @@ class Request(RepozeBFGRequest):
                     cookie = session.__dict__['_headers']['cookie_out']
                     if cookie:
                         response.headerlist.append(('Set-cookie', cookie))
+        self._sess_callback = session_callback
         self.add_response_callback(session_callback)
         return session
+    
+    def abort_session(self):
+        """Aborts a session
+        
+        This causes a session that was used to be removed from the
+        request, and any saves that were pending will not be persisted.
+        Nor will any cookie be written out indicating the session was
+        accessed.
+        
+        Once a session is aborted, any further use of the `request.session`
+        object will not result in changes being persisted, or update the
+        accessed time for an existing session.
+        
+        """
+        try:
+            sess_callback = self._sess_callback
+        except AttributeError:
+            raise Exception("You cannot cancel a session if there was no"
+                            " session in use.")
+        callbacks = []
+        for cb in self.response_callbacks:
+            if cb != sess_callback:
+                callbacks.append(cb)
+        self.response_callbacks = callbacks
     
     def determine_browser_charset(self):
         """Legacy method to return the
