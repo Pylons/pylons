@@ -33,7 +33,6 @@ from repoze.bfg.mako import renderer_factory as mako_renderer_factory
 
 from pylons.controllers.util import Request
 from pylons.events import TemplateGlobals
-from pylons.util import resolve_dotted
 from pylons.url import route_url
 
 
@@ -272,8 +271,7 @@ class Configurator(BFGConfigurator):
         available under the 'h' namespace in templates.
         
         """
-        if isinstance(module_ref, basestring):
-            module_ref = resolve_dotted(module_ref)
+        module_ref = self.maybe_dotted(module_ref)
         self.registry.helpers = module_ref
     
     def add_sessions(self, settings=None, exception_abort=True, **fallback):
@@ -355,8 +353,7 @@ class Configurator(BFGConfigurator):
         Any extra keyword arguments are passed along to ``add_route``.
 
         This method returns the result of add_route."""
-        if isinstance(handler, basestring):
-            handler = resolve_dotted(handler)
+        handler = self.maybe_dotted(handler)
 
         route = self.add_route(route_name, pattern, **kw)
 
@@ -474,8 +471,7 @@ class Configurator(BFGConfigurator):
         XXX need a lot more docs
 
         """
-        if isinstance(handler, basestring):
-            handler = resolve_dotted(handler)
+        handler = self.maybe_dotted(handler)
 
         handler = self._make_rest_handler(handler)
         add = functools.partial(self.add_route, view_renderer='json',
