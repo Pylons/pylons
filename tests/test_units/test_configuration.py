@@ -398,6 +398,16 @@ class TestActionPredicate(unittest.TestCase):
         request.matchdict = {'action':'myaction'}
         self.assertEqual(pred(None, request), True)
 
+    def test___hash__(self):
+        pred1 = self._makeOne()
+        pred2 = self._makeOne()
+        pred3 = self._makeOne(action='notthesame')
+        self.assertEqual(hash(pred1), hash(pred2))
+        self.assertNotEqual(hash(pred1), hash(pred3))
+        self.assertNotEqual(hash(pred2), hash(pred3))
+        
+        
+
 class Dummy(object):
     pass
             

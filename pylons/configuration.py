@@ -543,6 +543,7 @@ class Configurator(BFGConfigurator):
 class ActionPredicate(object):
     action_name = 'action'
     def __init__(self, action):
+        self.action = action
         try:
             self.action_re = re.compile(action + '$')
         except (re.error, TypeError), why:
@@ -556,4 +557,9 @@ class ActionPredicate(object):
         if action is None:
             return False
         return bool(self.action_re.match(action))
+
+    def __hash__(self):
+        # allow this predicate's phash to be compared as equal to
+        # others that share the same action name
+        return hash(self.action)
         
