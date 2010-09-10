@@ -78,7 +78,7 @@ class Request(RepozeBFGRequest):
         sess_opts = self.registry.session_options
         if not sess_opts:
             raise Exception("Can't use the session without configuring sessions")
-        session = SessionObject(self.environ)
+        session = SessionObject(self.environ, **sess_opts)
         def session_callback(request, response):
             if 'exception' in attrs and exception_abort:
                 return None
