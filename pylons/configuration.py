@@ -275,7 +275,7 @@ class Configurator(BFGConfigurator):
         self.registry.helpers = module_ref
     
     def add_sessions(self, settings=None, exception_abort=True, **fallback):
-        """Add's session support to the WSGI app
+        """Adds session support to the Pylons application.
         
         The ``settings`` argument should be a dict, usually the same
         settings dict that the :class:`Configurator` was instantiated
@@ -334,7 +334,12 @@ class Configurator(BFGConfigurator):
         ``route_name`` is the name of the route (to be used later in
         URL generation).
 
-        ``pattern`` is the matching pattern, e.g. ``'/blog/{action}'``
+        ``pattern`` is the matching pattern,
+        e.g. ``'/blog/{action}'``.  ``pattern`` may be ``None``, in
+        which case the pattern of an existing route named the same as
+        ``route_name`` is used.  If ``pattern`` is ``None`` and no
+        route named ``route_name`` exists, a ``ConfigurationError`` is
+        raised.
         
         ``handler`` is a dotted name of (or direct reference to) a
         Python handler class,
@@ -355,7 +360,18 @@ class Configurator(BFGConfigurator):
         This method returns the result of add_route."""
         handler = self.maybe_dotted(handler)
 
-        route = self.add_route(route_name, pattern, **kw)
+        if pattern is not None:
+            route = self.add_route(route_name, pattern, **kw)
+        else:
+            mapper = self.get_routes_mapper()
+            route = mapper.get_route(route_name)
+            if route is None:
+                raise ConfigurationError(
+                    'The "pattern" parameter may only be "None" when a route '
+                    'with the route_name argument was previously registered. '
+                    'No such route named %r exists'  % route_name)
+                                         
+            pattern = route.pattern
 
         path_has_action = ':action' in pattern or '{action}' in pattern
 

@@ -200,7 +200,7 @@ class TestConfigurator(unittest.TestCase):
         self.assertRaises(ConfigurationError, config.add_handler, 
                           'name', '/{action}', DummyHandler, action='abc')
 
-    def test_with_explicit_action(self):
+    def test_add_handler_with_explicit_action(self):
         config = self._makeOne()
         class DummyHandler(object):
             def index(self): pass
@@ -217,7 +217,7 @@ class TestConfigurator(unittest.TestCase):
         self.assertEqual(view['route_name'], 'name')
         self.assertEqual(view['view'], DummyHandler)
 
-    def test_with_implicit_action(self):
+    def test_add_handler_with_implicit_action(self):
         config = self._makeOne()
         class DummyHandler(object):
             def __call__(self): pass
@@ -234,7 +234,7 @@ class TestConfigurator(unittest.TestCase):
         self.assertEqual(view['route_name'], 'name')
         self.assertEqual(view['view'], DummyHandler)
     
-    def test_with_multiple_action(self):
+    def test_add_handler_with_multiple_action(self):
         config = self._makeOne()
         class DummyHandler(object):
             def index(self): pass
@@ -253,7 +253,7 @@ class TestConfigurator(unittest.TestCase):
         view = views[1]
         self.assertEqual(view['attr'], 'index')
 
-    def test_string_handler(self):
+    def test_add_handler_string(self):
         import pylons
         views = []
         config = self._makeOne()
@@ -261,6 +261,26 @@ class TestConfigurator(unittest.TestCase):
             views.append(kw)
         config.add_view = dummy_add_view
         config.add_handler('name', '/abc', 'pylons')
+        self.assertEqual(len(views), 1)
+        view = views[0]
+        self.assertEqual(view['view'], pylons)
+
+    def test_add_handler_pattern_None_no_previous_route(self):
+        from repoze.bfg.exceptions import ConfigurationError
+        config = self._makeOne()
+        self.assertRaises(ConfigurationError, config.add_handler,
+                          'name', None, 'pylons')
+
+    def test_add_handler_pattern_None_with_previous_route(self):
+        import pylons
+        config = self._makeOne()
+        config.add_route('name', ':def')
+        views = []
+        def dummy_add_view(**kw):
+            views.append(kw)
+        config.add_view = dummy_add_view
+        config.add_route = None # shouldn't be called
+        config.add_handler('name', None, 'pylons')
         self.assertEqual(len(views), 1)
         view = views[0]
         self.assertEqual(view['view'], pylons)
