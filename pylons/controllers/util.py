@@ -18,17 +18,15 @@ import binascii
 import hmac
 import logging
 import re
-import sys
 try:
     import cPickle as pickle
-except ImportError:
+except ImportError: # pragma: no cover
     import pickle
 try:
     from hashlib import sha1
-except ImportError:
+except ImportError: # pragma: no cover
     import sha as sha1
 
-import pkg_resources
 from beaker.session import SessionObject
 from repoze.bfg.decorator import reify
 from repoze.bfg.interfaces import ISettings
@@ -39,8 +37,7 @@ from webob.exc import status_map
 import pylons
 from pylons.util import PylonsContext
 
-__all__ = ['abort', 'etag_cache', 'lookup_controller', 'redirect', 
-           'redirect_to', 'Request', 'Response']
+__all__ = ['abort', 'etag_cache', 'redirect', 'Request', 'Response']
 
 log = logging.getLogger(__name__)
 
