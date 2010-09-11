@@ -18,39 +18,101 @@ import binascii
 import hmac
 import logging
 import re
-import sys
 try:
     import cPickle as pickle
-except ImportError:
+except ImportError: # pragma: no cover
     import pickle
 try:
     from hashlib import sha1
-except ImportError:
+except ImportError: # pragma: no cover
     import sha as sha1
 
-import pkg_resources
-from webob import Request as WebObRequest
+from beaker.session import SessionObject
+from repoze.bfg.decorator import reify
+from repoze.bfg.interfaces import ISettings
+from repoze.bfg.request import Request as RepozeBFGRequest
 from webob import Response as WebObResponse
 from webob.exc import status_map
 
 import pylons
+from pylons.util import PylonsContext
 
-__all__ = ['abort', 'etag_cache', 'lookup_controller', 'redirect', 
-           'redirect_to', 'Request', 'Response']
+__all__ = ['abort', 'etag_cache', 'redirect', 'Request', 'Response']
 
 log = logging.getLogger(__name__)
 
 IF_NONE_MATCH = re.compile('(?:W/)?(?:"([^"]*)",?\s*)')
 
 
-class Request(WebObRequest):
+class Request(RepozeBFGRequest):
     """WebOb Request subclass
     
     The WebOb :class:`webob.Request` has no charset, or other defaults. This subclass
     adds defaults, along with several methods for backwards 
     compatibility with paste.wsgiwrappers.WSGIRequest.
     
-    """    
+    """
+    def __init__(self, *args, **kw):
+        RepozeBFGRequest.__init__(self, *args, **kw)
+        attrs = self.__dict__
+        attrs['tmpl_context'] = PylonsContext()
+    
+    @reify
+    def settings(self):
+        return self.registry.queryUtility(ISettings)
+    
+    @reify
+    def session(self):
+        """Create and return the session object
+        
+        This also adds a response callback, which ensures that the
+        session is written out, and the appropriate cookie's are
+        set if necessary on the response object.
+        
+        """
+        attrs = self.__dict__
+        exception_abort = self.registry.session_exception
+        sess_opts = self.registry.session_options
+        if not sess_opts:
+            raise Exception("Can't use the session without configuring sessions")
+        session = SessionObject(self.environ, **sess_opts)
+        def session_callback(request, response):
+            if 'exception' in attrs and exception_abort:
+                return None
+            if session.accessed():
+                session.persist()
+                if session.__dict__['_headers']['set_cookie']:
+                    cookie = session.__dict__['_headers']['cookie_out']
+                    if cookie:
+                        response.headerlist.append(('Set-cookie', cookie))
+        self._sess_callback = session_callback
+        self.add_response_callback(session_callback)
+        return session
+    
+    def abort_session(self):
+        """Aborts a session
+        
+        This causes a session that was used to be removed from the
+        request, and any saves that were pending will not be persisted.
+        Nor will any cookie be written out indicating the session was
+        accessed.
+        
+        Once a session is aborted, any further use of the `request.session`
+        object will not result in changes being persisted, or update the
+        accessed time for an existing session.
+        
+        """
+        try:
+            sess_callback = self._sess_callback
+        except AttributeError:
+            raise Exception("You cannot cancel a session if there was no"
+                            " session in use.")
+        callbacks = []
+        for cb in self.response_callbacks:
+            if cb != sess_callback:
+                callbacks.append(cb)
+        self.response_callbacks = callbacks
+    
     def determine_browser_charset(self):
         """Legacy method to return the
         :attr:`webob.Request.accept_charset`"""

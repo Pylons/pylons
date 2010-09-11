@@ -84,6 +84,19 @@ PylonsHQ website in this browser.</p>
 
 report_libs = ['pylons', 'genshi', 'sqlalchemy']
 
+def DebugHandler(app, global_conf, **kwargs):
+    footer = footer_html % (kwargs.get('traceback_host', 
+                                       'pylonshq.com'),
+                            pylons.__version__)
+    py_media = dict(pylons=media_path)
+    app = EvalException(app, global_conf, 
+                        templating_formatters=template_error_formatters,
+                        media_paths=py_media, head_html=head_html, 
+                        footer_html=footer,
+                        libraries=report_libs)
+    return app
+
+
 def ErrorHandler(app, global_conf, **errorware):
     """ErrorHandler Toggle
     
@@ -193,3 +206,12 @@ error_document_template = literal("""\
 </body>
 </html>
 """)
+
+def debugger_filter_factory(global_conf, **kwargs):
+    def filter(app):
+        return DebugHandler(app, global_conf, **kwargs)
+    return filter
+
+
+def debugger_filter_app_factory(app, global_conf, **kwargs):
+    return DebugHandler(app, global_conf, **kwargs)

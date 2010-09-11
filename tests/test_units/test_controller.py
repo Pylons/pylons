@@ -1,9 +1,75 @@
 # -*- coding: utf-8 -*-
+import unittest
+
 from paste.fixture import TestApp
 from paste.registry import RegistryManager
 from webob.exc import status_map
 
 from __init__ import TestWSGIController, TestMiddleware
+
+class Test_session_subclass(unittest.TestCase):
+    def _make_req(self, use_sessions=True):
+        from pylons.configuration import Configurator
+        from pylons.controllers.util import Request
+        config = Configurator(settings={})
+        config.begin()
+        if use_sessions:
+            config.add_sessions({'session.key':'groovie'})
+        req = Request({})
+        req.registry = config.registry
+        config.end()
+        return req
+        
+    def test_session(self):
+        from pylons.controllers.util import Response
+        req = self._make_req()
+        assert len(req.response_callbacks) == 0
+        req.session['fred'] = 42
+        req.session.save()
+        assert req.session.accessed() == True
+        assert len(req.response_callbacks) > 0
+        
+        resp = Response()
+        req.response_callbacks[0](req, resp)
+        assert 'Set-Cookie' in resp.headers
+    
+    def test_no_session(self):
+        req = self._make_req(use_sessions=False)
+        def throw_no_session():
+            req.session['fred'] = 42
+        self.assertRaises(Exception, throw_no_session)
+    
+    def test_session_abort(self):
+        from pylons.controllers.util import Response
+        req = self._make_req()
+        assert len(req.response_callbacks) == 0
+        req.add_response_callback(lambda x,y: x)
+        req.session['fred'] = 42
+        req.session.save()
+        assert req.session.accessed() == True
+        req.abort_session()
+        assert len(req.response_callbacks) == 1
+    
+    def test_session_abort_fail(self):
+        req = self._make_req(use_sessions=False)
+        def throw_no_sess():
+            req.abort_session()
+        self.assertRaises(Exception, throw_no_sess)
+    
+    def test_session_abort_exception(self):
+        from pylons.controllers.util import Response
+        req = self._make_req()
+        assert len(req.response_callbacks) == 0
+        req.session['fred'] = 42
+        req.session.save()
+        assert req.session.accessed() == True
+        assert len(req.response_callbacks) > 0
+        
+        resp = Response()
+        req.exception = True
+        assert req.response_callbacks[0](req, resp) == None
+        assert 'Set-Cookie' not in resp.headers
+
 
 def make_controllers():
     import pylons

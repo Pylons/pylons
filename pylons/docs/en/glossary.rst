@@ -71,7 +71,14 @@ Glossary
             Pylons :ref:`deployment`
 
         .. _easy_install: http://peak.telecommunity.com/DevCenter/EasyInstall
-
+    
+    dotted name string
+        A reference to a Python module by name using a string to identify it,
+        e.g. ``pylons.controllers.util``. These strings are evaluated to
+        import the module being referenced without having to import it in
+        the code used. This is generally used to avoid import-time 
+        side-effects.
+    
     egg
         Python egg's are bundled Python packages, generally installed by
         a package called :term:`setuptools`. Unlike normal Python package

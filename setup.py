@@ -83,6 +83,7 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
         "FormEncode>=1.2.1", "simplejson>=2.0.8", "decorator>=2.3.2",
         "nose>=0.10.4", "Mako>=0.2.4", "WebOb>=0.9.6.1", "WebError>=0.10.1",
         "WebTest>=1.1", "Tempita>=0.2", "MarkupSafe>=0.9.2",
+        "repoze.bfg >= 1.3a4", "repoze.bfg.mako"
     ],
     dependency_links=[
         "http://www.pylonshq.com/download/1.0"
@@ -112,5 +113,14 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
     [paste.paster_create_template]
     pylons = pylons.util:PylonsTemplate
     pylons_minimal = pylons.util:MinimalPylonsTemplate
+    pylons_legacy = pylons.util:LegacyPylonsTemplate
+    pylons_newminimal = pylons.util:NewMinimalPylonsTemplate
+    pylons_newsqla = pylons.util:NewSQLAlchemyTemplate
+    
+    [paste.filter_factory]
+    debugger = pylons.middleware:debugger_filter_factory
+    
+    [paste.filter_app_factory]
+    debugger = pylons.middleware:debugger_filter_app_factory
     """,
 )

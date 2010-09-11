@@ -1,6 +1,9 @@
 Pylons Changelog
 ================
 
+bfg_branch
+* Add dependency on repoze.bfg 1.3a4+.
+
 1.1 (**tip**)
 * Remove Pylons nose plugin. Increase globals that default tests setup.
 

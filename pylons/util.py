@@ -181,6 +181,23 @@ class MinimalPylonsTemplate(PylonsTemplate):
             default='mako'),
     ]
 
+class LegacyPylonsTemplate(PylonsTemplate):
+    _template_dir = ('pylons', 'templates/legacy_project')
+    summary = 'Pylons legacy application template'
+    vars = [
+        var('template_engine', 'mako/genshi/jinja2/etc: Template language', 
+            default='mako'),
+    ]
+
+class NewMinimalPylonsTemplate(PylonsTemplate):
+    _template_dir = ('pylons', 'templates/newminimal_project')
+    summary = 'Pylons "newstyle" minimal application template'
+    vars = []
+
+class NewSQLAlchemyTemplate(PylonsTemplate):
+    _template_dir = ('pylons', 'templates/newsqla_project')
+    summary = 'Pylons "newstyle" SQLAlchemy template'
+    vars = []
 
 class PylonsInstaller(Installer):
     use_cheetah = False
@@ -205,3 +222,6 @@ class PylonsInstaller(Installer):
                     vars, filename=self.config_file)
         # Legacy support for the old location in egg-info
         return super(PylonsInstaller, self).config_content(command, vars)
+
+def resolve_dotted(name):
+    return pkg_resources.EntryPoint.parse('x=%s' % name).load(False)

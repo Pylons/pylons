@@ -5,9 +5,11 @@ import pkg_resources
 from paste.registry import StackedObjectProxy
 
 from pylons.configuration import config
+from pylons.controllers.util import Request
+from pylons.controllers.util import Response
 
 __all__ = ['app_globals', 'cache', 'config', 'request', 'response',
-           'session', 'tmpl_context', 'url']
+           'session', 'tmpl_context', 'url', 'Request', 'Response']
 
 def __figure_version():
     try:
