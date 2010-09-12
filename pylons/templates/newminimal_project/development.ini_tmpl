@@ -1,7 +1,7 @@
 [app:main]
 use = egg:{{project}}
 reload_templates = true
-mako.directories = {{project}}:templates
+mako.directories = {{package}}:templates
 debug_authorization = false
 debug_notfound = false
 debug_templates = true
