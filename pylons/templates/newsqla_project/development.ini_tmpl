@@ -12,7 +12,7 @@ db_string = sqlite:///%(here)s/tutorial.db
 pipeline =
     egg:WebError#evalerror
     egg:repoze.tm2#tm
-    wiki
+    {{project}}
 
 [server:main]
 use = egg:Paste#http

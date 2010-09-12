@@ -12,7 +12,7 @@ def main(global_config, **settings):
     config.begin()
     config.add_static_view(
         'static',
-        '{{package}}:templates/static'
+        '{{package}}:static/'
         )
     config.add_handler(
         'main',
