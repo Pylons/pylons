@@ -1,7 +1,7 @@
-[app:wiki]
+[app:{{project}}]
 use = egg:{{project}}
 reload_templates = true
-mako.directories = {{project}}:templates
+mako.directories = {{package}}:templates
 debug_authorization = false
 debug_notfound = false
 debug_templates = true
@@ -10,6 +10,7 @@ db_string = sqlite:///%(here)s/tutorial.db
 
 [pipeline:main]
 pipeline =
+    egg:WebError#evalerror
     egg:repoze.tm2#tm
     wiki
 

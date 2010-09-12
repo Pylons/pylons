@@ -7,11 +7,8 @@ debug_notfound = false
 debug_templates = true
 default_locale_name = en
 
-[filter:evalerror]
-use = egg:WebError#evalerror
-
 [pipeline:main]
-pipeline = evalerror
+pipeline = egg:WebError#evalerror
            {{project}}
 
 [server:main]
