@@ -1,4 +1,4 @@
-[app:main]
+[app:{{project}}]
 use = egg:{{project}}
 reload_templates = true
 mako.directories = {{package}}:templates
@@ -6,6 +6,13 @@ debug_authorization = false
 debug_notfound = false
 debug_templates = true
 default_locale_name = en
+
+[filter:evalerror]
+use = egg:WebError#evalerror
+
+[pipeline:main]
+pipeline = evalerror
+           {{project}}
 
 [server:main]
 use = egg:Paste#http
