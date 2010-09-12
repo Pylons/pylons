@@ -4,7 +4,7 @@ def main(global_config, **settings):
     from pylons.configuration import Configurator
     config = Configurator(settings=settings)
     config.begin()
-    config.add_static_view('static', '{{package}}:templates/static')
+    config.add_static_view('static', '{{package}}:static/')
     config.add_handler('action', '/{action}', '{{package}}.handlers:MyHandler')
     config.add_handler('home', '/', '{{package}}.handlers:MyHandler',
                        action='index')
