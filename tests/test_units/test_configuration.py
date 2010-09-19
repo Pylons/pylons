@@ -19,6 +19,54 @@ class TestConfigurator(unittest.TestCase):
     def _makeOne(self, *arg, **kw):
         return self._getTargetClass()(*arg, **kw)
 
+    def test_add_cache_no_regions(self):
+        import beaker
+        from repoze.bfg.interfaces import ISettings
+        beaker.cache.cache_regions = {}
+        config = self._makeOne()
+        settings = config.registry.queryUtility(ISettings)
+        settings['cache.regions'] = '' #how to pretend it doesnt exist at all ?
+        config.add_cache()
+        self.assertEqual(beaker.cache.cache_regions, {})
+
+    def test_add_cache_single_region_no_expire(self):
+        import beaker
+        from repoze.bfg.interfaces import ISettings
+        beaker.cache.cache_regions = {}
+        config = self._makeOne()        
+        settings = config.registry.queryUtility(ISettings)
+        settings['cache.regions'] = 'default_term'
+        config.add_cache()
+        default_term = beaker.cache.cache_regions.get('default_term')
+        self.assertEqual(default_term, {'expire': 60, 'type': 'memory',
+                                      'lock_dir': None})
+    
+    def test_add_cache_multiple_region(self):
+        import beaker
+        from repoze.bfg.interfaces import ISettings
+        beaker.cache.cache_regions = {}
+        config = self._makeOne()        
+        settings = config.registry.queryUtility(ISettings)
+        settings['cache.regions'] = 'default_term, short_term'
+        settings['cache.lock_dir'] = 'foo'
+        settings['cache.short_term.expire'] = '60'
+        settings['cache.default_term.type'] = 'file'
+        settings['cache.default_term.expire'] = '300'
+        config.add_cache()
+        default_term = beaker.cache.cache_regions.get('default_term')
+        short_term = beaker.cache.cache_regions.get('short_term')
+        self.assertEqual(short_term.get('expire'),
+                         int(settings['cache.short_term.expire']))
+        self.assertEqual(short_term.get('lock_dir'), settings['cache.lock_dir'])
+        self.assertEqual(short_term.get('type'), 'memory')
+
+        self.assertEqual(default_term.get('expire'),
+                         int(settings['cache.default_term.expire']))
+        self.assertEqual(default_term.get('lock_dir'),
+                         settings['cache.lock_dir'])
+        self.assertEqual(default_term.get('type'),
+                         settings['cache.default_term.type'])
+
     def test_ctor(self):
         from repoze.bfg.interfaces import IRendererFactory
         config = self._makeOne()
