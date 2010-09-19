@@ -6,11 +6,11 @@ debug_authorization = false
 debug_notfound = false
 debug_templates = true
 default_locale_name = en
-beaker.session.type = file
-beaker.session.data_dir = %(here)s/data/sessions/data
-beaker.session.lock_dir = %(here)s/data/sessions/lock
-beaker.session.key = {{project}}
-beaker.session.secret = your_app_secret_string
+session.type = file
+session.data_dir = %(here)s/data/sessions/data
+session.lock_dir = %(here)s/data/sessions/lock
+session.key = {{project}}
+session.secret = your_app_secret_string
 
 [pipeline:main]
 pipeline = egg:WebError#evalerror
