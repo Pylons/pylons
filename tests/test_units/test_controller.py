@@ -14,7 +14,7 @@ class Test_session_subclass(unittest.TestCase):
         config = Configurator(settings={})
         config.begin()
         if use_sessions:
-            config.add_sessions({'session.key':'groovie'})
+            config.add_sessions(key='groovie')
         req = Request({})
         req.registry = config.registry
         config.end()

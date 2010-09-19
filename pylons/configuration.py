@@ -26,6 +26,7 @@ from webhelpers.mimehelper import MIMETypes
 
 from repoze.bfg.configuration import Configurator as BFGConfigurator
 from repoze.bfg.exceptions import ConfigurationError
+from repoze.bfg.interfaces import ISettings
 from repoze.bfg.threadlocal import get_current_registry
 from repoze.bfg.threadlocal import get_current_request
 
@@ -274,14 +275,13 @@ class Configurator(BFGConfigurator):
         module_ref = self.maybe_dotted(module_ref)
         self.registry.helpers = module_ref
     
-    def add_sessions(self, settings=None, exception_abort=True, **fallback):
+    def add_sessions(self, exception_abort=True, **fallback):
         """Adds session support to the Pylons application.
         
-        The ``settings`` argument should be a dict, usually the same
-        settings dict that the :class:`Configurator` was instantiated
-        with. Values will be pulled out of the dict that have a key
+        The ``settings`` passed the configurator are used to setup
+        the session confgiuration. Values will be used that have a key
         that begin with either 'beaker.session.' or 'session.'. Options
-        from this dict replace any options of the same name from the
+        from ``settings`` replace any options of the same name from the
         fallback keyword args.
         
         The ``exception_abort`` argument determines whether the session
@@ -299,7 +299,7 @@ class Configurator(BFGConfigurator):
         
         """
         session_settings = fallback
-        settings = settings or {}
+        settings = self.registry.queryUtility(ISettings) or {}
         for key in settings.keys():
             for prefix in ['beaker.session.', 'session.']:
                 if key.startswith(prefix):
