@@ -11,7 +11,7 @@ def main(global_config, **settings):
     initialize_sql(db_string, asbool(settings.get('db_echo')))
     config = Configurator(settings=settings)
     config.begin()
-    config.add_sessions(settings=settings)
+    config.add_sessions()
     config.add_static_view(
         'static',
         '{{package}}:static/'
@@ -29,4 +29,3 @@ def main(global_config, **settings):
         )
     config.end()
     return config.make_wsgi_app()
-
