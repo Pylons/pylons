@@ -278,7 +278,7 @@ class Configurator(BFGConfigurator):
     def add_sessions(self, exception_abort=True, **fallback):
         """Adds session support to the Pylons application.
         
-        The ``settings`` passed the configurator are used to setup
+        The ``settings`` passed to the configurator are used to setup
         the session confgiuration. Values will be used that have a key
         that begin with either 'beaker.session.' or 'session.'. Options
         from ``settings`` replace any options of the same name from the
