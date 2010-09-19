@@ -20,6 +20,7 @@ import logging
 import os
 import re
 
+import beaker
 from paste.config import DispatchingConfig
 from paste.deploy.converters import asbool
 from webhelpers.mimehelper import MIMETypes
@@ -259,7 +260,13 @@ class Configurator(BFGConfigurator):
         return result
     
     def add_cache(self):
-        import beaker
+        """ Add cache support to the Pylons application.
+        
+        The ``settings`` passed to the configurator are used to setup
+        the cache options. Cache options in the settings should start
+        with either 'beaker.cache.' or 'cache.'.
+        
+        """
         cache_settings = {'regions':None}
         settings = self.registry.queryUtility(ISettings) or {}
         for key in settings.keys():
