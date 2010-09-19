@@ -1,7 +1,7 @@
 from pylons.views import action
 
 from {{package}}.models import DBSession
-from {{package}}.models import Model
+from {{package}}.models import MyModel
 
 class MyHandler(object):
     def __init__(self, request):
@@ -9,6 +9,5 @@ class MyHandler(object):
 
     @action(renderer='mytemplate.mak')
     def index(self):
-        dbsession = DBSession()
-        root = dbsession.query(Model).filter(Model.name==u'root').first()
+        root = MyModel.by_name('root')
         return {'root':root, 'project':'{{package}}'}

@@ -7,6 +7,14 @@ debug_notfound = false
 debug_templates = true
 default_locale_name = en
 db_string = sqlite:///%(here)s/tutorial.db
+db_echo = true
+beaker.session.type = file
+beaker.session.data_dir = %(here)s/data/sessions/data
+beaker.session.lock_dir = %(here)s/data/sessions/lock
+beaker.session.key = {{project}}
+beaker.session.secret = your_app_secret_string
+
+
 
 [pipeline:main]
 pipeline =
