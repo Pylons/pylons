@@ -41,8 +41,8 @@ from pylons.url import route_url
 request_defaults = dict(charset='utf-8', errors='replace',
                         decode_param_names=False, language='en-us')
 response_defaults = dict(content_type='text/html',
-                         charset='utf-8', errors='strict', 
-                         headers={'Cache-Control': 'no-cache', 
+                         charset='utf-8', errors='strict',
+                         headers={'Cache-Control': 'no-cache',
                                   'Pragma': 'no-cache'})
 
 log = logging.getLogger(__name__)
@@ -108,7 +108,7 @@ class PylonsConfig(dict):
                          'controllers': None,
                          'templates': [],
                          'static_files': None},
-        'pylons.environ_config': dict(session='beaker.session', 
+        'pylons.environ_config': dict(session='beaker.session',
                                       cache='beaker.cache'),
         'pylons.app_globals': None,
         'pylons.h': None,
@@ -202,7 +202,7 @@ class PylonsConfig(dict):
             conf.setdefault('beaker.cache.data_dir',
                             os.path.join(conf['cache_dir'], 'cache'))
 
-        conf['pylons.cache_dir'] = conf.pop('cache_dir', 
+        conf['pylons.cache_dir'] = conf.pop('cache_dir',
                                             conf['app_conf'].get('cache_dir'))
         # Save our errorware values
         conf['pylons.errorware'] = errorware
@@ -257,6 +257,31 @@ class Configurator(BFGConfigurator):
         self.registry.session_exception = True
         self.set_request_factory(Request)
         return result
+    
+    def add_cache(self):
+        import beaker
+        cache_settings = {'regions':None}
+        settings = self.registry.queryUtility(ISettings) or {}
+        for key in settings.keys():
+            for prefix in ['beaker.cache.', 'cache.']:
+                if key.startswith(prefix):
+                    name = key.split(prefix)[1].strip()
+                    cache_settings[name] = settings[key].strip()
+        if cache_settings['regions']:
+            for region in cache_settings['regions'].split(','):
+                region = region.strip()
+                region_settings = {}
+                for key, value in cache_settings.items():
+                    if key.startswith(region):
+                        region_settings[key.split('.')[1]] = value
+                region_settings['expire'] = int(region_settings.get('expire',
+                                                                    60))
+                region_settings.setdefault('lock_dir',
+                                           cache_settings.get('lock_dir'))  
+                if 'type' not in region_settings:
+                    region_settings['type'] = cache_settings.get('type',
+                                                                 'memory')
+                beaker.cache.cache_regions[region] = region_settings 
     
     def add_helpers(self, module_ref):
         """ Add a reference to the helpers module
@@ -369,7 +394,7 @@ class Configurator(BFGConfigurator):
                 raise ConfigurationError(
                     'The "pattern" parameter may only be "None" when a route '
                     'with the route_name argument was previously registered. '
-                    'No such route named %r exists'  % route_name)
+                    'No such route named %r exists' % route_name)
                                          
             pattern = route.pattern
 
@@ -398,7 +423,7 @@ class Configurator(BFGConfigurator):
                     # so we copy each
                     view_args = expose_config.copy()
                     action = view_args.pop('name', method_name)
-                    preds = list(view_args.pop('custom_predicates',[]))
+                    preds = list(view_args.pop('custom_predicates', []))
                     preds.append(ActionPredicate(action))
                     view_args['custom_predicates'] = preds
                     self.add_view(view=handler, attr=method_name,
@@ -515,7 +540,7 @@ class Configurator(BFGConfigurator):
                 self.request = request
                 
             def _get_handler(self):
-                handler =  handler_factory(self.request)
+                handler = handler_factory(self.request)
                 return handler
 
             def index(self):
