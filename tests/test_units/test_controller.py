@@ -11,10 +11,13 @@ class Test_session_subclass(unittest.TestCase):
     def _make_req(self, use_sessions=True):
         from pylons.configuration import Configurator
         from pylons.controllers.util import Request
+        from repoze.bfg.interfaces import ISettings
         config = Configurator(settings={})
         config.begin()
         if use_sessions:
-            config.add_sessions(key='groovie')
+            settings = config.registry.queryUtility(ISettings)
+            settings['session.key'] = 'groovie'
+            config.add_sessions()
         req = Request({})
         req.registry = config.registry
         config.end()
