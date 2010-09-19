@@ -11,6 +11,7 @@ def main(global_config, **settings):
     initialize_sql(db_string, asbool(settings.get('db_echo')))
     config = Configurator(settings=settings)
     config.begin()
+    config.add_cache()
     config.add_sessions()
     config.add_static_view(
         'static',
