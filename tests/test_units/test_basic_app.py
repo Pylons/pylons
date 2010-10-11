@@ -151,4 +151,4 @@ class TestJsonifyDecorator(object):
     def test_langs(self):
         response = self.app.get(self.url(controller='i18nc', action='langs'), headers={
                 'Accept-Language':'fr;q=0.6, en;q=0.1, ja;q=0.3'})
-        assert "['fr', 'ja', 'en', 'en-us']" in response
+        assert "['fr', 'ja', 'en-us']" in response
