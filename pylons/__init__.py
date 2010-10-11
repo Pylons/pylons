@@ -5,6 +5,7 @@ import pkg_resources
 from paste.registry import StackedObjectProxy
 
 from pylons.configuration import config
+from pylons.configuration import Configurator
 from pylons.controllers.util import Request
 from pylons.controllers.util import Response
 
