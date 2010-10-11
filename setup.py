@@ -7,7 +7,7 @@ except ImportError:
     use_setuptools()
     from setuptools import setup, find_packages
 
-version = '2.0'
+version = '2.0a1'
 
 tests_require = ['nose', 'Jinja2>=2.2.1']
 if not sys.platform.startswith('java'):
@@ -21,8 +21,38 @@ setup(
 Pylons
 ======
 
-The Pylons web framework is aimed at making webapps and large programmatic
-website development in Python easy. Several key points:
+The Pylons web framework is designed for building web applications and
+sites in an easy and concise manner. They can range from as small as a
+single Python module, to a substantial directory layout for larger and
+more complex web applications.
+
+
+Example `Hello World`
+---------------------
+
+..
+
+    from paste.httpserver import serve
+    from pylons import Configurator, Response
+
+    class Hello(object):
+        def __init__(self, request):
+            self.request = request
+
+        def index(self):
+            return Response(body="Hello World!")
+
+
+    if __name__ == '__main__':
+        config = Configurator()
+        config.begin()
+        config.add_handler('home', '/', handler=Hello, action='index')
+        config.end()
+        serve(config.make_wsgi_app(), host='0.0.0.0')
+
+
+Core Features
+-------------
 
 * A framework to make writing web applications in Python easy
 
@@ -31,28 +61,20 @@ website development in Python easy. Several key points:
 
 * Harness existing knowledge about Python
 
-Knowing Python makes Pylons easy
---------------------------------
+* Extensible application design
 
-Pylons makes it easy to expand on your knowledge of Python to master Pylons for
-web development. Using a MVC style dispath, Python knowledge is used at various
-levels:
+* Fast and efficient, an incredibly small per-request call-stack providing
+  top performance
 
-* The Controller is just a basic Python class, called for each
-  request. Customizing the response is as easy as overriding __call__ to make
-  your webapp work how you want.
+* Uses existing and well tested Python packages
 
-* Mako templating compiles directly to Python byte-code for speed and utilizes
-  Python for template control rather than creating its own template syntax for
-  "for, while, etc"
 
 Current Status
----------------
+--------------
 
-Pylons %s described on this page is stable.
+Pylons 1.0 series is stable and production ready. Pylons 2 is currently under
+development, and while the code is stable, there may be bugs.
 
-There is also an unstable `develoment version
-<https://www.knowledgetap.com/hg/pylons-dev/archive/tip.tar.gz#egg=Pylons-dev>`_ of Pylons.
 
 Download and Installation
 -------------------------
@@ -66,7 +88,16 @@ Dependant packages are automatically installed from
 the `Pylons download page <http://pylonshq.com/download/>`_ .
 
 
-""" % version,
+Development Version
+-------------------
+
+Pylons development uses the Mercuial distributed version control system (DVCS)
+with BitBucket hosting the main repository here:
+    
+    `Pylons Bitbucket repository <http://bitbucket.org/bbangert/pylons/>`_
+
+
+""",
     keywords='web wsgi lightweight framework sqlalchemy formencode mako templates',
     license='BSD',
     author='Ben Bangert, Philip Jenvey, James Gardner',
@@ -81,9 +112,9 @@ the `Pylons download page <http://pylonshq.com/download/>`_ .
         "Routes>=1.12", "WebHelpers>=0.6.4", "Beaker>=1.3",
         "Paste>=1.7.2", "PasteDeploy>=1.3.3", "PasteScript>=1.7.3",
         "FormEncode>=1.2.1", "simplejson>=2.0.8", "decorator>=2.3.2",
-        "nose>=0.10.4", "Mako>=0.2.4", "WebOb>=0.9.6.1", "WebError>=0.10.1",
-        "WebTest>=1.1", "Tempita>=0.2", "MarkupSafe>=0.9.2",
-        "repoze.bfg >= 1.3a4", "repoze.bfg.mako"
+        "nose>=0.10.4", "Mako>=0.3.4", "WebError>=0.10.1",
+        "WebTest>=1.1", "Tempita>=0.2", "MarkupSafe>=0.11",
+        "repoze.bfg >= 1.3a15", "repoze.bfg.mako>=0.3"
     ],
     dependency_links=[
         "http://www.pylonshq.com/download/1.0"
