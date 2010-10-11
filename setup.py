@@ -26,6 +26,10 @@ sites in an easy and concise manner. They can range from as small as a
 single Python module, to a substantial directory layout for larger and
 more complex web applications.
 
+Pylons comes with project templates that help boot-strap a new web
+application project, or you can start from scratch and set things up
+exactly as desired.
+
 
 Example `Hello World`
 ---------------------
