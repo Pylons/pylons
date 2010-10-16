@@ -1,10 +1,8 @@
 Pylons Changelog
 ================
 
-bfg_branch
-* Add dependency on repoze.bfg 1.3a4+.
-
-1.1 (**tip**)
+2.0 (**tip**)
+* Added webob.exc facade as pylons.httpexceptions.
 * Remove Pylons nose plugin. Increase globals that default tests setup.
 
 1.0.1 (**tip**)
