@@ -103,11 +103,13 @@ template engine, and are used by the render functions.
 """
 import logging
 
+from repoze.bfg.renderers import render
+from repoze.bfg.renderers import render_to_response
 from webhelpers.html import literal
 
 import pylons
 
-__all__ = ['render_genshi', 'render_jinja2', 'render_mako', 'render_response']
+__all__ = ['render_genshi', 'render_jinja2', 'render_mako', 'render_to_response', 'render']
 
 PYLONS_VARS = ['c', 'app_globals', 'config', 'h', 'render', 'request',
                'session', 'translator', 'ungettext', '_', 'N_']
