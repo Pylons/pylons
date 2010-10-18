@@ -189,6 +189,11 @@ class LegacyPylonsTemplate(PylonsTemplate):
             default='mako'),
     ]
 
+class NewPylonsTemplate(PylonsTemplate):
+    _template_dir = ('pylons', 'templates/new_project')
+    summary = 'Pylons "newstyle" application template'
+    vars = []
+    
 class NewMinimalPylonsTemplate(PylonsTemplate):
     _template_dir = ('pylons', 'templates/newminimal_project')
     summary = 'Pylons "newstyle" minimal application template'

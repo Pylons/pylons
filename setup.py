@@ -149,6 +149,7 @@ with BitBucket hosting the main repository here:
     pylons = pylons.util:PylonsTemplate
     pylons_minimal = pylons.util:MinimalPylonsTemplate
     pylons_legacy = pylons.util:LegacyPylonsTemplate
+    pylons_new = pylons.util:NewPylonsTemplate
     pylons_newminimal = pylons.util:NewMinimalPylonsTemplate
     pylons_newsqla = pylons.util:NewSQLAlchemyTemplate
     

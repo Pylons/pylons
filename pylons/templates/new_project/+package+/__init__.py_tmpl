@@ -1,0 +1,14 @@
+def main(global_config, **settings):
+    """ This function returns a Pylons WSGI application.
+    """
+    from pylons.configuration import Configurator
+    from {{package}}.handlers import add_handlers
+    config = Configurator(settings=settings)
+    config.begin()
+    config.add_cache()
+    config.add_sessions()
+    config.add_helpers('{{package}}.lib.helpers')
+    config.add_static_view('static', '{{package}}:static/')
+    add_handlers(config)
+    config.end()
+    return config.make_wsgi_app()
