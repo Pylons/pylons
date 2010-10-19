@@ -1,5 +1,5 @@
 """Handlers package"""
 def add_handlers(config):
-    config.add_handler('action', '/{action}', '{{package}}.handlers.hello:HelloHandler')
-    config.add_handler('home', '/', '{{package}}.handlers.hello:HelloHandler',
+    config.add_handler('action', '/{action}', '.hello:HelloHandler')
+    config.add_handler('home', '/', '.hello:HelloHandler',
                        action='index')

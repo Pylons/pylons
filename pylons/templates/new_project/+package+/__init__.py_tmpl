@@ -9,6 +9,6 @@ def main(global_config, **settings):
     config.add_sessions()
     config.add_helpers('{{package}}.lib.helpers')
     config.add_static_view('static', '{{package}}:static/')
-    add_handlers(config)
+    add_handlers(config.with_package('{{package}}.handlers'))
     config.end()
     return config.make_wsgi_app()
