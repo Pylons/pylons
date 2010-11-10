@@ -1,9 +1,0 @@
-from pylons.views import action
-
-class HelloHandler(object):
-    def __init__(self, request):
-        self.request = request
-
-    @action(renderer='mytemplate.mak')
-    def index(self):
-        return {'project':'{{project}}'}
