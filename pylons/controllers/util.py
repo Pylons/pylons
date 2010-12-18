@@ -259,9 +259,8 @@ def forward(wsgi_app):
 def abort(status_code=None, detail="", headers=None, comment=None):
     """Aborts the request immediately by returning an HTTP exception
     
-    In the event that the status_code is a 300 series error, the detail
-    attribute will be used as the Location header should one not be
-    specified in the headers attribute.
+    For 300 series, a headers dict will need to be supplied with the
+    appropriate 'Location' set for the redirect.
     
     """
     exc = status_map[status_code](detail=detail, headers=headers, 
