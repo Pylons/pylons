@@ -2,6 +2,8 @@ Pylons Changelog
 ================
 
 1.1 (**tip**)
+* Add ability for jsonify to handle objects with a __json__ attribute using
+  custom JSONEncoder class similar to TG2. Patch by Bob Farrell.
 * Added ability for __before__ to reference a callable function. Patch
   contributed by mverdone.
 * Pulled in JSON-RPC support from agentultra's pylons fork.

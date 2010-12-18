@@ -23,6 +23,14 @@ __all__ = ['jsonify', 'validate']
 
 log = logging.getLogger(__name__)
 
+class JSONEncoder(simplejson.JSONEncoder):
+    def default(self, obj):
+        encoder = getattr(obj, '__json__', None)
+        if encoder is not None:
+            return encoder()
+        return super(JSONEncoder, self).default(obj)
+
+
 @decorator
 def jsonify(func, *args, **kwargs):
     """Action decorator that formats output for JSON
@@ -42,7 +50,7 @@ def jsonify(func, *args, **kwargs):
         warnings.warn(msg, Warning, 2)
         log.warning(msg)
     log.debug("Returning JSON wrapped action output")
-    return simplejson.dumps(data)
+    return simplejson.dumps(data, cls=JSONEncoder)
 
 
 def validate(schema=None, validators=None, form=None, variable_decode=False,
