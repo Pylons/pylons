@@ -140,7 +140,7 @@ class PylonsTemplate(Template):
     vars = [
         var('template_engine', 'mako/genshi/jinja2/etc: Template language', 
             default='mako'),
-        var('sqlalchemy', 'True/False: Include SQLAlchemy 0.5 configuration',
+        var('sqlalchemy', 'True/False: Include SQLAlchemy configuration',
             default=False),
     ]
     ensure_names = ['description', 'author', 'author_email', 'url']
