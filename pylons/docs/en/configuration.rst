@@ -63,7 +63,7 @@ That can then be read in the projects code:
 .. code-block :: python
 
     from pylons import config 
-    cache_dir = config['cache_dir']
+    cache_dir = config['cache.dir']
 
 Or the current debug status like this: 
 
