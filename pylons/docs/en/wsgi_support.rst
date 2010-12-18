@@ -20,7 +20,7 @@ If you want to, you can get the WSGI application object from your Pylons configu
     from paste.deploy import loadapp 
     wsgi_app = loadapp('config:/path/to/config.ini') 
 
-You can then serve the file using a WSGI server. Here is an example using the WSGI Reference Implementation to be included with Python 2.5: 
+You can then serve the file using a WSGI server. Here is an example using the WSGI Reference Implementation included with Python 2.5: 
 
 .. code-block:: python 
 
@@ -153,7 +153,7 @@ Towards the end of the middleware stack in your project's ``config/middleware.py
 
     app = Cascade([static_app, javascripts_app, app]) 
 
-Passed a list of applications, ``Cascade`` will try each of them in turn. If one returns a 404 status code then the next application is tried until one of the applications returns a code other than ``200`` in which case its response is returned. If all applications fail, then the last application's failure response is used. 
+Passed a list of applications, ``Cascade`` will try each of them in turn. If one returns a 404 status code then the next application is tried until one of the applications returns a code other than ``404`` in which case its response is returned. If all applications fail, then the last application's failure response is used. 
 
 The three WSGI applications in the cascade serve files from your project's ``public`` directory first then if nothing matches, the WebHelpers module JavaScripts are searched and finally if no JavaScripts are found your Pylons app is tried. This is why the ``public/index.html`` file is served before your controller is executed and why you can put ``/javascripts/`` into your HTML and the files will be found. 
 
