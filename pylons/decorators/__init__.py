@@ -38,7 +38,7 @@ def jsonify(func, *args, **kwargs):
     if isinstance(data, (list, tuple)):
         msg = "JSON responses with Array envelopes are susceptible to " \
               "cross-site data leak attacks, see " \
-              "http://pylonshq.com/warnings/JSONArray"
+              "http://wiki.pylonshq.com/display/pylonsfaq/Warnings"
         warnings.warn(msg, Warning, 2)
         log.warning(msg)
     log.debug("Returning JSON wrapped action output")
