@@ -40,8 +40,11 @@ def authenticate_form(func, *args, **kwargs):
 
     """
     request = get_pylons(args).request
-    if authenticated_form(request.POST):
-        del request.POST[secure_form.token_key]
+    if authenticated_form(request.params):
+        try:
+            del request.POST[secure_form.token_key]
+        except KeyError:
+            del request.GET[secure_form.token_key]
         return func(*args, **kwargs)
     else:
         log.warn('Cross-site request forgery detected, request denied: %r '

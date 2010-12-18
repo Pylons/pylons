@@ -2,6 +2,7 @@ Pylons Changelog
 ================
 
 1.1 (**tip**)
+* authenticate_form allows for GET. Patch by iElectric.
 * jsonify now properly sets charset to utf-8.
 * Add ability for jsonify to handle objects with a __json__ attribute using
   custom JSONEncoder class similar to TG2. Patch by Bob Farrell.

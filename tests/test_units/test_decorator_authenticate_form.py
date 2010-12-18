@@ -87,3 +87,16 @@ class TestAuthenticateFormDecorator(TestWSGIController):
                                 extra_environ=self.environ,
                                 expect_errors=True)
         assert 'Authenticated' in response
+
+        # GET with token_key in query string
+        response = self.app.get('/protected',
+                                 params={secure_form.token_key: token},
+                                 extra_environ=self.environ,
+                                 expect_errors=True)
+        assert 'Authenticated' in response
+
+        # POST with token_key in query string
+        response = self.app.post('/protected?' + secure_form.token_key + '=' + token,
+                                 extra_environ=self.environ,
+                                 expect_errors=True)
+        assert 'Authenticated' in response
