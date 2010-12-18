@@ -132,7 +132,12 @@ class PylonsConfig(dict):
         dict.__setitem__(self, name, value)
 
     def __getitem__(self, name):
-        if name in ['pylons.strict_c', 'pylons.c_attach_args']:
+        new_name = None
+        if name == 'pylons.strict_c':
+            new_name = 'pylons.strict_tmpl_context'
+        elif name = 'pylons.c_attach_args':
+            new_name = 'pylons.tmpl_context_attach_args'
+        if new_name:
             new_name = name.replace('c', 'tmpl_context')
             warnings.warn(pylons.legacy.c_attrib_moved % \
                           (name, new_name),
