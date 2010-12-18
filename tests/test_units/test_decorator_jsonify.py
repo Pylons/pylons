@@ -52,3 +52,4 @@ class TestJsonifyDecorator(TestWSGIController):
     def test_good_json(self):
         response = self.get_response(action='test_good_json')
         assert '{"fred": 42}' in response
+        assert response.header('Content-Type') == 'application/json; charset=utf-8'

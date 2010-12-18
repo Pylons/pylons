@@ -41,7 +41,7 @@ def jsonify(func, *args, **kwargs):
     
     """
     pylons = get_pylons(args)
-    pylons.response.headers['Content-Type'] = 'application/json'
+    pylons.response.headers['Content-Type'] = 'application/json; charset=utf-8'
     data = func(*args, **kwargs)
     if isinstance(data, (list, tuple)):
         msg = "JSON responses with Array envelopes are susceptible to " \
@@ -50,7 +50,7 @@ def jsonify(func, *args, **kwargs):
         warnings.warn(msg, Warning, 2)
         log.warning(msg)
     log.debug("Returning JSON wrapped action output")
-    return simplejson.dumps(data, cls=JSONEncoder)
+    return simplejson.dumps(data, cls=JSONEncoder, encoding='utf-8')
 
 
 def validate(schema=None, validators=None, form=None, variable_decode=False,
