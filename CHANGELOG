@@ -1,11 +1,9 @@
 Pylons Changelog
 ================
 
-2.0 (**tip**)
-* Added webob.exc facade as pylons.httpexceptions.
-* Remove Pylons nose plugin. Increase globals that default tests setup.
-
-1.0.1 (**tip**)
+1.1 (**tip**)
+* Apply patch for proper pylons.__version__ under Windows. Contributed by
+  Christoph Zwerschke.
 * Utilize MarkupSafe for faster HTML escaping.
 * Fix signed cookies by using standard base64 alphabet, and prevent timing
   attacks on signature comparison.

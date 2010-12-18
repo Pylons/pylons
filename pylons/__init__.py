@@ -19,8 +19,9 @@ def __figure_version():
         # or has an .egg-info directory present (i.e. wont work with raw
         # SVN checkout)
         info = require('pylons')[0]
-        if os.path.dirname(os.path.dirname(__file__)) == info.location:
-            return info.version
+        if os.path.normcase(os.path.realpath(os.path.dirname( 
+            os.path.dirname(__file__)))) == info.location: 
+            return info.version            
         else:
             return '(not installed)'
     except:
