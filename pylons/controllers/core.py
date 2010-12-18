@@ -73,10 +73,12 @@ class WSGIController(object):
         except AttributeError:
             self.__class__._cached_argspecs = cached_argspecs = {}
         
+        # function could be callable
+        func_key = getattr(func, 'im_func', func.__call__)
         try:
-            argspec = cached_argspecs[func.im_func]
+            argspec = cached_argspecs[func_key]
         except KeyError:
-            argspec = cached_argspecs[func.im_func] = inspect.getargspec(func)
+            argspec = cached_argspecs[func_key] = inspect.getargspec(func_key)
         kargs = self._get_method_args()
                 
         log_debug = self._pylons_log_debug

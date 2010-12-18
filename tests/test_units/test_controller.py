@@ -216,3 +216,36 @@ class TestFilteredWSGI(TestWSGIController):
     def test_start_response(self):
         self.baseenviron['pylons.routes_dict']['action'] = 'start_response'
         self.app.get('/', status=404)
+
+class TestBeforeAfterAsCallables(TestWSGIController):
+    def __init__(self, *args, **kargs):
+        TestWSGIController.__init__(self, *args, **kargs)
+
+        class Callable(object):
+            def __init__(self): self.called = False
+            def __call__(self, *args, **kargs): self.called = True
+
+        self.before_callable = Callable()
+        self.after_callable = Callable()
+
+        from pylons.controllers import WSGIController
+        class Controller(WSGIController):
+            def index(self): return 'index'
+            __before__ = self.before_callable
+            __after__ = self.after_callable
+
+        from pylons.testutil import ControllerWrap, SetupCacheGlobal
+        self.baseenviron = {}
+        app = ControllerWrap(Controller)
+        app = self.sap = SetupCacheGlobal(app, self.baseenviron)
+        app = RegistryManager(app)
+        self.app = TestApp(app)
+
+    def test_after_called(self):
+        self.get_response(action='index')
+        assert self.after_callable.called
+
+    def test_before_called(self):
+        self.get_response(action='index')
+        assert self.before_callable.called
+

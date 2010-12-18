@@ -2,6 +2,8 @@ Pylons Changelog
 ================
 
 1.1 (**tip**)
+* Added ability for __before__ to reference a callable function. Patch
+  contributed by mverdone.
 * Pulled in JSON-RPC support from agentultra's pylons fork.
 * Apply patch for proper pylons.__version__ under Windows. Contributed by
   Christoph Zwerschke.
