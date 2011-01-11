@@ -42,7 +42,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General substitutions.
-project = 'Pylons'
+project = 'Pylons Framework'
 copyright = '2008-2010, Ben Bangert, James Gardner, Philip Jenvey'
 
 # The default replacements for |version| and |release|, also used in various
@@ -74,15 +74,20 @@ today_fmt = '%B %d, %Y'
 #show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+#pygments_style = 'sphinx'
 
 # Options for HTML output
 # -----------------------
 
+# Add and use Pylons theme
+sys.path.append(os.path.abspath('_themes'))
+html_theme_path = ['_themes']
+html_theme = 'pylonsfw'
+
 # The style sheet to use for HTML and HTML Help pages. A file of that name
 # must exist either in Sphinx' static/ path, or in one of the custom paths
 # given in html_static_path.
-html_style = 'default.css'
+#html_style = 'default.css'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -114,7 +119,7 @@ html_last_updated_fmt = '%b %d, %Y'
 #html_copy_source = True
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Pylonsdoc'
+htmlhelp_basename = 'Pylonsfwdoc'
 
 
 # Options for LaTeX output
