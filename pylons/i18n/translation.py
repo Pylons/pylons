@@ -44,8 +44,8 @@ class LazyString(object):
     def __mod__(self, other):
         return self.eval() % other
 
-    def format(self, other):
-        return self.eval().format(other)
+    def format(self, *args):
+        return self.eval().format(*args)
 
 
 def lazify(func):
