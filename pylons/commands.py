@@ -560,10 +560,15 @@ class ShellCommand(Command):
                 raise ImportError()
 
             # try to use IPython if possible
-            from IPython.Shell import IPShellEmbed
+            try:
+                # 0.11
+                from IPython.frontend.terminal.embed import InteractiveShellEmbed
+                shell = InteractiveShellEmbed(banner1=banner)
+            except ImportError:
+                # <= 0.10
+                from IPython.Shell import IPShellEmbed
+                shell = IPShellEmbed(argv=self.args, banner=banner)
 
-            shell = IPShellEmbed(argv=self.args)
-            shell.set_banner(shell.IP.BANNER + '\n\n' + banner)
             try:
                 shell(local_ns=locs, global_ns={})
             finally:
