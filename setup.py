@@ -7,7 +7,7 @@ except ImportError:
     use_setuptools()
     from setuptools import setup, find_packages
 
-version = '1.1'
+version = '1.0.1rc1'
 
 tests_require = ['nose', 'Jinja2>=2.2.1']
 if not sys.platform.startswith('java'):
@@ -76,8 +76,9 @@ Core Features
 Current Status
 --------------
 
-Pylons 1.0 series is stable and production ready. Pylons 2 is currently under
-development, and while the code is stable, there may be bugs.
+Pylons 1.0 series is stable and production ready. The Pylons Project now
+maintains the Pyramid web framework for future development. Pylons 1.0 users
+should strongly consider using it for their next project.
 
 
 Download and Installation
@@ -98,7 +99,7 @@ Development Version
 Pylons development uses the Mercuial distributed version control system (DVCS)
 with BitBucket hosting the main repository here:
     
-    `Pylons Bitbucket repository <http://bitbucket.org/bbangert/pylons/>`_
+    `Pylons Bitbucket repository <https://github.com/Pylons/pylons>`_
 
 
 """,
@@ -116,7 +117,7 @@ with BitBucket hosting the main repository here:
         "Routes>=1.12.3", "WebHelpers>=0.6.4", "Beaker>=1.5.4",
         "Paste>=1.7.5.1", "PasteDeploy>=1.5.0", "PasteScript>=1.7.4.2",
         "FormEncode>=1.2.4", "simplejson>=2.2.1", "decorator>=3.3.2",
-        "nose>=1.1.2", "Mako>=0.5.0", "WebError>=0.10.1",
+        "nose>=1.1.2", "Mako>=0.5.0", "WebError>=0.10.3",
         "WebTest>=1.3.1", "Tempita>=0.5.1", "MarkupSafe>=0.15",
         "WebOb>=1.1.1",
     ],
