@@ -1,5 +1,9 @@
 from projectname.tests import *
-from sqlalchemy.exceptions import IntegrityError
+try:
+    from sqlalchemy.exceptions import IntegrityError
+except ImportError:
+    from sqlalchemy.exc import IntegrityError
+    
 from projectname.model.meta import Session, Base
 from projectname.model import Foo
 

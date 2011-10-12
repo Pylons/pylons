@@ -8,7 +8,8 @@ import pkg_resources
 from nose import SkipTest
 from paste.fixture import TestFileEnvironment
 
-raise SkipTest()
+if os.environ.get('SKIP_INTEGRATED', 'False') != '0':
+    raise SkipTest()
 
 import pylons
 import pylons.test

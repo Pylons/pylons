@@ -135,7 +135,7 @@ with BitBucket hosting the main repository here:
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     extras_require = {
-        'genshi': ['Genshi>=0.4.4'],
+        'genshi': ['Genshi>=0.6'],
         'jinja2': ['Jinja2'],
     },
     entry_points="""
