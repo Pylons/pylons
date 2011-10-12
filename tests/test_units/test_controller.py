@@ -1,97 +1,87 @@
 # -*- coding: utf-8 -*-
-import unittest
-
 from paste.fixture import TestApp
 from paste.registry import RegistryManager
 from webob.exc import status_map
 
+import pylons
+from pylons.controllers import WSGIController
+
+from pylons.testutil import SetupCacheGlobal, ControllerWrap
 from __init__ import TestWSGIController, TestMiddleware
 
+class BasicWSGIController(WSGIController):
+    def __init__(self):
+        self._pylons_log_debug = True
 
-def make_controllers():
-    import pylons
-    from pylons.controllers import WSGIController
+    def __before__(self):
+        pylons.response.headers['Cache-Control'] = 'private'
     
-    class BasicWSGIController(WSGIController):
-        def __init__(self):
-            self._pylons_log_debug = True
-
-        def __before__(self):
-            pylons.response.headers['Cache-Control'] = 'private'
+    def __after__(self):
+        pylons.response.set_cookie('big_message', 'goodbye')
     
-        def __after__(self):
-            pylons.response.set_cookie('big_message', 'goodbye')
+    def index(self):
+        return 'hello world'
+
+    def yield_fun(self):
+        def its():
+            x = 0
+            while x < 100:
+                yield 'hi'
+                x += 1
+        return its()
     
-        def index(self):
-            return 'hello world'
-
-        def yield_fun(self):
-            def its():
-                x = 0
-                while x < 100:
-                    yield 'hi'
-                    x += 1
-            return its()
+    def strme(self):
+        return "hi there"
     
-        def strme(self):
-            return "hi there"
+    def use_redirect(self):
+        pylons.response.set_cookie('message', 'Hello World')
+        exc = status_map[301]
+        raise exc('/elsewhere').exception
     
-        def use_redirect(self):
-            pylons.response.set_cookie('message', 'Hello World')
-            exc = status_map[301]
-            raise exc('/elsewhere').exception
+    def use_customnotfound(self):
+        exc = status_map[404]
+        raise exc('Custom not found').exception
     
-        def use_customnotfound(self):
-            exc = status_map[404]
-            raise exc('Custom not found').exception
+    def header_check(self):
+        pylons.response.headers['Content-Type'] = 'text/plain'
+        return "Hello all!"
     
-        def header_check(self):
-            pylons.response.headers['Content-Type'] = 'text/plain'
-            return "Hello all!"
-    
-        def swallow_all(self, **kwargs):
-            return "We got back %s" % kwargs
-    
-        def nothing(self):
-            return
+    def nothing(self):
+        return
 
-        def params(self):
-            items = pylons.request.params.mixed().items()
-            items.sort()
-            return str(items)
+    def params(self):
+        items = pylons.request.params.mixed().items()
+        items.sort()
+        return str(items)
 
-        def list(self):
-            return ['from', ' a ', 'list']
+    def list(self):
+        return ['from', ' a ', 'list']
 
-    class FilteredWSGIController(WSGIController):
-        def __init__(self):
-            self.before = 0
-            self.after = 0
+class FilteredWSGIController(WSGIController):
+    def __init__(self):
+        self.before = 0
+        self.after = 0
 
-        def __before__(self):
-            self.before += 1
+    def __before__(self):
+        self.before += 1
 
-        def __after__(self):
-            self.after += 1
-            action = pylons.request.environ['pylons.routes_dict'].get('action')
-            if action in ('after_response', 'after_string_response'):
-                pylons.response.write(' from __after__')
+    def __after__(self):
+        self.after += 1
+        action = pylons.request.environ['pylons.routes_dict'].get('action')
+        if action in ('after_response', 'after_string_response'):
+            pylons.response.write(' from __after__')
 
-        def index(self):
-            return 'hi all, before is %s' % self.before
+    def index(self):
+        return 'hi all, before is %s' % self.before
 
-        def after_response(self):
-            return 'hi'
+    def after_response(self):
+        return 'hi'
 
-        def after_string_response(self):
-            return 'hello'
-    
-    return BasicWSGIController, FilteredWSGIController
+    def after_string_response(self):
+        return 'hello'
 
 class TestBasicWSGI(TestWSGIController):
     def __init__(self, *args, **kargs):
-        from pylons.testutil import ControllerWrap, SetupCacheGlobal
-        BasicWSGIController, FilteredWSGIController = make_controllers()
         TestWSGIController.__init__(self, *args, **kargs)
         self.baseenviron = {}
         app = ControllerWrap(BasicWSGIController)
@@ -162,7 +152,7 @@ class TestBasicWSGI(TestWSGIController):
         assert resp.response.headers['Cache-Control'] == 'private'
 
     def test_unicode_action(self):
-        self.baseenviron['pylons.routes_dict']['action'] = u'ОбсуждениеКомпаний'
+        self.baseenviron['pylons.routes_dict']['action'] = u'ÐžÐ±ÑÑƒÐ¶Ð´ÐµÐ½Ð¸ÐµÐšÐ¾Ð¼Ð¿Ð°Ð½Ð¸Ð¹'
         resp = self.app.get('/', status=404)
 
     def test_params(self):
@@ -177,18 +167,9 @@ class TestBasicWSGI(TestWSGIController):
     def test_list(self):
         self.baseenviron['pylons.routes_dict']['action'] = 'list'
         assert 'from a list' in self.app.get('/')
-    
-    def test_eat_kwargs(self):
-        import pylons
-        pylons.config['pylons.tmpl_context_attach_args'] = True
-        self.baseenviron['pylons.routes_dict']['action'] = 'swallow_all'
-        assert "We got back {'action': 'swallow_all'," in self.app.get('/')
-
 
 class TestFilteredWSGI(TestWSGIController):
     def __init__(self, *args, **kargs):
-        from pylons.testutil import ControllerWrap, SetupCacheGlobal
-        BasicWSGIController, FilteredWSGIController = make_controllers()
         TestWSGIController.__init__(self, *args, **kargs)
         self.baseenviron = {}
         app = ControllerWrap(FilteredWSGIController)
@@ -216,36 +197,3 @@ class TestFilteredWSGI(TestWSGIController):
     def test_start_response(self):
         self.baseenviron['pylons.routes_dict']['action'] = 'start_response'
         self.app.get('/', status=404)
-
-class TestBeforeAfterAsCallables(TestWSGIController):
-    def __init__(self, *args, **kargs):
-        TestWSGIController.__init__(self, *args, **kargs)
-
-        class Callable(object):
-            def __init__(self): self.called = False
-            def __call__(self, *args, **kargs): self.called = True
-
-        self.before_callable = Callable()
-        self.after_callable = Callable()
-
-        from pylons.controllers import WSGIController
-        class Controller(WSGIController):
-            def index(self): return 'index'
-            __before__ = self.before_callable
-            __after__ = self.after_callable
-
-        from pylons.testutil import ControllerWrap, SetupCacheGlobal
-        self.baseenviron = {}
-        app = ControllerWrap(Controller)
-        app = self.sap = SetupCacheGlobal(app, self.baseenviron)
-        app = RegistryManager(app)
-        self.app = TestApp(app)
-
-    def test_after_called(self):
-        self.get_response(action='index')
-        assert self.after_callable.called
-
-    def test_before_called(self):
-        self.get_response(action='index')
-        assert self.before_callable.called
-

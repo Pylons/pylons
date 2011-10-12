@@ -7,7 +7,7 @@ except ImportError:
     use_setuptools()
     from setuptools import setup, find_packages
 
-version = '1.2'
+version = '1.1'
 
 tests_require = ['nose', 'Jinja2>=2.2.1']
 if not sys.platform.startswith('java'):
@@ -113,12 +113,12 @@ with BitBucket hosting the main repository here:
     test_suite='nose.collector',
     tests_require=tests_require,
     install_requires=[
-        "Routes>=1.12", "WebHelpers>=0.6.4", "Beaker>=1.3",
-        "Paste>=1.7.2", "PasteDeploy>=1.3.3", "PasteScript>=1.7.3",
-        "FormEncode>=1.2.1", "simplejson>=2.0.8", "decorator>=2.3.2",
-        "nose>=0.10.4", "Mako>=0.3.4", "WebError>=0.10.1",
-        "WebTest>=1.1", "Tempita>=0.2", "MarkupSafe>=0.11",
-        "repoze.bfg >= 1.3a15", "repoze.bfg.mako>=0.3"
+        "Routes>=1.12.3", "WebHelpers>=0.6.4", "Beaker>=1.5.4",
+        "Paste>=1.7.5.1", "PasteDeploy>=1.5.0", "PasteScript>=1.7.4.2",
+        "FormEncode>=1.2.4", "simplejson>=2.2.1", "decorator>=3.3.2",
+        "nose>=1.1.2", "Mako>=0.5.0", "WebError>=0.10.1",
+        "WebTest>=1.3.1", "Tempita>=0.5.1", "MarkupSafe>=0.15",
+        "WebOb>=1.1.1",
     ],
     dependency_links=[
         "http://www.pylonshq.com/download/1.0"
