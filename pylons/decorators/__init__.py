@@ -14,7 +14,6 @@ import formencode
 import simplejson
 from decorator import decorator
 from formencode import api, htmlfill, variabledecode
-from webob.multidict import UnicodeMultiDict
 
 from pylons.decorators.util import get_pylons
 from pylons.i18n import _ as pylons_gettext
