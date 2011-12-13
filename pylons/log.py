@@ -11,6 +11,7 @@ import pylons
 
 __all__ = ['WSGIErrorsHandler']
 
+
 class WSGIErrorsHandler(logging.Handler):
 
     """A handler class that writes logging records to
@@ -71,7 +72,7 @@ class WSGIErrorsHandler(logging.Handler):
             try:
                 msg = self.format(record)
                 fs = "%s\n"
-                if not hasattr(types, "UnicodeType"): #if no unicode support...
+                if not hasattr(types, "UnicodeType"):  # if no unicode support
                     stream.write(fs % msg)
                 else:
                     try:

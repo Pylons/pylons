@@ -15,17 +15,18 @@ __all__ = ['_', 'add_fallback', 'get_lang', 'gettext', 'gettext_noop',
            'ngettext', 'set_lang', 'ugettext', 'ungettext', 'LanguageError',
            'N_']
 
+
 class LanguageError(Exception):
     """Exception raised when a problem occurs with changing languages"""
     pass
 
 
 class LazyString(object):
-    """Has a number of lazily evaluated functions replicating a 
+    """Has a number of lazily evaluated functions replicating a
     string. Just override the eval() method to produce the actual value.
 
     This method copied from TurboGears.
-    
+
     """
     def __init__(self, func, *args, **kwargs):
         self.func = func
@@ -101,7 +102,7 @@ def ugettext(value):
     Mark a string to be localized as follows::
 
         _('This should be in lots of languages')
-    
+
     """
     return pylons.translator.ugettext(value)
 _ = ugettext

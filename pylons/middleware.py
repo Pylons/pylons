@@ -13,7 +13,7 @@ import pylons
 from pylons.error import template_error_formatters
 from pylons.util import call_wsgi_application
 
-__all__ = ['ErrorHandler', 'StaticJavascripts', 'error_document_template',
+__all__ = ['ErrorHandler', 'error_document_template',
            'footer_html', 'head_html', 'media_path']
 
 log = logging.getLogger(__name__)
@@ -84,14 +84,15 @@ PylonsHQ website in this browser.</p>
 
 report_libs = ['pylons', 'genshi', 'sqlalchemy']
 
+
 def DebugHandler(app, global_conf, **kwargs):
-    footer = footer_html % (kwargs.get('traceback_host', 
+    footer = footer_html % (kwargs.get('traceback_host',
                                        'pylonshq.com'),
                             pylons.__version__)
     py_media = dict(pylons=media_path)
-    app = EvalException(app, global_conf, 
+    app = EvalException(app, global_conf,
                         templating_formatters=template_error_formatters,
-                        media_paths=py_media, head_html=head_html, 
+                        media_paths=py_media, head_html=head_html,
                         footer_html=footer,
                         libraries=report_libs)
     return app
@@ -99,25 +100,25 @@ def DebugHandler(app, global_conf, **kwargs):
 
 def ErrorHandler(app, global_conf, **errorware):
     """ErrorHandler Toggle
-    
+
     If debug is enabled, this function will return the app wrapped in
     the WebError ``EvalException`` middleware which displays
     interactive debugging sessions when a traceback occurs.
-    
+
     Otherwise, the app will be wrapped in the WebError
     ``ErrorMiddleware``, and the ``errorware`` dict will be passed into
     it. The ``ErrorMiddleware`` handles sending an email to the address
     listed in the .ini file, under ``email_to``.
-    
+
     """
     if asbool(global_conf.get('debug')):
-        footer = footer_html % (pylons.config.get('traceback_host', 
+        footer = footer_html % (pylons.config.get('traceback_host',
                                                   'pylonshq.com'),
                                 pylons.__version__)
         py_media = dict(pylons=media_path)
-        app = EvalException(app, global_conf, 
+        app = EvalException(app, global_conf,
                             templating_formatters=template_error_formatters,
-                            media_paths=py_media, head_html=head_html, 
+                            media_paths=py_media, head_html=head_html,
                             footer_html=footer,
                             libraries=report_libs)
     else:
@@ -127,37 +128,37 @@ def ErrorHandler(app, global_conf, **errorware):
 
 class StatusCodeRedirect(object):
     """Internally redirects a request based on status code
-    
-    StatusCodeRedirect watches the response of the app it wraps. If the 
+
+    StatusCodeRedirect watches the response of the app it wraps. If the
     response is an error code in the errors sequence passed the request
     will be re-run with the path URL set to the path passed in.
-    
-    This operation is non-recursive and the output of the second 
+
+    This operation is non-recursive and the output of the second
     request will be used no matter what it is.
-    
-    Should an application wish to bypass the error response (ie, to 
-    purposely return a 401), set 
+
+    Should an application wish to bypass the error response (ie, to
+    purposely return a 401), set
     ``environ['pylons.status_code_redirect'] = True`` in the application.
-    
+
     """
     def __init__(self, app, errors=(400, 401, 403, 404),
                  path='/error/document'):
         """Initialize the ErrorRedirect
-        
+
         ``errors``
             A sequence (list, tuple) of error code integers that should
             be caught.
         ``path``
-            The path to set for the next request down to the 
-            application. 
-        
+            The path to set for the next request down to the
+            application.
+
         """
         self.app = app
         self.error_path = path
-        
+
         # Transform errors to str for comparison
         self.errors = tuple([str(x) for x in errors])
-    
+
     def __call__(self, environ, start_response):
         status, headers, app_iter, exc_info = call_wsgi_application(
             self.app, environ, catch_exc_info=True)
@@ -167,11 +168,11 @@ class StatusCodeRedirect(object):
             environ['pylons.original_response'] = Response(
                 status=status, headerlist=headers, app_iter=app_iter)
             environ['pylons.original_request'] = Request(environ)
-            
+
             # Create a new environ to avoid touching the original request data
             new_environ = environ.copy()
             new_environ['PATH_INFO'] = self.error_path
-            
+
             newstatus, headers, app_iter, exc_info = call_wsgi_application(
                     self.app, new_environ, catch_exc_info=True)
         start_response(status, headers, exc_info)
@@ -206,6 +207,7 @@ error_document_template = literal("""\
 </body>
 </html>
 """)
+
 
 def debugger_filter_factory(global_conf, **kwargs):
     def filter(app):

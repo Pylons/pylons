@@ -43,15 +43,16 @@ class JSONRPCError(BaseException):
 
 
 JSONRPC_PARSE_ERROR = JSONRPCError(-32700, "Parse error")
-JSONRPC_INVALID_REQUEST = JSONRPCError( -32600, "Invalid Request")
-JSONRPC_METHOD_NOT_FOUND = JSONRPCError( -32601, "Method not found")
-JSONRPC_INVALID_PARAMS = JSONRPCError( -32602, "Invalid params")
-JSONRPC_INTERNAL_ERROR = JSONRPCError( -32603, "Internal error")
+JSONRPC_INVALID_REQUEST = JSONRPCError(-32600, "Invalid Request")
+JSONRPC_METHOD_NOT_FOUND = JSONRPCError(-32601, "Method not found")
+JSONRPC_INVALID_PARAMS = JSONRPCError(-32602, "Invalid params")
+JSONRPC_INTERNAL_ERROR = JSONRPCError(-32603, "Internal error")
 _reserved_errors = dict(parse_error=JSONRPC_PARSE_ERROR,
                         invalid_request=JSONRPC_INVALID_REQUEST,
                         method_not_found=JSONRPC_METHOD_NOT_FOUND,
                         invalid_params=JSONRPC_INVALID_PARAMS,
                         internal_error=JSONRPC_INTERNAL_ERROR)
+
 
 def jsonrpc_error(req_id, error):
     """Generate a Response object with a JSON-RPC error body. Used to
@@ -62,6 +63,7 @@ def jsonrpc_error(req_id, error):
         return Response(body=json.dumps(dict(jsonrpc=JSONRPC_VERSION,
                                              id=req_id,
                                              error=err.as_dict())))
+
 
 class JSONRPCController(WSGIController):
     """
@@ -121,7 +123,7 @@ class JSONRPCController(WSGIController):
         self._error = None
         try:
             self._func = self._find_method()
-        except AttributeError, e:
+        except AttributeError:
             err = jsonrpc_error(self._req_id, 'method_not_found')
             return err(environ, start_response)
 
@@ -149,6 +151,7 @@ class JSONRPCController(WSGIController):
         status = []
         headers = []
         exc_info = []
+
         def change_content(new_status, new_headers, new_exc_info=None):
             status.append(new_status)
             headers.extend(new_headers)
@@ -201,16 +204,16 @@ class JSONRPCController(WSGIController):
         """Return method named by `self._req_method` in controller if able"""
         log.debug('Trying to find JSON-RPC method: %s', self._req_method)
         if self._req_method.startswith('_'):
-            raise AttributeError, "Method not allowed"
+            raise AttributeError("Method not allowed")
 
         try:
             func = getattr(self, self._req_method, None)
         except UnicodeEncodeError:
             # XMLRPCController catches this, not sure why.
-            raise AttributeError, ("Problem decoding unicode in requested "
-                                   "method name.")
+            raise AttributeError("Problem decoding unicode in requested "
+                                 "method name.")
 
         if isinstance(func, types.MethodType):
             return func
         else:
-            raise AttributeError, "No such method: %s" % self._req_method
+            raise AttributeError("No such method: %s" % self._req_method)

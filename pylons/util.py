@@ -24,6 +24,7 @@ __all__ = ['AttribSafeContextObj', 'ContextObj', 'PylonsContext',
 
 log = logging.getLogger(__name__)
 
+
 def call_wsgi_application(application, environ, catch_exc_info=False):
     """
     Call the given WSGI application, returning ``(status_string,
@@ -36,10 +37,11 @@ def call_wsgi_application(application, environ, catch_exc_info=False):
     be None, but won't be if there was an exception.  If you don't
     do this and there was an exception, the exception will be
     raised directly.
-    
+
     """
     captured = []
     output = []
+
     def start_response(status, headers, exc_info=None):
         if exc_info is not None and not catch_exc_info:
             raise exc_info[0], exc_info[1], exc_info[2]
@@ -82,11 +84,11 @@ def class_name_from_module_name(module_name):
 
 class PylonsContext(object):
     """Pylons context object
-    
+
     All the Pylons Stacked Object Proxies are also stored here, for use
     in generators and async based operation where the globals can't be
     used.
-    
+
     This object is attached in
     :class:`~pylons.controllers.core.WSGIController` instances as
     :attr:`~WSGIController._py_object`. For example::
@@ -95,7 +97,7 @@ class PylonsContext(object):
             def index(self):
                 pyobj = self._py_object
                 return "Environ is %s" % pyobj.request.environ
-    
+
     """
     pass
 
@@ -138,13 +140,13 @@ class PylonsTemplate(Template):
     summary = 'Pylons application template'
     egg_plugins = ['PasteScript', 'Pylons']
     vars = [
-        var('template_engine', 'mako/genshi/jinja2/etc: Template language', 
+        var('template_engine', 'mako/genshi/jinja2/etc: Template language',
             default='mako'),
         var('sqlalchemy', 'True/False: Include SQLAlchemy configuration',
             default=False),
     ]
     ensure_names = ['description', 'author', 'author_email', 'url']
-    
+
     def pre(self, command, output_dir, vars):
         """Called before template is applied."""
         package_logger = vars['package']
@@ -177,32 +179,37 @@ class MinimalPylonsTemplate(PylonsTemplate):
     _template_dir = ('pylons', 'templates/minimal_project')
     summary = 'Pylons minimal application template'
     vars = [
-        var('template_engine', 'mako/genshi/jinja2/etc: Template language', 
+        var('template_engine', 'mako/genshi/jinja2/etc: Template language',
             default='mako'),
     ]
+
 
 class LegacyPylonsTemplate(PylonsTemplate):
     _template_dir = ('pylons', 'templates/legacy_project')
     summary = 'Pylons legacy application template'
     vars = [
-        var('template_engine', 'mako/genshi/jinja2/etc: Template language', 
+        var('template_engine', 'mako/genshi/jinja2/etc: Template language',
             default='mako'),
     ]
+
 
 class NewPylonsTemplate(PylonsTemplate):
     _template_dir = ('pylons', 'templates/new_project')
     summary = 'Pylons "newstyle" application template'
     vars = []
-    
+
+
 class NewMinimalPylonsTemplate(PylonsTemplate):
     _template_dir = ('pylons', 'templates/newminimal_project')
     summary = 'Pylons "newstyle" minimal application template'
     vars = []
 
+
 class NewSQLAlchemyTemplate(PylonsTemplate):
     _template_dir = ('pylons', 'templates/newsqla_project')
     summary = 'Pylons "newstyle" SQLAlchemy template'
     vars = []
+
 
 class PylonsInstaller(Installer):
     use_cheetah = False
@@ -227,6 +234,7 @@ class PylonsInstaller(Installer):
                     vars, filename=self.config_file)
         # Legacy support for the old location in egg-info
         return super(PylonsInstaller, self).config_content(command, vars)
+
 
 def resolve_dotted(name):
     return pkg_resources.EntryPoint.parse('x=%s' % name).load(False)

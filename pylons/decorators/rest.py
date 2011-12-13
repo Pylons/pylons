@@ -10,6 +10,7 @@ __all__ = ['dispatch_on', 'restrict']
 
 log = logging.getLogger(__name__)
 
+
 def restrict(*methods):
     """Restricts access to the function depending on HTTP method
 
@@ -23,7 +24,7 @@ def restrict(*methods):
 
             @rest.restrict('GET')
             def comment(self, id):
-    
+
     """
     def check_methods(func, *args, **kwargs):
         """Wrapper for restrict"""
@@ -32,6 +33,7 @@ def restrict(*methods):
             abort(405, headers=[('Allow', ','.join(methods))])
         return func(*args, **kwargs)
     return decorator(check_methods)
+
 
 def dispatch_on(**method_map):
     """Dispatches to alternate controller methods based on HTTP method
@@ -55,7 +57,7 @@ def dispatch_on(**method_map):
 
             def create_comment(self, id):
                 # Do something if its a post to comment
-    
+
     """
     def dispatcher(func, self, *args, **kwargs):
         """Wrapper for dispatch_on"""

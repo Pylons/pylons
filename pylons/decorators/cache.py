@@ -7,13 +7,14 @@ from decorator import decorator
 from paste.deploy.converters import asbool
 
 from pylons.decorators.util import get_pylons
-    
+
 log = logging.getLogger(__name__)
+
 
 def beaker_cache(key="cache_default", expire="never", type=None,
                  query_args=False,
                  cache_headers=('content-type', 'content-length'),
-                 invalidate_on_startup=False, 
+                 invalidate_on_startup=False,
                  cache_response=True, **b_kwargs):
     """Cache decorator utilizing Beaker. Caches action or other
     function that returns a pickle-able object as a result.
@@ -26,7 +27,7 @@ def beaker_cache(key="cache_default", expire="never", type=None,
         string - Use kwargs[key] as key
         list - Use [kwargs[k] for k in list] as key
     ``expire``
-        Time in seconds before cache expires, or the string "never". 
+        Time in seconds before cache expires, or the string "never".
         Defaults to "never"
     ``type``
         Type of cache to use: dbm, memory, file, memcached, or None for
@@ -42,7 +43,7 @@ def beaker_cache(key="cache_default", expire="never", type=None,
     ``cache_response``
         Determines whether the response at the time beaker_cache is used
         should be cached or not, defaults to True.
-        
+
         .. note::
             When cache_response is set to False, the cache_headers
             argument is ignored as none of the response is cached.
@@ -72,7 +73,7 @@ def beaker_cache(key="cache_default", expire="never", type=None,
             key_dict.update(_make_dict_from_args(func, args))
             if query_args:
                 key_dict.update(pylons.request.GET.mixed())
-            
+
             if key != "cache_default":
                 if isinstance(key, list):
                     key_dict = dict((k, key_dict[k]) for k in key)
@@ -88,21 +89,21 @@ def beaker_cache(key="cache_default", expire="never", type=None,
 
         if type:
             b_kwargs['type'] = type
-        
+
         cache_obj = getattr(pylons.app_globals, 'cache', None)
         if not cache_obj:
             cache_obj = getattr(pylons, 'cache', None)
         if not cache_obj:
             raise Exception('No CacheMiddleware or cache object on '
                             ' app_globals was found')
-        
+
         my_cache = cache_obj.get_cache(namespace, **b_kwargs)
-            
+
         if expire == "never":
             cache_expire = None
         else:
             cache_expire = expire
-        
+
         def create_func():
             log.debug("Creating new cache copy with key: %s, type: %s",
                       cache_key, type)
@@ -113,7 +114,7 @@ def beaker_cache(key="cache_default", expire="never", type=None,
             full_response = dict(headers=headers, status=status,
                                  cookies=None, content=result)
             return full_response
-        
+
         response = my_cache.get_value(cache_key, createfunc=create_func,
                                       expiretime=cache_expire,
                                       starttime=starttime)
@@ -126,15 +127,16 @@ def beaker_cache(key="cache_default", expire="never", type=None,
         return response['content']
     return decorator(wrapper)
 
+
 def create_cache_key(func, key_dict=None, self=None):
     """Get a cache namespace and key used by the beaker_cache decorator.
-    
+
     Example::
         from pylons import cache
         from pylons.decorators.cache import create_cache_key
         namespace, key = create_cache_key(MyController.some_method)
         cache.get_cache(namespace).remove(key)
-            
+
     """
     kls = None
     if hasattr(func, 'im_func'):
@@ -149,11 +151,12 @@ def create_cache_key(func, key_dict=None, self=None):
 
     if not kls and self:
         kls = getattr(self, '__class__', None)
-    
+
     if kls:
         return '%s.%s' % (kls.__module__, kls.__name__), cache_key
     else:
         return func.__module__, cache_key
+
 
 def _make_dict_from_args(func, args):
     """Inspects function for name of args"""

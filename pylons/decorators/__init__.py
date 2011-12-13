@@ -7,7 +7,6 @@ decorators for use with controllers are in the
 
 """
 import logging
-import sys
 import warnings
 
 import formencode
@@ -21,6 +20,7 @@ from pylons.i18n import _ as pylons_gettext
 __all__ = ['jsonify', 'validate']
 
 log = logging.getLogger(__name__)
+
 
 class JSONEncoder(simplejson.JSONEncoder):
     def default(self, obj):
@@ -37,7 +37,7 @@ def jsonify(func, *args, **kwargs):
     Given a function that will return content, this decorator will turn
     the result into JSON, with a content-type of 'application/json' and
     output it.
-    
+
     """
     pylons = get_pylons(args)
     pylons.response.headers['Content-Type'] = 'application/json; charset=utf-8'
@@ -69,13 +69,13 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
     ``schema``
         Refers to a FormEncode Schema object to use during validation.
     ``form``
-        Method used to display the form, which will be used to get the 
+        Method used to display the form, which will be used to get the
         HTML representation of the form for error filling.
     ``variable_decode``
         Boolean to indicate whether FormEncode's variable decode
         function should be run on the form input before validation.
     ``dict_char``
-        Passed through to FormEncode. Toggles the form field naming 
+        Passed through to FormEncode. Toggles the form field naming
         scheme used to determine what is used to represent a dict. This
         option is only applicable when used with variable_decode=True.
     ``list_char``
@@ -85,7 +85,7 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
     ``post_only``
         Boolean that indicates whether or not GET (query) variables
         should be included during validation.
-        
+
         .. warning::
             ``post_only`` applies to *where* the arguments to be
             validated come from. It does *not* restrict the form to
@@ -112,21 +112,22 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
     """
     if state is None:
         state = PylonsFormEncodeState
+
     def wrapper(func, self, *args, **kwargs):
         """Decorator Wrapper function"""
         request = self._py_object.request
         errors = {}
-        
+
         # Skip the validation if on_get is False and its a GET
         if not on_get and request.environ['REQUEST_METHOD'] == 'GET':
             return func(self, *args, **kwargs)
-        
+
         # If they want post args only, use just the post args
         if post_only:
             params = request.POST
         else:
             params = request.params
-        
+
         params = params.mixed()
         if variable_decode:
             log.debug("Running variable_decode on params")
@@ -181,7 +182,7 @@ def validate(schema=None, validators=None, form=None, variable_decode=False,
 def pylons_formencode_gettext(value):
     """Translates a string ``value`` using pylons gettext first and if
     that fails, formencode gettext.
-    
+
     This allows to "merge" localized error messages from built-in
     FormEncode's validators with application-specific validators.
 
@@ -209,6 +210,6 @@ class PylonsFormEncodeState(object):
     them instead of gathering and translating everything from scratch.
     To allow this, we pass as ``_`` a function which looks up
     translation both in application and formencode message catalogs.
-    
+
     """
     _ = staticmethod(pylons_formencode_gettext)

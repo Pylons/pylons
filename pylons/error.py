@@ -13,12 +13,13 @@ except ImportError:
 
 __all__ = ['handle_mako_error']
 
+
 def handle_mako_error(context, exc):
     try:
         exc.is_mako_exception = True
     except:
         pass
-    raise exc, None, sys.exc_info()[2]
+    raise (exc, None, sys.exc_info()[2])
 
 
 def myghty_html_data(exc_value):

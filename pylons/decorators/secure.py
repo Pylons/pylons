@@ -20,6 +20,7 @@ csrf_detected_message = (
     "http://en.wikipedia.org/wiki/Cross-site_request_forgery for more "
     "information.")
 
+
 def authenticated_form(params):
     submitted_token = params.get(secure_form.token_key)
     return submitted_token is not None and \

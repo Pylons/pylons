@@ -12,6 +12,7 @@ from pylons.configuration import request_defaults, response_defaults
 from pylons.controllers.util import Request, Response
 from pylons.util import ContextObj, PylonsContext
 
+
 class ControllerWrap(object):
     def __init__(self, controller):
         self.controller = controller
@@ -20,6 +21,7 @@ class ControllerWrap(object):
         app = self.controller()
         app.start_response = None
         return app(environ, start_response)
+
 
 class SetupCacheGlobal(object):
     def __init__(self, app, environ, setup_g=True, setup_cache=False,
@@ -59,14 +61,15 @@ class SetupCacheGlobal(object):
         # Update the environ
         req = Request(environ, charset=request_defaults['charset'],
                       unicode_errors=request_defaults['errors'],
-                      decode_param_names=request_defaults['decode_param_names'])        
+                      decode_param_names=request_defaults['decode_param_names']
+        )
         req.language = request_defaults['language']
-        
+
         response = Response(
             content_type=response_defaults['content_type'],
             charset=response_defaults['charset'])
         response.headers.update(response_defaults['headers'])
-        
+
         environ.update(self.environ)
         py_obj.config = pylons.config._current_obj()
         py_obj.request = req

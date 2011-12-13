@@ -11,6 +11,7 @@ from pylons.controllers.util import Response
 __all__ = ['app_globals', 'cache', 'config', 'request', 'response',
            'session', 'tmpl_context', 'url', 'Request', 'Response']
 
+
 def __figure_version():
     try:
         from pkg_resources import require
@@ -19,14 +20,14 @@ def __figure_version():
         # or has an .egg-info directory present (i.e. wont work with raw
         # SVN checkout)
         info = require('pylons')[0]
-        if os.path.normcase(os.path.realpath(os.path.dirname( 
-            os.path.dirname(__file__)))) == info.location: 
-            return info.version            
+        if os.path.normcase(os.path.realpath(os.path.dirname(
+            os.path.dirname(__file__)))) == info.location:
+            return info.version
         else:
             return '(not installed)'
     except:
         return '(not installed)'
-        
+
 __version__ = __figure_version()
 
 app_globals = StackedObjectProxy(name="app_globals")

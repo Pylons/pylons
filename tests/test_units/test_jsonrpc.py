@@ -190,7 +190,6 @@ class TestJSONRPCController(TestWSGIController):
 
     def test_v2_decrement_missing_keyword_argument(self):
         response = self.jsonreq('v2_decrement', args={})
-        print response
         assert dict(jsonrpc='2.0',
                     id='test',
                     error={'code': -32602,

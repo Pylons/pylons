@@ -14,12 +14,13 @@ __all__ = ['XMLRPCController']
 log = logging.getLogger(__name__)
 
 XMLRPC_MAPPING = ((basestring, 'string'), (list, 'array'), (bool, 'boolean'),
-                  (int, 'int'), (float, 'double'), (dict, 'struct'), 
+                  (int, 'int'), (float, 'double'), (dict, 'struct'),
                   (xmlrpclib.DateTime, 'dateTime.iso8601'),
                   (xmlrpclib.Binary, 'base64'))
 
+
 def xmlrpc_sig(args):
-    """Returns a list of the function signature in string format based on a 
+    """Returns a list of the function signature in string format based on a
     tuple provided by xmlrpclib."""
     signature = []
     for param in args:
@@ -38,28 +39,28 @@ def xmlrpc_fault(code, message):
 
 class XMLRPCController(WSGIController):
     """XML-RPC Controller that speaks WSGI
-    
-    This controller handles XML-RPC responses and complies with the 
+
+    This controller handles XML-RPC responses and complies with the
     `XML-RPC Specification <http://www.xmlrpc.com/spec>`_ as well as
     the `XML-RPC Introspection
-    <http://scripts.incutio.com/xmlrpc/introspection.html>`_ 
+    <http://scripts.incutio.com/xmlrpc/introspection.html>`_
     specification.
-    
+
     By default, methods with names containing a dot are translated to
     use an underscore. For example, the `system.methodHelp` is handled
     by the method :meth:`system_methodHelp`.
-    
+
     Methods in the XML-RPC controller will be called with the method
     given in the XMLRPC body. Methods may be annotated with a signature
     attribute to declare the valid arguments and return types.
-    
+
     For example::
-        
+
         class MyXML(XMLRPCController):
             def userstatus(self):
                 return 'basic string'
             userstatus.signature = [ ['string'] ]
-            
+
             def userinfo(self, username, age=None):
                 user = LookUpUser(username)
                 response = {'username':user.name}
@@ -68,16 +69,16 @@ class XMLRPCController(WSGIController):
                 return response
             userinfo.signature = [['struct', 'string'],
                                   ['struct', 'string', 'int']]
-    
+
     Since XML-RPC methods can take different sets of data, each set of
     valid arguments is its own list. The first value in the list is the
     type of the return argument. The rest of the arguments are the
     types of the data that must be passed in.
-    
+
     In the last method in the example above, since the method can
     optionally take an integer value both sets of valid parameter lists
     should be provided.
-    
+
     Valid types that can be checked in the signature and their
     corresponding Python types::
 
@@ -89,7 +90,7 @@ class XMLRPCController(WSGIController):
         'struct' - dict
         'dateTime.iso8601' - xmlrpclib.DateTime
         'base64' - xmlrpclib.Binary
-    
+
     The class variable ``allow_none`` is passed to xmlrpclib.dumps;
     enabling it allows translating ``None`` to XML (an extension to the
     XML-RPC specification)
@@ -97,7 +98,7 @@ class XMLRPCController(WSGIController):
     .. note::
 
         Requiring a signature is optional.
-    
+
     """
     allow_none = False
     max_body_length = 4194304
@@ -146,7 +147,7 @@ class XMLRPCController(WSGIController):
             params = xmlrpc_sig(rpc_args)
             for sig in func.signature:
                 # Next sig if we don't have the same amount of args
-                if len(sig)-1 != len(rpc_args):
+                if len(sig) - 1 != len(rpc_args):
                     continue
 
                 # If the params match, we're valid
@@ -171,12 +172,13 @@ class XMLRPCController(WSGIController):
         kargs['start_response'] = start_response
         self.rpc_kargs = kargs
         self._func = func
-        
+
         # Now that we know the method is valid, and the args are valid,
         # we can dispatch control to the default WSGIController
         status = []
         headers = []
         exc_info = []
+
         def change_content(new_status, new_headers, new_exc_info=None):
             status.append(new_status)
             headers.extend(new_headers)
@@ -218,19 +220,19 @@ class XMLRPCController(WSGIController):
 
     def _find_method_name(self, name):
         """Locate a method in the controller by the appropriate name
-        
-        By default, this translates method names like 
+
+        By default, this translates method names like
         'system.methodHelp' into 'system_methodHelp'.
-        
+
         """
         return name.replace('.', '_')
 
     def _publish_method_name(self, name):
         """Translate an internal method name to a publicly viewable one
-        
+
         By default, this translates internal method names like
         'blog_view' into 'blog.view'.
-        
+
         """
         return name.replace('_', '.')
 
@@ -253,7 +255,7 @@ class XMLRPCController(WSGIController):
         The first value of each array is the return value of the
         method. The result is an array to indicate multiple signatures
         a method may be capable of.
-        
+
         """
         method = self._find_method(self._find_method_name(name))
         if method:

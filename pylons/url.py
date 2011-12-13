@@ -4,16 +4,18 @@ from repoze.bfg.url import _join_elements
 
 from pylons.interfaces import IRoutesMapper
 
+
 def route_url(route_name, request, *elements, **kw):
     try:
         reg = request.registry
     except AttributeError:
-        reg = get_current_registry() # b/c
+        reg = get_current_registry()  # b/c
     mapper = reg.getUtility(IRoutesMapper)
 
     route = mapper.routes.get(route_name)
     if route and 'custom_url_generator' in route.__dict__:
-         route_name, request, elements, kw = route.custom_url_generator(route_name, request, *elements, **kw)
+        route_name, request, elements, kw = route.custom_url_generator(
+            route_name, request, *elements, **kw)
     anchor = ''
     qs = ''
     app_url = None
@@ -30,7 +32,7 @@ def route_url(route_name, request, *elements, **kw):
     if '_app_url' in kw:
         app_url = kw.pop('_app_url')
 
-    path = mapper.generate(route_name, kw) # raises KeyError if generate fails
+    path = mapper.generate(route_name, kw)  # raises KeyError if generate fails
 
     if elements:
         suffix = _join_elements(elements)

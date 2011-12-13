@@ -24,11 +24,11 @@ return :class:`~webhelpers.html.literal` objects, a subclass of
 unicode).
 
 .. admonition :: Tip
-    
+
     :data:`tmpl_context` (template context) is abbreviated to :data:`c`
     instead of its full name since it will likely be used extensively
     and it's much faster to use :data:`c`. Of course, for users that
-    can't tolerate one-letter variables, feel free to not import 
+    can't tolerate one-letter variables, feel free to not import
     :data:`tmpl_context` as :data:`c` since both names are available in
     templates as well.
 
@@ -49,7 +49,7 @@ Example of rendering a template with some variables::
 And the accompanying Mako template:
 
 .. code-block:: mako
-    
+
     Hello ${c.first name}, I see your lastname is ${c.last_name}!
 
 Your controller will have additional default imports for commonly used
@@ -88,7 +88,7 @@ are included in the template's namespace are:
 Configuring the template language
 ---------------------------------
 
-The template engine is created in the projects 
+The template engine is created in the projects
 ``config/environment.py`` and attached to the ``app_globals`` (g)
 instance. Configuration options can be directly passed into the
 template engine, and are used by the render functions.
@@ -107,27 +107,28 @@ from webhelpers.html import literal
 
 import pylons
 
-__all__ = ['render_genshi', 'render_jinja2', 'render_mako', 'render_response']
+__all__ = ['render_genshi', 'render_jinja2', 'render_mako']
 
 PYLONS_VARS = ['c', 'app_globals', 'config', 'h', 'render', 'request',
                'session', 'translator', 'ungettext', '_', 'N_']
 
 log = logging.getLogger(__name__)
 
+
 def pylons_globals():
     """Create and return a dictionary of global Pylons variables
-    
+
     Render functions should call this to retrieve a list of global
     Pylons variables that should be included in the global template
     namespace if possible.
-    
+
     Pylons variables that are returned in the dictionary:
-        ``c``, ``h``, ``_``, ``N_``, config, request, response, 
+        ``c``, ``h``, ``_``, ``N_``, config, request, response,
         translator, ungettext, ``url``
-    
+
     If SessionMiddleware is being used, ``session`` will also be
     available in the template namespace.
-    
+
     """
     conf = pylons.config._current_obj()
     c = pylons.tmpl_context._current_obj()
@@ -146,7 +147,7 @@ def pylons_globals():
         _=pylons.i18n._,
         N_=pylons.i18n.N_
     )
-    
+
     # If the session was overriden to be None, don't populate the session
     # var
     econf = pylons.config['pylons.environ_config']
@@ -161,12 +162,12 @@ def cached_template(template_name, render_func, ns_options=(),
                     cache_key=None, cache_type=None, cache_expire=None,
                     **kwargs):
     """Cache and render a template
-    
+
     Cache a template to the namespace ``template_name``, along with a
     specific key if provided.
-    
+
     Basic Options
-    
+
     ``template_name``
         Name of the template, which is used as the template namespace.
     ``render_func``
@@ -179,9 +180,9 @@ def cached_template(template_name, render_func, ns_options=(),
         language supports the 'fragment' option, the namespace should
         include it so that the cached copy for a template is not the
         same as the fragment version of it.
-    
+
     Caching options (uses Beaker caching middleware)
-    
+
     ``cache_key``
         Key to cache this copy of the template under.
     ``cache_type``
@@ -191,11 +192,11 @@ def cached_template(template_name, render_func, ns_options=(),
         Time in seconds to cache this template with this ``cache_key``
         for. Or use 'never' to designate that the cache should never
         expire.
-    
+
     The minimum key required to trigger caching is
     ``cache_expire='never'`` which will cache the template forever
     seconds with no key.
-    
+
     """
     # If one of them is not None then the user did set something
     if cache_key is not None or cache_expire is not None or cache_type \
@@ -204,41 +205,41 @@ def cached_template(template_name, render_func, ns_options=(),
         if not cache_type:
             cache_type = 'dbm'
         if not cache_key:
-            cache_key = 'default'     
+            cache_key = 'default'
         if cache_expire == 'never':
             cache_expire = None
         namespace = template_name
         for name in ns_options:
             namespace += str(kwargs.get(name))
         cache = pylons.cache.get_cache(namespace, type=cache_type)
-        content = cache.get_value(cache_key, createfunc=render_func, 
+        content = cache.get_value(cache_key, createfunc=render_func,
             expiretime=cache_expire)
         return content
     else:
         return render_func()
 
 
-def render_mako(template_name, extra_vars=None, cache_key=None, 
+def render_mako(template_name, extra_vars=None, cache_key=None,
                 cache_type=None, cache_expire=None):
     """Render a template with Mako
-    
+
     Accepts the cache options ``cache_key``, ``cache_type``, and
     ``cache_expire``.
-    
-    """    
+
+    """
     # Create a render callable for the cache function
     def render_template():
         # Pull in extra vars if needed
         globs = extra_vars or {}
-        
+
         # Second, get the globals
         globs.update(pylons_globals())
 
         # Grab a template reference
         template = globs['app_globals'].mako_lookup.get_template(template_name)
-        
+
         return literal(template.render_unicode(**globs))
-    
+
     return cached_template(template_name, render_template, cache_key=cache_key,
                            cache_type=cache_type, cache_expire=cache_expire)
 
@@ -246,80 +247,80 @@ def render_mako(template_name, extra_vars=None, cache_key=None,
 def render_mako_def(template_name, def_name, cache_key=None,
                     cache_type=None, cache_expire=None, **kwargs):
     """Render a def block within a Mako template
-    
+
     Takes the template name, and the name of the def within it to call.
     If the def takes arguments, they should be passed in as keyword
     arguments.
-    
+
     Example::
-        
+
         # To call the def 'header' within the 'layout.mako' template
         # with a title argument
         render_mako_def('layout.mako', 'header', title='Testing')
-    
+
     Also accepts the cache options ``cache_key``, ``cache_type``, and
     ``cache_expire``.
-    
+
     """
     # Create a render callable for the cache function
     def render_template():
         # Pull in extra vars if needed
         globs = kwargs or {}
-        
+
         # Second, get the globals
         globs.update(pylons_globals())
 
         # Grab a template reference
         template = globs['app_globals'].mako_lookup.get_template(
             template_name).get_def(def_name)
-        
+
         return literal(template.render_unicode(**globs))
-    
+
     return cached_template(template_name, render_template, cache_key=cache_key,
                            cache_type=cache_type, cache_expire=cache_expire)
 
 
-def render_genshi(template_name, extra_vars=None, cache_key=None, 
+def render_genshi(template_name, extra_vars=None, cache_key=None,
                   cache_type=None, cache_expire=None, method='xhtml'):
     """Render a template with Genshi
-    
+
     Accepts the cache options ``cache_key``, ``cache_type``, and
     ``cache_expire`` in addition to method which are passed to Genshi's
     render function.
-    
+
     """
     # Create a render callable for the cache function
     def render_template():
         # Pull in extra vars if needed
         globs = extra_vars or {}
-        
+
         # Second, get the globals
         globs.update(pylons_globals())
 
         # Grab a template reference
         template = globs['app_globals'].genshi_loader.load(template_name)
-        
+
         return literal(template.generate(**globs).render(method=method,
                                                          encoding=None))
-    
+
     return cached_template(template_name, render_template, cache_key=cache_key,
                            cache_type=cache_type, cache_expire=cache_expire,
                            ns_options=('method'), method=method)
 
 
-def render_jinja2(template_name, extra_vars=None, cache_key=None, 
+def render_jinja2(template_name, extra_vars=None, cache_key=None,
                  cache_type=None, cache_expire=None):
     """Render a template with Jinja2
 
     Accepts the cache options ``cache_key``, ``cache_type``, and
     ``cache_expire``.
 
-    """    
+    """
     # Create a render callable for the cache function
     def render_template():
         # Pull in extra vars if needed
         globs = extra_vars or {}
-        
+
         # Second, get the globals
         globs.update(pylons_globals())
 

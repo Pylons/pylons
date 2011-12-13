@@ -16,7 +16,7 @@ Commands available:
     Open an interactive shell with the Pylons app loaded
 
 Example usage::
-    
+
     ~/sample$ paster controller account
     Creating /Users/ben/sample/sample/controllers/account.py
     Creating /Users/ben/sample/sample/tests/functional/test_account.py
@@ -26,12 +26,12 @@ Example usage::
 
     :command:`paster` is a command line script (from the PasteScript
     package) that allows the creation of context sensitive commands.
-    :command:`paster` looks in the current directory for a 
+    :command:`paster` looks in the current directory for a
     ``.egg-info`` directory, then loads the ``paster_plugins.txt``
     file.
 
     Using setuptools entry points, :command:`paster` looks for
-    functions registered with setuptools as 
+    functions registered with setuptools as
     :func:`paste.paster_command`. These are defined in the entry_points
     block in each packages :file:`setup.py` module.
 
@@ -53,6 +53,7 @@ import pylons
 import pylons.util as util
 
 __all__ = ['ControllerCommand', 'RestControllerCommand', 'ShellCommand']
+
 
 def can_import(name):
     """Attempt to __import__ the specified package/module, returning
@@ -120,11 +121,11 @@ def validate_name(name):
     return True
 
 
-def check_controller_existence(base_package, directory, name): 
+def check_controller_existence(base_package, directory, name):
     """Check if given controller already exists in project."""
     filename = os.path.join(base_package, 'controllers', directory,
                             name + '.py')
-    if os.path.exists(filename): 
+    if os.path.exists(filename):
         raise BadCommand('Controller %s already exists.' %
                          os.path.join(directory, name))
 
@@ -203,15 +204,15 @@ class ControllerCommand(Command):
             if not fullname.startswith(os.sep):
                 fullname = os.sep + fullname
             testname = fullname.replace(os.sep, '_')[1:]
-            
+
             module_dir = directory.replace('/', os.path.sep)
             check_controller_existence(base_package, module_dir, name)
-            
+
             file_op.template_vars.update(
                 {'name': controller_name,
                  'fname': os.path.join(directory, name).replace('\\', '/'),
                  'tmpl_name': name,
-                 'package':base_package,
+                 'package': base_package,
                  'importstatement': importstatement})
             file_op.copy_file(template='controller.py_tmpl',
                               dest=os.path.join('controllers', directory),
@@ -294,7 +295,7 @@ class RestControllerCommand(Command):
             if base_package.lower() == pluralname.lower():
                 raise BadCommand(
                     'Your controller name should not be the same as '
-                    'the package name %r.'% base_package)
+                    'the package name %r.' % base_package)
             # Validate the name
             for name in [pluralname]:
                 name = name.replace('-', '_')
@@ -309,11 +310,10 @@ class RestControllerCommand(Command):
                                    base_package)
             if defines_render(base_package):
                 importstatement += ', render'
-            
-            
+
             module_dir = pluraldirectory.replace('/', os.path.sep)
             check_controller_existence(base_package, module_dir, name)
-            
+
             # Setup the controller
             fullname = os.path.join(pluraldirectory, pluralname)
             controller_name = util.class_name_from_module_name(
@@ -327,7 +327,7 @@ class RestControllerCommand(Command):
             if pluraldirectory:
                 nameprefix = pluraldirectory.replace(os.path.sep, '_') + '_'
                 path = pluraldirectory + '/'
-                
+
             controller_c = ''
             if nameprefix:
                 controller_c = ", controller='%s', \n\t" % \
@@ -343,10 +343,10 @@ class RestControllerCommand(Command):
                  'singularname': singularname,
                  'name': controller_name,
                  'nameprefix': nameprefix,
-                 'package':base_package,
-                 'path':path,
+                 'package': base_package,
+                 'path': path,
                  'resource_command': command.replace('\n\t', '\n%s#%s' % \
-                                                         (' '*4, ' '*9)),
+                                                         (' ' * 4, ' ' * 9)),
                  'fname': os.path.join(pluraldirectory, pluralname),
                  'importstatement': importstatement})
 
@@ -419,7 +419,7 @@ class RoutesCommand(Command):
         if not self.options.quiet:
             # Configure logging from the config file
             self.logging_file_config(config_file)
-        
+
         # Load the wsgi app first so that everything is initialized right
         wsgiapp = loadapp(config_name, relative_to=here_dir)
         test_app = paste.fixture.TestApp(wsgiapp)
@@ -486,7 +486,7 @@ class ShellCommand(Command):
         if not self.options.quiet:
             # Configure logging from the config file
             self.logging_file_config(config_file)
-        
+
         # Load locals and populate with objects for use in shell
         sys.path.insert(0, here_dir)
 
@@ -507,7 +507,7 @@ class ShellCommand(Command):
         # Restore the state of the Pylons special objects
         # (StackedObjectProxies)
         paste.registry.restorer.restoration_begin(request_id)
-                
+
         # Determine the package name from the pylons.config object
         pkg_name = pylons.config['pylons.package']
 
@@ -532,7 +532,7 @@ class ShellCommand(Command):
         exec ('from pylons.controllers.util import abort, redirect') in locs
         exec 'from pylons.i18n import _, ungettext, N_' in locs
         locs.pop('__builtins__', None)
-        
+
         # Import all objects from the base module
         __import__(base_module)
 

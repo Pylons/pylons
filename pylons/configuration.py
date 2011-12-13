@@ -34,6 +34,7 @@ log = logging.getLogger(__name__)
 
 config = DispatchingConfig()
 
+
 class PylonsConfig(dict):
     """Pylons configuration object
 
@@ -71,11 +72,11 @@ class PylonsConfig(dict):
     ``pylons.request_options``
         A dict of Content-Type related default settings for new
         instances of :class:`~pylons.controllers.util.Request`. May
-        contain the values ``charset`` and ``errors`` and 
+        contain the values ``charset`` and ``errors`` and
         ``decode_param_names``. Overrides the Pylons default values
         specified by the ``request_defaults`` dict.
     ``pylons.response_options``
-        A dict of Content-Type related default settings for new 
+        A dict of Content-Type related default settings for new
         instances of :class:`~pylons.controllers.util.Response`. May
         contain the values ``content_type``, ``charset`` and
         ``errors``. Overrides the Pylons default values specified by
@@ -83,7 +84,7 @@ class PylonsConfig(dict):
     ``routes.map``
         Mapper object used for Routing. Yes, it is possible to add
         routes after your application has started running.
-    
+
     """
     defaults = {
         'debug': False,
@@ -101,18 +102,18 @@ class PylonsConfig(dict):
         'pylons.strict_tmpl_context': True,
         'pylons.tmpl_context_attach_args': False,
     }
-    
+
     def init_app(self, global_conf, app_conf, package=None, paths=None):
         """Initialize configuration for the application
-        
+
         .. note
-            This *must* be called at least once, as soon as possible 
+            This *must* be called at least once, as soon as possible
             to setup all the configuration options.
-        
+
         ``global_conf``
             Several options are expected to be set for a Pylons web
-            application. They will be loaded from the global_config 
-            which has the main Paste options. If ``debug`` is not 
+            application. They will be loaded from the global_config
+            which has the main Paste options. If ``debug`` is not
             enabled as a global config option, the following option
             *must* be set:
 
@@ -120,7 +121,7 @@ class PylonsConfig(dict):
 
             The optional config options in this case are:
 
-            * smtp_server - The SMTP server to use, defaults to 
+            * smtp_server - The SMTP server to use, defaults to
               'localhost'
             * error_log - A logfile to write the error to
             * error_subject_prefix - The prefix of the error email
@@ -128,19 +129,19 @@ class PylonsConfig(dict):
             * from_address - Whom the error email should be from
         ``app_conf``
             Defaults supplied via the [app:main] section from the Paste
-            config file. ``load_config`` only cares about whether a 
+            config file. ``load_config`` only cares about whether a
             'prefix' option is set, if so it will update Routes to
             ensure URL's take that into account.
         ``package``
-            The name of the application package, to be stored in the 
+            The name of the application package, to be stored in the
             app_conf.
-        
+
         .. versionchanged:: 1.0
             ``template_engine`` option is no longer supported.
-                
+
         """
         log.debug("Initializing configuration, package: '%s'", package)
-        
+
         conf = global_conf.copy()
         conf.update(app_conf)
         conf.update(dict(app_conf=app_conf, global_conf=global_conf))
@@ -148,14 +149,14 @@ class PylonsConfig(dict):
 
         if paths:
             conf['pylons.paths'] = paths
-        
+
         conf['pylons.package'] = package
-        
+
         conf['debug'] = asbool(conf.get('debug'))
-                
+
         # Load the MIMETypes with its default types
         MIMETypes.init()
-        
+
         # Ensure all the keys from defaults are present, load them if not
         for key, val in copy.deepcopy(PylonsConfig.defaults).iteritems():
             conf.setdefault(key, val)
@@ -190,7 +191,7 @@ class PylonsConfig(dict):
                                             conf['app_conf'].get('cache_dir'))
         # Save our errorware values
         conf['pylons.errorware'] = errorware
-        
+
         # Load conf dict into self
         self.update(conf)
 
