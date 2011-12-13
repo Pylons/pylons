@@ -158,11 +158,13 @@ class TestBasicWSGI(TestWSGIController):
     def test_params(self):
         self.baseenviron['pylons.routes_dict']['action'] = u'params'
         resp = self.app.get('/?foo=bar')
-        assert "[('foo', u'bar')]" in resp, str(resp)
+        assert "'foo', u'bar')]" in resp, str(resp)
         resp = self.app.post('/?foo=bar', params=dict(snafu='snafoo'))
-        assert "[('foo', u'bar'), ('snafu', u'snafoo')]" in resp, str(resp)
+        assert "'foo', u'bar')" in resp, str(resp)
+        assert "'snafu', u'snafoo')]" in resp, str(resp)
         resp = self.app.put('/?foo=bar', params=dict(snafu='snafoo'))
-        assert "[('foo', u'bar'), ('snafu', u'snafoo')]" in resp, str(resp)
+        assert "'foo', u'bar')" in resp, str(resp)
+        assert "'snafu', u'snafoo')]" in resp, str(resp)
 
     def test_list(self):
         self.baseenviron['pylons.routes_dict']['action'] = 'list'

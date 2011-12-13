@@ -26,8 +26,8 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx']
 
 intersphinx_mapping = {
-    'http://www.sqlalchemy.org/docs/05/': None,
-    'http://webhelpers.groovie.org/': None,
+    'http://www.sqlalchemy.org/docs/': None,
+    'http://sluggo.scrapping.cc/python/WebHelpers/': None,
     'http://routes.groovie.org/': None,
     'http://beaker.groovie.org/': None,
 }
@@ -43,7 +43,7 @@ master_doc = 'index'
 
 # General substitutions.
 project = 'Pylons Framework'
-copyright = '2008-2010, Ben Bangert, James Gardner, Philip Jenvey'
+copyright = '2008-2011, Ben Bangert, James Gardner, Philip Jenvey'
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
@@ -83,6 +83,7 @@ today_fmt = '%B %d, %Y'
 sys.path.append(os.path.abspath('_themes'))
 html_theme_path = ['_themes']
 html_theme = 'pylonsfw'
+html_theme_options = {'github_url':'http://github.com/Pylons/pylons'}
 
 # The style sheet to use for HTML and HTML Help pages. A file of that name
 # must exist either in Sphinx' static/ path, or in one of the custom paths

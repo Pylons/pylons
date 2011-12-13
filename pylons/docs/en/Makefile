@@ -68,4 +68,4 @@ linkcheck:
 	      "or in _build/linkcheck/output.txt."
 
 _themes:
-	git clone git://github.com/Pylons/pylons_sphinx_theme.git _themes
+	cd ../../..; git submodule update --init; cd pylons/docs/en

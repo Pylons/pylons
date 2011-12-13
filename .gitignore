@@ -1,4 +1,5 @@
 *.pyc
 *.egg-info
+*.egg
 tests/test_units/cache/
 tests/test_units/session/
