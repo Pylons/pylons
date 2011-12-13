@@ -1,7 +1,9 @@
 Pylons Changelog
 ================
 
-1.0.1RC1 (**tip**)
+1.0.1RC1 (December 12, 2011)
+* Updated dependencies to latest versions of Paste, PasteDeploy, and
+  compatibility for the latest WebOb 1.2 betas.
 * authenticate_form allows for GET. Patch by iElectric.
 * jsonify now properly sets charset to utf-8.
 * Add ability for jsonify to handle objects with a __json__ attribute using
