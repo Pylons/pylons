@@ -98,7 +98,7 @@ Development Version
 
 Pylons development uses the Mercuial distributed version control system (DVCS)
 with BitBucket hosting the main repository here:
-    
+
     `Pylons Bitbucket repository <https://github.com/Pylons/pylons>`_
 
 
@@ -130,12 +130,13 @@ with BitBucket hosting the main repository here:
         "License :: OSI Approved :: BSD License",
         "Framework :: Pylons",
         "Programming Language :: Python",
+        "Programming Language :: Python :: 2 :: Only",
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
         "Topic :: Internet :: WWW/HTTP :: WSGI",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    extras_require = {
+    extras_require={
         'genshi': ['Genshi>=0.6'],
         'jinja2': ['Jinja2'],
     },
@@ -149,10 +150,10 @@ with BitBucket hosting the main repository here:
     [paste.paster_create_template]
     pylons = pylons.util:PylonsTemplate
     pylons_minimal = pylons.util:MinimalPylonsTemplate
-    
+
     [paste.filter_factory]
     debugger = pylons.middleware:debugger_filter_factory
-    
+
     [paste.filter_app_factory]
     debugger = pylons.middleware:debugger_filter_app_factory
     """,

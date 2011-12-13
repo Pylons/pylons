@@ -27,7 +27,7 @@ try:
 except ImportError:
     import sha as sha1
 
-from webob import Request as WebObRequest
+from webob import BaseRequest as WebObRequest
 from webob import Response as WebObResponse
 from webob.exc import status_map
 
@@ -54,7 +54,16 @@ class Request(WebObRequest):
         return self.accept_charset
 
     def languages(self):
-        return self.accept_language.best_matches(self.language)
+        # And we now have the old best_matches code that webob ditched!
+        al = self.accept_language
+        items = [i for i, q in sorted(al._parsed, key=lambda iq: -iq[1])]
+        for index, item in enumerate(items):
+            if al._match(item, self.language):
+                items[index:] = [self.language]
+                break
+        else:
+            items.append(self.language)
+        return items
     languages = property(languages)
 
     def match_accept(self, mimetypes):

@@ -27,6 +27,7 @@ class I18NcController(WSGIController):
         return resp_unicode
 
     def i18n_index(self):
+        obj = request._current_obj()
         locale_list = request.languages
         set_lang(request.languages)
         return unicode(_('basic index page'))

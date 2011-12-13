@@ -6,10 +6,10 @@ from paste.deploy.converters import asbool
 from paste.urlparser import StaticURLParser
 from weberror.evalexception import EvalException
 from weberror.errormiddleware import ErrorMiddleware
-from webob import Request, Response
 from webhelpers.html import literal
 
 import pylons
+from pylons.controllers.util import Request, Response
 from pylons.error import template_error_formatters
 from pylons.util import call_wsgi_application
 

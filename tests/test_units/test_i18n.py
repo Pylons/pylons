@@ -8,6 +8,7 @@ from __init__ import test_root
 
 lang_setup = None
 
+
 def setup_py_trans():
     global lang_setup
     import pylons
@@ -19,13 +20,14 @@ def setup_py_trans():
 
 glob_set = []
 
+
 class TestI18N(object):
     def setUp(self):
         setup_py_trans()
-    
+
     def test_lazify(self):
         from pylons.i18n.translation import lazify
-        
+
         def show_str(st):
             return '%s%s' % (st, len(glob_set))
         lazy_show_str = lazify(show_str)
@@ -34,17 +36,18 @@ class TestI18N(object):
         assert str(result1) == str(result2)
         glob_set.append('1')
         assert str(result1) != str(result2)
-    
+
     def test_noop(self):
         import pylons
         from pylons.i18n.translation import _, N_, set_lang
         foo = N_('Hello')
+
         class Bar(object):
             def __init__(self):
                 self.local_foo = _(foo)
-        
+
         assert Bar().local_foo == 'Hello'
-        
+
         t = set_lang('fr', set_environ=False, pylons_config=lang_setup)
         pylons.translator._push_object(t)
         assert Bar().local_foo == 'Bonjour'
