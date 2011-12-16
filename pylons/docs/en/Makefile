@@ -25,7 +25,7 @@ help:
 clean:
 	-rm -rf _build/*
 
-html: _themes
+html:
 	mkdir -p _build/html _build/doctrees
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) _build/html
 	@echo
@@ -67,5 +67,3 @@ linkcheck:
 	@echo "Link check complete; look for any errors in the above output " \
 	      "or in _build/linkcheck/output.txt."
 
-_themes:
-	cd ../../..; git submodule update --init; cd pylons/docs/en
