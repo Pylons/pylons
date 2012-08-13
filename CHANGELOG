@@ -1,6 +1,9 @@
 Pylons Changelog
 ================
 
+1.0.1 (August 13th, 2012)
+* No changes since RC1.
+
 1.0.1RC1 (December 12, 2011)
 * Updated dependencies to latest versions of Paste, PasteDeploy, and
   compatibility for the latest WebOb 1.2 betas.
