@@ -221,4 +221,4 @@ def redirect(url, code=302):
     """
     log.debug("Generating %s redirect" % code)
     exc = status_map[code]
-    raise exc(location=url).exception
+    raise exc(location=url.encode('utf-8')).exception
