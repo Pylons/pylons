@@ -174,7 +174,7 @@ def etag_cache(key=None):
         response.headers.pop('Content-Type', None)
         response.headers.pop('Cache-Control', None)
         response.headers.pop('Pragma', None)
-        raise status_map[304]().exception
+        raise status_map[304]()
     else:
         log.debug("ETag didn't match, returning response object")
 
