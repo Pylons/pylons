@@ -1,6 +1,10 @@
 import sys
 
 try:
+    import multiprocessing
+except:
+    pass
+try:
     from setuptools import setup, find_packages
 except ImportError:
     from ez_setup import use_setuptools
