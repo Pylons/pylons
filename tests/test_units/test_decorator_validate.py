@@ -100,7 +100,8 @@ class TestValidateDecorator(TestWSGIController):
 
     def test_network_failed_validation_non_ascii(self):
         response = self.post_response(action='network', new_network='Росси́я')
-        assert 'That is not a valid URL' in response
+        # assert 'That is not a valid URL' in response, response
+        assert 'You must provide a full domain name' in response
         assert 'Росси́я' in response
 
     def test_recurse_validated(self):
