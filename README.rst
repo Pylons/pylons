@@ -12,7 +12,7 @@ Full documentation is available online at http://docs.pylonsproject.org/projects
 Install
 =======
 
-Installation instructions are at http://pylonshq.com/docs/en/1.0/gettingstarted/
+Installation instructions are at http://docs.pylonsproject.org/projects/pylons-webframework/en/latest/gettingstarted.html#installing
 
 If you want to install from source you can run the following command:
 
