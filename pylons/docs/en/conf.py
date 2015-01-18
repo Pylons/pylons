@@ -43,15 +43,15 @@ master_doc = 'index'
 
 # General substitutions.
 project = 'Pylons Framework'
-copyright = '2008-2012, Ben Bangert, James Gardner, Philip Jenvey'
+copyright = '2008-2015, Ben Bangert, James Gardner, Philip Jenvey'
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
 #
 # The short X.Y version.
-version = '1.0.1'
+version = '1.0.2'
 # The full version, including alpha/beta/rc tags.
-release = '1.0.1'
+release = '1.0.2'
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
@@ -153,7 +153,7 @@ latex_paper_size = 'letter'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, document class [howto/manual]).
 latex_documents = [
-  ('index', 'Pylons.tex', 'Pylons Reference Documentation', 
+  ('index', 'Pylons.tex', 'Pylons Reference Documentation',
    'Ben Bangert, Graham Higgins, James Gardner, Philip Jenvey', 'manual',
    'toctree_only'),
 ]
