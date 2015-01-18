@@ -121,9 +121,6 @@ with BitBucket hosting the main repository here:
         "WebTest>=1.3.1", "Tempita>=0.5.1", "MarkupSafe>=0.15",
         "WebOb>=1.1.1",
     ],
-    dependency_links=[
-        "http://www.pylonshq.com/download/1.0"
-    ],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
