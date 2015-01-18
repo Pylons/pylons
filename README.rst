@@ -35,6 +35,10 @@ additional tools.
 This will install additional dependencies needed for the tests. As above, you
 may need root privileges.
 
+.. image:: https://secure.travis-ci.org/Pylons/pylons.png?branch=master
+   :alt: Build Status
+   :target: https://secure.travis-ci.org/Pylons/pylons
+
 Documentation
 =============
 
