@@ -21,7 +21,7 @@ class HelloForm(formencode.Schema):
 def make_validating_controller():
     from pylons.decorators import validate
     from pylons.controllers import WSGIController
-    
+
     class ValidatingController(WSGIController):
         def new_network(self):
             return """
@@ -86,7 +86,7 @@ class TestValidateDecorator(TestWSGIController):
     def setUp(self):
         from pylons.testutil import ControllerWrap, SetupCacheGlobal
         ValidatingController = make_validating_controller()
-        
+
         TestWSGIController.setUp(self)
         app = SetupCacheGlobal(ControllerWrap(ValidatingController),
                                self.environ)
@@ -100,7 +100,7 @@ class TestValidateDecorator(TestWSGIController):
 
     def test_network_failed_validation_non_ascii(self):
         response = self.post_response(action='network', new_network='Росси́я')
-        assert 'That is not a valid URL' in response
+        assert 'You must provide a full domain name' in response
         assert 'Росси́я' in response
 
     def test_recurse_validated(self):
@@ -113,7 +113,7 @@ class TestValidateDecorator(TestWSGIController):
         response = self.app.post('/hello?hello=1&hello=2&hello=3',
                                  extra_environ=self.environ)
         assert "'hello': [1, 2, 3]" in response
-                                      
+
     def test_hello_failed(self):
         self.environ['pylons.routes_dict']['action'] = 'hello'
         response = self.app.post('/hello?hello=1&hello=2&hello=hi',
