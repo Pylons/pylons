@@ -7,6 +7,12 @@ Pylons
 
 Pylons is a rapid web application development framework.
 
+.. note::
+
+    Pylons has merged with repoze.bfg, and is now in maintenance-only
+    mode. It's highly recommended that new projects start with the new
+    merged web framework, `pyramid <http://www.pylonsproject.org/>`_.
+
 `Read the complete Pylons web framework documentation
 <http://docs.pylonsproject.org/projects/pylons-webframework/>`_
 
