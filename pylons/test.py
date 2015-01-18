@@ -42,7 +42,7 @@ class PylonsPlugin(nose.plugins.Plugin):
     enableOpt = 'pylons_config'
     name = 'pylons'
 
-    def add_options(self, parser, env=os.environ):
+    def options(self, parser, env=os.environ):
         """Add command-line options for this plugin"""
         env_opt = 'NOSE_WITH_%s' % self.name.upper()
         env_opt.replace('-', '_')

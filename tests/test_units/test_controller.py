@@ -36,11 +36,11 @@ class BasicWSGIController(WSGIController):
     def use_redirect(self):
         pylons.response.set_cookie('message', 'Hello World')
         exc = status_map[301]
-        raise exc('/elsewhere').exception
+        raise exc('/elsewhere')
     
     def use_customnotfound(self):
         exc = status_map[404]
-        raise exc('Custom not found').exception
+        raise exc('Custom not found')
     
     def header_check(self):
         pylons.response.headers['Content-Type'] = 'text/plain'
