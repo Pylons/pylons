@@ -1,9 +1,13 @@
 Pylons
 ++++++
 
+.. image:: https://secure.travis-ci.org/Pylons/pylons.png?branch=master
+   :alt: Build Status
+   :target: https://secure.travis-ci.org/Pylons/pylons
+
 Pylons is a rapid web application development framework.
 
-Full documentation is available online at http://pylonshq.com/docs/en/1.0/
+Full documentation is available online at http://docs.pylonsproject.org/projects/pylons-webframework/
 
 Install
 =======
@@ -25,19 +29,12 @@ Testing
 
 To test the source distribution run the following command:
 
-you will need to install Pylons as well some
-additional tools.
-
 .. code-block :: bash
 
     $ python setup.py test
 
 This will install additional dependencies needed for the tests. As above, you
 may need root privileges.
-
-.. image:: https://secure.travis-ci.org/Pylons/pylons.png?branch=master
-   :alt: Build Status
-   :target: https://secure.travis-ci.org/Pylons/pylons
 
 Documentation
 =============
