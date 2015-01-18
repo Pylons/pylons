@@ -7,12 +7,14 @@ Pylons
 
 Pylons is a rapid web application development framework.
 
-Full documentation is available online at http://docs.pylonsproject.org/projects/pylons-webframework/
+`Read the complete Pylons web framework documentation
+<http://docs.pylonsproject.org/projects/pylons-webframework/>`_
 
 Install
 =======
 
-Installation instructions are at http://docs.pylonsproject.org/projects/pylons-webframework/en/latest/gettingstarted.html#installing
+`Read the online Installation instructions
+<http://docs.pylonsproject.org/projects/pylons-webframework/en/latest/gettingstarted.html#installing>`_.
 
 If you want to install from source you can run the following command:
 
