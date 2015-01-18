@@ -39,7 +39,6 @@ var TRACEBACK = {
 <ul id="supportnav">
     <li class="nav active"><a class="overview" href="#">Overview</a></li>
     <li class="nav"><a class="search" href="#">Search Mail Lists</a></li>
-    <li class="nav"><a class="posttraceback" href="#">Post Traceback</a></li>
 </ul>
 </div>
 <div class="clearfix">&nbsp;</div>
@@ -51,16 +50,8 @@ helping out.</p>
 
 <ol>
 <li>Search the mail list</li>
-<li>Post the traceback, and ask for help on IRC</li>
-<li>Post a message to the mail list, referring to the posted traceback</li>
+<li>Post a message to the mail list</li>
 
-</div>
-<div class="posttracebacktab">
-<p><b>Note:</b> Clicking this button will post your traceback to the PylonsHQ website.
-The traceback includes the module names, Python version, and lines of code that you
-can see above. All tracebacks are posted anonymously unless you're logged into the
-PylonsHQ website in this browser.</p>
-<input type="button" href="#" class="submit_traceback" value="Send TraceBack to PylonsHQ" style="text-align: center;"/>
 </div>
 
 <div class="searchtab">
