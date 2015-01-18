@@ -9,6 +9,8 @@ Pylons Changelog
 * No changes since RC1.
 
 1.0.1RC1 (December 12, 2011)
+* WARNING: pylons.lib.decorators has had two functions removed:
+  ``determine_response_charset`` and ``encode_formencode_errors``.
 * Updated dependencies to latest versions of Paste, PasteDeploy, and
   compatibility for the latest WebOb 1.2 betas.
 * authenticate_form allows for GET. Patch by Domen Kožar.
