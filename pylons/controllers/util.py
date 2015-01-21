@@ -56,14 +56,19 @@ class Request(WebObRequest):
     def languages(self):
         # And we now have the old best_matches code that webob ditched!
         al = self.accept_language
-        items = [i for i, q in sorted(al._parsed, key=lambda iq: -iq[1])]
-        for index, item in enumerate(items):
-            if al._match(item, self.language):
-                items[index:] = [self.language]
-                break
-        else:
-            items.append(self.language)
-        return items
+        try:
+            items = [i for i, q in sorted(al._parsed, key=lambda iq: -iq[1])]
+            for index, item in enumerate(items):
+                if al._match(item, self.language):
+                    items[index:] = [self.language]
+                    break
+            else:
+                items.append(self.language)
+            return items
+        except AttributeError:
+            # If its a NilAccept, there won't be a _parsed attribute
+            # Return the best match instead
+            return [self.accept_language.best_match(self.language)]
     languages = property(languages)
 
     def match_accept(self, mimetypes):
