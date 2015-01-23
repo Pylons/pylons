@@ -2,6 +2,8 @@ Pylons Changelog
 ================
 
 1.0.2 (**dev)
+* In the event of a NilAccept for the language, request.languages() would
+  throw an AttributeError exception. Fixes #24.
 * Encode Location HTTP header in redirect responses in UTF-8. Per
   RFC 3987. Refers to #15.
 
