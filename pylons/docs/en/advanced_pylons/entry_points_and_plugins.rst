@@ -7,7 +7,7 @@ Using Entry Points to Write Plugins
 Introduction
 ============
 
-An entry point is a Python object in a project's code that is identified by a string in the project's ``setup.py`` file. The entry point is referenced by a group and a name so that the object may be discoverabe. This means that another application can search for all the installed software that has an entry point with a particular group name, and then access the Python object associated with that name. 
+An entry point is a Python object in a project's code that is identified by a string in the project's ``setup.py`` file. The entry point is referenced by a group and a name so that the object may be discoverable. This means that another application can search for all the installed software that has an entry point with a particular group name, and then access the Python object associated with that name. 
 
 This is extremely useful because it means it is possible to write plugins for an appropriately-designed application that can be loaded at run time. This document describes just such an application.
 
