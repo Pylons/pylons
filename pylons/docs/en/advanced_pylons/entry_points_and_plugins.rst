@@ -141,7 +141,7 @@ Executing this short script, will result in the following output:
     This would return the JPEG image plugin
     This would return the PNG image plugin
 
-The ``iter_entry_points()`` function has looped though all the objects in the ``cms.plugin`` group and returned the function they were associated with. The application then called the function that the enrty point was pointing to.
+The ``iter_entry_points()`` function has looped though all the objects in the ``cms.plugin`` group and returned the function they were associated with. The application then called the function that the entry point was pointing to.
 
 We hope that we have demonstrated the power of entry points for building extensible code and developers are encouraged to read the `pkg_resources <http://peak.telecommunity.com/DevCenter/PkgResources>`_ module documentation to learn about some more features of the eggs format. 
 
