@@ -86,7 +86,7 @@ Group names are specified in square brackets, plugin names are specified in the 
 
 The developer can add as many entries as desired in each group as long as the names are different and the same holds for adding groups. It is also possible to specify the entry points as a Python dictionary rather than a string if that approach is preferred.
 
-There are two more things we need to do to complete the plugin. The first is to include an ``ez_setup`` module so that if the user installing the plugin doesn't have ``setuptools`` installed, it will be installed for them. We do this by adding the follwoing to the very top of the ``setup.py`` file before the import:
+There are two more things we need to do to complete the plugin. The first is to include an ``ez_setup`` module so that if the user installing the plugin doesn't have ``setuptools`` installed, it will be installed for them. We do this by adding the following to the very top of the ``setup.py`` file before the import:
 
 
 .. code-block:: python
@@ -126,13 +126,13 @@ There are actually lots of ways of discovering plugins. For example: by distribu
 .. code-block:: python
 
     from pkg_resources import iter_entry_points
-    for object in iter_entry_points(group='cms.plugin', name=None):
-        print object()
+    for entry_point in iter_entry_points(group='cms.plugin', name=None):
+        print(entry_point)
 
     from pkg_resources import iter_entry_points
     available_methods = []
-    for method_handler in iter_entry_points(group='authkit.method', name=None):
-        available_methods.append(method_handler.load())
+    for entry_point in iter_entry_points(group='authkit.method', name=None):
+        available_methods.append(entry_point.load())
 
 Executing this short script, will result in the following output:
 
