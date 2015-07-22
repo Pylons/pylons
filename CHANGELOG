@@ -1,11 +1,13 @@
 Pylons Changelog
 ================
 
-1.0.2 (**dev)
+1.0.2 (July 21, 2015)
 * In the event of a NilAccept for the language, request.languages() would
   throw an AttributeError exception. Fixes #24.
 * Encode Location HTTP header in redirect responses in UTF-8. Per
   RFC 3987. Refers to #15.
+* Remove "Post Traceback" as it was a possible XSS vector with prior versions
+  of WebError, and the PylonsHQ site is no longer in existence to support them.
 
 1.0.1 (August 13th, 2012)
 * No changes since RC1.
