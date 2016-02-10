@@ -19,7 +19,7 @@ def handle_mako_error(context, exc):
         exc.is_mako_exception = True
     except:
         pass
-    raise (exc, None, sys.exc_info()[2])
+    raise exc, None, sys.exc_info()[2]
 
 
 def myghty_html_data(exc_value):
