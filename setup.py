@@ -76,9 +76,10 @@ Core Features
 Current Status
 --------------
 
-Pylons 1.0 series is stable and production ready. The Pylons Project now
-maintains the Pyramid web framework for future development. Pylons 1.0 users
-should strongly consider using it for their next project.
+Pylons 1.0 series is stable and production ready, but in maintenance-only
+mode. The Pylons Project now maintains the Pyramid web framework for future
+development. Pylons 1.0 users should strongly consider using Pyramid for
+their next project.
 
 
 Download and Installation
@@ -89,25 +90,27 @@ Pylons can be installed with `Easy Install
 
     > easy_install Pylons
 
-Dependant packages are automatically installed from
-the `Pylons download page <http://pylonshq.com/download/>`_ .
-
 
 Development Version
 -------------------
 
-Pylons development uses the Mercuial distributed version control system (DVCS)
-with BitBucket hosting the main repository here:
+Pylons development uses the git distributed version control system (DVCS)
+with GitHub hosting the main repository here:
 
-    `Pylons Bitbucket repository <https://github.com/Pylons/pylons>`_
+    `Pylons GitHub repository <https://github.com/Pylons/pylons>`_
 
+
+Documentation
+-------------
+
+http://docs.pylonsproject.org/projects/pylons-webframework/en/latest/
 
 """,
     keywords='web wsgi lightweight framework sqlalchemy formencode mako templates',
     license='BSD',
     author='Ben Bangert, Philip Jenvey, James Gardner',
     author_email='ben@groovie.org, pjenvey@underboss.org',
-    url='http://www.pylonshq.com/',
+    url='https://github.com/Pylons/pylons',
     packages=find_packages(exclude=['ez_setup', 'tests', 'tests.*']),
     zip_safe=False,
     include_package_data=True,
