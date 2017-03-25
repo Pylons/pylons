@@ -212,7 +212,7 @@ Since we have used docutils and SQLAlchemy, both third party packages, we need t
         "docutils==0.4",
     ],
 
-While we are we are making changes to :file:`setup.py` we might want to complete some of the other sections too. Set the version number to 0.1.6 and add a description and URL which will be used on PyPi when we release it: 
+While we are making changes to :file:`setup.py` we might want to complete some of the other sections too. Set the version number to 0.1.6 and add a description and URL which will be used on PyPi when we release it: 
 
 .. code-block :: python 
 
