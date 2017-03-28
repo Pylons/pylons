@@ -13,9 +13,6 @@ Pylons is a rapid web application development framework.
     mode. It's highly recommended that new projects start with the new
     merged web framework, `pyramid <http://www.pylonsproject.org/>`_.
 
-`Read the complete Pylons web framework documentation
-<http://docs.pylonsproject.org/projects/pylons-webframework/>`_
-
 Install
 =======
 
@@ -46,6 +43,11 @@ may need root privileges.
 
 Documentation
 =============
+
+`Read the complete Pylons web framework documentation
+<http://docs.pylonsproject.org/projects/pylons-webframework/>`_.
+
+`Definitive Guide to Pylons <https://thejimmyg.github.io/pylonsbook/>`_ is a book about Pylons published by Apress, written by James Gardner, with free HTML rendering.
 
 Generating documentation requires Sphinx:
 
