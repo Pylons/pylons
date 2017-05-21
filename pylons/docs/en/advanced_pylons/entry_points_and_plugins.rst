@@ -79,7 +79,7 @@ We are interested in adding the entry points. We need to decide on a group name 
         entry_points="""
             [cms.plugin]
             jpg_image=image_plugin:make_jpeg_image_plugin
-            png_image=image_plugin:make_jpeg_image_plugin
+            png_image=image_plugin:make_png_image_plugin
         """,
 
 Group names are specified in square brackets, plugin names are specified in the format ``name=module.import.path:object_within_the_module``. The object doesn't have to be a function and can have any valid Python name. The module import path doesn't have to be a top level component as it is in this example and the name of the entry point doesn't have to be the same as the name of the object it is pointing to.
